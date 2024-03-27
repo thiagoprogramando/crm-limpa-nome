@@ -280,10 +280,9 @@ class AssasController extends Controller {
     private function sendWhatsapp($link, $message, $phone) {
 
         $client = new Client();
-
         $url = 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
+    
         try {
-
             $response = $client->post($url, [
                 'headers' => [
                     'Content-Type'  => 'application/json',
@@ -298,13 +297,18 @@ class AssasController extends Controller {
                     'title'           => 'Assinatura de Documento',
                     'linkDescription' => 'Link para Assinatura Digital',
                 ],
+                'verify' => false
             ]);
-
-            return true;
+    
+            if ($response->getStatusCode() == 200) {
+                return true;
+            } else {
+                return false;
+            }
         } catch (\Exception $e) {
             return false;
         }
-    }
+    }    
 
     private function createKey($id) {
 
@@ -437,7 +441,7 @@ class AssasController extends Controller {
                 }
 
                 $client = User::find($invoice->id_user);
-                $this->sendWhatsapp(env('APP_URL').'/consulta/'.$sale->id, 'Olá, '.$client->name.'! Recebemos o seu pagamento, *segue link para acessar Faturas, consultar processos* e demais informações sobre seus contratos. \r\n\r\n PRONTO AGORA SÓ ACOMPANHAR 👇🏼📲', $client->phone);
+                $this->sendWhatsapp(env('APP_URL').'/consulta/'.$sale->id, "Olá, ".$client->name."! Recebemos o seu pagamento, *segue link para acessar Faturas, consultar processos* e demais informações sobre seus contratos. \r\n\r\n PRONTO AGORA SÓ ACOMPANHAR 👇🏼📲", $client->phone);
 
                 return response()->json(['status' => 'success', 'message' => 'Operação Finalizada!']);
             }
@@ -579,5 +583,37 @@ class AssasController extends Controller {
         } catch (\Exception $e) {
             return 0;
         }
+    }
+
+    public function webhookSing(Request $request) {
+
+        $jsonData = $request->getContent();
+        $data = json_decode($jsonData, true);
+        if (isset($data['token']) && isset($data['event_type'])) {
+            
+            if($data['event_type'] === 'doc_signed') {
+                $token = $data['token'];
+
+                $sale = Sale::where('token_contract', $token)->first();
+                if ($sale && $sale->status != 2) {
+
+                    $sale->status = 2;
+                    $sale->save();
+
+                    if($this->createSalePayment($sale->id)) {
+                        return response()->json(['message' => 'Contrato assinado e Faturas geradas!'], 200);
+                    }
+
+                    return response()->json(['message' => 'Contrato assinado e mas não foi possível gerar Faturas!'], 200);
+                }
+            }
+
+            return response()->json(['message' => 'Nenhuma operação finalizada!'], 200);
+        } else {
+            
+            return response()->json(['error' => 'Token e Event não localizados!'], 200);
+        }
+
+        return response()->json(['error' => 'Webhook não utilizado!'], 200);
     }
 }

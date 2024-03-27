@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Sale;
 
 use App\Http\Controllers\Assas\AssasController;
 use App\Http\Controllers\Controller;
+
 use App\Models\Invoice;
 use App\Models\Lists;
 use App\Models\Payment;
@@ -75,11 +76,11 @@ class SaleController extends Controller {
             if(!empty($product->contract)) {
 
                 $document = $this->sendContract($user->id, $product->contract, $request->value, $request->payment);
-                if ($document['token']) {
+                if($document['token']) {
 
                     $sale->token_contract = $document['token'];
                     $sale->url_contract   = $document['signers'][0]['sign_url'];
-                    $this->sendWhatsapp($document['signers'][0]['sign_url'], 'Prezado Cliente, segue seu *contrato de adesão* ao produto da G7 Assessoria: \r\n ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼 \r \n ⚠ Salva o contato se não tiver aparecendo o link', $user->phone);
+                    $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado Cliente, segue seu *contrato de adesão* ao produto da ".env('APP_NAME')." Assessoria: \r\n ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼 \r \n ⚠ Salva o contato se não tiver aparecendo o link.", $user->phone);
 
                     if($sale->save()) {
                         return redirect()->back()->with('success', 'Sucesso! O contrato foi enviado para o cliente via WhatsApp.');
@@ -245,12 +246,12 @@ class SaleController extends Controller {
                         ],
                     ],
                 ],
-                        
+                'verify' => false      
             ]);
 
             return json_decode($response->getBody(), true);
         } catch (RequestException $e) {
-            return false;
+            return $e->getMessage();
         }
     }
 
@@ -275,6 +276,7 @@ class SaleController extends Controller {
                     'title'           => 'Assinatura de Documento',
                     'linkDescription' => 'Link para Assinatura Digital',
                 ],
+                'verify' => false
             ]);
 
             return true;
@@ -293,7 +295,7 @@ class SaleController extends Controller {
 
     public function manager(Request $request) {
 
-        $sales = Sale::all();
+        $sales = Sale::orderBy('created_at', 'desc')->get();
         return view('app.Sale.manager', ['sales' => $sales]);
     }
 

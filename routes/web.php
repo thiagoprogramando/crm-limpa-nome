@@ -6,6 +6,7 @@ use App\Http\Controllers\AppController;
 use App\Http\Controllers\Assas\AssasController;
 use App\Http\Controllers\Payment\Payment;
 use App\Http\Controllers\Product\ProductController;
+use App\Http\Controllers\Sale\DefaultController;
 use App\Http\Controllers\Sale\SaleController;
 use App\Http\Controllers\User\ListController;
 use App\Http\Controllers\User\UserController;
@@ -32,6 +33,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/update-sale/{id}', [SaleController::class, 'viewSale'])->name('update-sale');
         Route::get('/invoice-default', [SaleController::class, 'default'])->name('invoice-default');
         Route::post('delete-sale', [SaleController::class, 'deleteSale'])->name('delete-sale');
+
+        Route::get('/send-default-whatsapp/{id}', [DefaultController::class, 'sendWhatsapp'])->name('send-default-whatsapp');
 
         //Wallet
         Route::get('/wallet', [WalletController::class, 'wallet'])->name('wallet');

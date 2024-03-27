@@ -9,3 +9,4 @@ use Illuminate\Support\Facades\Route;
 // })->middleware('auth:sanctum');
 
 Route::post('webhook-assas', [AssasController::class, 'webhook'])->name('webhook-assas');
+Route::post('webhook-zapsing', [AssasController::class, 'webhookSing'])->name('webhook-zapsing');
