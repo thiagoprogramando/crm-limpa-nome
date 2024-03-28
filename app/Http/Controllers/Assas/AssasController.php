@@ -455,6 +455,10 @@ class AssasController extends Controller {
     public function myDocuments() {
         $user = auth()->user();
 
+        if(empty($user->api_key)) {
+            return [];
+        }
+
         $client = new Client();
         $options = [
             'headers' => [
