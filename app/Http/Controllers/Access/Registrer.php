@@ -24,7 +24,7 @@ class Registrer extends Controller {
 
         $user = new User();
         $user->name = $request->name;
-        $user->cpfcnpj = $request->cpfcnpj;
+        $user->cpfcnpj = preg_replace('/\D/', '', $request->cpfcnpj);
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
         if($user->save()) {
