@@ -405,7 +405,7 @@ class AssasController extends Controller {
                     return response()->json(['status' => 'error', 'message' => 'Não foi possível confirmar o pagamento da fatura!']);
                 }
 
-                $sale   = Sale::where('id', $invoice->id_sale)->first();
+                $sale = Sale::where('id', $invoice->id_sale)->first();
                 
                 $product = $invoice->id_product != null ? Product::where('id', $invoice->id_product)->first() : false;
                 if($product) {
@@ -417,20 +417,22 @@ class AssasController extends Controller {
                     }
                 }
 
-                $seller = User::find($sale->id_seller);
-                $totalSales = Sale::where('id_seller', $seller->id)->where('status', 1)->count();
-                switch($totalSales) {
-                    case 10:
-                        $seller->level = 2;
-                        break;
-                    case 100:
-                        $seller->level = 3;
-                        break;
-                    case 1000:
-                        $seller->level = 4;
-                        break;
+                if($sale) {
+                    $seller = User::find($sale->id_seller);
+                    $totalSales = Sale::where('id_seller', $seller->id)->where('status', 1)->count();
+                    switch($totalSales) {
+                        case 10:
+                            $seller->level = 2;
+                            break;
+                        case 100:
+                            $seller->level = 3;
+                            break;
+                        case 1000:
+                            $seller->level = 4;
+                            break;
+                    }
+                    $seller->save();
                 }
-                $seller->save();
 
                 if($invoice->type == 1) {
 
