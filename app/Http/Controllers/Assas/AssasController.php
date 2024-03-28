@@ -175,6 +175,7 @@ class AssasController extends Controller {
             $invoice->id_user       = $user->id;
             $invoice->id_product    = 0;
             $invoice->value         = 99;
+            $invoice->commission    = 20;
             $invoice->status        = 0;
             $invoice->type          = 1;
             $invoice->num           = 1;
