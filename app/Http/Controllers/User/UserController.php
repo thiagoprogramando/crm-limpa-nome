@@ -22,7 +22,7 @@ class UserController extends Controller {
 
     public function updateProfile(Request $request) {
 
-        $data = [
+        $data = [   
             'name'          => $request->name,
             'cpfcnpj'       => $request->cpfcnpj,
             'phone'         => $request->phone,

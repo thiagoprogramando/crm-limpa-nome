@@ -110,11 +110,11 @@
                         </div>
                     @endif
 
-                    @if (Auth::user()->status == 4)
+                    @if(empty(Auth::user()->postal_code) || empty(Auth::user()->address) || empty(Auth::user()->complement) || empty(Auth::user()->city) || empty(Auth::user()->state) || empty(Auth::user()->num))
                         <div class="col-12">
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                 <i class="bi bi-exclamation-octagon me-1"></i>
-                                Complete os dados do seu endereço e contatos abaixo para prosseguir!
+                                Complete os dados do seu endereço e contatos abaixo!
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         </div>
