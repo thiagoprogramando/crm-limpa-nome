@@ -100,7 +100,7 @@
                         </div>
                     @endif
 
-                    @if (Auth::user()->status == 3)
+                    @if (Auth::user()->status == 3 && empty(Auth::user()->api_key))
                         <div class="col-12">
                             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                                 <i class="bi bi-info-circle me-1"></i>

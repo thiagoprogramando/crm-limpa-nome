@@ -35,6 +35,22 @@ class UserController extends Controller {
             'complement'    => $request->complement,
             'num'           => $request->num,
         ];
+
+        if (
+            $request->filled('name') &&
+            $request->filled('cpfcnpj') &&
+            $request->filled('phone') &&
+            $request->filled('email') &&
+            $request->filled('birth_date') &&
+            $request->filled('postal_code') &&
+            $request->filled('address') &&
+            $request->filled('state') &&
+            $request->filled('city') &&
+            $request->filled('complement') &&
+            $request->filled('num')
+        ) {
+            $data['status'] = 3;
+        }
     
         $user = User::where('id', Auth::id())->update($data);
         if ($user) {
