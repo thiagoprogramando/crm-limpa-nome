@@ -165,7 +165,7 @@ class AssasController extends Controller {
             }
         }
 
-        $charge = $this->createCharge($user->customer, 'PIX', '99.00', 'Assinatura -'.env('APP_NAME'), now()->addDay(), 0, 'afd76f74-6dd8-487b-b251-28205161e1e6', 20);
+        $charge = $this->createCharge($user->customer, 'PIX', '99.00', 'Assinatura -'.env('APP_NAME'), now()->addDay(), 0, env('WALLET_HEFESTO'), 20);
         if($charge != false) {
 
             $invoice = new Invoice();
