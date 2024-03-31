@@ -98,7 +98,7 @@
 
             <div class="card info-card clock-card">
                 <div class="card-body">
-                    <h5 class="card-title">Próxima Lista <span>{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</span></h5>
+                    <h5 class="card-title">Próxima Lista @if($list) <span>{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</span> @else Não há lista disponível @endif</h5>
                     <div class="d-flex align-items-center">
                         <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                             <i class="bi bi-clock-history"></i>
