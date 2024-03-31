@@ -28,6 +28,8 @@ class AppController extends Controller {
             $diff = $now->diff($createdAt);
     
             $remainingTime = $diff->format('%dd %hh %im %ss');
+        } else {
+            $remainingTime = 0;
         }
 
         $sale = Sale::where('id_seller', Auth::id())->where('status', 1)->select(DB::raw('COUNT(*) as totalSales'), DB::raw('MONTH(created_at) as month'))->groupBy(DB::raw('MONTH(created_at)'))->get();
