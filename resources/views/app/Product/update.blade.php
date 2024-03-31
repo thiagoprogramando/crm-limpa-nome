@@ -137,34 +137,36 @@
                             </div>
                         </form>
 
-                        <table class="table table-hover mt-3">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Método</th>
-                                    <th class="text-center" scope="col">Parcelas</th>
-                                    <th class="text-center" scope="col">Taxas</th>
-                                    <th class="text-center" scope="col">Opções</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($payments as $payment)
+                        <div class="table-responsive">
+                            <table class="table table-hover mt-3">
+                                <thead>
                                     <tr>
-                                        <th scope="row">{{ $payment->id }}</th>
-                                        <td>{{ $payment->methodLabel() }}</td>
-                                        <td class="text-center">{{ $payment->installments }}</td>
-                                        <td class="text-center">R$ {{ number_format($payment->value_rate, 2, ',', '.') }}</td>
-                                        <td class="text-center">
-                                            <form action="{{ route('delete-payment') }}" method="POST" class="delete">
-                                                @csrf
-                                                <input type="hidden" name="id" value="{{ $payment->id }}">
-                                                <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
-                                            </form>
-                                        </td>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Método</th>
+                                        <th class="text-center" scope="col">Parcelas</th>
+                                        <th class="text-center" scope="col">Taxas</th>
+                                        <th class="text-center" scope="col">Opções</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach ($payments as $payment)
+                                        <tr>
+                                            <th scope="row">{{ $payment->id }}</th>
+                                            <td>{{ $payment->methodLabel() }}</td>
+                                            <td class="text-center">{{ $payment->installments }}</td>
+                                            <td class="text-center">R$ {{ number_format($payment->value_rate, 2, ',', '.') }}</td>
+                                            <td class="text-center">
+                                                <form action="{{ route('delete-payment') }}" method="POST" class="delete">
+                                                    @csrf
+                                                    <input type="hidden" name="id" value="{{ $payment->id }}">
+                                                    <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

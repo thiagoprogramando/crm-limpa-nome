@@ -38,6 +38,8 @@ Route::middleware(['auth'])->group(function () {
 
         //Wallet
         Route::get('/wallet', [WalletController::class, 'wallet'])->name('wallet');
+        Route::get('/withdraw', [WalletController::class, 'withdraw'])->name('withdraw');
+        Route::post('withdraw-send', [WalletController::class, 'withdrawSend'])->name('withdraw-send');
 
     });
 
@@ -54,6 +56,7 @@ Route::middleware(['auth'])->group(function () {
     //User
     Route::get('/profile', [UserController::class, 'profile'])->name('profile');
     Route::post('update-user', [UserController::class, 'updateProfile'])->name('update-user');
+    Route::get('/search', [UserController::class, 'search'])->name('search');
 
     //List
     Route::get('/lists', [ListController::class, 'list'])->name('lists');

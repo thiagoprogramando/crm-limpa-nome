@@ -21,6 +21,9 @@
         <link href="{{ asset('assets/dashboard/vendor/remixicon/remixicon.css') }}" rel="stylesheet">
         <link href="{{ asset('assets/dashboard/vendor/simple-datatables/style.css') }}" rel="stylesheet">
         <link href="{{ asset('assets/dashboard/css/style.css') }}" rel="stylesheet">
+
+        <script src="{{ asset('assets/dashboard/js/chart.js')}}"></script>
+        <script src="{{ asset('assets/dashboard/js/sweetalert.js')}}"></script>
     </head>
 
     <body>
@@ -35,8 +38,8 @@
             </div>
 
             <div class="search-bar">
-                <form class="search-form d-flex align-items-center" method="POST" action="#">
-                    <input type="text" name="query" placeholder="Pesquisar" title="Pesquisar">
+                <form class="search-form d-flex align-items-center" method="GET" action="{{ route('search') }}">
+                    <input type="text" name="search" placeholder="Pesquisar" title="Pesquisar">
                     <button type="submit" title="Search"><i class="bi bi-search"></i></button>
                 </form>
             </div>
@@ -130,11 +133,16 @@
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="{{ route('wallet') }}"> <i class="bi bi-wallet2"></i> <span>Carteira</span> </a>
                 </li>
+
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ route('receivable') }}"> <i class="bi bi-box-arrow-in-up"></i> <span>Recebíveis</span> </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ route('payments') }}"> <i class="bi bi-box-arrow-down"></i> <span>Pagamentos</span> </a>
+                    <a class="nav-link collapsed" data-bs-target="#forms-finan" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-bank"></i><span>Operações</span><i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <ul id="forms-finan" class="nav-content collapse " data-bs-parent="#sidebar-nav">  
+                        <li><a href="{{ route('withdraw') }}"> <i class="bi bi-circle"></i><span>Saques</span> </a></li>
+                        <li><a href="{{ route('receivable') }}"> <i class="bi bi-circle"></i><span>Recebíveis</span> </a></li>
+                        <li><a href="{{ route('payments') }}"> <i class="bi bi-circle"></i><span>Pagamentos</span> </a></li>
+                    </ul>
                 </li>
 
                 <li class="nav-heading">Gestão</li>
@@ -201,18 +209,13 @@
 
         <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-        <script src="{{ asset('assets/dashboard/vendor/apexcharts/apexcharts.min.js') }}"></script>
         <script src="{{ asset('assets/dashboard/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-        <script src="{{ asset('assets/dashboard/vendor/chart.js/chart.umd.js') }}"></script>
-        <script src="{{ asset('assets/dashboard/vendor/echarts/echarts.min.js') }}"></script>
         <script src="{{ asset('assets/dashboard/vendor/quill/quill.min.js') }}"></script>
         <script src="{{ asset('assets/dashboard/vendor/simple-datatables/simple-datatables.js') }}"></script>
         <script src="{{ asset('assets/dashboard/vendor/tinymce/tinymce.min.js') }}"></script>
-        <script src="{{ asset('assets/dashboard/vendor/php-email-form/validate.js') }}"></script>
         <script src="{{ asset('assets/dashboard/js/main.js') }}"></script>
         <script src="{{ asset('assets/dashboard/js/jquery.js') }}"></script>
         <script src="{{ asset('assets/dashboard/js/mask.js') }}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             @if(session('error'))
                 Swal.fire({

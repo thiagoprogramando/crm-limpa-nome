@@ -18,42 +18,43 @@
             <div class="card p-5">
                 <div class="card-body">
                     <h5 class="card-title">Listas</h5>
-    
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Nome</th>
-                                <th scope="col">Descrição</th>
-                                <th class="text-center" scope="col">Encerramento</th>
-                                <th class="text-center" scope="col">Status</th>
-                                <th class="text-center" scope="col">Opções</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($lists as $list)
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
                                 <tr>
-                                    <th scope="row">{{ $list->id }}</th>
-                                    <td>{{ $list->name }}</td>
-                                    <td>{{ $list->description }}</td>
-                                    <td class="text-center">{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y H:i') }}</td>
-                                    <td class="text-center">{{ $list->statusLabel() }}</td>
-                                    <td class="text-center">
-                                        <form action="{{ route('delete-list') }}" method="POST" class="delete">
-                                            @csrf
-                                            <input type="hidden" name="id" value="{{ $list->id }}">
-                                            @if (Auth::user()->type == 1)
-                                                <a href="{{ route('updatelist', ['id' => $list->id]) }}" class="btn btn-warning text-light"><i class="bi bi-pencil-square"></i></a>
-                                                <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
-                                            @endif
-                                            <a href="{{ route('updatelist', ['id' => $list->id]) }}" class="btn btn-success text-light"><i class="bi bi-file-earmark-excel"></i></a>
-                                        </form>
-                                    </td>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Nome</th>
+                                    <th scope="col">Descrição</th>
+                                    <th class="text-center" scope="col">Encerramento</th>
+                                    <th class="text-center" scope="col">Status</th>
+                                    <th class="text-center" scope="col">Opções</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-
+                            </thead>
+                            <tbody>
+                                @foreach ($lists as $list)
+                                    <tr>
+                                        <th scope="row">{{ $list->id }}</th>
+                                        <td>{{ $list->name }}</td>
+                                        <td>{{ $list->description }}</td>
+                                        <td class="text-center">{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y H:i') }}</td>
+                                        <td class="text-center">{{ $list->statusLabel() }}</td>
+                                        <td class="text-center">
+                                            <form action="{{ route('delete-list') }}" method="POST" class="delete">
+                                                @csrf
+                                                <input type="hidden" name="id" value="{{ $list->id }}">
+                                                @if (Auth::user()->type == 1)
+                                                    <a href="{{ route('updatelist', ['id' => $list->id]) }}" class="btn btn-warning text-light"><i class="bi bi-pencil-square"></i></a>
+                                                    <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
+                                                @endif
+                                                <a href="{{ route('updatelist', ['id' => $list->id]) }}" class="btn btn-success text-light"><i class="bi bi-file-earmark-excel"></i></a>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

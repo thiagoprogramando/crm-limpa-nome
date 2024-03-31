@@ -623,4 +623,68 @@ class AssasController extends Controller {
 
         return response()->json(['error' => 'Webhook não utilizado!'], 200);
     }
+
+    public function withdrawSend($key, $value, $type) {
+
+        $client = new Client();
+        
+        $user = auth()->user();
+        try {
+            $response = $client->request('POST', env('API_URL_ASSAS').'v3/transfers', [
+                'headers' => [
+                    'accept'       => 'application/json',
+                    'Content-Type' => 'application/json',
+                    'access_token' => $user->api_key,
+                ],
+                'json' => [
+                    'value' => $value,
+                    'operationType' => 'PIX',
+                    'pixAddressKey' => $key,
+                    'pixAddressKeyType' => $type,
+                    'description' => 'Saque '.env('APP_NAME'),
+                ],
+                'verify'  => false,
+            ]);
+    
+            $body = $response->getBody()->getContents();
+            $decodedBody = json_decode($body, true);
+    
+            if ($decodedBody['status'] === 'PENDING') {
+                return ['success' => true, 'message' => 'Saque agendado com sucesso'];
+            } else {
+                return ['success' => false, 'message' => 'Situação do Saque: ' . $decodedBody['status']];
+            }
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            $response = $e->getResponse();
+            $body = $response->getBody()->getContents();
+            $decodedBody = json_decode($body, true);
+    
+            return ['success' => false, 'message' => $decodedBody['errors'][0]['description']];
+        }
+    }
+
+    public function extract() {
+
+        $client = new Client();
+
+        $user = auth()->user();
+        $startDate = $user->created_at->toDateString();
+        $finishDate = now()->toDateString();
+
+        $response = $client->request('GET',  env('API_URL_ASSAS') . "v3/financialTransactions?startDate={$startDate}&finishDate={$finishDate}&order=desc", [
+            'headers' => [
+                'accept' => 'application/json',
+                'access_token' => $user->api_key,
+            ],
+            'verify' => false,
+        ]);
+
+        $body = (string) $response->getBody();
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode($body, true);
+            return $data['data'];
+        } else {
+            return [];
+        }
+    }
 }

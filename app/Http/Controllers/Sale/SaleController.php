@@ -295,8 +295,31 @@ class SaleController extends Controller {
 
     public function manager(Request $request) {
 
-        $sales = Sale::orderBy('created_at', 'desc')->get();
-        return view('app.Sale.manager', ['sales' => $sales]);
+        $query = Sale::orderBy('created_at', 'desc');
+
+        if (!empty($request->created_at)) {
+            $query->whereDate('created_at', $request->created_at);
+        }
+
+        if (!empty($request->value) && $this->formatarValor($request->value) > 0) {
+            $query->where('value', $this->formatarValor($request->value));
+        }
+
+        if (!empty($request->id_list)) {
+            $query->where('id_list', $request->id_list);
+        }
+
+        if (!empty($request->id_seller)) {
+            $query->where('id_seller', $request->id_seller);
+        }
+
+        $sales = $query->get();
+
+        return view('app.Sale.manager',  [
+            'sales'   => $sales,
+            'lists'   => Lists::orderBy('created_at', 'desc')->get(),
+            'sellers' => User::whereIn('type', [1, 2])->get()
+        ]);
     }
 
     public function viewSale($id) {

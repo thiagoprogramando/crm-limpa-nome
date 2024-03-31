@@ -72,34 +72,36 @@
             <div class="card p-5">
                 <h5 class="card-title">Extrato</h5>
 
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Tipo</th>
-                            <th>Data</th>
-                            <th>Descrição</th>
-                            <th class="text-justify">Valor</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($extracts as $extract)
+                <div class="table-responsive">
+                    <table class="table table-responsive table-hover">
+                        <thead>
                             <tr>
-                                <td>{{ $extract['id'] }}</td>
-                                <td>
-                                    @if($extract['value'] < 0)
-                                        Saída
-                                    @else
-                                        Entrada
-                                    @endif
-                                </td>
-                                <td>{{ \Carbon\Carbon::parse($extract['date'])->format('d/m/Y') }}</td>
-                                <td>{{ $extract['description'] }}</td>
-                                <td class="text-justify">R$ {{ number_format($extract['value'], 2, ',', '.') }}</td>
+                                <th>ID</th>
+                                <th>Tipo</th>
+                                <th>Data</th>
+                                <th>Descrição</th>
+                                <th class="text-justify">Valor</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($extracts as $extract)
+                                <tr>
+                                    <td>{{ $extract['id'] }}</td>
+                                    <td>
+                                        @if($extract['value'] < 0)
+                                            Saída
+                                        @else
+                                            Entrada
+                                        @endif
+                                    </td>
+                                    <td>{{ \Carbon\Carbon::parse($extract['date'])->format('d/m/Y') }}</td>
+                                    <td>{{ $extract['description'] }}</td>
+                                    <td class="text-justify">R$ {{ number_format($extract['value'], 2, ',', '.') }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 

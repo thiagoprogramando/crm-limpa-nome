@@ -4,7 +4,9 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Assas\AssasController;
 use App\Http\Controllers\Controller;
-
+use App\Models\Invoice;
+use App\Models\Lists;
+use App\Models\Sale;
 use App\Models\User;
 
 use Illuminate\Http\Request;
@@ -60,4 +62,17 @@ class UserController extends Controller {
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
     }
 
+    public function search(Request $request) {
+
+        $sales      = Sale::where('id', 'like', '%' . $request->search . '%')->orWhereHas('user', function ($query) use ($request) {$query->where('name', 'like', '%' . $request->search . '%');})->get();
+        $invoices   = Invoice::where('name', 'like', '%' . $request->search . '%')->orWhere('id', 'like', '%' . $request->search . '%')->where('id_user', Auth::id())->get();
+        $lists      = Lists::where('name', 'like', '%' . $request->search . '%')->orWhere('id', 'like', '%' . $request->search . '%')->get();
+
+        return view('app.User.search', [
+            'search'    => $request->search,
+            'sales'     => $sales,
+            'invoices'  => $invoices,
+            'lists'     => $lists
+        ]);
+    }
 }

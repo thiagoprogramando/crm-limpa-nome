@@ -31,14 +31,14 @@
                 <div class="col-xxl-4 col-md-6">
                     <div class="card info-card sales-card">
                         <div class="card-body">
-                            <h5 class="card-title">Vendas</h5>
+                            <h5 class="card-title">T. Vendas (N°)</h5>
 
                             <div class="d-flex align-items-center">
                                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                     <i class="bi bi-cart"></i>
                                 </div>
                                 <div class="ps-3">
-                                    <h6>145</h6>
+                                    <h6>{{ $sales }}</h6>
                                 </div>
                             </div>
                         </div>
@@ -49,14 +49,14 @@
                     <div class="card info-card revenue-card">
 
                         <div class="card-body">
-                            <h5 class="card-title">Comissão</h5>
+                            <h5 class="card-title">T. Comissão (R$)</h5>
 
                             <div class="d-flex align-items-center">
                                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                 <i class="bi bi-currency-dollar"></i>
                                 </div>
                                 <div class="ps-3">
-                                    <h6>R$ 3.262</h6>
+                                    <h6>{{ number_format($commission, 2, ',', '.') }}</h6>
                                 </div>
                             </div>
                         </div>
@@ -68,14 +68,14 @@
                     <div class="card info-card customers-card">
 
                         <div class="card-body">
-                            <h5 class="card-title">Clientes</h5>
+                            <h5 class="card-title">T. Vendas (R$)</h5>
 
                             <div class="d-flex align-items-center">
                                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-people"></i>
+                                    <i class="bi bi-award"></i>
                                 </div>
                                 <div class="ps-3">
-                                    <h6>1244</h6>
+                                    <h6>{{ number_format($saleValue, 2, ',', '.') }}</h6>
                                 </div>
                             </div>
                         </div>
@@ -85,69 +85,12 @@
 
                 <div class="col-12">
                     <div class="card">
-
                         <div class="card-body">
                             <h5 class="card-title">Gráfico de crescimento <span>| Dados gerados pelo sistema.</span></h5>
-
-                            <div id="reportsChart"></div>
-                            <script>
-                                document.addEventListener("DOMContentLoaded", () => {
-                                    new ApexCharts(document.querySelector("#reportsChart"), {
-                                        series: [{
-                                            name: 'Sales',
-                                            data: [31, 40, 28, 51, 42, 82, 56],
-                                        }, {
-                                            name: 'Revenue',
-                                            data: [11, 32, 45, 32, 34, 52, 41]
-                                        }, {
-                                            name: 'Customers',
-                                            data: [15, 11, 32, 18, 9, 24, 11]
-                                        }],
-                                        chart: {
-                                            height: 350,
-                                            type: 'area',
-                                            toolbar: {
-                                                show: false
-                                            },
-                                        },
-                                        markers: {
-                                            size: 4
-                                        },
-                                        colors: ['#4154f1', '#2eca6a', '#ff771d'],
-                                        fill: {
-                                            type: "gradient",
-                                            gradient: {
-                                                shadeIntensity: 1,
-                                                opacityFrom: 0.3,
-                                                opacityTo: 0.4,
-                                                stops: [0, 90, 100]
-                                            }
-                                        },
-                                        dataLabels: {
-                                            enabled: false
-                                        },
-                                        stroke: {
-                                            curve: 'smooth',
-                                            width: 2
-                                        },
-                                        xaxis: {
-                                            type: 'datetime',
-                                            categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
-                                        },
-                                        tooltip: {
-                                            x: {
-                                                format: 'dd/MM/yy HH:mm'
-                                            },
-                                        }
-                                    }).render();
-                                });
-                            </script>
+                            <canvas id="growthChart"></canvas>
                         </div>
-
                     </div>
                 </div>
-        
-
             </div>
         </div>
 
@@ -155,14 +98,13 @@
 
             <div class="card info-card clock-card">
                 <div class="card-body">
-                    <h5 class="card-title">Próxima Lista <span> 14/03/2024</span></h5>
-
+                    <h5 class="card-title">Próxima Lista <span>{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</span></h5>
                     <div class="d-flex align-items-center">
                         <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                             <i class="bi bi-clock-history"></i>
                         </div>
                         <div class="ps-3">
-                            <h6>5d 2h 33min</h6>
+                            <h6>{{ $remainingTime }}</h6>
                         </div>
                     </div>
                 </div>
@@ -207,4 +149,47 @@
     </div>
 </section>
 
+<script>
+    var salesData = {!! json_encode($saleGraph) !!};
+    var commissionsData = {!! json_encode($commissionGraph) !!};
+
+    var labels = [];
+    var sales = [];
+    var commissions = [];
+
+    for (var i = 0; i < salesData.length; i++) {
+        labels.push(salesData[i].month);
+        sales.push(salesData[i].totalSales);
+    }
+
+    for (var j = 0; j < commissionsData.length; j++) {
+        commissions.push(commissionsData[j].totalCommissions);
+    }
+
+    var ctx = document.getElementById('growthChart').getContext('2d');
+    var growthChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Vendas',
+                data: sales,
+                borderColor: 'green',
+                fill: false
+            }, {
+                label: 'Comissões',
+                data: commissions,
+                borderColor: 'blue',
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            title: {
+                display: true,
+                text: 'Crescimento de Vendas e Comissões ao Longo do Tempo'
+            }
+        }
+    });
+</script>
 @endsection
