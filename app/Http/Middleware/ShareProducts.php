@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Notification;
 use Closure;
 
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +22,19 @@ class ShareProducts {
                 ->orWhere('level', Auth::user()->level)
                 ->get();
 
-            View::share('business', $business);
+            $notifications = Notification::where('id_user', Auth::id())
+                ->orWhere('id_user', null)
+                ->get();
+
+            $totalNotification = Notification::where('id_user', Auth::id())
+                ->where('view', null)
+                ->count();
+
+            View::share([
+                'business'          => $business,
+                'notifications'     => $notifications,
+                'totalNotification' => $totalNotification
+            ]);
         }
 
         return $next($request);

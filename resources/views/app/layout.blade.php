@@ -54,22 +54,29 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
                             <i class="bi bi-bell"></i>
-                            <span class="badge bg-primary badge-number">4</span>
+                            <span class="badge bg-primary badge-number">{{ $totalNotification }}</span>
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
-                            <li class="dropdown-header"> Você possui X notificações </li>
+                            <li class="dropdown-header"> Você possui {{ $totalNotification }} notificações </li>
                             <li><hr class="dropdown-divider"></li>
 
-                            <li class="notification-item">
-                                <i class="bi bi-exclamation-circle text-warning"></i>
-                                <div>
-                                    <h4>Lorem Ipsum</h4>
-                                    <p>Quae dolorem earum veritatis oditseno</p>
-                                    <p>30 min. ago</p>
-                                </div>
-                            </li>
-                            <li> <hr class="dropdown-divider"> </li>
+                            @foreach ($notifications as $notification)
+                                <li class="notification-item">
+                                    @if($notification->type == 1)
+                                        <i class="bi bi-check-circle text-success"></i>
+                                    @elseif ($notification->type == 2)
+                                        <i class="bi bi-exclamation-circle text-warning"></i>
+                                    @else
+                                        <i class="bi bi-exclamation-diamond text-danger"></i>
+                                    @endif
+                                    <div>
+                                        <h4>{{ $notification->name }}</h4>
+                                        <p>{{ $notification->description }}</p>
+                                    </div>
+                                </li>
+                                <li> <hr class="dropdown-divider"> </li>
+                            @endforeach
                             <li class="dropdown-footer"> <a href="#">Não há mais nada aqui.</a> </li>
                         </ul>
                     </li>
