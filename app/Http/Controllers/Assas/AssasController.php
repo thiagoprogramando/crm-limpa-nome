@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Assas;
 use App\Http\Controllers\Controller;
 
 use App\Models\Invoice;
+use App\Models\Notification;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Sale;
@@ -99,6 +100,16 @@ class AssasController extends Controller {
             $invoice->save();
         }
 
+        $notification               = new Notification();
+        $notification->name         = 'Faturas criada';
+        $notification->description  = 'Faturas geradas para venda N°'.$sale->id;
+        $notification->type         = 1;
+        $notification->id_user      = $sale->id_seller; 
+        $notification->save();
+
+        $invoice = Invoice::where('id_sale', $sale->id)->where('status', 0)->first();
+        $this->sendInvoice($invoice->url_payment, $sale->id_client);
+
         return true;
     }
 
@@ -137,8 +148,55 @@ class AssasController extends Controller {
             return false;
         }
 
+        $notification               = new Notification();
+        $notification->name         = 'Faturas criada';
+        $notification->description  = 'Faturas geradas para venda N°'.$sale->id;
+        $notification->type         = 1;
+        $notification->id_user      = $sale->id_seller; 
+        $notification->save();
+
         if($invoice->save()) {
+            
+            $invoice = Invoice::where('id_sale', $sale->id)->where('status', 0)->first();
+            $this->sendInvoice($invoice->url_payment, $sale->id_client);
+
             return true;
+        }
+
+        return false;
+    }
+
+    private function sendInvoice($url, $id) {
+
+        $user = User::find($id);
+        if($user) {
+
+            $client = new Client();
+
+            $url = 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
+            try {
+
+                $response = $client->post($url, [
+                    'headers' => [
+                        'Content-Type'  => 'application/json',
+                        'Accept'        => 'application/json',
+                        'Client-Token'  => 'Fabe25dbd69e54f34931e1c5f0dda8c5bS',
+                    ],
+                    'json' => [
+                        'phone'           => '55' . $user->phone,
+                        'message'         => "Prezado cliente, *estamos enviando o link para pagamento* da sua compra aos serviços do ".env('APP_NAME').": \r\n \r\n FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳",
+                        'image'           => env('APP_URL_LOGO'),
+                        'linkUrl'         => $url,
+                        'title'           => 'Pagamento de Fatura',
+                        'linkDescription' => 'Link para Pagamento Digital',
+                    ],
+                    'verify' => false
+                ]);
+
+                return true;
+            } catch (\Exception $e) {
+                return false;
+            }
         }
 
         return false;
@@ -252,17 +310,6 @@ class AssasController extends Controller {
                 'totalFixedValue' => number_format($commission, 2, '.', '')
             ];
         }
-        
-        // if ($value > 80) {
-        //     if (!isset($options['json']['split'])) {
-        //         $options['json']['split'] = [];
-        //     }
-        
-        //     $options['json']['split'][] = [
-        //         'walletId'          => 'afd76f74-6dd8-487b-b251-28205161e1e6',
-        //         'totalFixedValue'   => 1,
-        //     ];
-        // }
 
         $response = $client->post(env('API_URL_ASSAS') . 'v3/payments', $options);
         $body = (string) $response->getBody();
@@ -418,6 +465,14 @@ class AssasController extends Controller {
                 }
 
                 if($sale) {
+
+                    $notification               = new Notification();
+                    $notification->name         = 'Fatura N°'.$invoice->id;
+                    $notification->description  = 'Faturas recebida com sucesso!';
+                    $notification->type         = 1;
+                    $notification->id_user      = $invoice->id_seller; 
+                    $notification->save();
+
                     $seller = User::find($sale->id_seller);
                     $totalSales = Sale::where('id_seller', $seller->id)->where('status', 1)->count();
                     switch($totalSales) {
@@ -449,6 +504,25 @@ class AssasController extends Controller {
                 return response()->json(['status' => 'success', 'message' => 'Operação Finalizada!']);
             }
             
+            return response()->json(['status' => 'success', 'message' => 'Nenhum Fatura encontrada!']);
+        }
+
+        if($jsonData['event'] === 'PAYMENT_OVERDUE') {
+
+            $token = $jsonData['payment']['id'];
+            $invoice = Invoice::where('token_payment', $token)->where('status', 0)->first();
+            if($invoice) {
+                
+                $notification               = new Notification();
+                $notification->name         = 'Fatura N°'.$invoice->id;
+                $notification->description  = 'Faturas vencida sem conciliação de pagamento!';
+                $notification->type         = 1;
+                $notification->id_user      = $invoice->id_seller; 
+                $notification->save();
+
+                return response()->json(['status' => 'success', 'message' => 'Notificação de vencimento gerada!']);
+            }
+
             return response()->json(['status' => 'success', 'message' => 'Nenhum Fatura encontrada!']);
         }
 
