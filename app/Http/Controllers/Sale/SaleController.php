@@ -114,7 +114,7 @@ class SaleController extends Controller {
         $user->name         = $name;
         $user->email        = $email;
         $user->cpfcnpj      = $cpfcnpj;
-        $user->birth_date   = $birth_date;
+        $user->birth_date   = date('Y-m-d', strtotime($birth_date));
         $user->password     = bcrypt($cpfcnpj);
         $user->phone        = $phone;
         $user->postal_code  = $postal_code;
