@@ -33,7 +33,7 @@ class SaleController extends Controller {
 
     public function createSale(Request $request) {
 
-        $user = $this->createUser($request->name, $request->email, $request->cpfcnpj, $request->phone, $request->postal_code, $request->address, $request->complement, $request->city, $request->state, $request->num);
+        $user = $this->createUser($request->name, $request->email, $request->cpfcnpj, $request->birth_date, $request->phone, $request->postal_code, $request->address, $request->complement, $request->city, $request->state, $request->num);
         if($user != false) {
 
             $product = Product::where('id', $request->product)->first();
@@ -103,7 +103,7 @@ class SaleController extends Controller {
         }
     }
 
-    private function createUser($name, $email, $cpfcnpj, $phone, $postal_code = null, $address = null, $complement = null, $city = null, $state = null, $num = null) {
+    private function createUser($name, $email, $cpfcnpj, $birth_date, $phone, $postal_code = null, $address = null, $complement = null, $city = null, $state = null, $num = null) {
 
         $user = User::where('cpfcnpj', $cpfcnpj)->first();
         if($user) {
@@ -114,6 +114,7 @@ class SaleController extends Controller {
         $user->name         = $name;
         $user->email        = $email;
         $user->cpfcnpj      = $cpfcnpj;
+        $user->birth_date   = $birth_date;
         $user->password     = bcrypt($cpfcnpj);
         $user->phone        = $phone;
         $user->postal_code  = $postal_code;

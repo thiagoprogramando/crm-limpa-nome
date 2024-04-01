@@ -30,10 +30,17 @@
                                 </div>
                             </div>
                             
-                            <div class="col-12 col-md-6 col-lg-6 mb-1">
+                            <div class="col-12 col-md-3 col-lg-3 mb-1">
                                 <div class="form-floating">
                                     <input type="text" name="cpfcnpj" class="form-control" id="floatingCpfCnpj" placeholder="Informe o CPF ou CNPJ do Cliente:" oninput="mascaraCpfCnpj(this)" required>
                                     <label for="floatingCpfCnpj">CPF ou CNPJ:</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-3 col-lg-3 mb-1">
+                                <div class="form-floating">
+                                    <input type="text" name="birth_date" class="form-control" id="floatingBirth_date" placeholder="Data Nascimento:" oninput="mascaraData(this)" required>
+                                    <label for="floatingBirth_date">Data Nascimento:</label>
                                 </div>
                             </div>
 
