@@ -50,6 +50,9 @@ class User extends Authenticatable {
                 break; 
             case 4:
                 return 'REGIONAL';
+                break; 
+            case 5:
+                return 'VENDEDOR INTERNO';
                 break;         
             return $this->method;
         }

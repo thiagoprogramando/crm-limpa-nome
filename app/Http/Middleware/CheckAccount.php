@@ -12,9 +12,12 @@ class CheckAccount {
     public function handle(Request $request, Closure $next): Response {
 
         $user = Auth::user();
-        if (!$user || $user->wallet === null || $user->api_key === null) {
-            return redirect()->route('profile')->with('error', 'Complete seus dados para acessar todos os módulos!');
+        if($user && $user->type != 4) {
+            if ($user->wallet === null || $user->api_key === null) {
+                return redirect()->route('profile')->with('error', 'Complete seus dados para acessar todos os módulos!');
+            }
         }
+        
 
         return $next($request);
     }

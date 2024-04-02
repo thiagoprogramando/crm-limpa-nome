@@ -30,7 +30,7 @@ class UserController extends Controller {
             $user->name = $request->name;
         }
 
-        if(!empty($request->cpfcnpj)) {
+        if(!empty($request->cpfcnpj && $request->cpfcnpj !== $user->cpfcnpj)) {
             $user->cpfcnpj = $request->cpfcnpj;
         }
 
@@ -38,7 +38,7 @@ class UserController extends Controller {
             $user->phone = $request->phone;
         }
 
-        if(!empty($request->email)) {
+        if(!empty($request->email) && $request->email !== $user->email) {
             $user->email = $request->email;
         }
 
