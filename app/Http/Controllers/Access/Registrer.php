@@ -27,6 +27,16 @@ class Registrer extends Controller {
         $user->cpfcnpj = preg_replace('/\D/', '', $request->cpfcnpj);
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
+        
+        if($request->filiate) {
+            $filiates = User::where('filiate', $request->filiate)->count();
+            if($filiates >= 1) {
+                return redirect()->back()->with('error', 'Link de indicação expirado!');
+            }
+
+            $user->filiate = $request->filiate;
+        }
+
         if($user->save()) {
 
             $credentials = $request->only(['email', 'password']);

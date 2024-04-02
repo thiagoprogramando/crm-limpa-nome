@@ -106,7 +106,7 @@
                         <div class="col-12">
                             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                                 <i class="bi bi-info-circle me-1"></i>
-                                Você está quase lá! É necessário filiar-se <a href="{{ route('createMonthly', ['id' => Auth::user()->id]) }}"> ao {{ env('APP_NAME') }} clickando aqui!</a>
+                                Você está quase lá! É necessário filiar-se <a href="{{ route('createMonthly', ['id' => Auth::user()->id]) }}"> ao {{ env('APP_NAME') }} clicando aqui!</a>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         </div>

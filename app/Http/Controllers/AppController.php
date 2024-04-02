@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\Lists;
 use App\Models\Sale;
-
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -56,6 +56,7 @@ class AppController extends Controller {
             'commissionGraph' => $commissionGraph,
             'list'            => $list,
             'remainingTime'   => $remainingTime,
+            'filiate'         => User::where('filiate', Auth::id())->count(),
         ]);
     }
 }

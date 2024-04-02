@@ -84,6 +84,16 @@
                 </div>
 
                 <div class="col-12">
+
+                    @if($sales >= 10 && $filiate == 0)
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Indique seus parceiros para juntar-se ao {{ env('APP_NAME') }} e lucre 20% em cada venda!
+                            <a href="{{ route('registrer', ['id' => Auth::user()->id]) }}" target="_blank">Você pode indicar clicando aqui.</a>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Gráfico de crescimento <span>| Dados gerados pelo sistema.</span></h5>
