@@ -38,7 +38,7 @@ class UserController extends Controller {
             $user->phone = $request->phone;
         }
 
-        if(!empty($request->email) && $request->email !== $user->email) {
+        if(!empty($request->email) && $request->email != $user->email) {
             $user->email = $request->email;
         }
 
