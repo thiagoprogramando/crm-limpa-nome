@@ -41,6 +41,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/withdraw', [WalletController::class, 'withdraw'])->name('withdraw');
         Route::post('withdraw-send', [WalletController::class, 'withdrawSend'])->name('withdraw-send');
 
+        //Payments
+        Route::get('/receivable', [Payment::class, 'receivable'])->name('receivable');
+
     });
 
     //Product
@@ -56,7 +59,9 @@ Route::middleware(['auth'])->group(function () {
     //User
     Route::get('/profile', [UserController::class, 'profile'])->name('profile');
     Route::post('update-user', [UserController::class, 'updateProfile'])->name('update-user');
+    Route::post('delete-user', [UserController::class, 'deleteUser'])->name('delete-user');
     Route::get('/search', [UserController::class, 'search'])->name('search');
+    Route::get('/listuser/{type}', [UserController::class, 'listuser'])->name('listuser');
 
     //List
     Route::get('/lists', [ListController::class, 'list'])->name('lists');
@@ -68,9 +73,8 @@ Route::middleware(['auth'])->group(function () {
 
     //Payments Assas
     Route::get('/createMonthly/{id}', [AssasController::class, 'createMonthly'])->name('createMonthly');
-
     Route::get('/payments', [Payment::class, 'payments'])->name('payments');
-    Route::get('/receivable', [Payment::class, 'receivable'])->name('receivable');
+    
 
     Route::get('/logout', [Login::class, 'logout'])->name('logout');
 

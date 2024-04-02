@@ -214,6 +214,14 @@ class SaleController extends Controller {
                             "para"  => $user->rg
                         ],
                         [
+                            "de"    => "EMAIL",
+                            "para"  => $user->email
+                        ],
+                        [
+                            "de"    => "PHONE",
+                            "para"  => $user->phone
+                        ],
+                        [
                             "de"    => "CPFCNPJ",
                             "para"  => $user->cpfcnpj
                         ],
@@ -312,6 +320,10 @@ class SaleController extends Controller {
 
         if (!empty($request->id_seller)) {
             $query->where('id_seller', $request->id_seller);
+        }
+
+        if(Auth::user()->type != 1) {
+            $query->where('id_seller', Auth::user()->id);
         }
 
         $sales = $query->get();

@@ -121,7 +121,7 @@
 
             <ul class="sidebar-nav" id="sidebar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('app') }}"> <i class="bi bi-grid"></i> <span>Dashboard</span> </a>
+                    <a class="nav-link" href="{{ route('app') }}"> <i class="bi bi-grid"></i> <span>Escritório</span> </a>
                 </li>
 
                 <li class="nav-item">
@@ -196,6 +196,20 @@
                             <li>
                                 <a href="{{ route('createproduct') }}"> <i class="bi bi-circle"></i><span>Criar Produto</span> </a>
                             </li>
+                        </ul>
+                    </li>
+                @endif
+
+                @if (Auth::user()->type == 1)
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" data-bs-target="#forms-users" data-bs-toggle="collapse" href="#">
+                            <i class="bi bi-file-earmark-person"></i><span>Pessoas</span><i class="bi bi-chevron-down ms-auto"></i>
+                        </a>
+                        <ul id="forms-users" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                            <li> <a href="{{ route('listuser', ['type' => 1]) }}"><i class="bi bi-circle"></i><span>Administradores</span></a> </li>
+                            <li> <a href="{{ route('listuser', ['type' => 3]) }}"><i class="bi bi-circle"></i><span>Clientes</span></a> </li>
+                            <li> <a href="{{ route('listuser', ['type' => 2]) }}"><i class="bi bi-circle"></i><span>Consultores</span></a> </li>
+                            <li> <a href="{{ route('listuser', ['type' => 4]) }}"><i class="bi bi-circle"></i><span>Vendedor Interno</span></a> </li>
                         </ul>
                     </li>
                 @endif

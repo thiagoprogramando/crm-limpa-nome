@@ -32,7 +32,7 @@ return new class extends Migration {
             $table->longText('api_key')->nullable();
             $table->longText('customer')->nullable();
 
-            $table->integer('type')->nullable()->default('2'); // 1 - Master 2 - Vendedor 3 - Cliente
+            $table->integer('type')->nullable()->default('2'); // 1 - Master 2 - Consultor 3 - Cliente 4 - Vendedor Interno
             $table->unsignedBigInteger('filiate')->nullable();
 
             $table->timestamps();

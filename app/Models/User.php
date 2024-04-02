@@ -55,6 +55,37 @@ class User extends Authenticatable {
         }
     }
 
+    public function saleTotal() {
+
+        $id = $this->id;
+        return Sale::where('id_seller', $id)->where('status', 1)->count();
+    }
+
+    public function commissionTotal() {
+
+        $id = $this->id;
+        return Sale::where('id_seller', $id)->where('status', 1)->sum('value');
+    }
+
+    public function statusLabel() {
+
+        switch ($this->status) {
+            case 1:
+                return 'Ativo e Associado';
+                break;
+            case 2:
+                return 'Pendente de Documentos';
+                break; 
+            case 3:
+                return 'Pendente de Associação';
+                break; 
+            case 4:
+                return 'Pendente de Dados';
+                break;         
+            return $this->method;
+        }
+    }
+
     protected $hidden = [
         'password',
         'remember_token',

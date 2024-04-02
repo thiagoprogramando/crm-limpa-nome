@@ -62,7 +62,6 @@
                                         </div>
                                     </div>
                                 </form>
-                                <p class="text-center">Não é um membro? <a href="{{ route('registrer') }}">Cadastre-se</a></p>
                             </div>
                         </div>
                     </div>

@@ -24,19 +24,55 @@ class UserController extends Controller {
 
     public function updateProfile(Request $request) {
 
-        $data = [   
-            'name'          => $request->name,
-            'cpfcnpj'       => $request->cpfcnpj,
-            'phone'         => $request->phone,
-            'email'         => $request->email,
-            'birth_date'    => $request->birth_date,
-            'postal_code'   => $request->postal_code,
-            'address'       => $request->address,
-            'state'         => $request->state,
-            'city'          => $request->city,
-            'complement'    => $request->complement,
-            'num'           => $request->num,
-        ];
+        $user = User::where('id', Auth::id())->first();
+
+        if(!empty($request->name)) {
+            $user->name = $request->name;
+        }
+
+        if(!empty($request->cpfcnpj)) {
+            $user->cpfcnpj = $request->cpfcnpj;
+        }
+
+        if(!empty($request->phone)) {
+            $user->phone = $request->phone;
+        }
+
+        if(!empty($request->email)) {
+            $user->email = $request->email;
+        }
+
+        if(!empty($request->birth_date)) {
+            $user->birth_date = $request->birth_date;
+        }
+
+        if(!empty($request->postal_code)) {
+            $user->postal_code = $request->postal_code;
+        }
+
+        if(!empty($request->address)) {
+            $user->address = $request->address;
+        }
+
+        if(!empty($request->state)) {
+            $user->state = $request->state;
+        }
+
+        if(!empty($request->city)) {
+            $user->city = $request->city;
+        }
+
+        if(!empty($request->complement)) {
+            $user->complement = $request->complement;
+        }
+
+        if(!empty($request->num)) {
+            $user->num = $request->num;
+        }
+
+        if(!empty($request->type)) {
+            $user->type = $request->type;
+        }
 
         if (
             $request->filled('name') &&
@@ -51,11 +87,10 @@ class UserController extends Controller {
             $request->filled('complement') &&
             $request->filled('num')
         ) {
-            $data['status'] = 3;
+            $user->status = 3;
         }
-    
-        $user = User::where('id', Auth::id())->update($data);
-        if ($user) {
+
+        if ($user->save()) {
             return redirect()->back()->with('success', 'Dados atualizados com sucesso!');
         }
 
@@ -74,5 +109,46 @@ class UserController extends Controller {
             'invoices'  => $invoices,
             'lists'     => $lists
         ]);
+    }
+
+    public function listuser(Request $request, $type) {
+
+        $query = User::orderBy('name', 'desc');
+
+        if (!empty($request->name)) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+
+        if (!empty($request->city)) {
+            $query->where('city', 'like', '%' . $request->city . '%');
+        }
+
+        if (!empty($request->email)) {
+            $query->where('email', 'like', '%' . $request->email . '%');
+        }
+
+        if (!empty($request->cpfcnpj)) {
+            $query->where('cpfcnpj', 'like', '%' . $request->cpfcnpj . '%');
+        }
+
+        $query->where('type', $type);
+
+        $users = $query->get();
+
+        return view('app.User.list', ['users' => $users]);
+    }
+
+    public function deleteUser(Request $request) {
+
+        $user = User::find($request->id);
+        if($user) {
+            if($user->delete()) {
+                return redirect()->back()->with('success', 'Usuário excluído com sucesso!');
+            }
+
+            return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
+        }
+
+        return redirect()->back()->with('error', 'Não foram localizados dados do usuário!');
     }
 }
