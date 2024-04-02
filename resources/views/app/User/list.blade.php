@@ -102,6 +102,9 @@
                                                     </div>
                                                     <div class="modal-body">
                                                         <div class="row">
+
+                                                            <input type="hidden" name="id" value="{{ $user->id }}">
+                                                            
                                                             <div class="col-12 col-md-12 col-lg-12 mb-1">
                                                                 <div class="form-floating">
                                                                     <input type="text" name="name" class="form-control" id="floatingName" placeholder="Nome:" value="{{ $user->name }}">

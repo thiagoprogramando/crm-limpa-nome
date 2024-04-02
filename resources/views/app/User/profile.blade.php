@@ -133,6 +133,9 @@
 
                     <form action="{{ route('update-user') }}" method="POST" class="row g-3">
                         @csrf
+
+                        <input type="hidden" name="id" value="{{ Auth::user()->id }}">
+
                         <div class="col-12 col-md-4 col-lg-4 mb-1">
                             <div class="form-floating">
                                 <input type="text" name="name" value="{{ Auth::user()->name }}" class="form-control" id="floatingName" placeholder="Nome:">

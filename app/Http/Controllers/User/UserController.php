@@ -24,7 +24,7 @@ class UserController extends Controller {
 
     public function updateProfile(Request $request) {
 
-        $user = User::where('id', Auth::id())->first();
+        $user = User::where('id', $request->id)->first();
 
         if(!empty($request->name)) {
             $user->name = $request->name;
@@ -38,7 +38,7 @@ class UserController extends Controller {
             $user->phone = $request->phone;
         }
 
-        if(!empty($request->email) && $request->email != $user->email) {
+        if($request->email && $request->email != $user->email) {
             $user->email = $request->email;
         }
 
