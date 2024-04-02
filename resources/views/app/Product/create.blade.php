@@ -65,6 +65,7 @@
                                         <option value="2">Consultor</option>
                                         <option value="3">Líder</option>
                                         <option value="4">Regional</option>
+                                        <option value="5">Vendedor Interno</option>
                                         <option value="">Todos</option>
                                     </select>
                                     <label for="floatingSelect">Níveis</label>

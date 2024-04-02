@@ -478,19 +478,21 @@ class AssasController extends Controller {
                     $notification->save();
 
                     $seller = User::find($sale->id_seller);
-                    $totalSales = Sale::where('id_seller', $seller->id)->where('status', 1)->count();
-                    switch($totalSales) {
-                        case 10:
-                            $seller->level = 2;
-                            break;
-                        case 100:
-                            $seller->level = 3;
-                            break;
-                        case 1000:
-                            $seller->level = 4;
-                            break;
+                    if($seller->type != 4) {
+                        $totalSales = Sale::where('id_seller', $seller->id)->where('status', 1)->count();
+                        switch($totalSales) {
+                            case 10:
+                                $seller->level = 2;
+                                break;
+                            case 100:
+                                $seller->level = 3;
+                                break;
+                            case 1000:
+                                $seller->level = 4;
+                                break;
+                        }
+                        $seller->save();
                     }
-                    $seller->save();
                 }
 
                 if($invoice->type == 1) {
