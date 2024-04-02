@@ -120,7 +120,7 @@
                 </div>
             </div>
 
-            <div class="card">
+            {{-- <div class="card">
                 <div class="card-body pb-0">
                     <h5 class="card-title">Novidades <span>| Recentes</span></h5>
                     <div class="news">
@@ -152,7 +152,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
         </div>
 

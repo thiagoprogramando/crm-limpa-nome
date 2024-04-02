@@ -26,6 +26,10 @@ class AssasController extends Controller {
     
         $commission = ($sale->value - $product->value_cost) - $product->value_rate;
         $value      = ($sale->value + $payment->value_rate);
+
+        if($user->type == 4) {
+            $commission = 0;
+        }
     
         switch($sale->payment) {
             case 'BOLETO':
