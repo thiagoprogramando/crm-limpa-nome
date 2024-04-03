@@ -109,7 +109,7 @@ class SaleController extends Controller {
 
     private function createUser($name, $email, $cpfcnpj, $birth_date, $phone, $postal_code = null, $address = null, $complement = null, $city = null, $state = null, $num = null) {
 
-        $user = User::where('cpfcnpj', $cpfcnpj)->first();
+        $user = User::where('cpfcnpj', str_replace(['.', '-'], '', $cpfcnpj))->first();
         if($user) {
             return $user;
         }
