@@ -85,7 +85,7 @@
 
                 <div class="col-12">
 
-                    @if($sales >= 10 && $filiate == 0)
+                    @if($sales >= 10)
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             <i class="bi bi-info-circle me-1"></i>
                             Indique seus parceiros para juntar-se ao {{ env('APP_NAME') }} e lucre 20% em cada venda!

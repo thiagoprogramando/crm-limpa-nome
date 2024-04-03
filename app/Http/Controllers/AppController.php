@@ -56,7 +56,6 @@ class AppController extends Controller {
             'commissionGraph' => $commissionGraph,
             'list'            => $list,
             'remainingTime'   => $remainingTime,
-            'filiate'         => User::where('filiate', Auth::id())->count(),
         ]);
     }
 }
