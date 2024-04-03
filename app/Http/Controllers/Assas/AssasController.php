@@ -99,7 +99,7 @@ class AssasController extends Controller {
                 ($i == 1) ? now()->addDay() : now()->addDay(),
                 null,
                 $wallet,
-                ($i == 1) ? $firstInstallmentCommission : $installmentCommission,
+                ($i == 1) ? ($firstInstallmentCommission - 2) : ($installmentCommission - 2),
                 $filiate
             );         
 
