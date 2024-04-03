@@ -89,19 +89,24 @@ class AssasController extends Controller {
             $invoice->id_product    = $sale->id_product;
 
             $invoice->name          = env('APP_NAME').' - Fatura';
-            $invoice->description   = 'Fatura N°'.$i.' venda N°'.$sale->id;
+            $invoice->description   = 'Fatura N°'.$i.' da venda N°'.$sale->id;
 
             $charge = $this->createCharge(
                 $customer,
                 $sale->payment, 
                 ($i == 1) ? $firstInstallmentValue : $installmentValue, 
-                'Fatura N°'.$i.' venda N°'.$sale->id,
+                'Fatura N°'.$i.' da venda N°'.$sale->id,
                 ($i == 1) ? now()->addDay() : now()->addDay(),
                 null,
                 $wallet,
                 ($i == 1) ? ($firstInstallmentCommission - 2) : ($installmentCommission - 2),
                 $filiate
-            );         
+            );  
+            
+            if($charge) {
+                $invoice->url_payment   = $charge['invoiceUrl'];
+                $invoice->token_payment = $charge['id'];
+            }
 
             $invoice->value         = ($i == 1) ? $firstInstallmentValue : $installmentValue;
             $invoice->commission    = ($i == 1) ? $firstInstallmentCommission : $installmentCommission;
@@ -109,13 +114,10 @@ class AssasController extends Controller {
             $invoice->num           =  $i;
             $invoice->type          =  3;
             $invoice->status        =  0;
-            if($charge) {
-                $invoice->url_payment   = $charge['invoiceUrl'];
-                $invoice->token_payment = $charge['id'];
-            }
-
             $invoice->save();
         }
+
+        return true;
         
     }
 
