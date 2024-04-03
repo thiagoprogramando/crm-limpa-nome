@@ -22,18 +22,10 @@ class ShareProducts {
                 ->orWhere('level', Auth::user()->level)
                 ->get();
 
-            $notifications = Notification::where('id_user', Auth::id())
-                ->orWhere('id_user', null)
-                ->get();
-
-            $totalNotification = Notification::where('id_user', Auth::id())
-                ->where('view', null)
-                ->count();
-
             View::share([
                 'business'          => $business,
-                'notifications'     => $notifications,
-                'totalNotification' => $totalNotification
+                'notifications'     => Notification::where('id_user', Auth::id())->get(),
+                'totalNotification' => Notification::where('id_user', Auth::id())->count(),
             ]);
         }
 

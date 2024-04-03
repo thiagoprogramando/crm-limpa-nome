@@ -6,6 +6,7 @@ use App\Http\Controllers\Assas\AssasController;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\Lists;
+use App\Models\Notification;
 use App\Models\Sale;
 use App\Models\User;
 
@@ -154,5 +155,17 @@ class UserController extends Controller {
         }
 
         return redirect()->back()->with('error', 'Não foram localizados dados do usuário!');
+    }
+
+    public function viewNotification($id) {
+
+        $notification = Notification::find($id);
+        if($notification) {
+            
+            $notification->delete();
+            return redirect()->back();
+        }
+
+        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
     }
 }

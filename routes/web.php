@@ -62,6 +62,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('delete-user', [UserController::class, 'deleteUser'])->name('delete-user');
     Route::get('/search', [UserController::class, 'search'])->name('search');
     Route::get('/listuser/{type}', [UserController::class, 'listuser'])->name('listuser');
+    Route::get('view-notification/{id}', [UserController::class, 'viewNotification'])->name('view-notification');
 
     //List
     Route::get('/lists', [ListController::class, 'list'])->name('lists');

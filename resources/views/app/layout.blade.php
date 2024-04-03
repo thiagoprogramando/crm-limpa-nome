@@ -62,19 +62,21 @@
                             <li><hr class="dropdown-divider"></li>
 
                             @foreach ($notifications as $notification)
-                                <li class="notification-item">
-                                    @if($notification->type == 1)
-                                        <i class="bi bi-check-circle text-success"></i>
-                                    @elseif ($notification->type == 2)
-                                        <i class="bi bi-exclamation-circle text-warning"></i>
-                                    @else
-                                        <i class="bi bi-exclamation-diamond text-danger"></i>
-                                    @endif
-                                    <div>
-                                        <h4>{{ $notification->name }}</h4>
-                                        <p>{{ $notification->description }}</p>
-                                    </div>
-                                </li>
+                                <a href="{{ route('view-notification', ['id' => $notification->id]) }}">
+                                    <li class="notification-item">
+                                        @if($notification->type == 1)
+                                            <i class="bi bi-check-circle text-success"></i>
+                                        @elseif ($notification->type == 2)
+                                            <i class="bi bi-exclamation-circle text-warning"></i>
+                                        @else
+                                            <i class="bi bi-exclamation-diamond text-danger"></i>
+                                        @endif
+                                        <div>
+                                            <h4>{{ $notification->name }}</h4>
+                                            <p>{{ $notification->description }}</p>
+                                        </div>
+                                    </li>
+                                </a>
                                 <li> <hr class="dropdown-divider"> </li>
                             @endforeach
                             <li class="dropdown-footer"> <a href="#">Não há mais nada aqui.</a> </li>
