@@ -61,12 +61,12 @@
                                 <div class="form-floating">
                                     <select name="level" class="form-select" id="floatingSelect">
                                         <option selected="">Indique qual nível terá acesso:</option>
-                                        <option value="1">Start</option>
-                                        <option value="2">Consultor</option>
-                                        <option value="3">Consultor líder</option>
-                                        <option value="4">Líder</option>
-                                        <option value="5">Regional</option>
-                                        <option value="6">Vendedor Interno</option>
+                                        <option value="1">INICIANTE</option>
+                                        <option value="2">CONSULTOR</option>
+                                        <option value="3">CONSULTOR LÍDER</option>
+                                        <option value="4">REGIONAL</option>
+                                        <option value="5">GERENTE REGIONAL</option>
+                                        <option value="6">VENDEDOR INTERNO</option>
                                         <option value="">Todos</option>
                                     </select>
                                     <label for="floatingSelect">Níveis</label>

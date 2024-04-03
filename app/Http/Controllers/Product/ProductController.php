@@ -69,9 +69,8 @@ class ProductController extends Controller {
             $product->address = $request->has('address') ? 1 : 0;
             $product->createuser = $request->has('createuser') ? 1 : 0;
             
-            if($request->level) {
-                $product->level = $request->level;
-            }
+            $product->level = $request->level;
+            
             if($request->contract) {
                 $product->contract = $request->contract;
             }
