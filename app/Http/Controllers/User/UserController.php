@@ -74,7 +74,7 @@ class UserController extends Controller {
             $user->type = $request->type;
 
             if($request->type == 4) {
-                $user->level = 5;
+                $user->level = 6;
             }
         }
 

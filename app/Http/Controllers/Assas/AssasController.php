@@ -484,11 +484,14 @@ class AssasController extends Controller {
                             case 10:
                                 $seller->level = 2;
                                 break;
-                            case 100:
+                            case 30:
                                 $seller->level = 3;
                                 break;
-                            case 1000:
+                            case 50:
                                 $seller->level = 4;
+                                break;
+                            case 100:
+                                $seller->level = 5;
                                 break;
                         }
                         $seller->save();
