@@ -708,8 +708,6 @@ class AssasController extends Controller {
                     $sale->status = 2;
                     $sale->save();
 
-                    $this->createSalePayment($sale->id);
-
                     if($this->createSalePayment($sale->id)) {
                         return response()->json(['message' => 'Contrato assinado e Faturas geradas!'], 200);
                     }
