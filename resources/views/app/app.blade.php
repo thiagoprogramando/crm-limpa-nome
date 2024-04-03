@@ -88,7 +88,7 @@
                     @if($sales >= 10)
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             <i class="bi bi-info-circle me-1"></i>
-                            Indique seus parceiros para juntar-se ao {{ env('APP_NAME') }} e lucre 20% em cada venda!
+                            Indique seus amigos para juntar-se ao {{ env('APP_NAME') }} e lucre 20% em cada venda e assinatura!
                             <a href="{{ route('registrer', ['id' => Auth::user()->id]) }}" target="_blank">Você pode indicar clicando aqui.</a>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>

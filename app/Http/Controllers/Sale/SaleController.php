@@ -73,6 +73,10 @@ class SaleController extends Controller {
             $sale->value        = $this->formatarValor($request->value);
             $sale->commission   = auth()->user()->type == 4 ? 0 : ($this->formatarValor($request->value) - $product->value_cost) - $product->value_rate;
 
+            if(auth()->user()->filiate != null) {
+                $sale->commission -= $sale->commission * 0.20;
+            }
+
             if(!empty($product->contract)) {
 
                 $document = $this->sendContract($user->id, $product->contract, $request->value, $request->payment);

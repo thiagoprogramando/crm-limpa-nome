@@ -25,6 +25,12 @@ class AssasController extends Controller {
         $user      = User::find($sale->id_seller);
     
         $commission = ($sale->value - $product->value_cost) - $product->value_rate;
+        if(auth()->user()->filiate != null) {
+            $filiate = User::where('id', $user->filiate)->first();
+            $filiate = !empty($filiate) ? $filiate->wallet : null;
+        } else {
+            $filiate = null;
+        }
         $value      = ($sale->value + $payment->value_rate);
 
         if($user->type == 4) {
@@ -33,13 +39,13 @@ class AssasController extends Controller {
     
         switch($sale->payment) {
             case 'BOLETO':
-                return $this->invoiceBoleto($value, $commission, $sale, $user->wallet, $client);
+                return $this->invoiceBoleto($value, $commission, $sale, $user->wallet, $client, $filiate);
                 break;
             case 'CREDIT_CARD':
-                return $this->invoiceCard($value, $commission, $sale, $user->wallet, $client);
+                return $this->invoiceCard($value, $commission, $sale, $user->wallet, $client, $filiate);
                 break;
             case 'PIX':
-                return $this->invoiceBoleto($value, $commission, $sale, $user->wallet, $client);
+                return $this->invoiceBoleto($value, $commission, $sale, $user->wallet, $client, $filiate);
                 break;
             default:
                 return false;
@@ -49,7 +55,7 @@ class AssasController extends Controller {
         return false;
     }    
 
-    private function invoiceBoleto($value, $commission, $sale, $wallet, $client) {
+    private function invoiceBoleto($value, $commission, $sale, $wallet, $client, $filiate = null) {
 
         $installmentValue       = $value / $sale->installments;
         $installmentCommission  = $commission / $sale->installments;
@@ -93,7 +99,8 @@ class AssasController extends Controller {
                 ($i == 1) ? now()->addDay() : now()->addDay(),
                 null,
                 $wallet,
-                ($i == 1) ? $firstInstallmentCommission : $installmentCommission
+                ($i == 1) ? $firstInstallmentCommission : $installmentCommission,
+                $filiate
             );
 
             if($charge) {
@@ -117,7 +124,7 @@ class AssasController extends Controller {
         return true;
     }
 
-    private function invoiceCard($value, $commission, $sale, $wallet, $client) {
+    private function invoiceCard($value, $commission, $sale, $wallet, $client, $filiate = null) {
 
         $invoice                = new Invoice();
         $invoice->id_user       = $sale->id_client;
@@ -283,7 +290,7 @@ class AssasController extends Controller {
         }
     }
 
-    private function createCharge($customer, $billingType, $value, $description, $dueDate, $installments = null, $wallet= null, $commission = null) {
+    private function createCharge($customer, $billingType, $value, $description, $dueDate, $installments = null, $wallet= null, $commission = null, $filiate = null) {
 
         $client = new Client();
 
@@ -304,14 +311,28 @@ class AssasController extends Controller {
             'verify' => false
         ];
 
-        if ($wallet != null && $commission > 0) {
+        if ($filiate != null && $commission > 0) {
+            if (!isset($options['json']['split'])) {
+                $options['json']['split'] = [];
+            }
+
+            $affiliateCommission = $commission * 0.20;
+            $remainingCommission = $commission - $affiliateCommission;
+        
+            $options['json']['split'][] = [
+                'walletId'          => $filiate,
+                'totalFixedValue' => number_format($affiliateCommission, 2, '.', '')
+            ];
+        }
+
+        if ($wallet != null && $remainingCommission  > 0) {
             if (!isset($options['json']['split'])) {
                 $options['json']['split'] = [];
             }
         
             $options['json']['split'][] = [
                 'walletId'          => $wallet,
-                'totalFixedValue' => number_format($commission, 2, '.', '')
+                'totalFixedValue' => number_format($remainingCommission, 2, '.', '')
             ];
         }
 
