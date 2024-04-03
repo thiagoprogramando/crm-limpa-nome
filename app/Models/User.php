@@ -40,7 +40,7 @@ class User extends Authenticatable {
 
         switch ($this->level) {
             case 1:
-                return 'START';
+                return 'INICIANTE';
                 break;
             case 2:
                 return 'CONSULTOR';
@@ -49,10 +49,10 @@ class User extends Authenticatable {
                 return 'CONSULTOR LÍDER';
                 break; 
             case 4:
-                return 'LÍDER';
+                return 'REGIONAL';
                 break; 
             case 5:
-                return 'REGIONAL';
+                return 'GERENTE REGIONAL';
                 break; 
             case 6:
                 return 'VENDEDOR INTERNO';
