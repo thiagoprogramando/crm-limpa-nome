@@ -109,7 +109,7 @@ class AssasController extends Controller {
             }
 
             $invoice->value         = ($i == 1) ? $firstInstallmentValue : $installmentValue;
-            $invoice->commission    = ($i == 1) ? $firstInstallmentCommission : $installmentCommission;
+            $invoice->commission    = ($i == 1) ? ($firstInstallmentCommission - 2) : ($installmentCommission - 2);
             $invoice->due_date      =  now()->addDay();
             $invoice->num           =  $i;
             $invoice->type          =  3;
