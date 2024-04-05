@@ -11,6 +11,7 @@ use App\Http\Controllers\Sale\SaleController;
 use App\Http\Controllers\User\ListController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\WalletController;
+use App\Http\Middleware\Monthly;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [Login::class, 'index'])->name('login');
@@ -23,26 +24,30 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/app', [AppController::class, 'app'])->name('app');
 
-    Route::middleware(['verify'])->group(function () {
+    Route::middleware(['monthly'])->group(function () {
+
+        Route::middleware(['verify'])->group(function () {
         
-        //Sale
-        Route::get('/createsale/{id}', [SaleController::class, 'create'])->name('createsale');
-        Route::post('create-sale', [SaleController::class, 'createSale'])->name('create-sale');
-
-        Route::get('/manager-sale', [SaleController::class, 'manager'])->name('manager-sale');
-        Route::get('/update-sale/{id}', [SaleController::class, 'viewSale'])->name('update-sale');
-        Route::get('/invoice-default', [SaleController::class, 'default'])->name('invoice-default');
-        Route::post('delete-sale', [SaleController::class, 'deleteSale'])->name('delete-sale');
-
-        Route::get('/send-default-whatsapp/{id}', [DefaultController::class, 'sendWhatsapp'])->name('send-default-whatsapp');
-
-        //Wallet
-        Route::get('/wallet', [WalletController::class, 'wallet'])->name('wallet');
-        Route::get('/withdraw', [WalletController::class, 'withdraw'])->name('withdraw');
-        Route::post('withdraw-send', [WalletController::class, 'withdrawSend'])->name('withdraw-send');
-
-        //Payments
-        Route::get('/receivable', [Payment::class, 'receivable'])->name('receivable');
+            //Sale
+            Route::get('/createsale/{id}', [SaleController::class, 'create'])->name('createsale');
+            Route::post('create-sale', [SaleController::class, 'createSale'])->name('create-sale');
+    
+            Route::get('/manager-sale', [SaleController::class, 'manager'])->name('manager-sale');
+            Route::get('/update-sale/{id}', [SaleController::class, 'viewSale'])->name('update-sale');
+            Route::get('/invoice-default', [SaleController::class, 'default'])->name('invoice-default');
+            Route::post('delete-sale', [SaleController::class, 'deleteSale'])->name('delete-sale');
+    
+            Route::get('/send-default-whatsapp/{id}', [DefaultController::class, 'sendWhatsapp'])->name('send-default-whatsapp');
+    
+            //Wallet
+            Route::get('/wallet', [WalletController::class, 'wallet'])->name('wallet');
+            Route::get('/withdraw', [WalletController::class, 'withdraw'])->name('withdraw');
+            Route::post('withdraw-send', [WalletController::class, 'withdrawSend'])->name('withdraw-send');
+    
+            //Payments
+            Route::get('/receivable', [Payment::class, 'receivable'])->name('receivable');
+    
+        });
 
     });
 
@@ -76,7 +81,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/createMonthly/{id}', [AssasController::class, 'createMonthly'])->name('createMonthly');
     Route::get('/payments', [Payment::class, 'payments'])->name('payments');
     
-
     Route::get('/logout', [Login::class, 'logout'])->name('logout');
-
 });

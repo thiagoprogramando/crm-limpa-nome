@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\Cache;
 use App\Http\Middleware\CheckAccount;
 use App\Http\Middleware\Monthly;
 use App\Http\Middleware\ShareProducts;
@@ -15,11 +16,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->web(ShareProducts::class);
+        $middleware->web([ShareProducts::class, Cache::class]);
+
+        $middleware->appendToGroup('monthly', [
+            Monthly::class,
+        ]);
 
         $middleware->appendToGroup('verify', [
             CheckAccount::class,
-            Monthly::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
