@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CheckAccount;
+use App\Http\Middleware\Monthly;
 use App\Http\Middleware\ShareProducts;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -17,7 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(ShareProducts::class);
 
         $middleware->appendToGroup('verify', [
-            CheckAccount::class
+            CheckAccount::class,
+            Monthly::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

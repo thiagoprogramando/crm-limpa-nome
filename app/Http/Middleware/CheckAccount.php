@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Invoice;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,8 +17,12 @@ class CheckAccount {
             if ($user->wallet === null || $user->api_key === null) {
                 return redirect()->route('profile')->with('error', 'Complete seus dados para acessar todos os módulos!');
             }
+
+            $payment = Invoice::where('id_user', $user->id)->where('status', 0)->count();
+            if($payment >= 1) {
+                return redirect()->route('payments')->with('error', 'Existem mensalidades em aberto!');
+            }
         }
-        
 
         return $next($request);
     }
