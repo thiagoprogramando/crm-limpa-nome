@@ -401,9 +401,9 @@ class AssasController extends Controller {
                         'cpfCnpj'       => $user->cpfcnpj,
                         'birthDate'     => $user->birth_date,
                         'mobilePhone'   => $user->phone,
-                        'address'       => $user->postalCode.' - '.$user->address.', '.$user->addressNumber.'/'.$user->city,
+                        'address'       => $user->postalCode.' - '.$user->address.', '.$user->addressNumber.' -'.$user->city.'/'.$user->state,
                         'addressNumber' => $user->num,
-                        'province'      => $user->city,
+                        'province'      => $user->complement,
                         'postalCode'    => $user->postalCode,
                         'companyType'   => strlen($user->cpfcnpj) === 11 ? '' : 'MEI',
                         "accountStatusWebhook" => [
