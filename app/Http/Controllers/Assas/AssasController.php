@@ -401,7 +401,7 @@ class AssasController extends Controller {
                         'cpfCnpj'       => $user->cpfcnpj,
                         'birthDate'     => $user->birth_date,
                         'mobilePhone'   => $user->phone,
-                        'address'       => $user->address,
+                        'address'       => $user->postalCode.' - '.$user->address.', '.$user->addressNumber.'/'.$user->city,
                         'addressNumber' => $user->num,
                         'province'      => $user->city,
                         'postalCode'    => $user->postalCode,
