@@ -388,6 +388,10 @@ class AssasController extends Controller {
             $user = User::find($invoice->id_user);
             if($user) {
 
+                if($user->api_key != null) {
+                    return true;
+                }
+
                 $client = new Client();
 
                 $options = [
