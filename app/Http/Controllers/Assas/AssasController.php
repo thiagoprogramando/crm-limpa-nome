@@ -401,10 +401,10 @@ class AssasController extends Controller {
                         'cpfCnpj'       => $user->cpfcnpj,
                         'birthDate'     => $user->birth_date,
                         'mobilePhone'   => $user->phone,
-                        'address'       => $user->postalCode.' - '.$user->address.', '.$user->addressNumber.' -'.$user->city.'/'.$user->state,
+                        'address'       => $user->postal_code.' - '.$user->address.', '.$user->addressNumber.' -'.$user->city.'/'.$user->state,
                         'addressNumber' => $user->num,
                         'province'      => $user->complement,
-                        'postalCode'    => $user->postalCode,
+                        'postalCode'    => $user->postal_code,
                         'companyType'   => strlen($user->cpfcnpj) === 11 ? '' : 'MEI',
                         "accountStatusWebhook" => [
                             "url"           => env('APP_URL')."/api/webhookAccount",
