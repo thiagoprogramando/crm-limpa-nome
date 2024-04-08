@@ -137,6 +137,10 @@
                     </ul>
                 </li>
 
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="http://consultas.grupo7assessoria.com" target="_blank"> <i class="bi bi-search"></i> <span>Consultas</span> </a>
+                </li>
+
                 <li class="nav-heading">Financeiro</li>
 
                 <li class="nav-item">
