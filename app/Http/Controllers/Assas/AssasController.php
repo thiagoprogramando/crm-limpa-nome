@@ -403,7 +403,7 @@ class AssasController extends Controller {
                         'mobilePhone'   => $user->phone,
                         'address'       => $user->address,
                         'addressNumber' => $user->num,
-                        'province'      => $user->province,
+                        'province'      => $user->city,
                         'postalCode'    => $user->postalCode,
                         'companyType'   => strlen($user->cpfcnpj) === 11 ? '' : 'MEI',
                         "accountStatusWebhook" => [
@@ -723,6 +723,43 @@ class AssasController extends Controller {
         }
 
         return response()->json(['error' => 'Webhook não utilizado!'], 200);
+    }
+
+    public function webhookAccount(Request $request) {
+
+        $this->logRequest($request);
+
+        $jsonData = $request->json()->all();
+        $user = User::where('wallet', $jsonData['accountStatus']['id'])->first();
+        if($user) {
+            switch ($jsonData['event']) {
+                case 'ACCOUNT_STATUS_GENERAL_APPROVAL_APPROVED':
+                    $user->status = 1;
+                    $user->save();
+                    break;
+                case 'ACCOUNT_STATUS_GENERAL_APPROVAL_PENDING':
+                    $user->status = 2;
+                    $user->save();
+                    break;
+            }        
+            return response()->json(['status' => 'success', 'message' => 'Tratamento realizado para status da Conta!']);
+        }
+
+        return response()->json(['status' => 'success', 'message' => 'Não há nenhuma conta associada ao conteúdo da requisição!']);
+    }
+
+    private function logRequest(Request $request) {
+
+        $logPath = public_path('request_log.txt');
+    
+        $requestData = [
+            'headers' => $request->header(),
+            'body' => $request->json()->all(),
+        ];
+    
+        $logMessage = "Request Log:\n" . json_encode($requestData, JSON_PRETTY_PRINT) . "\n\n";
+
+        file_put_contents($logPath, $logMessage, FILE_APPEND);
     }
 
     public function withdrawSend($key, $value, $type) {

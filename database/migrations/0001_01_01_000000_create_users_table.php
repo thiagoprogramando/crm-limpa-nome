@@ -18,7 +18,7 @@ return new class extends Migration {
             
 
             $table->integer('level')->nullable()->default('1'); // 1 - Start 2 - Consultor 3 - Consultor Líder 4 -Líder 5 -Regional 6 - Vendedor interno
-            $table->integer('status')->nullable()->default('4');
+            $table->integer('status')->nullable()->default('4'); // 1 - Ativo 2 - Documentos Pendentes 3 - Filiação Pendente 4 - Estado inicial
 
             $table->string('postal_code')->nullable();
             $table->string('address')->nullable();
