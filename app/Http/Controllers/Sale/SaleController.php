@@ -70,10 +70,10 @@ class SaleController extends Controller {
             $sale->installments = $method->installments;
             $sale->status       = 0;
 
-            $sale->value        = $this->formatarValor($request->value);
+            $sale->value        = $this->formatarValor($request->value) + $method->value_rate;
             $sale->commission   = auth()->user()->type == 4 ? 0 : ($this->formatarValor($request->value) - $product->value_cost) - $product->value_rate;
 
-            if(auth()->user()->filiate != null) {
+            if(auth()->user()->filiate != null && auth()->user()->type != 4) {
                 $sale->commission -= $sale->commission * 0.20;
             }
 

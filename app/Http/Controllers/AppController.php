@@ -19,7 +19,7 @@ class AppController extends Controller {
 
         $sales      = Sale::where('id_seller', Auth::id())->where('status', 1)->count();
         $saleValue  = Sale::where('id_seller', Auth::id())->where('status', 1)->sum('commission');
-        $commission = Invoice::where('id_user', Auth::id())->where('status', 1)->sum('commission');
+        $commission = Invoice::where('id_user', Auth::id())->where('status', 1)->whereIn('type', [2, 3])->sum('commission');
 
         $list = Lists::where('start', '<=', now())->where('end', '>=', now())->first();
         if ($list) {
@@ -40,7 +40,7 @@ class AppController extends Controller {
             ];
         });
 
-        $commissions = Invoice::where('id_user', Auth::id())->where('status', 1)->get();
+        $commissions = Invoice::where('id_user', Auth::id())->where('status', 1)->whereIn('type', [2, 3])->get();
         $commissionGraph = $commissions->map(function($commission) {
             return [
                 'month' => $commission->created_at->format('M'),

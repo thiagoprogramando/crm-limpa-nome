@@ -18,7 +18,7 @@ class CheckAccount {
                 return redirect()->route('profile')->with('error', 'Complete seus dados para acessar todos os módulos!');
             }
 
-            $payment = Invoice::where('id_user', $user->id)->where('status', 0)->count();
+            $payment = Invoice::where('id_user', $user->id)->where('status', 0)->where('type', 1)->count();
             if($payment >= 1) {
                 return redirect()->route('payments')->with('error', 'Existem mensalidades em aberto!');
             }

@@ -16,7 +16,7 @@ class Monthly {
         if (Auth::check()) {
             
             $user = Auth::user();
-            if ($user && $user->status == 1) {
+            if ($user && $user->status == 1 && $user->type == 2) {
         
                 $monthly = Invoice::where('id_user', $user->id)->where('status', 1)->first();
                 if (!$monthly || $monthly->created_at->lte(now()->subDays(30)->startOfDay())) {

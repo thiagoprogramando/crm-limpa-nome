@@ -24,14 +24,13 @@ class AssasController extends Controller {
         $client    = User::find($sale->id_client);
         $user      = User::find($sale->id_seller);
     
-        $commission = ($sale->value - $product->value_cost) - $product->value_rate;
+        $commission = (($sale->value - $product->value_cost) - $product->value_rate) - $payment->value_rate;
         if($user->filiate != null) {
             $filiate = User::where('id', $user->filiate)->first();
             $filiate = !empty($filiate) ? $filiate->wallet : null;
         } else {
             $filiate = null;
         }
-        $value      = ($sale->value + $payment->value_rate);
 
         if($user->type == 4) {
             $commission = 0;
@@ -39,13 +38,13 @@ class AssasController extends Controller {
     
         switch($sale->payment) {
             case 'BOLETO':
-                return $this->invoiceBoleto($value, $product->value_cost, $commission, $sale, $user->wallet, $client, $filiate);
+                return $this->invoiceBoleto($sale->value, $product->value_cost, $commission, $sale, $user->wallet, $client, $filiate);
                 break;
             case 'CREDIT_CARD':
-                return $this->invoiceCard($value, $commission, $sale, $user->wallet, $client, $filiate);
+                return $this->invoiceCard($sale->value, $commission, $sale, $user->wallet, $client, $filiate);
                 break;
             case 'PIX':
-                return $this->invoiceBoleto($value, $product->value_cost, $commission, $sale, $user->wallet, $client, $filiate);
+                return $this->invoiceBoleto($sale->value, $product->value_cost, $commission, $sale, $user->wallet, $client, $filiate);
                 break;
             default:
                 return false;
@@ -57,26 +56,22 @@ class AssasController extends Controller {
     
     private function invoiceBoleto($value, $value_cost, $commission, $sale, $wallet, $client, $filiate = null) {
 
-        $installmentValue = $value / $sale->installments;
-    
-        if ($installmentValue < $value_cost) {
+        $valueInstallment = $value / $sale->installments;
 
+        if ($valueInstallment < $value_cost) {
+            
             $firstInstallmentValue = $value_cost;
+            $installmentValue = ($value - $firstInstallmentValue) / ($sale->installments - 1); 
+            
             $firstInstallmentCommission = 0;
-    
-            $installmentValue = ($value - $firstInstallmentValue) / 5;
-            $remainingCommission = $commission;
-    
-            if ($sale->installments > 1) {
-                $installmentCommission = $remainingCommission * 0.95 / ($sale->installments - 1);
-            } else {
-                $installmentCommission = $remainingCommission;
-            }
+            $installmentCommission = ($commission - $firstInstallmentCommission) / ($sale->installments - 1);
         } else {
-
-            $firstInstallmentValue = $installmentValue;
-            $firstInstallmentCommission = $commission / $sale->installments;
-            $installmentCommission = $commission * 0.95 / $sale->installments;
+            
+            $firstInstallmentValue = $valueInstallment;
+            $installmentValue = $valueInstallment;
+    
+            $firstInstallmentCommission = $valueInstallment - $value_cost;
+            $installmentCommission = ($commission - $firstInstallmentCommission) / ($sale->installments - 1);
         }
         
         $customer = $this->createCustomer($client->name, $client->cpfcnpj, $client->phone, $client->email);
@@ -96,10 +91,10 @@ class AssasController extends Controller {
                 $sale->payment, 
                 ($i == 1) ? $firstInstallmentValue : $installmentValue, 
                 'Fatura N°'.$i.' da venda N°'.$sale->id,
-                ($i == 1) ? now()->addDay() : now()->addDay(),
+                ($i == 1) ? now()->addDay() : now()->addMonths($i - 1),
                 null,
                 $wallet,
-                ($i == 1) ? ($firstInstallmentCommission - 2) : ($installmentCommission - 2),
+                ($i == 1) ? max(0, $firstInstallmentCommission - 2) : max(0, $installmentCommission - 2),
                 $filiate
             );  
             
@@ -109,14 +104,19 @@ class AssasController extends Controller {
             }
 
             $invoice->value         = ($i == 1) ? $firstInstallmentValue : $installmentValue;
-            $invoice->commission    = ($i == 1) ? ($firstInstallmentCommission - 2) : ($installmentCommission - 2);
-            $invoice->due_date      =  now()->addDay();
+            $invoice->commission    = ($i == 1) ? max(0, $firstInstallmentCommission - 2) : max(0, $installmentCommission - 2);
+            $invoice->due_date      = ($i == 1) ? now()->addDay() : now()->addMonths($i - 1);
             $invoice->num           =  $i;
             $invoice->type          =  3;
             $invoice->status        =  0;
             $invoice->save();
         }
 
+        $invoice = Invoice::where('id_sale', $sale->id)->where('status', 0)->first();
+        if($invoice) {
+            $this->sendInvoice($invoice->url_payment, $sale->id_client);
+        }
+        
         return true;
         
     }

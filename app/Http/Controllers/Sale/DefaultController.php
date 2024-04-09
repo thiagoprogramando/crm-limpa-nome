@@ -24,6 +24,10 @@ class DefaultController extends Controller {
             return redirect()->back()->with('error', 'Fatura já confirmada!'); 
         }
 
+        if($invoice->due_date > now()) {
+            return redirect()->back()->with('error', 'Essa fatura não venceu ainda!'); 
+        }        
+
         $user = User::where('id', $invoice->id_user)->first();
 
         $client = new Client();
