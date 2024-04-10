@@ -64,14 +64,14 @@ class AssasController extends Controller {
             $installmentValue = ($value - $firstInstallmentValue) / ($sale->installments - 1); 
             
             $firstInstallmentCommission = 0;
-            $installmentCommission = ($commission - $firstInstallmentCommission) / ($sale->installments - 1);
+            $installmentCommission = ($commission - $firstInstallmentCommission) / min(1, ($sale->installments - 1));
         } else {
             
             $firstInstallmentValue = $valueInstallment;
             $installmentValue = $valueInstallment;
     
             $firstInstallmentCommission = $valueInstallment - $value_cost;
-            $installmentCommission = ($commission - $firstInstallmentCommission) / ($sale->installments - 1);
+            $installmentCommission = ($commission - $firstInstallmentCommission) / min(1, ($sale->installments - 1));
         }
         
         $customer = $this->createCustomer($client->name, $client->cpfcnpj, $client->phone, $client->email);
