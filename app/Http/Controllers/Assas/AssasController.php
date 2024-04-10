@@ -64,7 +64,7 @@ class AssasController extends Controller {
             $installmentValue = ($value - $firstInstallmentValue) / ($sale->installments - 1); 
             
             $firstInstallmentCommission = 0;
-            $installmentCommission = ($commission - $firstInstallmentCommission) / min(1, ($sale->installments - 1));
+            $installmentCommission = ($commission - $firstInstallmentCommission) / max(1, ($sale->installments - 1));
         } else {
             
             $firstInstallmentValue = $valueInstallment;
