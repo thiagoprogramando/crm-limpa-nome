@@ -32,7 +32,7 @@ class UserController extends Controller {
         }
 
         if(!empty($request->cpfcnpj && $request->cpfcnpj !== $user->cpfcnpj)) {
-            $user->cpfcnpj = $request->cpfcnpj;
+            $user->cpfcnpj = preg_replace('/\D/', '', $request->cpfcnpj);
         }
 
         if(!empty($request->phone)) {
