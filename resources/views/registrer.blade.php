@@ -38,16 +38,20 @@
 
                                 <form action="{{ route('registrer-user') }}" method="POST" class="signin-form">
                                     @csrf
-                                    @if (session('error'))
+                                    @if ($errors->any())
                                         <div class="alert alert-danger alert-dismissible" role="alert">
-                                            {{ session('error') }}
+                                            <ul>
+                                                @foreach ($errors->all() as $error)
+                                                    <li>{{ $error }}</li>
+                                                @endforeach
+                                            </ul>
                                         </div>
                                     @endif
                                     <div class="form-group mb-3">
                                         <input type="text" name="name" class="form-control" placeholder="Nome:" required>
                                     </div>
                                     <div class="form-group mb-3">
-                                        <input type="text" name="cpfcnpj" class="form-control" placeholder="CPF ou CNPJ:" required>
+                                        <input type="number" name="cpfcnpj" class="form-control" placeholder="CPF ou CNPJ:" required>
                                     </div>
                                     <div class="form-group mb-3">
                                         <input type="email" name="email" class="form-control" placeholder="Email:" required>

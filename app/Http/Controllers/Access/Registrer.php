@@ -18,9 +18,19 @@ class Registrer extends Controller {
 
     public function registrerUser(Request $request) {
 
-        if(empty($request->terms)) {
-            return redirect()->back()->with('error', 'É necessário aceitar os termos de uso!');
-        }
+        $validator = $request->validate([
+            'name'      => 'required',
+            'email'     => 'required|unique:users,email',
+            'cpfcnpj'   => 'required|unique:users,cpfcnpj',
+            'password'  => 'required',
+            'terms'     => 'accepted',
+        ], [
+            'name.required'     => 'É necessário informar o seu Nome!',
+            'email.unique'      => 'Esse email já está em uso!',
+            'cpfcnpj.unique'    => 'Esse CPF ou CNPJ já esta em uso!',
+            'password.required' => 'É necessário informar uma senha!!',
+            'terms.accepted'    => 'É necessário aceitar os termos de uso!',
+        ]);
 
         $user = new User();
         $user->name = $request->name;
