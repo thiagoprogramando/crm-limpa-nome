@@ -114,7 +114,7 @@ class AssasController extends Controller {
 
         $invoice = Invoice::where('id_sale', $sale->id)->where('status', 0)->first();
         if($invoice) {
-            $this->sendInvoice($sale->url_payment, $sale->id_client);
+            $this->sendInvoice($invoice->url_payment, $sale->id_client);
         }
         
         return true;
@@ -174,7 +174,7 @@ class AssasController extends Controller {
         return false;
     }
 
-    private function sendInvoice($url, $id) {
+    private function sendInvoice($url_payment, $id) {
 
         $user = User::find($id);
         if($user) {
@@ -194,7 +194,7 @@ class AssasController extends Controller {
                         'phone'           => '55' . $user->phone,
                         'message'         => "Prezado cliente, *estamos enviando o link para pagamento* da sua compra aos serviços do ".env('APP_NAME').": \r\n \r\n FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳",
                         'image'           => env('APP_URL_LOGO'),
-                        'linkUrl'         => $url,
+                        'linkUrl'         => $url_payment,
                         'title'           => 'Pagamento de Fatura',
                         'linkDescription' => 'Link para Pagamento Digital',
                     ],
