@@ -114,7 +114,7 @@ class AssasController extends Controller {
 
         $invoice = Invoice::where('id_sale', $sale->id)->where('status', 0)->first();
         if($invoice) {
-            $this->sendInvoice($charge['invoiceUrl'], $sale->id_client);
+            $this->sendInvoice($sale->url_payment, $sale->id_client);
         }
         
         return true;
