@@ -10,6 +10,8 @@
         <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="{{ asset('assets/login-form/css/style.css') }}">
+
+        <script src="{{ asset('assets/dashboard/js/sweetalert.js')}}"></script>
 	</head>
 	<body>
 
@@ -47,6 +49,7 @@
                                             </ul>
                                         </div>
                                     @endif
+                                    <input type="hidden" name="filiate" value="{{ isset($id) ? $id : '' }}">
                                     <div class="form-group mb-3">
                                         <input type="text" name="name" class="form-control" placeholder="Nome:" required>
                                     </div>
@@ -81,6 +84,25 @@
         <script src="{{ asset('assets/login-form/js/popper.js') }}"></script>
         <script src="{{ asset('assets/login-form/js/bootstrap.min.js') }}"></script>
         <script src="{{ asset('assets/login-form/js/main.js') }}"></script>
+        <script>
+            @if(session('error'))
+                Swal.fire({
+                    title: 'Erro!',
+                    text: '{{ session('error') }}',
+                    icon: 'error',
+                    timer: 2000
+                })
+            @endif
+            
+            @if(session('success'))
+                Swal.fire({
+                    title: 'Sucesso!',
+                    text: '{{ session('success') }}',
+                    icon: 'success',
+                    timer: 2000
+                })
+            @endif
+        </script>
 	</body>
 </html>
 

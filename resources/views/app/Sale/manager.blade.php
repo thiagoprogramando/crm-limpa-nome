@@ -89,10 +89,10 @@
                                     <th scope="col">N°</th>
                                     <th scope="col">Produto</th>
                                     <th scope="col">Cliente</th>
+                                    <th scope="col">Vendedor</th>
                                     <th class="text-center" scope="col">V. Venda</th>
                                     <th class="text-center" scope="col">V. Comissão</th>
                                     <th class="text-center" scope="col">Status</th>
-                                    <th class="text-center" scope="col">Processo</th>
                                     <th class="text-center" scope="col">Opções</th>
                                 </tr>
                             </thead>
@@ -102,14 +102,15 @@
                                         <th scope="row">{{ $sale->id }}</th>
                                         <td>{{ $sale->product->name }}</td>
                                         <td>{{ $sale->user->name }}</td>
+                                        <td>{{ $sale->seller->name }}</td>
                                         <td class="text-center">R$ {{ number_format($sale->value, 2, ',', '.') }}</td>
                                         <td class="text-center">R$ {{ number_format($sale->commission, 2, ',', '.') }}</td>
                                         <td class="text-center">{{ $sale->statusLabel() }}</td>
-                                        <td class="text-center">{{ $sale->label }}</td>
                                         <td class="text-center">
                                             <form action="{{ route('delete-sale') }}" method="POST" class="delete">
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $sale->id }}">
+                                                <a href="{{ route('send-contract', ['id' => $sale->id]) }}" class="btn btn-dark text-light"><i class="bi bi-folder-symlink-fill"></i></a>
                                                 <a href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-warning text-light"><i class="bi bi-arrow-up-right-circle"></i></a>
                                                 <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
                                             </form>

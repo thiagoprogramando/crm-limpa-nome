@@ -135,6 +135,7 @@
                                                                         <option selected value="{{ $user->type }}">Tipo:</option>
                                                                         <option value="1">Administrador</option>
                                                                         <option value="2">Consultor</option>
+                                                                        <option value="5">Consultor (Indicador)</option>
                                                                         <option value="3">Cliente</option>
                                                                         <option value="4">Vendendor Interno</option>
                                                                     </select>

@@ -85,10 +85,10 @@
 
                 <div class="col-12">
 
-                    @if($sales >= 10)
+                    @if(Auth::user()->type == 5)
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             <i class="bi bi-info-circle me-1"></i>
-                            Indique seus amigos para juntar-se ao {{ env('APP_NAME') }} e lucre 20% em cada venda e assinatura!
+                            Agora você pode montar o seu time e lucrar 20% De todos contratos deles.
                             <a href="{{ route('registrer', ['id' => Auth::user()->id]) }}" target="_blank">Você pode indicar clicando aqui.</a>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>

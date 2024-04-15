@@ -13,7 +13,7 @@ class Registrer extends Controller {
      
     public function index($id = null) {
 
-        return view('registrer', ['filiate' => $id]);
+        return view('registrer', ['id' => $id]);
     }
 
     public function registrerUser(Request $request) {
@@ -39,11 +39,6 @@ class Registrer extends Controller {
         $user->password = bcrypt($request->password);
         
         if($request->filiate) {
-            $filiates = User::where('filiate', $request->filiate)->count();
-            if($filiates >= 1) {
-                return redirect()->back()->with('error', 'Link de indicação expirado!');
-            }
-
             $user->filiate = $request->filiate;
         }
 

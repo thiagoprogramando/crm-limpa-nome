@@ -27,7 +27,8 @@
                             <div class="login-wrap p-4 p-md-5">
                                 <div class="d-flex">
                                     <div class="w-100">
-                                        <h3 class="mb-4">Entrar</h3>
+                                        <h3 class="mb-4">Recuperação</h3>
+                                        
                                     </div>
                                     <div class="w-100">
                                         <p class="social-media d-flex justify-content-end">
@@ -37,33 +38,34 @@
                                     </div>
                                 </div>
 
-                                <form action="{{ route('logon') }}" method="POST" class="signin-form">
-                                    @csrf
-                                    @if (session('error'))
-                                        <div class="alert alert-danger alert-dismissible" role="alert">
-                                            {{ session('error') }}
+                                @if($code != null)
+                                    <form action="{{ route('update-password') }}" method="POST" class="signin-form">
+                                        @csrf
+                                        <div class="form-group mb-3">
+                                            <input type="text" name="code" class="form-control" placeholder="Código:" required>
                                         </div>
-                                    @endif
-                                    <div class="form-group mb-3">
-                                        <label class="label" for="name">Email:</label>
-                                        <input type="email" name="email" class="form-control" placeholder="joao@xxxxx.com" required>
-                                    </div>
-                                    <div class="form-group mb-3">
-                                        <label class="label" for="password">Senha:</label>
-                                        <input type="password" name="password" class="form-control" placeholder="Senha" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <button type="submit" class="form-control btn btn-primary rounded submit px-3">Acessar</button>
-                                    </div>
-                                    <div class="form-group d-md-flex">
-                                        <div class="w-50 text-left">
-                                            <label class="checkbox-wrap checkbox-primary mb-0">Salvar dados <input type="checkbox" checked> <span class="checkmark"></span> </label>
+                                        <div class="form-group mb-3">
+                                            <input type="text" name="password" class="form-control" placeholder="Nova senha:" required>
                                         </div>
-                                        <div class="w-50 text-md-right">
-                                            <a href="{{ route('forgout') }}">Esqueci minha senha</a>
+                                        <div class="form-group mb-3">
+                                            <input type="text" name="repeat_password" class="form-control" placeholder="Confirme a senha:" required>
                                         </div>
-                                    </div>
-                                </form>
+                                        <div class="form-group">
+                                            <button type="submit" class="form-control btn btn-primary rounded submit px-3">Atualizar</button>
+                                        </div>
+                                    </form>
+                                @else
+                                    <form action="{{ route('send-code-password') }}" method="POST" class="signin-form">
+                                        @csrf
+                                        <div class="form-group mb-3">
+                                            <input type="email" name="email" class="form-control" placeholder="Email:" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="submit" class="form-control btn btn-primary rounded submit px-3">Solicitar código</button>
+                                        </div>
+                                    </form>
+                                @endif
+                                <p class="text-center">Já é um membro? <a href="{{ route('login') }}">Acessar</a></p>
                             </div>
                         </div>
                     </div>

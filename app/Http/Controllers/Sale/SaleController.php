@@ -385,6 +385,41 @@ class SaleController extends Controller {
         }
     
         return view('app.Sale.default', ['invoices' => $invoices]);
-    }    
+    }   
+    
+    public function sendContractWhatsapp($id) {
+
+        $sale = Sale::find($id);
+        if(!$sale) {
+            return redirect()->back()->with('error', 'Dados do contrato não encontrado!');
+        }
+
+        $client = new Client();
+
+        $url = 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
+        try {
+
+            $response = $client->post($url, [
+                'headers' => [
+                    'Content-Type'  => 'application/json',
+                    'Accept'        => 'application/json',
+                    'Client-Token'  => 'Fabe25dbd69e54f34931e1c5f0dda8c5bS',
+                ],
+                'json' => [
+                    'phone'           => '55' . $sale->user->phone,
+                    'message'         => "Prezado Cliente, segue seu *contrato de adesão* ao produto da ".env('APP_NAME')." Assessoria: \r\n ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼 \r \n ⚠ Salva o contato se não tiver aparecendo o link.",
+                    'image'           => env('APP_URL_LOGO'),
+                    'linkUrl'         => $sale->url_contract,
+                    'title'           => 'Assinatura de Documento',
+                    'linkDescription' => 'Link para Assinatura Digital',
+                ],
+                'verify' => false
+            ]);
+
+            return redirect()->back()->with('success', 'Contrato enviado para o Cliente!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao enviar contrato, tente novamente mais tarde!');
+        }
+    }
 
 }

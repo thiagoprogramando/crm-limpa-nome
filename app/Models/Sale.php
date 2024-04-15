@@ -45,6 +45,10 @@ class Sale extends Model {
         return $this->belongsTo(User::class, 'id_client');
     }
 
+    public function seller() {
+        return $this->belongsTo(User::class, 'id_seller');
+    }
+
     public function statusLabel() {
         switch ($this->status) {
             case 1:

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Access\Forgout;
 use App\Http\Controllers\Access\Login;
 use App\Http\Controllers\Access\Registrer;
 use App\Http\Controllers\AppController;
@@ -20,6 +21,10 @@ Route::post('/logon', [Login::class, 'logon'])->name('logon');
 Route::get('/registrer/{id?}', [Registrer::class, 'index'])->name('registrer');
 Route::post('registrer-user', [Registrer::class, 'registrerUser'])->name('registrer-user');
 
+Route::get('/forgout/{code?}', [Forgout::class, 'forgout'])->name('forgout');
+Route::post('send-code-password', [Forgout::class, 'sendCodePassword'])->name('send-code-password');
+Route::post('update-password', [Forgout::class, 'updatePassword'])->name('update-password');
+
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/app', [AppController::class, 'app'])->name('app');
@@ -38,6 +43,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('delete-sale', [SaleController::class, 'deleteSale'])->name('delete-sale');
     
             Route::get('/send-default-whatsapp/{id}', [DefaultController::class, 'sendWhatsapp'])->name('send-default-whatsapp');
+            Route::get('/send-contract/{id}', [SaleController::class, 'sendContractWhatsapp'])->name('send-contract');
     
             //Wallet
             Route::get('/wallet', [WalletController::class, 'wallet'])->name('wallet');
