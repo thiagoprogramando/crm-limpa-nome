@@ -42,7 +42,7 @@
                                         <td class="text-center">R$ {{ number_format($invoice->commission, 2, ',', '.') }}</td>
                                         <td class="text-center">{{ $invoice->statusLabel() }}</td>
                                         <td class="text-center">
-                                            <a href="{{ route('send-default-whatsapp', ['id' => $invoice->id]) }}" class="btn btn-success text-light"><i class="bi bi-whatsapp"></i></a>
+                                            <a href="{{ route('send-default-whatsapp', ['id' => $invoice->id]) }}" class="btn btn-success text-light confirm"><i class="bi bi-whatsapp"></i></a>
                                         </td>
                                     </tr>
                                 @endforeach

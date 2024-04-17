@@ -86,6 +86,9 @@ Route::middleware(['auth'])->group(function () {
     //Payments Assas
     Route::get('/createMonthly/{id}', [AssasController::class, 'createMonthly'])->name('createMonthly');
     Route::get('/payments', [Payment::class, 'payments'])->name('payments');
+
+    //Client
+    Route::get('/my-shop', [SaleController::class, 'myShop'])->name('my-shop');
     
     Route::get('/logout', [Login::class, 'logout'])->name('logout');
 });

@@ -40,7 +40,7 @@ class UserController extends Controller {
         }
 
         if($request->email && $request->email != $user->email) {
-            $user->email = $request->email;
+            $user->email = preg_replace('/[^\w\d\.\@\-\_]/', '', $request->email);
         }
 
         if(!empty($request->birth_date)) {

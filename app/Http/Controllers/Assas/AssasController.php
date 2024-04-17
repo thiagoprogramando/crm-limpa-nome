@@ -491,7 +491,7 @@ class AssasController extends Controller {
                 }
 
                 if($sale) {
-
+                    
                     $notification               = new Notification();
                     $notification->name         = 'Fatura N°'.$invoice->id;
                     $notification->description  = 'Faturas recebida com sucesso!';
@@ -521,7 +521,6 @@ class AssasController extends Controller {
                 }
 
                 if($invoice->type == 1) {
-
                     $key = $this->createKey($invoice->id);
                     if($key) {
                         return response()->json(['status' => 'success', 'message' => 'Operação Finalizada & ApiKey criada!']);
@@ -530,8 +529,10 @@ class AssasController extends Controller {
                 }
 
                 $client = User::find($invoice->id_user);
-                $this->sendWhatsapp(env('APP_URL').'/consulta/'.$sale->id, "Olá, ".$client->name."! Recebemos o seu pagamento, *segue link para acessar Faturas, consultar processos* e demais informações sobre seus contratos. \r\n\r\n PRONTO AGORA SÓ ACOMPANHAR 👇🏼📲", $client->phone);
-
+                if($client) {
+                    $this->sendWhatsapp(env('APP_URL'), "Olá, ".$client->name."! Recebemos o seu pagamento, *segue link para acessar faturas e consultar processos!* Para acessar basta informar seu E-mail e CPF. \r\n\r\n PRONTO AGORA SÓ ACOMPANHAR 👇🏼📲", $client->phone);
+                }
+                
                 return response()->json(['status' => 'success', 'message' => 'Operação Finalizada!']);
             }
             

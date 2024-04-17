@@ -18,7 +18,7 @@
 
             <div class="btn-group mb-3" role="group">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
-                <button type="button" class="btn btn-outline-primary">Excel</button>
+                <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
             </div>
 
             <div class="modal fade" id="filterModal" tabindex="-1">
@@ -31,6 +31,12 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row">
+                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                        <div class="form-floating">
+                                            <input type="text" name="name" class="form-control" id="floatingName" placeholder="Informe o Nome:">
+                                            <label for="floatingName">Cliente:</label>
+                                        </div>
+                                    </div>
                                     <div class="col-12 col-md-6 col-lg-6 mb-1">
                                         <div class="form-floating">
                                             <input type="date" name="created_at" class="form-control" id="floatingCreated_at" placeholder="Informe a data:">
@@ -83,7 +89,7 @@
                     <h5 class="card-title">Vendas</h5>
                     
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover" id="table">
                             <thead>
                                 <tr>
                                     <th scope="col">N°</th>
@@ -110,8 +116,8 @@
                                             <form action="{{ route('delete-sale') }}" method="POST" class="delete">
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $sale->id }}">
-                                                <a href="{{ route('send-contract', ['id' => $sale->id]) }}" class="btn btn-dark text-light"><i class="bi bi-folder-symlink-fill"></i></a>
-                                                <a href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-warning text-light"><i class="bi bi-arrow-up-right-circle"></i></a>
+                                                <a href="{{ route('send-contract', ['id' => $sale->id]) }}" class="btn btn-primary text-light confirm"><i class="bi bi-folder-symlink-fill"></i></a>
+                                                <a href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-primary text-light"><i class="bi bi-arrow-up-right-circle"></i></a>
                                                 <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
                                             </form>
                                         </td>

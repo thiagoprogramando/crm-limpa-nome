@@ -14,12 +14,17 @@
     <section class="section dashboard">
         <div class="row">
             <div class="col-12">
+
+                <div class="btn-group mb-3" role="group">
+                    <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
+                </div>
+                
                 <div class="card p-5">
                     <div class="card-body">
                         <h5 class="card-title">Extrato</h5>
                         
                         <div class="table-responsive">
-                            <table class="table table-hover">
+                            <table class="table table-hover" id="table">
                                 <thead>
                                     <tr>
                                         <th scope="col">#</th>

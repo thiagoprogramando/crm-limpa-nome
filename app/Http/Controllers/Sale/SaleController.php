@@ -23,6 +23,12 @@ use GuzzleHttp\Exception\RequestException;
 
 class SaleController extends Controller {
 
+    public function myShop() {
+        
+        $sales = Sale::where('id_client', Auth::id())->get();
+        return view('app.Shop.list', ['sales' => $sales]);
+    }
+
     public function create($id) {
 
         $product = Product::find($id);
@@ -84,7 +90,7 @@ class SaleController extends Controller {
 
                     $sale->token_contract = $document['token'];
                     $sale->url_contract   = $document['signers'][0]['sign_url'];
-                    $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado Cliente, segue seu *contrato de adesão* ao produto da ".env('APP_NAME')." Assessoria: \r\n ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼 \r \n ⚠ Salva o contato se não tiver aparecendo o link.", $user->phone);
+                    $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado Cliente, segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼 \r\n"."\r\n ⚠ Salva o contato se não tiver aparecendo o link.", $user->phone);
 
                     if($sale->save()) {
                         return redirect()->back()->with('success', 'Sucesso! O contrato foi enviado para o cliente via WhatsApp.');
@@ -116,8 +122,8 @@ class SaleController extends Controller {
         
         $user               = new User();
         $user->name         = $name;
-        $user->email        = $email;
-        $user->cpfcnpj      = $cpfcnpj;
+        $user->email        = preg_replace('/[^\w\d\.\@\-\_]/', '', $email);
+        $user->cpfcnpj      = preg_replace('/\D/', '', $cpfcnpj);
         $user->birth_date   = date('Y-m-d', strtotime($birth_date));
         $user->password     = bcrypt(str_replace(['.', '-'], '', $cpfcnpj));
         $user->phone        = $phone;
@@ -310,6 +316,14 @@ class SaleController extends Controller {
 
         $query = Sale::orderBy('created_at', 'desc');
 
+        if (!empty($request->name)) {
+            $names = explode(',', $request->name);
+            $users = User::whereIn('name', $names)->pluck('id')->toArray();
+            if (!empty($users)) {
+                $query->whereIn('id_client', $users);
+            }
+        }
+
         if (!empty($request->created_at)) {
             $query->whereDate('created_at', $request->created_at);
         }
@@ -354,6 +368,11 @@ class SaleController extends Controller {
             return redirect()->back()->with('error', 'Não encontramos dados da venda!');
         }
 
+        $user = User::find($sale->id_client);
+        if ($user) {
+            $saleUser = Sale::where('id_client', $user->id)->count();
+        }
+
         Invoice::where('id_sale', $sale->id)->delete();
 
         switch ($sale->status) {
@@ -361,6 +380,9 @@ class SaleController extends Controller {
             case 3:
             case 4:
                 $sale->delete();
+                if ($user && $saleUser <= 1) {
+                    $user->delete();
+                }                
                 return redirect()->back()->with('success', 'Dados da venda eliminados do sistema!');
                 break;
             case 1:
@@ -407,7 +429,7 @@ class SaleController extends Controller {
                 ],
                 'json' => [
                     'phone'           => '55' . $sale->user->phone,
-                    'message'         => "Prezado Cliente, segue seu *contrato de adesão* ao produto da ".env('APP_NAME')." Assessoria: \r\n ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼 \r \n ⚠ Salva o contato se não tiver aparecendo o link.",
+                    'message'         => "Prezado Cliente, segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼 \r\n ⚠ Salva o contato se não tiver aparecendo o link.",
                     'image'           => env('APP_URL_LOGO'),
                     'linkUrl'         => $sale->url_contract,
                     'title'           => 'Assinatura de Documento',

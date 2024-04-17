@@ -19,7 +19,7 @@
             <div class="btn-group mb-3" role="group">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
                 <a href="{{ route('registrer') }}" target="_blank" class="btn btn-outline-primary">Cadastrar</a>
-                <button type="button" class="btn btn-outline-primary">Excel</button>
+                <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
             </div>
 
             <div class="modal fade" id="filterModal" tabindex="-1">
@@ -60,7 +60,7 @@
                     <h5 class="card-title">Pessoas</h5>
                     
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover" id="table">
                             <thead>
                                 <tr>
                                     <th scope="col">N°</th>
