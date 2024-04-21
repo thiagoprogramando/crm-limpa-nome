@@ -38,7 +38,7 @@
                                     @foreach ($sales as $sale)
                                         <tr>
                                             <th scope="row">{{ $sale->id }}</th>
-                                            <td>{{ $sale->product->name }}</td>
+                                            <td><a href="{{ route('my-product', ['id' => $sale->id_product]) }}">{{ $sale->product->name }}</a></td>
                                             <td class="text-center">R$ {{ number_format($sale->value, 2, ',', '.') }}</td>
                                             <td class="text-center">{{ \Carbon\Carbon::parse($sale->created_at)->format('d/m/Y') }}</td>
                                             <td class="text-center">{{ $sale->statusLabel() }}</td>

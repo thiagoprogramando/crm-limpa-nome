@@ -66,6 +66,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('delete-product', [ProductController::class, 'delete'])->name('delete-product');
     Route::post('create-payment', [ProductController::class, 'payment'])->name('create-payment');
     Route::post('delete-payment', [ProductController::class, 'deletePayment'])->name('delete-payment');
+    Route::post('create-item', [ProductController::class, 'createItem'])->name('create-item');
+    Route::post('delete-item', [ProductController::class, 'deleteItem'])->name('delete-item');
 
     //User
     Route::get('/profile', [UserController::class, 'profile'])->name('profile');
@@ -89,6 +91,7 @@ Route::middleware(['auth'])->group(function () {
 
     //Client
     Route::get('/my-shop', [SaleController::class, 'myShop'])->name('my-shop');
+    Route::get('/my-product/{id}', [SaleController::class, 'myProduct'])->name('my-product');
     
     Route::get('/logout', [Login::class, 'logout'])->name('logout');
 });

@@ -51,13 +51,26 @@
                                     </div>
                                     <div class="col-12 col-md-12 col-lg-12 mb-1">
                                         <div class="form-floating">
-                                            <select name="id_list" class="form-select" id="floatingSelect">
+                                            <select name="id_list" class="form-select" id="floatinglist">
                                                 <option selected="" value="">Lista:</option>
                                                 @foreach ($lists as $list)
                                                     <option value="{{ $list->id }}">{{ $list->name }}</option>  
                                                 @endforeach
                                             </select>
-                                            <label for="floatingSelect">Listas</label>
+                                            <label for="floatinglist">Listas</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                        <div class="form-floating">
+                                            <select name="status" class="form-select" id="floatingStatus">
+                                                <option selected value="">Status:</option>
+                                                <option value="0">Pendente</option>
+                                                <option value="1">Pagamento confirmado</option>
+                                                <option value="2">Contrato Assinado</option>
+                                                <option value="3">Pendente de Assinatura</option>
+                                                <option value="4">Pendente de Pagamento</option>
+                                            </select>
+                                            <label for="floatingStatus">Status</label>
                                         </div>
                                     </div>
                                     @if (Auth::user()->type == 1)
@@ -98,7 +111,7 @@
                                     <th scope="col">Vendedor</th>
                                     <th class="text-center" scope="col">V. Venda</th>
                                     <th class="text-center" scope="col">V. Comissão</th>
-                                    <th class="text-center" scope="col">Status</th>
+                                    <th class="text-center" scope="col">Status - Data</th>
                                     <th class="text-center" scope="col">Opções</th>
                                 </tr>
                             </thead>
@@ -106,12 +119,12 @@
                                 @foreach ($sales as $sale)
                                     <tr>
                                         <th scope="row">{{ $sale->id }}</th>
-                                        <td>{{ $sale->product->name }}</td>
-                                        <td>{{ $sale->user->name }}</td>
-                                        <td>{{ $sale->seller->name }}</td>
+                                        <td title="{{ $sale->product->name }}">{{ substr($sale->product->name, 0, 15) }}</td>
+                                        <td title="{{ $sale->user->name }}">{{ substr($sale->user->name, 0, 15) }}...</td>
+                                        <td title="{{ $sale->seller->name }}">{{ substr($sale->seller->name, 0, 15) }}..</td>
                                         <td class="text-center">R$ {{ number_format($sale->value, 2, ',', '.') }}</td>
                                         <td class="text-center">R$ {{ number_format($sale->commission, 2, ',', '.') }}</td>
-                                        <td class="text-center">{{ $sale->statusLabel() }}</td>
+                                        <td class="text-center">{{ $sale->statusLabel() }} - {{ \Carbon\Carbon::parse($sale->create_at)->format('d/m/Y') }}</td>
                                         <td class="text-center">
                                             <form action="{{ route('delete-sale') }}" method="POST" class="delete">
                                                 @csrf

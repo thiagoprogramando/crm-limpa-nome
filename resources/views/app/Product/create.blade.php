@@ -94,7 +94,7 @@
 
                             <div class="col-12 col-md-4 col-lg-4 offset-md-8 offset-lg-8 mb-1 d-grid gap-2 mt-3">
                                 <button type="submit" class="btn btn-outline-success rounded-pill" type="button">Salvar</button>
-                              </div>
+                            </div>
                         </form>
                     </div>
                 </div>

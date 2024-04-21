@@ -20,7 +20,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Preencha todas às informações para começar:</h5>
 
-                    @if (Auth::user()->status == 1)
+                    @if (Auth::user()->status == 1 && Auth::user()->type != 3)
                         <div class="col-12">
                             <div class="alert alert-success alert-dismissible fade show" role="alert">
                                 <i class="bi bi-info-circle me-1"></i>
@@ -30,7 +30,7 @@
                         </div>
                     @endif
                     
-                    @if (Auth::user()->status == 2)
+                    @if (Auth::user()->status == 2 && Auth::user()->type != 3)
                         <div class="col-12">
                             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                                 <i class="bi bi-info-circle me-1"></i>
@@ -102,7 +102,7 @@
                         </div>
                     @endif
 
-                    @if (Auth::user()->status == 3 && empty(Auth::user()->api_key))
+                    @if (Auth::user()->status == 3 && empty(Auth::user()->api_key) && Auth::user()->type != 3)
                         <div class="col-12">
                             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                                 <i class="bi bi-info-circle me-1"></i>

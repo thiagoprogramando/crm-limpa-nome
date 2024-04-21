@@ -11,6 +11,7 @@ use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\User;
+use App\Models\Item;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,6 +28,21 @@ class SaleController extends Controller {
         
         $sales = Sale::where('id_client', Auth::id())->get();
         return view('app.Shop.list', ['sales' => $sales]);
+    }
+
+    public function myProduct($id) {
+
+        $product = Product::find($id);
+        if($product) {
+
+            $itens = Item::where('id_product', $product->id)->get();
+            return view('app.Shop.product', [
+                'product' => $product,
+                'itens'   => $itens
+            ]);
+        }
+        
+        return redirect()->back()->with('error', 'Não foram encontrados dados do Produto!');
     }
 
     public function create($id) {
@@ -133,6 +149,7 @@ class SaleController extends Controller {
         $user->city         = $city;
         $user->state        = $state;
         $user->num          = $num;
+        $user->type         = 3;
         if($user->save()) {
             return $user;
         }
@@ -338,6 +355,10 @@ class SaleController extends Controller {
 
         if (!empty($request->id_seller)) {
             $query->where('id_seller', $request->id_seller);
+        }
+
+        if (!empty($request->status)) {
+            $query->where('status', $request->status);
         }
 
         if(Auth::user()->type != 1) {

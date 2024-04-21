@@ -172,6 +172,113 @@
                     </div>
                 </div>
             </div>
+
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Adicione Itens.</h5>
+
+                        <div class="row">
+                            <div class="col-sm-12 col-md-6 col-lg-6">
+                                <form action="{{ route('create-item') }}" method="POST" class="row" enctype="multipart/form-data">
+                                    @csrf
+                                    <input type="hidden" name="id" value="{{ $product->id }}">
+                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                        <div class="form-floating">
+                                            <select name="type" class="form-select" id="floatingType" required>
+                                                <option selected>Escolha uma Opção:</option>
+                                                <option value="1">Texto</option>
+                                                <option value="2">PDF ou Epub</option>
+                                                <option value="3">Vídeo</option>
+                                                <option value="4">URL (Link)</option>
+                                            </select>
+                                            <label for="floatingType">Tipo de Item</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                        <div class="form-floating">
+                                            <input type="text" name="name" class="form-control" id="floatingName" placeholder="Informe um título ao Item:" required>
+                                            <label for="floatingName">Título:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                        <div class="form-floating">
+                                            <textarea name="description" class="form-control" placeholder="Descrição" id="floatingDescription" style="height: 100px;"></textarea>
+                                            <label for="floatingDescription">Descrição:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-12 col-lg-12 mb-1" style="display: none;">
+                                        <div class="form-floating">
+                                            <input type="text" name="file" class="form-control" id="floatingUrl" placeholder="Informe uma URL:">
+                                            <label for="floatingUrl">URL:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-12 col-lg-12 mb-1" style="display: none;">
+                                        <div class="form-floating">
+                                            <input type="file" name="file" class="form-control" id="floatingFile" placeholder="Arquivo:">
+                                            <label for="floatingFile">Arquivo:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-12 col-lg-12 d-grid gap-2 mb-1">
+                                        <button type="submit" class="btn btn-outline-success rounded-pill" type="button">Adicionar</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="col-sm-12 col-md-6 col-lg-6">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mt-3">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Título</th>
+                                                <th class="text-center" scope="col">Descrição</th>
+                                                <th class="text-center" scope="col">Arquivo</th>
+                                                <th class="text-center" scope="col">Opções</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($itens as $item)
+                                                <tr>
+                                                    <th scope="row">{{ $item->id }}</th>
+                                                    <td title="{{ $item->name }}">{{ substr($item->name, 0, 15) }}..</td>
+                                                    <td class="text-center" title="{{ $item->description }}">{{ substr($item->description, 0, 15) }}...</td>
+                                                    <td class="text-center">@if($item->type != 1) <a href="{{ url("storage/{$item->item}") }}" target="_blank">Acessar</a> @else --- @endif</td>
+                                                    <td class="text-center">
+                                                        <form action="{{ route('delete-item') }}" method="POST" class="delete">
+                                                            @csrf
+                                                            <input type="hidden" name="id" value="{{ $item->id }}">
+                                                            <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
+
+    <script>
+        $(document).ready(function(){
+            $('#floatingType').change(function(){
+                var selectedOption = $(this).val();
+                if(selectedOption == '4') {
+                    $('#floatingUrl').parent().parent().show();
+                    $('#floatingFile').parent().parent().hide();
+                } else if (selectedOption == '2' || selectedOption == '3') {
+                    $('#floatingUrl').parent().parent().hide();
+                    $('#floatingFile').parent().parent().show();
+                } else {
+                    $('#floatingUrl').parent().parent().hide();
+                    $('#floatingFile').parent().parent().hide();
+                }
+            });
+        });
+    </script>
 @endsection

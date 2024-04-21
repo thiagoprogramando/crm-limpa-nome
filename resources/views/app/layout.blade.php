@@ -24,6 +24,7 @@
 
         <script src="{{ asset('assets/dashboard/js/chart.js')}}"></script>
         <script src="{{ asset('assets/dashboard/js/sweetalert.js')}}"></script>
+        <script src="{{ asset('assets/dashboard/js/jquery.js') }}"></script>
     </head>
 
     <body>
@@ -129,7 +130,7 @@
                 @if (Auth::user()->type != 3)
                     <li class="nav-item">
                         <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
-                            <i class="bi bi-briefcase"></i><span>Negócios & Produtos</span><i class="bi bi-chevron-down ms-auto"></i>
+                            <i class="bi bi-briefcase"></i><span>Negócios & Cursos</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
                         <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                             @foreach($business as $busines)
@@ -221,7 +222,8 @@
                             <ul id="forms-users" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                                 <li> <a href="{{ route('listuser', ['type' => 1]) }}"><i class="bi bi-circle"></i><span>Administradores</span></a> </li>
                                 <li> <a href="{{ route('listuser', ['type' => 3]) }}"><i class="bi bi-circle"></i><span>Clientes</span></a> </li>
-                                <li> <a href="{{ route('listuser', ['type' => 2]) }}"><i class="bi bi-circle"></i><span>Consultores</span></a> </li>
+                                <li> <a href="{{ route('listuser', ['type' => 2]) }}"><i class="bi bi-circle"></i><span>Consultores</span></a>
+                                <li> <a href="{{ route('listuser', ['type' => 5]) }}"><i class="bi bi-circle"></i><span>Consultores Indicadores</span></a> </li>
                                 <li> <a href="{{ route('listuser', ['type' => 4]) }}"><i class="bi bi-circle"></i><span>Vendedor Interno</span></a> </li>
                             </ul>
                         </li>
@@ -246,7 +248,6 @@
 
         <script src="{{ asset('assets/dashboard/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
         <script src="{{ asset('assets/dashboard/js/main.js') }}"></script>
-        <script src="{{ asset('assets/dashboard/js/jquery.js') }}"></script>
         <script src="{{ asset('assets/dashboard/js/mask.js') }}"></script>
         <script src="{{ asset('assets/dashboard/js/excel.js') }}"></script>
         <script>

@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
+
+use App\Models\Item;
 use App\Models\Payment;
 use App\Models\Product;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller {
     
@@ -48,8 +51,13 @@ class ProductController extends Controller {
 
         $product = Product::find($id);
         $payments = Payment::where('id_product', $product->id)->get();
+        $itens = Item::where('id_product', $product->id)->get();
         if($product) {
-            return view('app.Product.update', ['product' => $product, 'payments' => $payments]);
+            return view('app.Product.update', [
+                'product'   => $product, 
+                'payments'  => $payments,
+                'itens'     => $itens
+            ]);
         }
         
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, dados do Produto não encontrados!');
@@ -144,5 +152,46 @@ class ProductController extends Controller {
         $valor = str_replace(['.', ','], '', $valor);
 
         return number_format(floatval($valor) / 100, 2, '.', '');
+    }
+
+    public function createItem(Request $request) {
+
+        $product = Product::find($request->id);
+        if($product) {
+
+            $item               = new Item();
+            $item->id_product   = $product->id;
+            $item->name         = $request->name;
+            $item->description  = $request->description;
+            $item->type         = $request->type;
+
+            if ($request->hasFile('file') && $request->file('file')->isValid()) {
+                $item->item = $request->file->store('public/item');
+            } else {
+                $item->item = $request->file;
+            }
+
+            if($item->save()) {
+                return redirect()->back()->with('success', 'Item incluído com sucesso!');
+            }
+        }
+
+        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, dados do Produto não encontrados!');
+    }
+
+    public function deleteItem(Request $request) {
+
+        $item = Item::find($request->id);
+        if($item) {
+
+            if(!empty($item->item) && Storage::exists($item->item)) {
+                Storage::delete($item->item);
+            }
+
+            $item->delete();
+            return redirect()->back()->with('success', 'Registro excluído com sucesso!');
+        }
+
+        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
     }
 }

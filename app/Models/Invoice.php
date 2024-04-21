@@ -30,6 +30,10 @@ class Invoice extends Model {
         'type',
     ];
 
+    public function user() {
+        return $this->belongsTo(User::class, 'id_user');
+    }
+
     public function sale() {
         return $this->belongsTo(Sale::class, 'id_sale');
     }
