@@ -140,7 +140,7 @@ class UserController extends Controller {
 
         $users = $query->get();
 
-        return view('app.User.list', ['users' => $users]);
+        return view('app.User.list', ['users' => $users, 'type' => $type]);
     }
 
     public function deleteUser(Request $request) {
