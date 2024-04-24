@@ -128,8 +128,9 @@
                                         <td class="text-center">
                                             <form action="{{ route('delete-sale') }}" method="POST" class="delete">
                                                 @csrf
-                                                <input type="hidden" name="id" value="{{ $sale->id }}">
-                                                <a href="{{ route('send-contract', ['id' => $sale->id]) }}" class="btn btn-primary text-light confirm"><i class="bi bi-folder-symlink-fill"></i></a>
+                                                <input type="hidden" name="id" value="{{ $sale->id }}"> 
+                                                {{-- {{ route('send-contract', ['id' => $sale->id]) }} --}}
+                                                <a href="{{ $sale->url_contract }}" target="_blank" class="btn btn-primary text-light confirm"><i class="bi bi-folder-symlink-fill"></i></a>
                                                 <a href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-primary text-light"><i class="bi bi-arrow-up-right-circle"></i></a>
                                                 <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
                                             </form>

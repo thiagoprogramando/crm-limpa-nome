@@ -334,8 +334,7 @@ class SaleController extends Controller {
         $query = Sale::orderBy('created_at', 'desc');
 
         if (!empty($request->name)) {
-            $names = explode(',', $request->name);
-            $users = User::whereIn('name', $names)->pluck('id')->toArray();
+            $users = User::where('name', 'LIKE', '%'.$request->name.'%')->pluck('id')->toArray();
             if (!empty($users)) {
                 $query->whereIn('id_client', $users);
             }
