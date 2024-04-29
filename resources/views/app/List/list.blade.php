@@ -47,7 +47,7 @@
                                                     <a href="{{ route('updatelist', ['id' => $list->id]) }}" class="btn btn-warning text-light"><i class="bi bi-pencil-square"></i></a>
                                                     <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
                                                 @endif
-                                                <a href="{{ route('updatelist', ['id' => $list->id]) }}" class="btn btn-success text-light"><i class="bi bi-file-earmark-excel"></i></a>
+                                                <a href="{{ route('excel-list', ['id' => $list->id]) }}" class="btn btn-success text-light"><i class="bi bi-file-earmark-excel"></i></a>
                                             </form>
                                         </td>
                                     </tr>

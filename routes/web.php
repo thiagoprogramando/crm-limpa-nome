@@ -80,6 +80,7 @@ Route::middleware(['auth'])->group(function () {
     //List
     Route::get('/lists', [ListController::class, 'list'])->name('lists');
     Route::get('/createlist', [ListController::class, 'create'])->name('createlist');
+    Route::get('/excel-list/{id}', [ListController::class, 'excelList'])->name('excel-list');
     Route::post('create-list', [ListController::class, 'createList'])->name('create-list');
     Route::get('/updatelist/{id}', [ListController::class, 'update'])->name('updatelist');
     Route::post('update-list', [ListController::class, 'updateList'])->name('update-list');

@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Exports\SalesExport;
 use App\Http\Controllers\Controller;
 
 use App\Models\Lists;
-
+use App\Models\Sale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ListController extends Controller {
     
@@ -102,6 +104,18 @@ class ListController extends Controller {
             return redirect()->back()->with('success', 'Lista excluída com sucesso!');
         }
 
+        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, dados da Lista não encontrados!');
+    }
+
+    public function excelList($id) {
+
+        $list = Lists::find($id);
+        if($list) {
+
+            $sales = Sale::where('id_list', $list->id)->where('status', 1)->get();
+            return Excel::download(new SalesExport($sales), 'Vendas.xlsx');
+        }
+        
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, dados da Lista não encontrados!');
     }
 
