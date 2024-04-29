@@ -175,7 +175,7 @@
                         </div>
                         <div class="col-12 col-md-3 col-lg-3 mb-1">
                             <div class="form-floating">
-                                <input type="text" name="address" value="{{ Auth::user()->address }}" class="form-control" id="floatingAddress" placeholder="Endereço:" readonly>
+                                <input type="text" name="address" value="{{ Auth::user()->address }}" class="form-control" id="floatingAddress" placeholder="Endereço:">
                                 <label for="floatingAddress">Endereço:</label>
                             </div>
                         </div>
