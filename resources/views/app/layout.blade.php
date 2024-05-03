@@ -274,6 +274,10 @@
 
             document.addEventListener('DOMContentLoaded', function () {
                 
+                @if(Auth::user()->type == 3)
+                    $('#clickInfoModal').click();
+                @endif
+                
                 const deleteForms = document.querySelectorAll('form.delete');
                 deleteForms.forEach(form => {
                     form.addEventListener('submit', function (event) {
