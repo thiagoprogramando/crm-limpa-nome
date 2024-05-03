@@ -141,7 +141,10 @@
                 @endif
 
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ route('my-shop') }}"> <i class="bi bi-shop-window"></i> <span>Minhas Compras</span> </a>
+                    <a class="nav-link collapsed" href="{{ route('my-shop') }}"> <i class="bi bi-shop-window"></i> <span>Minhas compras</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="{{ route('my-archive') }}"> <i class="bi bi-ui-checks"></i> <span>Consulta Serasa</span> </a>
                 </li>
 
                 @if (Auth::user()->type != 3)

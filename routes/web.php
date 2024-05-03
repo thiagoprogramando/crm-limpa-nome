@@ -76,6 +76,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/search', [UserController::class, 'search'])->name('search');
     Route::get('/listuser/{type}', [UserController::class, 'listuser'])->name('listuser');
     Route::get('view-notification/{id}', [UserController::class, 'viewNotification'])->name('view-notification');
+        //Archive
+        Route::get('/my-archive', [UserController::class, 'myArchive'])->name('my-archive');
+        Route::post('/create-archive', [UserController::class, 'createArchive'])->name('create-archive');
 
     //List
     Route::get('/lists', [ListController::class, 'list'])->name('lists');
