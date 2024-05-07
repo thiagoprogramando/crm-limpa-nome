@@ -90,7 +90,6 @@ class UserController extends Controller {
             $request->filled('address') &&
             $request->filled('state') &&
             $request->filled('city') &&
-            $request->filled('complement') &&
             $request->filled('num')
         ) {
             $user->status = 3;

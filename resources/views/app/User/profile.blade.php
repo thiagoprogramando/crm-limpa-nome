@@ -112,7 +112,7 @@
                         </div>
                     @endif
 
-                    @if(empty(Auth::user()->postal_code) || empty(Auth::user()->address) || empty(Auth::user()->complement) || empty(Auth::user()->city) || empty(Auth::user()->state) || empty(Auth::user()->num))
+                    @if(empty(Auth::user()->postal_code) || empty(Auth::user()->address) || empty(Auth::user()->city) || empty(Auth::user()->state) || empty(Auth::user()->num))
                         <div class="col-12">
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                 <i class="bi bi-exclamation-octagon me-1"></i>
@@ -136,7 +136,7 @@
 
                         <input type="hidden" name="id" value="{{ Auth::user()->id }}">
 
-                        <div class="col-12 col-md-4 col-lg-4 mb-1">
+                        <div class="col-12 col-md-6 col-lg-6 mb-1">
                             <div class="form-floating">
                                 <input type="text" name="name" value="{{ Auth::user()->name }}" class="form-control" id="floatingName" placeholder="Nome:">
                                 <label for="floatingName">Nome:</label>
@@ -150,23 +150,24 @@
                         </div>
                         <div class="col-12 col-md-3 col-lg-3 mb-1">
                             <div class="form-floating">
-                                <input type="text" name="phone" value="{{ Auth::user()->phone }}" class="form-control" id="floatingPhone" placeholder="Telefone:">
-                                <label for="floatingPhone">Telefone:</label>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-2 col-lg-2 mb-1">
-                            <div class="form-floating">
                                 <input type="date" name="birth_date" value="{{ Auth::user()->birth_date }}" class="form-control" id="floatingDate" placeholder="Data de Aniversário:">
                                 <label for="floatingDate">Data de Aniversário:</label>
                             </div>
                         </div>
 
-                        <div class="col-12 col-md-4 col-lg-4 mb-1">
+                        <div class="col-12 col-md-3 col-lg-3 mb-1">
+                            <div class="form-floating">
+                                <input type="text" name="phone" value="{{ Auth::user()->phone }}" class="form-control" id="floatingPhone" placeholder="Telefone:">
+                                <label for="floatingPhone">Telefone:</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-3 col-lg-3 mb-1">
                             <div class="form-floating">
                                 <input type="text" name="email" value="{{ Auth::user()->email }}" class="form-control" id="floatingEmail" placeholder="Email:">
                                 <label for="floatingEmail">Email:</label>
                             </div>
                         </div>
+
                         <div class="col-12 col-md-3 col-lg-3 mb-1">
                             <div class="form-floating">
                                 <input type="number" name="postal_code" value="{{ Auth::user()->postal_code }}" onblur="consultaCEP()" class="form-control" id="floatingPostalCode" placeholder="CEP:">
@@ -175,20 +176,29 @@
                         </div>
                         <div class="col-12 col-md-3 col-lg-3 mb-1">
                             <div class="form-floating">
-                                <input type="text" name="address" value="{{ Auth::user()->address }}" class="form-control" id="floatingAddress" placeholder="Endereço:">
-                                <label for="floatingAddress">Endereço:</label>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-2 col-lg-2 mb-1">
-                            <div class="form-floating">
                                 <input type="number" name="num" value="{{ Auth::user()->num }}" class="form-control" id="floatingNum" placeholder="N°:">
                                 <label for="floatingNum">N°:</label>
                             </div>
                         </div>
-
-                        <input type="hidden" name="state" value="{{ Auth::user()->state }}">
-                        <input type="hidden" name="city" value="{{ Auth::user()->city }}">
-                        <input type="hidden" name="complement" value="{{ Auth::user()->complement }}">
+                        <div class="col-12 col-md-6 col-lg-6 mb-1">
+                            <div class="form-floating">
+                                <input type="text" name="address" value="{{ Auth::user()->address }}" class="form-control" id="floatingAddress" placeholder="Endereço:">
+                                <label for="floatingAddress">Endereço:</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-3 col-lg-3 mb-1">
+                            <div class="form-floating">
+                                <input type="text" name="city" value="{{ Auth::user()->city }}" class="form-control" id="floatingCity" placeholder="Cidade:">
+                                <label for="floatingCity">Endereço:</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-3 col-lg-3 mb-1">
+                            <div class="form-floating">
+                                <input type="text" name="state" value="{{ Auth::user()->state }}" class="form-control" id="floatingState" placeholder="Estado:">
+                                <label for="floatingState">Estado:</label>
+                            </div>
+                        </div>
+                        
                         <input type="hidden" name="id" value="{{ Auth::user()->id }}">
 
                         <div class="col-12 col-md-3 col-lg-3 offset-md-9 offset-lg-9 d-grid gap-2 mb-1">
