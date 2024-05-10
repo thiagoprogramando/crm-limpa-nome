@@ -18,7 +18,7 @@ class Monthly {
             $user = Auth::user();
             if ($user && $user->status == 1 && $user->type == 2) {
         
-                $monthly = Invoice::where('id_user', $user->id)->where('status', 1)->first();
+                $monthly = Invoice::where('id_user', $user->id)->where('status', 1)->where('type', 1)->latest('created_at')->first();
                 if (!$monthly || $monthly->created_at->lte(now()->subDays(30)->startOfDay())) {
                     
                     $assas = new AssasController();
