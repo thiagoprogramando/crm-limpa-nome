@@ -30,7 +30,7 @@
                         </div>
                     @endif
                     
-                    @if (Auth::user()->status == 2 && Auth::user()->type != 3)
+                    @if (Auth::user()->api_key != null && Auth::user()->wallet != null)
                         <div class="col-12">
                             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                                 <i class="bi bi-info-circle me-1"></i>
