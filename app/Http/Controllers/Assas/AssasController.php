@@ -25,26 +25,19 @@ class AssasController extends Controller {
         $user      = User::find($sale->id_seller);
     
         $commission = (($sale->value - $product->value_cost) - $product->value_rate) - $payment->value_rate;
-        if($user->filiate != null) {
-            $filiate = User::where('id', $user->filiate)->first();
-            $filiate = !empty($filiate) ? $filiate->wallet : null;
-        } else {
-            $filiate = null;
-        }
-
         if($user->type == 4) {
             $commission = 0;
         }
     
         switch($sale->payment) {
             case 'BOLETO':
-                return $this->invoiceBoleto($sale->value, $product->value_cost, $commission, $sale, $user->wallet, $client, $filiate);
+                return $this->invoiceBoleto($sale->value, $commission, $sale, $user->wallet, $client);
                 break;
             case 'CREDIT_CARD':
-                return $this->invoiceCard($sale->value, $commission, $sale, $user->wallet, $client, $filiate);
+                return $this->invoiceCard($sale->value, $commission, $sale, $user->wallet, $client);
                 break;
             case 'PIX':
-                return $this->invoiceBoleto($sale->value, $product->value_cost, $commission, $sale, $user->wallet, $client, $filiate);
+                return $this->invoiceBoleto($sale->value, $commission, $sale, $user->wallet, $client);
                 break;
             default:
                 return false;
@@ -54,63 +47,45 @@ class AssasController extends Controller {
         return false;
     }   
     
-    private function invoiceBoleto($value, $value_cost, $commission, $sale, $wallet, $client, $filiate = null) {
+    private function invoiceBoleto($value, $commission, $sale, $wallet, $client) {
 
-        $valueInstallment = $value / $sale->installments;
-
-        if ($valueInstallment < $value_cost) {
-            
-            $firstInstallmentValue = $value_cost;
-            $installmentValue = ($value - $firstInstallmentValue) / ($sale->installments - 1); 
-            
-            $firstInstallmentCommission = 0;
-            $installmentCommission = ($commission - $firstInstallmentCommission) / max(1, ($sale->installments - 1));
-        } else {
-            
-            $firstInstallmentValue = $valueInstallment;
-            $installmentValue = $valueInstallment;
-    
-            $firstInstallmentCommission = $valueInstallment - $value_cost;
-            $installmentCommission = ($commission - $firstInstallmentCommission) / max(1, ($sale->installments - 1));
-        }
-        
         $customer = $this->createCustomer($client->name, $client->cpfcnpj, $client->phone, $client->email);
-
-        for ($i = 1; $i <= $sale->installments; $i++) {
-
-            $invoice                = new Invoice();
-            $invoice->id_user       = $sale->id_client;
-            $invoice->id_sale       = $sale->id;
-            $invoice->id_product    = $sale->id_product;
-
-            $invoice->name          = env('APP_NAME').' - Fatura';
-            $invoice->description   = 'Fatura N°'.$i.' da venda N°'.$sale->id;
-
-            $charge = $this->createCharge(
-                $customer,
-                $sale->payment, 
-                ($i == 1) ? $firstInstallmentValue : $installmentValue, 
-                'Fatura N°'.$i.' da venda N°'.$sale->id,
-                ($i == 1) ? now()->addDay() : now()->addMonths($i - 1),
-                null,
-                $wallet,
-                ($i == 1) ? max(0, $firstInstallmentCommission - 2) : max(0, $installmentCommission - 2),
-                $filiate
-            );  
-            
-            if($charge) {
-                $invoice->url_payment   = $charge['invoiceUrl'];
-                $invoice->token_payment = $charge['id'];
-            }
-
-            $invoice->value         = ($i == 1) ? $firstInstallmentValue : $installmentValue;
-            $invoice->commission    = ($i == 1) ? max(0, $firstInstallmentCommission - 2) : max(0, $installmentCommission - 2);
-            $invoice->due_date      = ($i == 1) ? now()->addDay() : now()->addMonths($i - 1);
-            $invoice->num           =  $i;
-            $invoice->type          =  3;
-            $invoice->status        =  0;
-            $invoice->save();
+        if(!$customer) {
+            return false;
         }
+
+        $charge = $this->createCharge(
+            $customer,
+            $sale->payment, 
+            $value,
+            'Venda N°'.$sale->id,
+            now()->addDay(),
+            $sale->installments,
+            $wallet,
+            ($commission - 5),
+        );
+        if(empty($charge['invoiceUrl']) && empty($charge['id'])) {
+            return false;
+        }
+
+        $invoice                = new Invoice();
+        $invoice->id_user       = $sale->id_client;
+        $invoice->id_sale       = $sale->id;
+        $invoice->id_product    = $sale->id_product;
+
+        $invoice->name          = env('APP_NAME').' - Fatura';
+        $invoice->description   = 'Venda N°'.$sale->id;
+
+        $invoice->url_payment   = $charge['invoiceUrl'];
+        $invoice->token_payment = $charge['id'];
+        
+        $invoice->value         = $value;
+        $invoice->commission    = ($commission - 5);
+        $invoice->due_date      = now()->addDay();
+        $invoice->num           =  1;
+        $invoice->type          =  3;
+        $invoice->status        =  0;
+        $invoice->save();
 
         $invoice = Invoice::where('id_sale', $sale->id)->where('status', 0)->first();
         if($invoice) {
@@ -118,10 +93,9 @@ class AssasController extends Controller {
         }
         
         return true;
-        
     }
 
-    private function invoiceCard($value, $commission, $sale, $wallet, $client, $filiate = null) {
+    private function invoiceCard($value, $commission, $sale, $wallet, $client) {
 
         $invoice                = new Invoice();
         $invoice->id_user       = $sale->id_client;
@@ -138,8 +112,13 @@ class AssasController extends Controller {
         $invoice->type          = 3;
         $invoice->status        = 0;
 
+        $customer = $this->createCustomer($client->name, $client->cpfcnpj, $client->phone, $client->email);
+        if(!$customer) {
+            return false;
+        }
+
         $charge = $this->createCharge(
-            $this->createCustomer($client->name, $client->cpfcnpj, $client->phone, $client->email),
+            $customer,
             $sale->payment, 
             $value, 
             'Fatura única para venda N°'.$sale->id,
@@ -149,12 +128,12 @@ class AssasController extends Controller {
             $commission
         );
 
-        if($charge) {
-            $invoice->url_payment   = $charge['invoiceUrl'];
-            $invoice->token_payment = $charge['id'];
-        } else {
+        if(empty($charge['invoiceUrl']) && empty($charge['id'])) {
             return false;
         }
+
+        $invoice->url_payment   = $charge['invoiceUrl'];
+        $invoice->token_payment = $charge['id'];
 
         $notification               = new Notification();
         $notification->name         = 'Faturas criada';
@@ -225,13 +204,14 @@ class AssasController extends Controller {
             $customer = $this->createCustomer($user->name, $user->cpfcnpj, $user->phone, $user->email);
             if($customer) {
                 $user->customer = $customer;
+                $user->status = 3;
                 $user->save();
             } else {
                 return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
             }
         }
 
-        $charge = $this->createCharge($user->customer, 'PIX', '99.00', 'Assinatura -'.env('APP_NAME'), now()->addDay(), 0, env('WALLET_HEFESTO'), 20);
+        $charge = $this->createCharge($user->customer, 'PIX', '29.99', 'Assinatura -'.env('APP_NAME'), now()->addDay(), 0);
         if($charge != false) {
 
             $invoice = new Invoice();
@@ -240,7 +220,7 @@ class AssasController extends Controller {
 
             $invoice->id_user       = $user->id;
             $invoice->id_product    = 0;
-            $invoice->value         = 99;
+            $invoice->value         = 29.99;
             $invoice->commission    = 20;
             $invoice->status        = 0;
             $invoice->type          = 1;
@@ -287,7 +267,7 @@ class AssasController extends Controller {
         }
     }
 
-    private function createCharge($customer, $billingType, $value, $description, $dueDate, $installments = null, $wallet= null, $commission = null, $filiate = null) {
+    private function createCharge($customer, $billingType, $value, $description, $dueDate, $installments = null, $wallet= null, $commission = null) {
 
         $client = new Client();
 
@@ -307,20 +287,6 @@ class AssasController extends Controller {
             ],
             'verify' => false
         ];
-
-        if ($filiate != null && $commission > 0) {
-            if (!isset($options['json']['split'])) {
-                $options['json']['split'] = [];
-            }
-
-            $affiliateCommission = $commission * 0.20;
-            $commission = $commission - $affiliateCommission;
-        
-            $options['json']['split'][] = [
-                'walletId'          => $filiate,
-                'totalFixedValue' => number_format($affiliateCommission, 2, '.', '')
-            ];
-        }
 
         if ($wallet != null && $commission > 0) {
             if (!isset($options['json']['split'])) {
@@ -405,34 +371,34 @@ class AssasController extends Controller {
                         'cpfCnpj'       => $user->cpfcnpj,
                         'birthDate'     => $user->birth_date,
                         'mobilePhone'   => $user->phone,
-                        'address'       => '09750-730 Rua José Versolato, 101 - Vila da Saúde, São Bernado do Campo',
-                        'addressNumber' => '101',
-                        'province'      => 'São Paulo',
-                        'postalCode'    => '09750730',
+                        'address'       => $user->postal_code.' - '.$user->address,
+                        'addressNumber' => $user->num,
+                        'province'      => $user->city,
+                        'postalCode'    => $user->postal_code,
                         'companyType'   => strlen($user->cpfcnpj) === 11 ? '' : 'MEI',
                         "accountStatusWebhook" => [
-                            "url"           => env('APP_URL')."/api/webhookAccount",
+                            "url"           => env('APP_URL')."/api/webhook-account",
                             "email"         => env('APP_EMAIL_SUPORT'),
                             "interrupted"   => false,
                             "enabled"       => true,
                             "apiVersion"    => 3,
                         ],
                         "transferWebhook"      => [
-                            "url"           => env('APP_URL')."/api/webhookAccount",
+                            "url"           => env('APP_URL')."/api/webhook-account",
                             "email"         => env('APP_EMAIL_SUPORT'),
                             "interrupted"   => false,
                             "enabled"       => true,
                             "apiVersion"    => 3,
                         ],
                         "paymentWebhook"       => [
-                            "url"           => env('APP_URL')."/api/webhookAccount",
+                            "url"           => env('APP_URL')."/api/webhook-account",
                             "email"         => env('APP_EMAIL_SUPORT'),
                             "interrupted"   => false,
                             "enabled"       => true,
                             "apiVersion"    => 3,
                         ],
                         "invoiceWebhook"        => [
-                            "url"           => env('APP_URL')."/api/webhookAccount",
+                            "url"           => env('APP_URL')."/api/webhook-account",
                             "email"         => env('APP_EMAIL_SUPORT'),
                             "interrupted"   => false,
                             "enabled"       => true,
@@ -471,17 +437,23 @@ class AssasController extends Controller {
             
             $token = $jsonData['payment']['id'];
             $invoice = Invoice::where('token_payment', $token)->where('status', 0)->first();
+
             if($invoice) {
 
+                //Confirma a aprovação da Invoice
                 $invoice->status = 1;
                 if(!$invoice->save()) {
+
                     return response()->json(['status' => 'error', 'message' => 'Não foi possível confirmar o pagamento da fatura!']);
                 }
 
+                //Busca uma venda
                 $sale = Sale::where('id', $invoice->id_sale)->first();
                 
+                //Se existir um Produto, confirma a aprovação
                 $product = $invoice->id_product != null ? Product::where('id', $invoice->id_product)->first() : false;
                 if($product) {
+
                     if($invoice->num == 1) {
                         if($sale) {
                             $sale->status = 1;
@@ -490,11 +462,12 @@ class AssasController extends Controller {
                     }
                 }
 
+                //Se tiver venda, gera notificação e configura Level
                 if($sale) {
                     
                     $notification               = new Notification();
                     $notification->name         = 'Fatura N°'.$invoice->id;
-                    $notification->description  = 'Faturas recebida com sucesso!';
+                    $notification->description  = 'Fatura recebida com sucesso!';
                     $notification->type         = 1;
                     $notification->id_user      = $invoice->id_seller; 
                     $notification->save();
@@ -503,23 +476,21 @@ class AssasController extends Controller {
                     if($seller->type != 4) {
                         $totalSales = Sale::where('id_seller', $seller->id)->where('status', 1)->count();
                         switch($totalSales) {
-                            case 10:
+                            case 300:
                                 $seller->level = 2;
                                 break;
-                            case 30:
+                            case 600:
                                 $seller->level = 3;
                                 break;
-                            case 50:
+                            case 1000:
                                 $seller->level = 4;
-                                break;
-                            case 100:
-                                $seller->level = 5;
                                 break;
                         }
                         $seller->save();
                     }
                 }
 
+                //Caso seja o TYPE 1 na invoice, gera carteira do Usuário
                 if($invoice->type == 1) {
                     $key = $this->createKey($invoice->id);
                     if($key) {
@@ -528,11 +499,13 @@ class AssasController extends Controller {
                     return response()->json(['status' => 'success', 'message' => 'Operação Finalizada, mas houve um erro na criação da ApiKey!']);
                 }
 
+                //Confirmar para o Cliente o pagamento
                 $client = User::find($invoice->id_user);
                 if($client) {
-                    $this->sendWhatsapp(env('APP_URL'), "Olá, ".$client->name."! Recebemos o seu pagamento, *segue link para acessar faturas e consultar processos!* Para acessar basta informar seu E-mail e CPF. \r\n\r\n PRONTO AGORA SÓ ACOMPANHAR 👇🏼📲", $client->phone);
+                    $this->sendWhatsapp(env('APP_URL'), "Olá, ".$client->name."! Recebemos o seu pagamento, *segue link para acessar faturas e consultar compras!* Para acessar basta informar seu E-mail e CPF. \r\n", $client->phone);
                 }
                 
+                //Retorna operação
                 return response()->json(['status' => 'success', 'message' => 'Operação Finalizada!']);
             }
             
@@ -543,6 +516,7 @@ class AssasController extends Controller {
 
             $token = $jsonData['payment']['id'];
             $invoice = Invoice::where('token_payment', $token)->where('status', 0)->first();
+
             if($invoice) {
                 
                 $notification               = new Notification();
@@ -737,6 +711,7 @@ class AssasController extends Controller {
 
         $jsonData = $request->json()->all();
         $user = User::where('wallet', $jsonData['accountStatus']['id'])->first();
+        
         if($user) {
             switch ($jsonData['event']) {
                 case 'ACCOUNT_STATUS_GENERAL_APPROVAL_APPROVED':

@@ -29,13 +29,13 @@
 
     <body>
 
-        <header id="header" class="header fixed-top d-flex align-items-center">
+        <header id="header" class="header nav-dark fixed-top d-flex align-items-center">
             <div class="d-flex align-items-center justify-content-between">
                 <a href="{{ route('app') }}" class="logo d-flex align-items-center">
-                    <img src="{{ asset('assets/dashboard/img/favicon.png') }}">
+                    <img src="{{ asset('assets/dashboard/img/logo.png') }}">
                     <span class="d-none d-lg-block">{{ env('APP_NAME') }}</span>
                 </a>
-                <i class="bi bi-list toggle-sidebar-btn"></i>
+                <i class="bi bi-list toggle-sidebar-btn text-light"></i>
             </div>
 
             <div class="search-bar">
@@ -49,13 +49,13 @@
                 <ul class="d-flex align-items-center">
 
                     <li class="nav-item d-block d-lg-none">
-                        <a class="nav-link nav-icon search-bar-toggle " href="#"><i class="bi bi-search"></i></a>
+                        <a class="nav-link nav-icon search-bar-toggle " href="#"><i class="bi bi-search text-light"></i></a>
                     </li>
 
                     <li class="nav-item dropdown">
                         <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-                            <i class="bi bi-bell"></i>
-                            <span class="badge bg-primary badge-number">{{ $totalNotification }}</span>
+                            <i class="bi bi-bell text-light"></i>
+                            <span class="badge bg-danger badge-number">{{ $totalNotification }}</span>
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
@@ -104,14 +104,14 @@
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('profile') }}">
                                     <i class="bi bi-person"></i>
-                                    <span>Perfil</span>
+                                    <span class="text-dark">Perfil</span>
                                 </a>
                             </li>
                             <li> <hr class="dropdown-divider"> </li>
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}">
                                     <i class="bi bi-box-arrow-right"></i>
-                                    <span>Sair</span>
+                                    <span class="text-dark">Sair</span>
                                 </a>
                             </li>
                         </ul>
@@ -124,13 +124,13 @@
 
             <ul class="sidebar-nav" id="sidebar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('app') }}"> <i class="bi bi-grid"></i> <span>Escritório</span> </a>
+                    <a class="nav-link" href="{{ route('app') }}"> <i class="bi bi-grid text-danger"></i> <span>Escritório</span> </a>
                 </li>
 
                 @if (Auth::user()->type != 3)
                     <li class="nav-item">
                         <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
-                            <i class="bi bi-briefcase"></i><span>Negócios & Cursos</span><i class="bi bi-chevron-down ms-auto"></i>
+                            <i class="bi bi-briefcase text-danger"></i><span>Negócios & Produtos</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
                         <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                             @foreach($business as $busines)
@@ -139,28 +139,21 @@
                         </ul>
                     </li>
                 @endif
-
+                
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ route('my-shop') }}"> <i class="bi bi-shop-window"></i> <span>Minhas compras</span> </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ route('my-archive') }}"> <i class="bi bi-ui-checks"></i> <span>Consulta Serasa</span> </a>
+                    <a class="nav-link collapsed" href="{{ route('my-shop') }}"> <i class="bi bi-shop-window text-danger"></i> <span>Minhas compras</span> </a>
                 </li>
 
                 @if (Auth::user()->type != 3)
-                    <li class="nav-item">
-                        <a class="nav-link collapsed" href="http://consultas.grupo7assessoria.com" target="_blank"> <i class="bi bi-search"></i> <span>Consultas</span> </a>
-                    </li>
-
                     <li class="nav-heading">Financeiro</li>
 
                     <li class="nav-item">
-                        <a class="nav-link collapsed" href="{{ route('wallet') }}"> <i class="bi bi-wallet2"></i> <span>Carteira</span> </a>
+                        <a class="nav-link collapsed" href="{{ route('wallet') }}"> <i class="bi bi-wallet2 text-danger"></i> <span>Carteira</span> </a>
                     </li>
 
                     <li class="nav-item">
                         <a class="nav-link collapsed" data-bs-target="#forms-finan" data-bs-toggle="collapse" href="#">
-                            <i class="bi bi-bank"></i><span>Operações</span><i class="bi bi-chevron-down ms-auto"></i>
+                            <i class="bi bi-bank text-danger"></i><span>Operações</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
                         <ul id="forms-finan" class="nav-content collapse " data-bs-parent="#sidebar-nav">  
                             <li><a href="{{ route('withdraw') }}"> <i class="bi bi-circle"></i><span>Saques</span> </a></li>
@@ -173,7 +166,7 @@
 
                     <li class="nav-item">
                         <a class="nav-link collapsed" data-bs-target="#forms-sale" data-bs-toggle="collapse" href="#">
-                            <i class="bi bi-bag"></i><span>Vendas</span><i class="bi bi-chevron-down ms-auto"></i>
+                            <i class="bi bi-bag text-danger"></i><span>Vendas</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
                         <ul id="forms-sale" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                             <li>
@@ -185,48 +178,40 @@
                         </ul>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link collapsed" data-bs-target="#forms-list" data-bs-toggle="collapse" href="#">
-                            <i class="bi bi-list-check"></i><span>Lista</span><i class="bi bi-chevron-down ms-auto"></i>
-                        </a>
-                        <ul id="forms-list" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                            <li>
-                                <a href="{{ route('lists') }}"> <i class="bi bi-circle"></i><span>Listas</span> </a>
-                            </li>
-                            @if (Auth::user()->type == 1)
+                    @if (Auth::user()->type == 1)
+                        <li class="nav-item">
+                            <a class="nav-link collapsed" data-bs-target="#forms-list" data-bs-toggle="collapse" href="#">
+                                <i class="bi bi-list-check text-danger"></i><span>Lista</span><i class="bi bi-chevron-down ms-auto"></i>
+                            </a>
+                            <ul id="forms-list" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                                <li>
+                                    <a href="{{ route('lists') }}"> <i class="bi bi-circle"></i><span>Listas</span> </a>
+                                </li>
                                 <li>
                                     <a href="{{ route('createlist') }}"> <i class="bi bi-circle"></i><span>Criar Lista</span> </a>
                                 </li>
-                            @endif
-                        </ul>
-                    </li>
+                            </ul>
+                        </li>
 
-                    @if (Auth::user()->type == 1)
                         <li class="nav-item">
                             <a class="nav-link collapsed" data-bs-target="#forms-product" data-bs-toggle="collapse" href="#">
-                                <i class="bi bi-box"></i><span>Produtos</span><i class="bi bi-chevron-down ms-auto"></i>
+                                <i class="bi bi-box text-danger"></i><span>Produtos</span><i class="bi bi-chevron-down ms-auto"></i>
                             </a>
                             <ul id="forms-product" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                                 <li>
-                                    <a href="{{ route('listproduct') }}"> <i class="bi bi-circle"></i><span>Produtos</span> </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('createproduct') }}"> <i class="bi bi-circle"></i><span>Criar Produto</span> </a>
+                                    <a href="{{ route('list-product') }}"> <i class="bi bi-circle"></i><span>Produtos</span> </a>
                                 </li>
                             </ul>
                         </li>
-                    @endif
-
-                    @if (Auth::user()->type == 1)
+                   
                         <li class="nav-item">
                             <a class="nav-link collapsed" data-bs-target="#forms-users" data-bs-toggle="collapse" href="#">
-                                <i class="bi bi-file-earmark-person"></i><span>Pessoas</span><i class="bi bi-chevron-down ms-auto"></i>
+                                <i class="bi bi-file-earmark-person text-danger"></i><span>Pessoas</span><i class="bi bi-chevron-down ms-auto"></i>
                             </a>
                             <ul id="forms-users" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                                 <li> <a href="{{ route('listuser', ['type' => 1]) }}"><i class="bi bi-circle"></i><span>Administradores</span></a> </li>
-                                <li> <a href="{{ route('listuser', ['type' => 3]) }}"><i class="bi bi-circle"></i><span>Clientes</span></a> </li>
                                 <li> <a href="{{ route('listuser', ['type' => 2]) }}"><i class="bi bi-circle"></i><span>Consultores</span></a>
-                                <li> <a href="{{ route('listuser', ['type' => 5]) }}"><i class="bi bi-circle"></i><span>Consultores Indicadores</span></a> </li>
+                                <li> <a href="{{ route('listuser', ['type' => 3]) }}"><i class="bi bi-circle"></i><span>Clientes</span></a> </li>
                                 <li> <a href="{{ route('listuser', ['type' => 4]) }}"><i class="bi bi-circle"></i><span>Vendedor Interno</span></a> </li>
                             </ul>
                         </li>
@@ -236,14 +221,14 @@
 
         </aside>
 
-        <main id="main" class="main">
+        <main id="main" class="main" style="min-height: 100vh;">
             @yield('conteudo')
         </main>
 
         <footer id="footer" class="footer">
             <div class="copyright"> &copy; Copyright <strong><span>{{ env('APP_NAME') }}</span></strong>. Todos os direitos reservados </div>
             <div class="credits">
-                Desenvolvido por <a href="https://grupo7assessoria.com.br/">G7 Assessoria</a>
+                Desenvolvido por <a href="https://ifuture.cloud/">ifuture.cloud</a>
             </div>
         </footer>
 
@@ -270,6 +255,10 @@
                     icon: 'success',
                     timer: 2000
                 })
+            @endif
+
+            @if(session('tab'))
+                $('button#' + '{{ session('tab') }}').click();
             @endif
 
             document.addEventListener('DOMContentLoaded', function () {

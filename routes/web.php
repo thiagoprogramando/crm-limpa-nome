@@ -18,8 +18,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [Login::class, 'index'])->name('login');
 Route::post('/logon', [Login::class, 'logon'])->name('logon');
 
-Route::get('/registrer/{id?}', [Registrer::class, 'index'])->name('registrer');
-Route::post('registrer-user', [Registrer::class, 'registrerUser'])->name('registrer-user');
+Route::get('/register/{id?}', [Registrer::class, 'index'])->name('register');
+Route::post('register-user', [Registrer::class, 'registerUser'])->name('register-user');
 
 Route::get('/forgout/{code?}', [Forgout::class, 'forgout'])->name('forgout');
 Route::post('send-code-password', [Forgout::class, 'sendCodePassword'])->name('send-code-password');
@@ -58,10 +58,9 @@ Route::middleware(['auth'])->group(function () {
     });
 
     //Product
-    Route::get('/listproduct', [ProductController::class, 'list'])->name('listproduct');
-    Route::get('/createproduct', [ProductController::class, 'create'])->name('createproduct');
+    Route::get('/list-product', [ProductController::class, 'list'])->name('list-product');
     Route::post('create-product', [ProductController::class, 'createProduct'])->name('create-product');
-    Route::get('/updateproduct/{id}', [ProductController::class, 'update'])->name('updateproduct');
+    Route::get('/detail-product/{id}', [ProductController::class, 'update'])->name('detail-product');
     Route::post('update-product', [ProductController::class, 'updateProduct'])->name('update-product');
     Route::post('delete-product', [ProductController::class, 'delete'])->name('delete-product');
     Route::post('create-payment', [ProductController::class, 'payment'])->name('create-payment');

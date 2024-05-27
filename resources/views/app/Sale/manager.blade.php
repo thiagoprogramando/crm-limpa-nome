@@ -52,27 +52,40 @@
                                     <div class="col-12 col-md-12 col-lg-12 mb-1">
                                         <div class="form-floating">
                                             <select name="id_list" class="form-select" id="floatinglist">
-                                                <option selected="" value="">Lista:</option>
-                                                @foreach ($lists as $list)
-                                                    <option value="{{ $list->id }}">{{ $list->name }}</option>  
+                                                <option selected="" value="">Produtos:</option>
+                                                @foreach($business as $busines)
+                                                    <option value="{{ $busines->id }}">{{ $busines->name }}</option>  
                                                 @endforeach
                                             </select>
-                                            <label for="floatinglist">Listas</label>
+                                            <label for="floatinglist">Escolha um produto:</label>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-12 col-lg-12 mb-1">
                                         <div class="form-floating">
                                             <select name="status" class="form-select" id="floatingStatus">
-                                                <option selected value="">Status:</option>
+                                                <option selected value="">situação:</option>
                                                 <option value="0">Pendente</option>
                                                 <option value="1">Pagamento confirmado</option>
                                                 <option value="2">Contrato Assinado</option>
                                                 <option value="3">Pendente de Assinatura</option>
                                                 <option value="4">Pendente de Pagamento</option>
                                             </select>
-                                            <label for="floatingStatus">Status</label>
+                                            <label for="floatingStatus">Escolha uma situação</label>
                                         </div>
                                     </div>
+                                    @if (Auth::user()->type == 1)
+                                        <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                            <div class="form-floating">
+                                                <select name="id_list" class="form-select" id="floatinglist">
+                                                    <option selected="" value="">Lista:</option>
+                                                    @foreach ($lists as $list)
+                                                        <option value="{{ $list->id }}">{{ $list->name }}</option>  
+                                                    @endforeach
+                                                </select>
+                                                <label for="floatinglist">Listas</label>
+                                            </div>
+                                        </div>
+                                    @endif
                                     @if (Auth::user()->type == 1)
                                         <div class="col-12 col-md-12 col-lg-12 mb-1">
                                             <div class="form-floating">
@@ -111,7 +124,7 @@
                                     <th scope="col">Vendedor</th>
                                     <th class="text-center" scope="col">V. Venda</th>
                                     <th class="text-center" scope="col">V. Comissão</th>
-                                    <th class="text-center" scope="col">Status - Data</th>
+                                    <th class="text-center" scope="col">Situação - Data</th>
                                     <th class="text-center" scope="col">Opções</th>
                                 </tr>
                             </thead>
@@ -129,8 +142,7 @@
                                             <form action="{{ route('delete-sale') }}" method="POST" class="delete">
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $sale->id }}"> 
-                                                {{-- {{ route('send-contract', ['id' => $sale->id]) }} --}}
-                                                <a href="{{ $sale->url_contract }}" target="_blank" class="btn btn-primary text-light confirm"><i class="bi bi-folder-symlink-fill"></i></a>
+                                                @if($sale->url_contract) <a href="{{ $sale->url_contract }}" target="_blank" class="btn btn-primary text-light"><i class="bi bi-folder-symlink-fill"></i></a> @endif
                                                 <a href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-primary text-light"><i class="bi bi-arrow-up-right-circle"></i></a>
                                                 <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
                                             </form>

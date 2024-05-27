@@ -78,13 +78,13 @@ class SaleController extends Controller {
 
             $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
             if(!$list) {
-                return redirect()->back()->with('error', 'Não há uma lista disponível para vendas!');
+                return redirect()->back()->with('error', 'Estamos com instabilidade no momento, tente novamente mais tarde!');
             }
         
             $sale               = new Sale();
             $sale->id_client    = $user->id;
             $sale->id_product   = $request->product;
-            $sale->id_list      = 1;
+            $sale->id_list      = $list->id;
             $sale->id_payment   = $method->id;
             $sale->id_seller    = Auth::id();
 
@@ -94,10 +94,6 @@ class SaleController extends Controller {
 
             $sale->value        = $this->formatarValor($request->value) + $method->value_rate;
             $sale->commission   = auth()->user()->type == 4 ? 0 : ($this->formatarValor($request->value) - $product->value_cost) - $product->value_rate;
-
-            if(auth()->user()->filiate != null && auth()->user()->type != 4) {
-                $sale->commission -= $sale->commission * 0.20;
-            }
 
             if(!empty($product->contract)) {
 

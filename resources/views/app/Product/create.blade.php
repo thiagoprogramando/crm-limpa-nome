@@ -1,12 +1,12 @@
 @extends('app.layout')
-@section('title') Criação de Produtos & Negócios @endsection
+@section('title') Configurações do Produto: {{ $product->name }} @endsection
 @section('conteudo')
     <div class="pagetitle">
-        <h1>Criação de Produtos & Negócios</h1>
+        <h1>Configurações do Produto: {{ $product->name }}</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('app') }}">Escritório</a></li>
-                <li class="breadcrumb-item active">Criação de Produtos & Negócios</li>
+                <li class="breadcrumb-item active">Configurações do Produto: {{ $product->name }}</li>
             </ol>
         </nav>
     </div>
@@ -15,90 +15,284 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Preencha todos os dados do Produto.</h5>
+                    <div class="card-body p-5">
+                        
+                        <ul class="nav nav-tabs d-flex" id="myTabjustified" role="tablist">
+                            <li class="nav-item flex-fill" role="presentation">
+                              <button class="nav-link w-100 active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-justified" type="button" role="tab" aria-controls="home" aria-selected="true">Dados</button>
+                            </li>
+                            <li class="nav-item flex-fill" role="presentation">
+                              <button class="nav-link w-100" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-justified" type="button" role="tab" aria-controls="profile" aria-selected="false">Formas de Pagamento</button>
+                            </li>
+                            <li class="nav-item flex-fill" role="presentation">
+                              <button class="nav-link w-100" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-justified" type="button" role="tab" aria-controls="contact" aria-selected="false">Material</button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content pt-2" id="myTabjustifiedContent">
+                            <div class="tab-pane fade show active" id="home-justified" role="tabpanel" aria-labelledby="home-tab">
+                                <form action="{{ route('update-product') }}" method="POST" class="row g-3 mt-3">
+                                    @csrf
+                                    <div class="col-12 col-md-8 col-lg-8 mb-1">
+                                        <div class="form-floating">
+                                            <input type="text" name="name" class="form-control" id="floatingName" placeholder="Indique um nome para o Produto:" value="{{ $product->name }}" required>
+                                            <label for="floatingName">Indique um nome para o Produto:</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12 col-md-4 col-lg-4 mb-1">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="address" id="address" @if($product->address) checked @endif>
+                                            <label class="form-check-label" for="address">Solicitar Endereço ao Cliente</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="createuser" id="user" @if($product->createuser) checked @endif>
+                                            <label class="form-check-label" for="user">Criar usuário para o Cliente</label>
+                                        </div>
+                                    </div>
         
-                        <form action="{{ route('create-product') }}" method="POST" class="row g-3">
-                            @csrf
-                            <div class="col-12 col-md-8 col-lg-8 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" name="name" class="form-control" id="floatingName" placeholder="Indique um nome para o Produto:" required>
-                                    <label for="floatingName">Indique um nome para o Produto:</label>
-                                </div>
-                            </div>
-                            
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="address" id="address">
-                                    <label class="form-check-label" for="address">Solicitar Endereço ao Cliente</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="createuser" id="user">
-                                    <label class="form-check-label" for="user">Criar usuário para o Cliente</label>
-                                </div>
-                            </div>
-
-                            <div class="col-12 col-md-12 col-lg-12 mb-1">
-                                <div class="form-floating">
-                                    <textarea name="description" class="form-control" placeholder="Descrição" id="floatingTextarea" style="height: 100px;"></textarea>
-                                    <label for="floatingTextarea">Indique uma descrição para o Produto:</label>
-                                </div>
-                            </div>
-
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" name="value_cost" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
-                                    <label for="floatingContract">Indique o custo do Produto:</label>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" name="value_rate" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
-                                    <label for="floatingContract">Indique o custo de taxas do Produto:</label>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <select name="level" class="form-select" id="floatingSelect">
-                                        <option selected="">Indique qual nível terá acesso:</option>
-                                        <option value="1">INICIANTE</option>
-                                        <option value="2">CONSULTOR</option>
-                                        <option value="3">CONSULTOR LÍDER</option>
-                                        <option value="4">REGIONAL</option>
-                                        <option value="5">GERENTE REGIONAL</option>
-                                        <option value="6">VENDEDOR INTERNO</option>
-                                        <option value="">Todos</option>
-                                    </select>
-                                    <label for="floatingSelect">Níveis</label>
-                                </div>
-                            </div>
-
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" name="contract" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:">
-                                    <label for="floatingContract">Indique um ID de contrato para o Produto:</label>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" name="value_min" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
-                                    <label for="floatingContract">Indique o valor mín de venda para o Produto:</label>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" name="value_max" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
-                                    <label for="floatingContract">Indique o valor máx de venda para o Produto:</label>
-                                </div>
+                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                        <div class="form-floating">
+                                            <textarea name="description" class="form-control" placeholder="Descrição" id="floatingTextarea" style="height: 100px;">{{ $product->description }}</textarea>
+                                            <label for="floatingTextarea">Indique uma descrição para o Produto:</label>
+                                        </div>
+                                    </div>
+        
+                                    <div class="col-12 col-md-4 col-lg-4 mb-1">
+                                        <div class="form-floating">
+                                            <input type="text" name="value_cost" class="form-control" id="floatingContract" placeholder="Indique o custo do Produto:" value="{{ $product->value_cost }}" oninput="mascaraReal(this)">
+                                            <label for="floatingContract">Indique o custo do Produto:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4 col-lg-4 mb-1">
+                                        <div class="form-floating">
+                                            <input type="text" name="value_rate" class="form-control" id="floatingContract" placeholder="Indique o custo de taxas do Produto:" value="{{ $product->value_rate }}" oninput="mascaraReal(this)">
+                                            <label for="floatingContract">Indique o custo de taxas do Produto:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4 col-lg-4 mb-1">
+                                        <div class="form-floating">
+                                            <select name="level" class="form-select" id="floatingSelect">
+                                                <option selected value="{{ $product->level }}">Indique qual nível terá acesso:</option>
+                                                <option value="1">Iniciante</option>
+                                                <option value="2">Consultor</option>
+                                                <option value="3">Líder</option>
+                                                <option value="4">Gerente</option>
+                                                <option value="6">Vendedor interno</option>
+                                                <option value="">Todos</option>
+                                            </select>
+                                            <label for="floatingSelect">Níveis</label>
+                                        </div>
+                                    </div>
+        
+                                    <div class="col-12 col-md-4 col-lg-4 mb-1">
+                                        <div class="form-floating">
+                                            <input type="text" name="contract" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" value="{{ $product->contract }}">
+                                            <label for="floatingContract">Indique um ID de contrato para o Produto:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4 col-lg-4 mb-1">
+                                        <div class="form-floating">
+                                            <input type="text" name="value_min" class="form-control" id="floatingContract" placeholder="Indique o valor mín de venda para o Produto:" value="{{ $product->value_min }}" oninput="mascaraReal(this)">
+                                            <label for="floatingContract">Indique o valor mín de venda para o Produto:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4 col-lg-4 mb-1">
+                                        <div class="form-floating">
+                                            <input type="text" name="value_max" class="form-control" id="floatingContract" placeholder="Indique o valor máx de venda para o Produto:" value="{{ $product->value_max }}" oninput="mascaraReal(this)">
+                                            <label for="floatingContract">Indique o valor máx de venda para o Produto:</label>
+                                        </div>
+                                    </div>
+        
+                                    <div class="col-12 col-md-4 col-lg-4 offset-md-8 offset-lg-8 mb-1 d-grid gap-2 mt-3">
+                                        <button type="submit" class="btn btn-outline-success rounded-pill" type="button">Próximo</button>
+                                    </div>
+                                </form>
                             </div>
 
-                            <div class="col-12 col-md-4 col-lg-4 offset-md-8 offset-lg-8 mb-1 d-grid gap-2 mt-3">
-                                <button type="submit" class="btn btn-outline-success rounded-pill" type="button">Salvar</button>
+                            <div class="tab-pane fade" id="profile-justified" role="tabpanel" aria-labelledby="profile-tab">
+                                @if(!empty($product->id))
+                                    <h5 class="card-title">Atribua formas de pagamentos.</h5>
+                                    <form action="{{ route('create-payment') }}" method="POST" class="row g-3">
+                                        @csrf
+                                        <input type="hidden" name="id" value="{{ $product->id }}">
+                                        <div class="col-12 col-md-4 col-lg-4 mb-1">
+                                            <div class="form-floating">
+                                                <select name="method" class="form-select" id="floatingMethod">
+                                                    <option selected value="PIX">Escolha uma Opção:</option>
+                                                    <option value="CREDIT_CARD">Cartão de Crédito</option>
+                                                    <option value="BOLETO">Boleto</option>
+                                                    <option value="PIX">Pix</option>
+                                                </select>
+                                                <label for="floatingMethod">Formas de Pagamento</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-2 col-lg-2 mb-1">
+                                            <div class="form-floating">
+                                                <input type="number" name="installments" class="form-control" id="floatingInstallments" placeholder="Indique o número de Parcelas:" required>
+                                                <label for="floatingInstallments">Parcelas:</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-2 col-lg-2 mb-1">
+                                            <div class="form-floating">
+                                                <input type="text" name="value_rate" class="form-control" id="floatingValueRate" placeholder="Indique o valor de Taxas ou acréscimos:" oninput="mascaraReal(this)">
+                                                <label for="floatingValueRate">Taxas (Acréscimos):</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-2 col-lg-2 d-grid gap-2 mb-1">
+                                            <button type="submit" class="btn btn-outline-success rounded-pill" type="button">Adicionar</button>
+                                        </div>
+                                    </form>
+
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mt-3">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">#</th>
+                                                    <th scope="col">Método</th>
+                                                    <th class="text-center" scope="col">Parcelas</th>
+                                                    <th class="text-center" scope="col">Taxas</th>
+                                                    <th class="text-center" scope="col">Opções</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($payments as $payment)
+                                                    <tr>
+                                                        <th scope="row">{{ $payment->id }}</th>
+                                                        <td>{{ $payment->methodLabel() }}</td>
+                                                        <td class="text-center">{{ $payment->installments }}</td>
+                                                        <td class="text-center">R$ {{ number_format($payment->value_rate, 2, ',', '.') }}</td>
+                                                        <td class="text-center">
+                                                            <form action="{{ route('delete-payment') }}" method="POST" class="delete">
+                                                                @csrf
+                                                                <input type="hidden" name="id" value="{{ $payment->id }}">
+                                                                <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @else
+                                    <p class="m-5">Nenhum produto selecionado.</p>
+                                @endif
                             </div>
-                        </form>
+
+                            <div class="tab-pane fade" id="contact-justified" role="tabpanel" aria-labelledby="contact-tab">
+                                @if(!empty($product->id))
+                                    <h5 class="card-title">Atribua itens.</h5>
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-6 col-lg-6">
+                                            <form action="{{ route('create-item') }}" method="POST" class="row" enctype="multipart/form-data">
+                                                @csrf
+                                                <input type="hidden" name="id" value="{{ $product->id }}">
+                                                <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                    <div class="form-floating">
+                                                        <select name="type" class="form-select" id="floatingType" required>
+                                                            <option selected>Escolha uma Opção:</option>
+                                                            <option value="1">Texto</option>
+                                                            <option value="2">PDF ou Epub</option>
+                                                            <option value="3">Vídeo</option>
+                                                            <option value="4">URL (Link)</option>
+                                                        </select>
+                                                        <label for="floatingType">Tipo de Item</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                    <div class="form-floating">
+                                                        <input type="text" name="name" class="form-control" id="floatingName" placeholder="Informe um título ao Item:" required>
+                                                        <label for="floatingName">Título:</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                    <div class="form-floating">
+                                                        <textarea name="description" class="form-control" placeholder="Descrição" id="floatingDescription" style="height: 100px;"></textarea>
+                                                        <label for="floatingDescription">Descrição:</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-md-12 col-lg-12 mb-1" style="display: none;">
+                                                    <div class="form-floating">
+                                                        <input type="text" name="file" class="form-control" id="floatingUrl" placeholder="Informe uma URL:">
+                                                        <label for="floatingUrl">URL:</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-md-12 col-lg-12 mb-1" style="display: none;">
+                                                    <div class="form-floating">
+                                                        <input type="file" name="file" class="form-control" id="floatingFile" placeholder="Arquivo:">
+                                                        <label for="floatingFile">Arquivo:</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-md-12 col-lg-12 d-grid gap-2 mb-1">
+                                                    <button type="submit" class="btn btn-outline-success rounded-pill" type="button">Adicionar</button>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-6 col-lg-6">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">#</th>
+                                                            <th scope="col">Título</th>
+                                                            <th class="text-center" scope="col">Descrição</th>
+                                                            <th class="text-center" scope="col">Arquivo</th>
+                                                            <th class="text-center" scope="col">Opções</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($itens as $item)
+                                                            <tr>
+                                                                <th scope="row">{{ $item->id }}</th>
+                                                                <td title="{{ $item->name }}">{{ substr($item->name, 0, 15) }}..</td>
+                                                                <td class="text-center" title="{{ $item->description }}">{{ substr($item->description, 0, 15) }}...</td>
+                                                                <td class="text-center">@if($item->type != 1) <a href="{{ url("storage/{$item->item}") }}" target="_blank">Acessar</a> @else --- @endif</td>
+                                                                <td class="text-center">
+                                                                    <form action="{{ route('delete-item') }}" method="POST" class="delete">
+                                                                        @csrf
+                                                                        <input type="hidden" name="id" value="{{ $item->id }}">
+                                                                        <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
+                                                                    </form>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <p class="m-5">Nenhum produto selecionado.</p>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function() {
+            
+
+            $('#floatingType').change(function(){
+                var selectedOption = $(this).val();
+                if(selectedOption == '4') {
+                    $('#floatingUrl').parent().parent().show();
+                    $('#floatingFile').parent().parent().hide();
+                } else if (selectedOption == '2' || selectedOption == '3') {
+                    $('#floatingUrl').parent().parent().hide();
+                    $('#floatingFile').parent().parent().show();
+                } else {
+                    $('#floatingUrl').parent().parent().hide();
+                    $('#floatingFile').parent().parent().hide();
+                }
+            });
+        });
+    </script>
 @endsection

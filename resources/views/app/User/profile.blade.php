@@ -20,108 +20,108 @@
                 <div class="card-body">
                     <h5 class="card-title">Preencha todas às informações para começar:</h5>
 
-                    @if (Auth::user()->status == 1 && Auth::user()->type != 3)
-                        <div class="col-12">
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Está tudo perfeito! Agora é com você!
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        </div>
-                    @endif
-                    
-                    @if (Auth::user()->api_key != null && Auth::user()->wallet != null)
-                        <div class="col-12">
-                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Estamos na última etapa! Nos links abaixo, você pode enviar sua documentação para analisarmos?
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-
-                            @if(count($mydocuments) > 0)
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Pagamentos</h5>
-                                        <div class="table-responsive">
-                                            <table class="table table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Situação</th>
-                                                        <th>Documento</th>
-                                                        <th>Descrição</th>
-                                                        <th class="text-center">Opções</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach ($mydocuments as $key => $myDocument)
-                                                        <tr>
-                                                            <td>
-                                                                @switch($myDocument['status'])
-                                                                    @case('NOT_SENT')
-                                                                        Não enviado
-                                                                        @break
-                                                                    @case('PENDING')
-                                                                        Em Análise
-                                                                        @break
-                                                                    @case('APPROVED')
-                                                                        Aprovado
-                                                                        @break
-                                                                    @case('REJECTED')
-                                                                        Rejeitado
-                                                                        @break
-                                                                    @default
-                                                                @endswitch
-                                                            </td>
-                                                            <td>{{ $myDocument['title'] }}</td>
-                                                            <td>Para enviar/reenviar esse documento utilize o botão ao lado.</td>
-                                                            <td class="text-center">
-                                                                @switch($myDocument['status'])
-                                                                    @case('NOT_SENT')
-                                                                    <a class="btn btn-primary" target="_blank" href="{{ $myDocument['onboardingUrl'] }}"><i class="bi bi-arrow-up-right-circle"></i></a>
-                                                                        @break
-                                                                    @case('PENDING')
-                                                                        Em Análise
-                                                                        @break
-                                                                    @case('APPROVED')
-                                                                        Aprovado
-                                                                        @break
-                                                                    @case('REJECTED')
-                                                                        <a class="btn btn-primary" target="_blank" href="{{ $myDocument['onboardingUrl'] }}"><i class="far fa-paper-plane"></i></a>
-                                                                        @break
-                                                                    @default
-                                                                @endswitch
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-                    @endif
-
-                    @if (Auth::user()->status == 3 && empty(Auth::user()->api_key) && Auth::user()->type != 3)
-                        <div class="col-12">
-                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Você está quase lá! É necessário filiar-se <a href="{{ route('createMonthly', ['id' => Auth::user()->id]) }}"> ao {{ env('APP_NAME') }} clicando aqui!</a>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        </div>
-                    @endif
-
-                    @if(empty(Auth::user()->postal_code) || empty(Auth::user()->address) || empty(Auth::user()->city) || empty(Auth::user()->state) || empty(Auth::user()->num))
+                    @if(empty(Auth::user()->postal_code) || empty(Auth::user()->address) || empty(Auth::user()->city) || empty(Auth::user()->state) || empty(Auth::user()->num) || empty(Auth::user()->phone) || empty(Auth::user()->birth_date))
                         <div class="col-12">
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                 <i class="bi bi-exclamation-octagon me-1"></i>
-                                Complete os dados do seu endereço e contatos abaixo!
+                                Complete os dados de endereço e contato abaixo!
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         </div>
-                    @endif
+                    @else
 
+                        @if (Auth::user()->status == 1 && Auth::user()->type != 3)
+                            <div class="col-12">
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Está tudo perfeito! Agora é com você!
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            </div>
+                        @endif
+                        
+                        @if (Auth::user()->api_key != null && Auth::user()->wallet != null && Auth::user()->status == 2)
+                            <div class="col-12">
+                                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Estamos na última etapa! Nos links abaixo, você pode enviar sua documentação para analisarmos?
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+
+                                @if(count($mydocuments) > 0)
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Pagamentos</h5>
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Situação</th>
+                                                            <th>Documento</th>
+                                                            <th>Descrição</th>
+                                                            <th class="text-center">Opções</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($mydocuments as $key => $myDocument)
+                                                            <tr>
+                                                                <td>
+                                                                    @switch($myDocument['status'])
+                                                                        @case('NOT_SENT')
+                                                                            Não enviado
+                                                                            @break
+                                                                        @case('PENDING')
+                                                                            Em Análise
+                                                                            @break
+                                                                        @case('APPROVED')
+                                                                            Aprovado
+                                                                            @break
+                                                                        @case('REJECTED')
+                                                                            Rejeitado
+                                                                            @break
+                                                                        @default
+                                                                    @endswitch
+                                                                </td>
+                                                                <td>{{ $myDocument['title'] }}</td>
+                                                                <td>Para enviar/reenviar esse documento utilize o botão ao lado.</td>
+                                                                <td class="text-center">
+                                                                    @switch($myDocument['status'])
+                                                                        @case('NOT_SENT')
+                                                                        <a class="btn btn-primary" target="_blank" href="{{ $myDocument['onboardingUrl'] }}"><i class="bi bi-arrow-up-right-circle"></i></a>
+                                                                            @break
+                                                                        @case('PENDING')
+                                                                            Em Análise
+                                                                            @break
+                                                                        @case('APPROVED')
+                                                                            Aprovado
+                                                                            @break
+                                                                        @case('REJECTED')
+                                                                            <a class="btn btn-primary" target="_blank" href="{{ $myDocument['onboardingUrl'] }}"><i class="far fa-paper-plane"></i></a>
+                                                                            @break
+                                                                        @default
+                                                                    @endswitch
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
+
+                        @if (empty(Auth::user()->api_key) && Auth::user()->status == 4)
+                            <div class="col-12">
+                                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Você está quase lá! <br> Aproveite todos os benefícios da nossa plataforma por apenas R$ 29,99 ao mês. <a href="{{ route('createMonthly', ['id' => Auth::user()->id]) }}"> Clique aqui para começar!</a>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            </div>
+                        @endif
+                    @endif
                 </div>
             </div>
         </div>

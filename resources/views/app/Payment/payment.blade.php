@@ -47,7 +47,7 @@
                                             <td class="text-center">{{ \Carbon\Carbon::parse($payment->due_date)->format('d/m/Y') }}</td>
                                             <td class="text-center">
                                                 <a href="{{ $payment->url_payment }}" target="_blank" class="btn btn-success text-light">
-                                                    <i class="bi bi-credit-card"></i>
+                                                    Abrir Fatura
                                                 </a>
                                             </td>
                                         </tr>

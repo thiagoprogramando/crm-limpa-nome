@@ -16,7 +16,7 @@ class Registrer extends Controller {
         return view('registrer', ['id' => $id]);
     }
 
-    public function registrerUser(Request $request) {
+    public function registerUser(Request $request) {
 
         $validator = $request->validate([
             'name'      => 'required',

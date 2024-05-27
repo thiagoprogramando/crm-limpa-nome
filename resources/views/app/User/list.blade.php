@@ -18,7 +18,7 @@
 
             <div class="btn-group mb-3" role="group">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
-                <a href="{{ route('registrer') }}" target="_blank" class="btn btn-outline-primary">Cadastrar</a>
+                <a href="{{ route('register') }}" target="_blank" class="btn btn-outline-primary">Cadastrar</a>
                 <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
             </div>
 

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Assas\AssasController;
 use App\Http\Controllers\Controller;
-use App\Models\Archive;
+
 use App\Models\Invoice;
 use App\Models\Lists;
 use App\Models\Notification;
@@ -80,21 +80,6 @@ class UserController extends Controller {
             }
         }
 
-        if (
-            $request->filled('name') &&
-            $request->filled('cpfcnpj') &&
-            $request->filled('phone') &&
-            $request->filled('email') &&
-            $request->filled('birth_date') &&
-            $request->filled('postal_code') &&
-            $request->filled('address') &&
-            $request->filled('state') &&
-            $request->filled('city') &&
-            $request->filled('num')
-        ) {
-            $user->status = 3;
-        }
-
         if ($user->save()) {
             return redirect()->back()->with('success', 'Dados atualizados com sucesso!');
         }
@@ -164,37 +149,6 @@ class UserController extends Controller {
             
             $notification->delete();
             return redirect()->back();
-        }
-
-        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
-    }
-
-    public function myArchive() {
-
-        if(Auth::check() && Auth::user()->type != 1) {
-            $archives = Archive::where('id_user', Auth::id())->orderBy('id', 'asc')->get();
-        } else {
-            $archives = Archive::orderBy('id', 'asc')->get();
-        }
-        
-        $users = User::orderBy('name', 'asc')->get();
-        return view('app.User.archives', ['archives' => $archives, 'users' => $users]);
-    }
-
-    public function createArchive(Request $request) {
-
-        $archive = new Archive();
-        $archive->title   = $request->title;
-        $archive->id_user = $request->id_user;
-
-        if ($request->hasFile('file') && $request->file('file')->isValid()) {
-            $archive->file = $request->file->store('public/archive');
-        } else {
-            return redirect()->back()->with('error', 'Não foi possível processar o arquivo, tente novamente mais tarde!');
-        }
-
-        if($archive->save()) {
-            return redirect()->back()->with('success', 'Arquivo criado com sucesso!');
         }
 
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');

@@ -19,11 +19,6 @@ class ProductController extends Controller {
         return view('app.Product.list', ['products' => $products]);
     }
 
-    public function create() {
-
-        return view('app.Product.create');
-    }
-
     public function createProduct(Request $request) {
 
         $product                = new Product();
@@ -41,7 +36,7 @@ class ProductController extends Controller {
         $product->value_max     = $this->formatarValor($request->value_max);
 
         if($product->save()) {
-            return redirect()->route('updateproduct', ['id' => $product->id])->with('success', 'Produto criado com sucesso!');
+            return redirect()->route('detail-product', ['id' => $product->id])->with('success', 'Produto criado com sucesso!');
         }
         
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
@@ -50,13 +45,16 @@ class ProductController extends Controller {
     public function update($id) {
 
         $product = Product::find($id);
-        $payments = Payment::where('id_product', $product->id)->get();
-        $itens = Item::where('id_product', $product->id)->get();
         if($product) {
-            return view('app.Product.update', [
+
+            $payments = Payment::where('id_product', $product->id)->get();
+            $itens = Item::where('id_product', $product->id)->get();
+
+            return view('app.Product.create', [
                 'product'   => $product, 
                 'payments'  => $payments,
-                'itens'     => $itens
+                'itens'     => $itens,
+                'tab'       => 'profile-tab',
             ]);
         }
         
@@ -96,7 +94,7 @@ class ProductController extends Controller {
             }
 
             if($product->save()) {
-                return redirect()->back()->with('success', 'Produto atualizado com sucesso!');
+                return redirect()->route('detail-product', ['id' => $product->id])->with('success', 'Produto atualizado com sucesso!');
             }    
         }
 
@@ -127,7 +125,10 @@ class ProductController extends Controller {
             $payment->id_product    = $request->id;
 
             if($payment->save()) {
-                return redirect()->back()->with('success', 'Forma de pagamento incluído com sucesso!');
+                return redirect()->back()->with([
+                    'success' => 'Forma de pagamento incluído com sucesso!',
+                    'tab' => 'profile-tab'
+                ]);
             }
         }
 
@@ -140,7 +141,10 @@ class ProductController extends Controller {
         if($payment) {
 
             $payment->delete();
-            return redirect()->back()->with('success', 'Registro excluído com sucesso!');
+            return redirect()->back()->with([
+                'success' => 'Registro excluído com sucesso!',
+                'tab' => 'profile-tab'
+            ]);
         }
 
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
@@ -172,7 +176,10 @@ class ProductController extends Controller {
             }
 
             if($item->save()) {
-                return redirect()->back()->with('success', 'Item incluído com sucesso!');
+                return redirect()->back()->with([
+                    'success' => 'Item criado com sucesso!',
+                    'tab' => 'contact-tab'
+                ]);
             }
         }
 
@@ -189,7 +196,10 @@ class ProductController extends Controller {
             }
 
             $item->delete();
-            return redirect()->back()->with('success', 'Registro excluído com sucesso!');
+            return redirect()->back()->with([
+                'success' => 'Item excluído com sucesso!',
+                'tab' => 'contact-tab'
+            ]);
         }
 
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
