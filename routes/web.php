@@ -12,7 +12,9 @@ use App\Http\Controllers\Sale\SaleController;
 use App\Http\Controllers\User\ListController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\WalletController;
+
 use App\Http\Middleware\Monthly;
+
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [Login::class, 'index'])->name('login');
@@ -25,9 +27,14 @@ Route::get('/forgout/{code?}', [Forgout::class, 'forgout'])->name('forgout');
 Route::post('send-code-password', [Forgout::class, 'sendCodePassword'])->name('send-code-password');
 Route::post('update-password', [Forgout::class, 'updatePassword'])->name('update-password');
 
+Route::get('/sale-link/{product}/{user}/{value}', [SaleController::class, 'saleLink'])->name('sale-link');
+
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/app', [AppController::class, 'app'])->name('app');
+    Route::get('/apresentation', [UserController::class, 'apresentation'])->name('apresentation');
+    Route::post('create-apresentation', [UserController::class, 'createApresentation'])->name('create-apresentation');
+    Route::post('delete-apresentation', [UserController::class, 'deleteApresentation'])->name('delete-apresentation');
 
     Route::middleware(['monthly'])->group(function () {
 
@@ -52,7 +59,6 @@ Route::middleware(['auth'])->group(function () {
     
             //Payments
             Route::get('/receivable', [Payment::class, 'receivable'])->name('receivable');
-    
         });
 
     });
@@ -79,6 +85,7 @@ Route::middleware(['auth'])->group(function () {
         //Archive
         Route::get('/my-archive', [UserController::class, 'myArchive'])->name('my-archive');
         Route::post('/create-archive', [UserController::class, 'createArchive'])->name('create-archive');
+        Route::post('/delete-archive', [UserController::class, 'deleteArchive'])->name('delete-archive');
 
     //List
     Route::get('/lists', [ListController::class, 'list'])->name('lists');

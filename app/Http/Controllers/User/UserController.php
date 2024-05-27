@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Assas\AssasController;
 use App\Http\Controllers\Controller;
+use App\Models\Apresentation;
 use App\Models\Archive;
 use App\Models\Invoice;
 use App\Models\Lists;
@@ -198,5 +199,71 @@ class UserController extends Controller {
         }
 
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
+    }
+
+    public function deleteArchive(Request $request) {
+
+        $archive = Archive::find($request->id);
+
+        $filePath = storage_path('app/public/' . $archive->file);
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+
+        if($archive && $archive->delete()) {
+            return redirect()->back()->with('success', 'Arquivo excluído com sucesso!');
+        }
+
+        return redirect()->back()->with('error', 'Não foram localizados dados do Arquivo!');
+    }
+
+    public function apresentation() {
+
+        if(Auth::check() && Auth::user()->type != 1) {
+            $archives = Apresentation::where('level', Auth::user()->level)->orWhereNull('level')->orderBy('id', 'asc')->get();
+        } else {
+            $archives = Apresentation::orderBy('id', 'asc')->get();
+        }
+        
+        $users = User::orderBy('name', 'asc')->get();
+        return view('app.User.apresentation', [
+                'archives' => $archives, 
+                'users' => $users
+            ]
+        );
+    }
+
+    public function createApresentation(Request $request) {
+
+        $apresentation         = new Apresentation();
+        $apresentation->title  = $request->title;
+        $apresentation->level  = $request->level;
+
+        if ($request->hasFile('file') && $request->file('file')->isValid()) {
+            $apresentation->file = $request->file->store('public/apresentation');
+        } else {
+            return redirect()->back()->with('error', 'Não foi possível processar o arquivo, tente novamente mais tarde!');
+        }
+
+        if($apresentation->save()) {
+            return redirect()->back()->with('success', 'Material criado com sucesso!');
+        }
+
+        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
+    }
+
+    public function deleteApresentation(Request $request) {
+
+        $apresentation = Apresentation::find($request->id);
+        $filePath = storage_path('app/public/' . $apresentation->file);
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+
+        if($apresentation && $apresentation->delete()) {
+            return redirect()->back()->with('success', 'Material excluído com sucesso!');
+        }
+
+        return redirect()->back()->with('error', 'Não foram localizados dados do Material!');
     }
 }

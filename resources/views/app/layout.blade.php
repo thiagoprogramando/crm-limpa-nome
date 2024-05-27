@@ -126,6 +126,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('app') }}"> <i class="bi bi-grid"></i> <span>Escritório</span> </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="{{ route('apresentation') }}"> <i class="bi bi-book"></i> <span>Apresentação</span> </a>
+                </li>
 
                 @if (Auth::user()->type != 3)
                     <li class="nav-item">
@@ -135,6 +138,19 @@
                         <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                             @foreach($business as $busines)
                                 <li><a href="{{ route('createsale', ['id' => $busines->id]) }}"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
+                            @endforeach
+                        </ul>
+                    </li>
+                @endif
+
+                @if (Auth::user()->type == 4)
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" data-bs-target="#forms-bussines" data-bs-toggle="collapse" href="#">
+                            <i class="bi bi-briefcase"></i><span>Negócios (Links)</span><i class="bi bi-chevron-down ms-auto"></i>
+                        </a>
+                        <ul id="forms-bussines" class="nav-content collapse " data-bs-parent="#sidebar-bussines">
+                            @foreach($business as $busines)
+                                <li><a class="business-link" data-id="{{ $busines->id }}" data-max="{{ $busines->value_max }}" data-min="{{ $busines->value_min }}"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
                             @endforeach
                         </ul>
                     </li>
@@ -271,6 +287,58 @@
                     timer: 2000
                 })
             @endif
+
+            function abrirModal(businesId, valueMin, valueMax) {
+                Swal.fire({
+                    title: 'Atribuir valor e gerar link',
+                    html:
+                        '<input id="valor-venda" class="swal2-input" placeholder="Valor da venda">',
+                    focusConfirm: false,
+                    showCancelButton: true,
+                    confirmButtonText: 'Gerar Venda'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const valorVenda = document.getElementById('valor-venda').value;
+                        const url = window.location.origin + '/sale-link/' + businesId + '/' + {{ Auth::id() }} + '/' + valorVenda;
+
+                        if(valueMin > 1 && valueMax > 1) {
+                            if(parseInt(valorVenda) < parseInt(valueMin) || parseInt(valorVenda) > parseInt(valueMax)) {
+                                return Swal.fire('info', 'Não é possível ultrapassar os valores Máx e Mín', 'info');
+                            }
+                        }
+
+                        Swal.fire({
+                            title: 'Link Gerado',
+                            input: 'text',
+                            inputValue: url,
+                            inputAttributes: {
+                                readonly: true
+                            },
+                            showCancelButton: true,
+                            confirmButtonText: 'Copiar Link'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                const input = document.createElement('textarea');
+                                input.value = url;
+                                document.body.appendChild(input);
+                                input.select();
+                                document.execCommand('copy');
+                                document.body.removeChild(input);
+                                Swal.fire('Link copiado com sucesso!', '', 'success');
+                            }
+                        });
+                    }
+                });
+            }
+
+            document.querySelectorAll('.business-link').forEach(item => {
+                item.addEventListener('click', event => {
+                    const businesId = item.getAttribute('data-id');
+                    const valueMin = item.getAttribute('data-min');
+                    const valueMax = item.getAttribute('data-max');
+                    abrirModal(businesId, valueMin, valueMax);
+                });
+            });
 
             document.addEventListener('DOMContentLoaded', function () {
                 

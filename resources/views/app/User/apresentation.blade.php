@@ -1,12 +1,12 @@
 @extends('app.layout')
-@section('title') Consultas e arquivos @endsection
+@section('title') Apresentação @endsection
 @section('conteudo')
     <div class="pagetitle">
-        <h1>Consultas e arquivos</h1>
+        <h1>Apresentação</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('app') }}">Escritório</a></li>
-                <li class="breadcrumb-item active">Consultas e arquivos</li>
+                <li class="breadcrumb-item active">Apresentação</li>
             </ol>
         </nav>
     </div>
@@ -25,10 +25,10 @@
                 <div class="modal fade" id="createModal" tabindex="-1">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <form action="{{ route('create-archive') }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('create-apresentation') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="modal-header">
-                                    <h5 class="modal-title">Cadastro de consultas e arquivos</h5>
+                                    <h5 class="modal-title">Cadastro de Vídeo/PDF</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
@@ -41,19 +41,23 @@
                                         </div>
                                         <div class="col-12 col-md-12 col-lg-12 mb-1">
                                             <div class="form-floating">
-                                                <input type="file" name="file" class="form-control" id="floatingFile" placeholder="Arquivo:">
+                                                <input type="file" name="file" class="form-control" id="floatingFile" placeholder="Arquivo:" accept=".pdf, .mp4">
                                                 <label for="floatingFile">Arquivo:</label>
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-12 col-lg-12 mb-1">
                                             <div class="form-floating">
-                                                <select name="id_user" class="form-select" id="floatingUser">
-                                                    <option selected="" value="">Usuário:</option>
-                                                    @foreach ($users as $user)
-                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>  
-                                                    @endforeach
+                                                <select name="level" class="form-select" id="floatingSelect">
+                                                    <option selected="">Indique qual nível terá acesso:</option>
+                                                    <option value="1">INICIANTE</option>
+                                                    <option value="2">CONSULTOR</option>
+                                                    <option value="3">CONSULTOR LÍDER</option>
+                                                    <option value="4">REGIONAL</option>
+                                                    <option value="5">GERENTE REGIONAL</option>
+                                                    <option value="6">VENDEDOR INTERNO</option>
+                                                    <option value="">Todos</option>
                                                 </select>
-                                                <label for="floatingUser">Usuário</label>
+                                                <label for="floatingSelect">Níveis</label>
                                             </div>
                                         </div>
                                     </div>
@@ -69,7 +73,7 @@
                 
                 <div class="card p-5">
                     <div class="card-body">
-                        <h5 class="card-title">Consultas e arquivos</h5>
+                        <h5 class="card-title">Material</h5>
                         
                         <div class="table-responsive">
                             <table class="table table-hover" id="table">
@@ -86,8 +90,8 @@
                                         <tr>
                                             <th scope="row">{{ $archive->id }}</th>
                                             <td><a href="{{ url("storage/{$archive->file}") }}" target="_blank">{{ $archive->title }}</a></td>
-                                            <td class="text-center">  
-                                                <form action="{{ route('delete-archive') }}" method="POST" class="delete">
+                                            <td class="text-center">
+                                                <form action="{{ route('delete-apresentation') }}" method="POST" class="delete">
                                                     @csrf
                                                     <input type="hidden" name="id" value="{{ $archive->id }}"> 
                                                     <a href="{{ url("storage/{$archive->file}") }}" target="_blank" class="btn btn-primary text-light"> <i class="bi bi-archive"></i> </a>

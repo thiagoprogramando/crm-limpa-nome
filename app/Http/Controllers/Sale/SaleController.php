@@ -86,7 +86,7 @@ class SaleController extends Controller {
             $sale->id_product   = $request->product;
             $sale->id_list      = $list->id;
             $sale->id_payment   = $method->id;
-            $sale->id_seller    = Auth::id();
+            $sale->id_seller    = !empty($request->id_seller) ? $request->id_seller : Auth::id();
 
             $sale->payment      = $method->method;
             $sale->installments = $method->installments;
@@ -462,6 +462,17 @@ class SaleController extends Controller {
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Erro ao enviar contrato, tente novamente mais tarde!');
         }
+    }
+
+    public function saleLink($product, $user, $value) {
+
+        $payments = Payment::where('id_product', $product)->get();
+        return view('form.sale', [
+            'id_product' => $product, 
+            'payments' => $payments, 
+            'id_seller' => $user, 
+            'value' => $value
+        ]);
     }
 
 }
