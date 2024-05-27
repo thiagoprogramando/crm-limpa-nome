@@ -84,7 +84,7 @@ class SaleController extends Controller {
             $sale               = new Sale();
             $sale->id_client    = $user->id;
             $sale->id_product   = $request->product;
-            $sale->id_list      = 1;
+            $sale->id_list      = $list->id;
             $sale->id_payment   = $method->id;
             $sale->id_seller    = Auth::id();
 
