@@ -322,12 +322,18 @@ class SaleController extends Controller {
     }
 
     private function formatarValor($valor) {
-        
-        $valor = preg_replace('/[^0-9,.]/', '', $valor);
-        $valor = str_replace(['.', ','], '', $valor);
-
-        return number_format(floatval($valor) / 100, 2, '.', '');
-    }
+        // Remove todos os caracteres que não são dígitos ou vírgulas
+        $valor = preg_replace('/[^0-9,]/', '', $valor);
+    
+        // Substitui vírgulas por pontos para tratar decimais no formato brasileiro
+        $valor = str_replace(',', '.', $valor);
+    
+        // Converte o valor para float
+        $valorFloat = floatval($valor);
+    
+        // Formata com duas casas decimais
+        return number_format($valorFloat, 2, '.', '');
+    }       
 
     public function manager(Request $request) {
 

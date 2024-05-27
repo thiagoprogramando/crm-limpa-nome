@@ -28,11 +28,13 @@
                                 
                             <form action="{{ route('create-sale') }}" method="POST" class="signin-form row">
                                 @csrf
-                                @if (session('error'))
-                                    <div class="alert alert-danger alert-dismissible" role="alert">
-                                        {{ session('error') }}
-                                    </div>
-                                @endif
+                                <div class="form-group col-sm-12 col-md-12 col-lg-12 mb-3">
+                                    @if (session('error'))
+                                        <div class="alert alert-danger alert-dismissible" role="alert">
+                                            {{ session('error') }}
+                                        </div>
+                                    @endif
+                                </div>
 
                                 <input type="hidden" name="product" value="{{ $id_product }}">
                                 <input type="hidden" name="id_seller" value="{{ $id_seller }}">
