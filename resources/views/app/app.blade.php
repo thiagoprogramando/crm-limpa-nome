@@ -15,7 +15,7 @@
 <section class="section dashboard">
     <div class="row">
 
-        <div class="col-lg-8">
+        <div class="col-lg-12">
             <div class="row">
 
                 @if (Auth::user()->phone == null || Auth::user()->wallet == null || Auth::user()->api_key == null)
@@ -27,8 +27,19 @@
                         </div>
                     </div>
                 @endif
+                
+                @if(Auth::user()->type == 5)
+                    <div class="col-12">
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Agora você pode montar o seu time e lucrar 20% De todos contratos deles.
+                            <a href="{{ route('registrer', ['id' => Auth::user()->id]) }}" target="_blank">Você pode indicar clicando aqui.</a>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </div>
+                @endif
 
-                <div class="col-xxl-4 col-md-6">
+                <div class="col-sm-12 col-md-4 col-lg-3">
                     <div class="card info-card sales-card">
                         <div class="card-body">
                             <h5 class="card-title">T. Vendas (N°)</h5>
@@ -45,7 +56,24 @@
                     </div>
                 </div>
 
-                <div class="col-xxl-4 col-md-6">
+                <div class="col-sm-12 col-md-4 col-lg-3">
+                    <div class="card info-card sales-card">
+                        <div class="card-body">
+                            <h5 class="card-title">T. Vendas (Hoje)</h5>
+
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-cart-check-fill"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6>{{ $salesDay }}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-md-4 col-lg-3">
                     <div class="card info-card revenue-card">
 
                         <div class="card-body">
@@ -64,7 +92,7 @@
                     </div>
                 </div>
 
-                <div class="col-xxl-4 col-xl-12">
+                <div class="col-sm-12 col-md-4 col-lg-3">
                     <div class="card info-card customers-card">
 
                         <div class="card-body">
@@ -83,17 +111,7 @@
                     </div>
                 </div>
 
-                <div class="col-12">
-
-                    @if(Auth::user()->type == 5)
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="bi bi-info-circle me-1"></i>
-                            Agora você pode montar o seu time e lucrar 20% De todos contratos deles.
-                            <a href="{{ route('registrer', ['id' => Auth::user()->id]) }}" target="_blank">Você pode indicar clicando aqui.</a>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    @endif
-
+                <div class="col-12 col-sm-12 col-lg-6">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Gráfico de crescimento <span>| Dados gerados pelo sistema.</span></h5>
@@ -101,82 +119,24 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="col-lg-4">
-
-            <div class="card info-card clock-card">
-                <div class="card-body">
-                    <h5 class="card-title">Próxima Lista @if($list) <span>{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</span> @else Não há lista disponível @endif</h5>
-                    <div class="d-flex align-items-center">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                            <i class="bi bi-clock-history"></i>
-                        </div>
-                        <div class="ps-3">
-                            <h6>{{ $remainingTime }}</h6>
+                <div class="col-12 col-sm-12 col-lg-6">
+                    <div class="card info-card clock-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Próxima Lista @if($list) <span>{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</span> @else Não há lista disponível @endif</h5>
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-clock-history"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6>{{ $remainingTime }}</h6>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            {{-- <div class="card">
-                <div class="card-body pb-0">
-                    <h5 class="card-title">Novidades <span>| Recentes</span></h5>
-                    <div class="news">
-                        <div class="post-item clearfix">
-                            <img src="{{ asset('assets/dashboard/img/news-1.jpg') }}">
-                            <h4><a href="#">Cartão para negativado!</a></h4>
-                            <p>IFuture Banking promete trazer cartão com micro-crédito para negativados.</p>
-                        </div>
-                    </div>
-                    <div class="news">
-                        <div class="post-item clearfix">
-                            <img src="{{ asset('assets/dashboard/img/news-1.jpg') }}">
-                            <h4><a href="#">Cartão para negativado!</a></h4>
-                            <p>IFuture Banking promete trazer cartão com micro-crédito para negativados.</p>
-                        </div>
-                    </div>
-                    <div class="news">
-                        <div class="post-item clearfix">
-                            <img src="{{ asset('assets/dashboard/img/news-1.jpg') }}">
-                            <h4><a href="#">Cartão para negativado!</a></h4>
-                            <p>IFuture Banking promete trazer cartão com micro-crédito para negativados.</p>
-                        </div>
-                    </div>
-                    <div class="news">
-                        <div class="post-item clearfix">
-                            <img src="{{ asset('assets/dashboard/img/news-1.jpg') }}">
-                            <h4><a href="#">Cartão para negativado!</a></h4>
-                            <p>IFuture Banking promete trazer cartão com micro-crédito para negativados.</p>
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
-
         </div>
-
-        <button type="button" class="d-none" id="clickInfoModal" data-bs-toggle="modal" data-bs-target="#infoModal"></button>
-        <div class="modal fade" id="infoModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Novidade para você!</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="embed-responsive embed-responsive-16by9">
-                            <iframe class="embed-responsive-item w-100 h-100" src="https://www.youtube.com/embed/zpOULjyy-n8?rel=0" allowfullscreen></iframe>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                    </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
     </div>
 </section>
 

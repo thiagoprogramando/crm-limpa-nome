@@ -21,9 +21,17 @@ class ShareProducts {
             $business = Product::where('level', null)
                 ->orWhere('level', Auth::user()->level)
                 ->get();
+            
+            $businessLink = Product::where('createuser', 1)
+                ->where(function ($query) {
+                    $query->where('level', null)->orWhere('level', Auth::user()->level);
+                })
+                ->get();
+
 
             View::share([
                 'business'          => $business,
+                'businessLink'      => $businessLink,
                 'notifications'     => Notification::where('id_user', Auth::id())->get(),
                 'totalNotification' => Notification::where('id_user', Auth::id())->count(),
             ]);

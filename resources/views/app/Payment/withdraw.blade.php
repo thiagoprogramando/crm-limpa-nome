@@ -23,7 +23,7 @@
                 <div class="modal fade" id="filterModal" tabindex="-1">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <form action="{{ route('withdraw-send') }}" method="POST">
+                            <form id="withdrawForm" action="{{ route('withdraw-send') }}" method="POST">
                                 @csrf
                                 <div class="modal-header">
                                     <h5 class="modal-title">Preencha todos os dados!</h5>
@@ -65,7 +65,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                                    <button type="submit" class="btn btn-success">Solicitar</button>
+                                    <button type="button" class="btn btn-success" id="submitBtn">Solicitar</button>
                                 </div>
                             </form>
                         </div>
@@ -112,4 +112,28 @@
             </div>
         </div>
     </section>
+
+    <script>
+        document.getElementById('submitBtn').addEventListener('click', function() {
+            const key = document.getElementById('floatingKey').value;
+            const value = document.getElementById('floatingValue').value;
+            const type = document.getElementById('floatingType').value;
+        
+            Swal.fire({
+                title: 'Confirmação',
+                html: `<p>Chave Pix: ${key}</p>
+                       <p>Valor: ${value}</p>
+                       <p>Tipo: ${type}</p>
+                       <p>Deseja confirmar?</p>`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sim',
+                cancelButtonText: 'Não'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('withdrawForm').submit();
+                }
+            });
+        });
+    </script>
 @endsection

@@ -35,7 +35,7 @@
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="createuser" id="user" @if($product->createuser) checked @endif>
-                                    <label class="form-check-label" for="user">Criar usuário para o Cliente</label>
+                                    <label class="form-check-label" for="user">Venda por Link</label>
                                 </div>
                             </div>
 

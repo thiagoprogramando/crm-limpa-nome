@@ -18,6 +18,7 @@ class AppController extends Controller {
     public function app() {
 
         $sales      = Sale::where('id_seller', Auth::id())->where('status', 1)->count();
+        $salesDay   = Sale::where('id_seller', Auth::id())->where('status', 1)->whereDate('created_at', Carbon::today())->count();
         $saleValue  = Sale::where('id_seller', Auth::id())->where('status', 1)->sum('commission');
         $commission = Invoice::where('id_user', Auth::id())->where('status', 1)->whereIn('type', [2, 3])->sum('commission');
 
@@ -50,6 +51,7 @@ class AppController extends Controller {
 
         return view('app.app', [
             'sales'           => $sales,
+            'salesDay'        => $salesDay,
             'saleValue'       => $saleValue,
             'commission'      => $commission,
             'saleGraph'       => $saleGraph,

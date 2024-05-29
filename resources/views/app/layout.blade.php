@@ -143,18 +143,16 @@
                     </li>
                 @endif
 
-                @if (Auth::user()->type == 4)
-                    <li class="nav-item">
-                        <a class="nav-link collapsed" data-bs-target="#forms-bussines" data-bs-toggle="collapse" href="#">
-                            <i class="bi bi-briefcase"></i><span>Negócios (Links)</span><i class="bi bi-chevron-down ms-auto"></i>
-                        </a>
-                        <ul id="forms-bussines" class="nav-content collapse " data-bs-parent="#sidebar-bussines">
-                            @foreach($business as $busines)
-                                <li><a class="business-link" data-id="{{ $busines->id }}" data-max="{{ $busines->value_max }}" data-min="{{ $busines->value_min }}"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
-                            @endforeach
-                        </ul>
-                    </li>
-                @endif
+                <li class="nav-item">
+                    <a class="nav-link collapsed" data-bs-target="#forms-bussines" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-briefcase"></i><span>Negócios (Links)</span><i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <ul id="forms-bussines" class="nav-content collapse " data-bs-parent="#sidebar-bussines">
+                        @foreach($businessLink as $busines)
+                            <li><a class="business-link" data-id="{{ $busines->id }}" data-max="{{ $busines->value_max }}" data-min="{{ $busines->value_min }}"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
+                        @endforeach
+                    </ul>
+                </li>
 
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="{{ route('my-shop') }}"> <i class="bi bi-shop-window"></i> <span>Minhas compras</span> </a>
