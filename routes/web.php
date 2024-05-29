@@ -28,6 +28,7 @@ Route::post('send-code-password', [Forgout::class, 'sendCodePassword'])->name('s
 Route::post('update-password', [Forgout::class, 'updatePassword'])->name('update-password');
 
 Route::get('/sale-link/{product}/{user}/{value}', [SaleController::class, 'saleLink'])->name('sale-link');
+Route::post('create-sale-external', [SaleController::class, 'createSale'])->name('create-sale-external');
 
 Route::middleware(['auth'])->group(function () {
 

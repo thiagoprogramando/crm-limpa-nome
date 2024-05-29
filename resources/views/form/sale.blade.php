@@ -26,7 +26,7 @@
                                 <h3 class="mb-4">Bem-vindo(a), complete com os seus dados.</h3>
                             </div>
                                 
-                            <form action="{{ route('create-sale') }}" method="POST" class="signin-form row">
+                            <form action="{{ route('create-sale-external') }}" method="POST" class="signin-form row">
                                 @csrf
                                 <div class="form-group col-sm-12 col-md-12 col-lg-12 mb-3">
                                     @if (session('error'))
