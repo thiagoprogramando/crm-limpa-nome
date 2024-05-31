@@ -530,7 +530,7 @@ class AssasController extends Controller {
 
                 $client = User::find($invoice->id_user);
                 if($client) {
-                    $this->sendWhatsapp(env('APP_URL'), "Olá, ".$client->name."! Recebemos o seu pagamento, *segue link para acessar faturas e consultar processos!* Para acessar basta informar seu E-mail e CPF. \r\n\r\n PRONTO AGORA SÓ ACOMPANHAR 👇🏼📲", $client->phone);
+                    $this->sendWhatsapp(env('APP_URL'), "Olá, ".$client->name."! Agradecemos pelo seu pagamento! \r\n Tenha a certeza de que sua situação está em boas mãos. \r\n\r\n *Nos próximos 30 dias úteis*, nossa equipe especializada acompanhará de perto todo o processo para garantir que seu nome seja limpo o mais rápido possível. \r\n\r\n Estamos à disposição para qualquer dúvida ou esclarecimento.", $client->phone);
                 }
                 
                 return response()->json(['status' => 'success', 'message' => 'Operação Finalizada!']);
