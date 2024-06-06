@@ -42,6 +42,7 @@
                                         <td class="text-center">R$ {{ number_format($invoice->commission, 2, ',', '.') }}</td>
                                         <td class="text-center">{{ $invoice->statusLabel() }}</td>
                                         <td class="text-center">
+                                            <a href="{{ $invoice->url_payment }}" target="_blank" class="btn btn-primary text-light"><i class="bi bi-upc"></i></a>
                                             <a href="{{ route('send-default-whatsapp', ['id' => $invoice->id]) }}" class="btn btn-success text-light"><i class="bi bi-whatsapp"></i></a>
                                         </td>
                                     </tr>

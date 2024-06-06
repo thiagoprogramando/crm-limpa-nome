@@ -73,6 +73,7 @@
                                     <th scope="col">Nome</th>
                                     <th scope="col">Nível</th>
                                     <th scope="col">Situação</th>
+                                    <th class="text-center" scope="col">Mens. Abertas</th>
                                     <th class="text-center" scope="col">T. Vendas</th>
                                     <th class="text-center" scope="col">T. Comissão</th>
                                     <th class="text-center" scope="col">Opções</th>
@@ -85,6 +86,7 @@
                                         <td>{{ $user->name }}</td>
                                         <td>{{ $user->levelLabel() }}</td>
                                         <td>{{ $user->statusLabel() }}</td>
+                                        <td class="text-center">{{ $user->invoicesPendent() }}</td>
                                         <td class="text-center">R$ {{ number_format($user->saleTotal(), 2, ',', '.') }}</td>
                                         <td class="text-center">R$ {{ number_format($user->commissionTotal(), 2, ',', '.') }}</td>
                                         <td class="text-center">

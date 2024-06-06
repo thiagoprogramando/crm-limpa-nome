@@ -157,9 +157,9 @@
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="{{ route('my-shop') }}"> <i class="bi bi-shop-window"></i> <span>Minhas compras</span> </a>
                 </li>
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link collapsed" href="{{ route('my-archive') }}"> <i class="bi bi-ui-checks"></i> <span>Consulta Serasa</span> </a>
-                </li>
+                </li> --}}
 
                 @if (Auth::user()->type != 3)
                     <li class="nav-item">

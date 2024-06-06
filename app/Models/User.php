@@ -36,6 +36,14 @@ class User extends Authenticatable {
         'filiate',
     ];
 
+    public function invoices() {
+        return $this->hasMany(Invoice::class, 'id_user');
+    }
+
+    public function invoicesPendent() {
+        return $this->invoices()->where('type', 1)->where('status', 0)->count();
+    }
+
     public function levelLabel() {
 
         switch ($this->level) {

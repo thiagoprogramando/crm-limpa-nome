@@ -77,14 +77,14 @@
                     <div class="card info-card revenue-card">
 
                         <div class="card-body">
-                            <h5 class="card-title">T. Comissão (R$)</h5>
+                            <h5 class="card-title">T. Faturamento (R$)</h5>
 
                             <div class="d-flex align-items-center">
                                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                 <i class="bi bi-currency-dollar"></i>
                                 </div>
                                 <div class="ps-3">
-                                    <h6>{{ number_format($commission, 2, ',', '.') }}</h6>
+                                    <h6>{{ number_format($invoicing, 2, ',', '.') }}</h6>
                                 </div>
                             </div>
                         </div>
