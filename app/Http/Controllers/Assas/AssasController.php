@@ -410,6 +410,7 @@ class AssasController extends Controller {
                         'province'      => 'São Paulo',
                         'postalCode'    => '09750730',
                         'companyType'   => strlen($user->cpfcnpj) === 11 ? '' : 'MEI',
+                        'incomeValue'   => 1000,
                         "accountStatusWebhook" => [
                             "url"           => env('APP_URL')."/api/webhookAccount",
                             "email"         => env('APP_EMAIL_SUPORT'),
