@@ -15,6 +15,63 @@
 <section class="section dashboard">
     <div class="row">
         <div class="col-12">
+
+            <div class="btn-group mb-3" role="group">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
+                <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
+            </div>
+
+            <div class="modal fade" id="filterModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form action="{{ route('invoice-default') }}" method="GET">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Filtrar dados da pesquisa</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                        <div class="form-floating">
+                                            <input type="text" name="name" class="form-control" id="floatingName" placeholder="Informe o Nome:">
+                                            <label for="floatingName">Cliente:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                        <div class="form-floating">
+                                            <select name="id_list" class="form-select" id="floatinglist">
+                                                <option selected="" value="">Lista:</option>
+                                                @foreach ($lists as $list)
+                                                    <option value="{{ $list->id }}">{{ $list->name }}</option>  
+                                                @endforeach
+                                            </select>
+                                            <label for="floatinglist">Listas</label>
+                                        </div>
+                                    </div>
+                                    @if (Auth::user()->type == 1)
+                                        <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                            <div class="form-floating">
+                                                <select name="id_seller" class="form-select" id="floatingSeller">
+                                                    <option selected="" value="">Vendedor:</option>
+                                                    @foreach ($sellers as $seller)
+                                                        <option value="{{ $seller->id }}">{{ $seller->name }}</option>  
+                                                    @endforeach
+                                                </select>
+                                                <label for="floatingSeller">Vendedor</label>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn btn-success">Consultar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <div class="card p-5">
                 <div class="card-body">
                     <h5 class="card-title">Faturas com atrasos</h5>

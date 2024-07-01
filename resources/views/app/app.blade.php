@@ -111,11 +111,50 @@
                     </div>
                 </div>
 
+                @php
+                $saleTotal = Auth::user()->saleTotal();
+                
+                // Defina os valores máximos de vendas para cada nível
+                $maxSalesConsultor = 2;
+                $maxSalesConsultorLider = 10;
+                $maxSalesRegional = 50;
+                $maxSalesRegionalLider = 100;
+                
+                // Cálculo das porcentagens de progresso
+                $progressConsultor = min(100, ($saleTotal / $maxSalesConsultor) * 100);
+                $progressConsultorLider = min(100, ($saleTotal / $maxSalesConsultorLider) * 100);
+                $progressRegional = min(100, ($saleTotal / $maxSalesRegional) * 100);
+                $progressRegionalLider = min(100, ($saleTotal / $maxSalesRegionalLider) * 100);
+            @endphp
+
                 <div class="col-12 col-sm-12 col-lg-6">
-                    <div class="card">
+                    <div class="card info-card clock-card">
                         <div class="card-body">
-                            <h5 class="card-title">Gráfico de crescimento <span>| Dados gerados pelo sistema.</span></h5>
-                            <canvas id="growthChart"></canvas>
+                            <h5 class="card-title">Níveis</h5>
+                            
+                            <small>Consultor</small>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: {{ $progressConsultor }}%" aria-valuenow="{{ $progressConsultor }}" aria-valuemin="0" aria-valuemax="{{ $maxSalesConsultor }}"></div>
+                                <small>Faltam {{ max(0, $maxSalesConsultor - $saleTotal) }} vendas</small>
+                            </div>
+                        
+                            <small>Consultor Líder</small>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: {{ $progressConsultorLider }}%" aria-valuenow="{{ $progressConsultorLider }}" aria-valuemin="0" aria-valuemax="{{ $maxSalesConsultorLider }}"></div>
+                                <small>Faltam {{ max(0, $maxSalesConsultorLider - $saleTotal) }} vendas</small>
+                            </div>
+                        
+                            <small>Regional</small>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: {{ $progressRegional }}%" aria-valuenow="{{ $progressRegional }}" aria-valuemin="0" aria-valuemax="{{ $maxSalesRegional }}"></div>
+                                <small>Faltam {{ max(0, $maxSalesRegional - $saleTotal) }} vendas</small>
+                            </div>
+                        
+                            <small>Regional Líder</small>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: {{ $progressRegionalLider }}%" aria-valuenow="{{ $progressRegionalLider }}" aria-valuemin="0" aria-valuemax="{{ $maxSalesRegionalLider }}"></div>
+                                <small>Faltam {{ max(0, $maxSalesRegionalLider - $saleTotal) }} vendas</small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -132,6 +171,15 @@
                                     <h6>{{ $remainingTime }}</h6>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-12 col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Gráfico de crescimento <span>| Dados gerados pelo sistema.</span></h5>
+                            <canvas id="growthChart"></canvas>
                         </div>
                     </div>
                 </div>

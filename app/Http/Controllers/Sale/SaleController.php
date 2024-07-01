@@ -428,17 +428,70 @@ class SaleController extends Controller {
         }
     }
 
-    public function default() {
+    // public function default(Request $request) {
 
+    //     $user = Auth::user();
+    //     if ($user->type == 1) {
+    //         $invoices = Invoice::where('due_date', '<', now())->where('status', 0)->get();
+    //     } else {
+    //         $invoices = Invoice::whereHas('sale', function ($query) use ($user) { $query->where('id_seller', $user->id); })->where('due_date', '<', now())->where('status', 0)->get();
+    //     }
+    
+    //     return view('app.Sale.default', [
+    //         'invoices' => $invoices,
+    //         'lists'   => Lists::orderBy('created_at', 'desc')->get(),
+    //         'sellers' => User::whereIn('type', [1, 2])->get()
+    //     ]);
+    // }
+
+    public function default(Request $request) {
+        
         $user = Auth::user();
+    
+        // Obter parâmetros de filtro da solicitação
+        $id_seller = $request->input('id_seller');
+        $id_list = $request->input('id_list');
+        $name = $request->input('name');
+    
+        // Iniciar a consulta de faturas
+        $query = Invoice::query();
+    
         if ($user->type == 1) {
-            $invoices = Invoice::where('due_date', '<', now())->where('status', 0)->get();
+            $query->where('due_date', '<', now())->where('status', 0);
         } else {
-            $invoices = Invoice::whereHas('sale', function ($query) use ($user) { $query->where('id_seller', $user->id); })->where('due_date', '<', now())->where('status', 0)->get();
+            $query->whereHas('sale', function ($query) use ($user) {
+                $query->where('id_seller', $user->id);
+            })->where('due_date', '<', now())->where('status', 0);
         }
     
-        return view('app.Sale.default', ['invoices' => $invoices]);
-    }   
+        // Aplicar filtros opcionais
+        if ($id_seller) {
+            $query->whereHas('sale', function ($query) use ($id_seller) {
+                $query->where('id_seller', $id_seller);
+            });
+        }
+    
+        if ($id_list) {
+            $query->whereHas('sale', function ($query) use ($id_list) {
+                $query->where('id_list', $id_list);
+            });
+        }
+    
+        if ($name) {
+            $query->whereHas('user', function ($query) use ($name) {
+                $query->where('name', 'like', '%' . $name . '%');
+            });
+        }
+    
+        $invoices = $query->get();
+    
+        return view('app.Sale.default', [
+            'invoices' => $invoices,
+            'lists'    => Lists::orderBy('created_at', 'desc')->get(),
+            'sellers'  => User::whereIn('type', [1, 2, 4, 5])->orderBy('name', 'asc')->get()
+        ]);
+    }
+    
     
     public function sendContractWhatsapp($id) {
 
