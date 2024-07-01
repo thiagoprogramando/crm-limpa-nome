@@ -32,7 +32,7 @@ Route::post('create-sale-external', [SaleController::class, 'createSale'])->name
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/app', [AppController::class, 'app'])->name('app');
+    Route::get('/app/{list?}', [AppController::class, 'app'])->name('app');
     Route::get('/apresentation', [UserController::class, 'apresentation'])->name('apresentation');
     Route::post('create-apresentation', [UserController::class, 'createApresentation'])->name('create-apresentation');
     Route::post('delete-apresentation', [UserController::class, 'deleteApresentation'])->name('delete-apresentation');

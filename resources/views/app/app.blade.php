@@ -18,6 +18,17 @@
         <div class="col-lg-12">
             <div class="row">
 
+                <div class="col-12 mb-3">
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle p-2 w-25" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Listas</button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            @foreach ($lists as $list_loop)
+                                <a class="dropdown-item" href="{{ route('app', ['list' => $list_loop->id]) }}">{{ $list_loop->name }}</a>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
                 @if (Auth::user()->phone == null || Auth::user()->wallet == null || Auth::user()->api_key == null)
                     <div class="col-12">
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -150,7 +161,7 @@
                                 <small>Faltam {{ max(0, $maxSalesRegional - $saleTotal) }} vendas</small>
                             </div>
                         
-                            <small>Regional Líder</small>
+                            <small>Gerente Regional</small>
                             <div class="progress">
                                 <div class="progress-bar" role="progressbar" style="width: {{ $progressRegionalLider }}%" aria-valuenow="{{ $progressRegionalLider }}" aria-valuemin="0" aria-valuemax="{{ $maxSalesRegionalLider }}"></div>
                                 <small>Faltam {{ max(0, $maxSalesRegionalLider - $saleTotal) }} vendas</small>
@@ -187,6 +198,9 @@
         </div>
     </div>
 </section>
+
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
 <script>
     var salesData = {!! json_encode($saleGraph) !!};
