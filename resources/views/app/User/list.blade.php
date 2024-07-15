@@ -150,6 +150,12 @@
                                                                     <label for="floatingType">Tipo</label>
                                                                 </div>
                                                             </div>
+                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                                <div class="form-floating">
+                                                                    <input type="text" name="api_token_zapapi" class="form-control" id="api_token_zapapi" placeholder="Api Token ZapSing:" value="{{ $user->api_token_zapapi }}">
+                                                                    <label for="api_token_zapapi">Api Token ZapSing:</label>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer">

@@ -34,6 +34,7 @@ class User extends Authenticatable {
 
         'type',
         'filiate',
+        'api_token_zapapi'
     ];
 
     public function invoices() {

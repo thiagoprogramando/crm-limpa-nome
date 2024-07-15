@@ -73,6 +73,10 @@ class UserController extends Controller {
             $user->num = $request->num;
         }
 
+        if(!empty($request->api_token_zapapi)) {
+            $user->api_token_zapapi = $request->api_token_zapapi;
+        }
+        
         if(!empty($request->type)) {
             $user->type = $request->type;
 

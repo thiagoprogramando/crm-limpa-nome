@@ -114,7 +114,7 @@ class AssasController extends Controller {
 
         $invoice = Invoice::where('id_sale', $sale->id)->where('status', 0)->first();
         if($invoice) {
-            $this->sendInvoice($invoice->url_payment, $sale->id_client);
+            $this->sendInvoice($invoice->url_payment, $sale->id_client, $sale->seller->api_token_zapapi);
         }
         
         return true;
@@ -166,7 +166,7 @@ class AssasController extends Controller {
         if($invoice->save()) {
             
             $invoice = Invoice::where('id_sale', $sale->id)->where('status', 0)->first();
-            $this->sendInvoice($charge['invoiceUrl'], $sale->id_client);
+            $this->sendInvoice($charge['invoiceUrl'], $sale->id_client, $sale->seller->api_token_zapapi);
 
             return true;
         }
@@ -174,14 +174,14 @@ class AssasController extends Controller {
         return false;
     }
 
-    private function sendInvoice($url_payment, $id) {
+    private function sendInvoice($url_payment, $id, $token = null) {
 
         $user = User::find($id);
         if($user) {
 
             $client = new Client();
 
-            $url = 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
+            $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
             try {
 
                 $response = $client->post($url, [
@@ -347,10 +347,10 @@ class AssasController extends Controller {
         }
     }
 
-    private function sendWhatsapp($link, $message, $phone) {
+    private function sendWhatsapp($link, $message, $phone, $token = null) {
 
         $client = new Client();
-        $url = 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
+        $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
     
         try {
             $response = $client->post($url, [
@@ -531,7 +531,7 @@ class AssasController extends Controller {
 
                 $client = User::find($invoice->id_user);
                 if($client) {
-                    $this->sendWhatsapp("", "Olá, ".$client->name."! Agradecemos pelo seu pagamento! \r\n Tenha a certeza de que sua situação está em boas mãos. \r\n\r\n *Nos próximos 30 dias úteis*, nossa equipe especializada acompanhará de perto todo o processo para garantir que seu nome seja limpo o mais rápido possível. \r\n\r\n Estamos à disposição para qualquer dúvida ou esclarecimento.", $client->phone);
+                    $this->sendWhatsapp("", "Olá, ".$client->name."! Agradecemos pelo seu pagamento! \r\n Tenha a certeza de que sua situação está em boas mãos. \r\n\r\n *Nos próximos 30 dias úteis*, nossa equipe especializada acompanhará de perto todo o processo para garantir que seu nome seja limpo o mais rápido possível. \r\n\r\n Estamos à disposição para qualquer dúvida ou esclarecimento.", $client->phone, $seller->api_token_zapapi);
                 }
                 
                 return response()->json(['status' => 'success', 'message' => 'Operação Finalizada!']);
