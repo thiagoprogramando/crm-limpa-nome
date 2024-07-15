@@ -133,7 +133,7 @@
                 @if (Auth::user()->type != 3)
                     <li class="nav-item">
                         <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
-                            <i class="bi bi-briefcase"></i><span>Negócios & Cursos</span><i class="bi bi-chevron-down ms-auto"></i>
+                            <i class="bi bi-briefcase"></i><span>Gerar Contrato</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
                         <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                             @foreach($business as $busines)
@@ -145,7 +145,7 @@
 
                 <li class="nav-item">
                     <a class="nav-link collapsed" data-bs-target="#forms-bussines" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-briefcase"></i><span>Negócios (Links)</span><i class="bi bi-chevron-down ms-auto"></i>
+                        <i class="bi bi-briefcase"></i><span>Gerar Contrato (Links)</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
                     <ul id="forms-bussines" class="nav-content collapse " data-bs-parent="#sidebar-bussines">
                         @foreach($businessLink as $busines)

@@ -141,6 +141,12 @@ class UserController extends Controller {
 
         $users = $query->get();
 
+        foreach ($users as $user) {
+            $user->commission_total = $user->commissionTotal();
+        }
+
+        $users = $users->sortByDesc('commission_total');
+
         return view('app.User.list', ['users' => $users, 'type' => $type]);
     }
 

@@ -72,13 +72,13 @@ class User extends Authenticatable {
     public function saleTotal() {
 
         $id = $this->id;
-        return Sale::where('id_seller', $id)->where('status', 1)->count();
+        return Sale::where('id_seller', $id)->where('status', 1)->sum('value');
     }
 
     public function commissionTotal() {
 
         $id = $this->id;
-        return Sale::where('id_seller', $id)->where('status', 1)->sum('value');
+        return Sale::where('id_seller', $id)->where('status', 1)->sum('commission');
     }
 
     public function statusLabel() {

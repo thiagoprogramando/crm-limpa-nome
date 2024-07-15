@@ -531,7 +531,7 @@ class AssasController extends Controller {
 
                 $client = User::find($invoice->id_user);
                 if($client) {
-                    $this->sendWhatsapp("https://grupo7assessoria.com.br/", "Olá, ".$client->name."! Agradecemos pelo seu pagamento! \r\n Tenha a certeza de que sua situação está em boas mãos. \r\n\r\n *Nos próximos 30 dias úteis*, nossa equipe especializada acompanhará de perto todo o processo para garantir que seu nome seja limpo o mais rápido possível. \r\n\r\n Estamos à disposição para qualquer dúvida ou esclarecimento.", $client->phone);
+                    $this->sendWhatsapp("", "Olá, ".$client->name."! Agradecemos pelo seu pagamento! \r\n Tenha a certeza de que sua situação está em boas mãos. \r\n\r\n *Nos próximos 30 dias úteis*, nossa equipe especializada acompanhará de perto todo o processo para garantir que seu nome seja limpo o mais rápido possível. \r\n\r\n Estamos à disposição para qualquer dúvida ou esclarecimento.", $client->phone);
                 }
                 
                 return response()->json(['status' => 'success', 'message' => 'Operação Finalizada!']);
