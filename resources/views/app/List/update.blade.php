@@ -39,13 +39,13 @@
 
                             <div class="col-12 col-md-4 col-lg-4 mb-1">
                                 <div class="form-floating">
-                                    <input type="date" name="date_start" class="form-control" id="floatingDateEnd" placeholder="Indique a data de encerramento:" value="{{ $list->end }}">
-                                    <label for="floatingDateEnd">Indique a data de início:</label>
+                                    <input type="date" name="date_start" class="form-control" id="floatingDateStart" placeholder="Indique a data de Início:" value="{{ $list->start }}">
+                                    <label for="floatingDateStart">Indique a data de início:</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4 col-lg-4 mb-1">
                                 <div class="form-floating">
-                                    <input type="date" name="date_end" class="form-control" id="floatingDateend" placeholder="Indique a data de encerramento:" value="{{ $list->start }}">
+                                    <input type="date" name="date_end" class="form-control" id="floatingDateend" placeholder="Indique a data de encerramento:" value="{{ $list->end }}">
                                     <label for="floatingDateend">Indique a data de encerramento:</label>
                                 </div>
                             </div>

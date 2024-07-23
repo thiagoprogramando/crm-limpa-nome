@@ -57,19 +57,28 @@ class ListController extends Controller {
     public function updateList(Request $request) {
 
         $list = Lists::find($request->id);
-
-        if(!empty($request->date_end) && !empty($request->date_end)) {
-            $startDate = Carbon::parse($request->date_start);
-            $endDate = Carbon::parse($request->date_end);
-
-            $existingListInside = Lists::where('start', '>=', $startDate)->where('end', '<=', $endDate)->exists();
-            $existingListContains = Lists::where('start', '<=', $startDate)->where('end', '>=', $endDate)->exists();
-            if ($existingListInside || $existingListContains) {
-                return redirect()->back()->with('error', 'Já existe uma Lista nesse período!');
-            }
-        }
-        
         if($list) {
+            
+            if(!empty($request->date_end) && !empty($request->date_end)) {
+                $startDate = Carbon::parse($request->date_start);
+                $endDate = Carbon::parse($request->date_end);
+    
+                $existingListOverlap = Lists::where('id', '!=', $list->id)
+                    ->where(function ($query) use ($startDate, $endDate) {
+                        $query->whereBetween('start', [$startDate, $endDate])
+                            ->orWhereBetween('end', [$startDate, $endDate])
+                            ->orWhere(function ($query) use ($startDate, $endDate) {
+                                $query->where('start', '<=', $startDate)
+                                        ->where('end', '>=', $endDate);
+                            });
+                    })
+                    ->exists();
+    
+                if ($existingListOverlap) {
+                    return redirect()->back()->with('error', 'Já existe uma Lista nesse período!');
+                }
+            }
+
             if($request->name) {
                 $list->name = $request->name;
             }

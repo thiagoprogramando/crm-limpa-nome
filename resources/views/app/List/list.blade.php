@@ -26,6 +26,7 @@
                                     <th scope="col">#</th>
                                     <th scope="col">Nome</th>
                                     <th scope="col">Descrição</th>
+                                    <th class="text-center" scope="col">Início</th>
                                     <th class="text-center" scope="col">Encerramento</th>
                                     <th class="text-center" scope="col">Status</th>
                                     <th class="text-center" scope="col">Opções</th>
@@ -37,7 +38,8 @@
                                         <th scope="row">{{ $list->id }}</th>
                                         <td>{{ $list->name }}</td>
                                         <td>{{ $list->description }}</td>
-                                        <td class="text-center">{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y H:i') }}</td>
+                                        <td class="text-center">{{ \Carbon\Carbon::parse($list->start)->format('d/m/Y') }}</td>
+                                        <td class="text-center">{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</td>
                                         <td class="text-center">{{ $list->statusLabel() }}</td>
                                         <td class="text-center">
                                             <form action="{{ route('delete-list') }}" method="POST" class="delete">
