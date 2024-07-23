@@ -111,7 +111,9 @@ class SaleController extends Controller {
 
                     $sale->token_contract = $document['token'];
                     $sale->url_contract   = $document['signers'][0]['sign_url'];
-                    $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado Cliente, segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼 \r\n"."\r\n ⚠ Salva o contato se não tiver aparecendo o link.", $user->phone);
+
+                    $seller = User::find($request->id_seller);
+                    $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado Cliente, segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼 \r\n"."\r\n ⚠ Salva o contato se não tiver aparecendo o link.", $user->phone, $seller->api_token_zapapi);
 
                     if($sale->save()) {
                         return redirect()->back()->with('success', 'Sucesso! O contrato foi enviado para o cliente via WhatsApp.');
@@ -296,11 +298,11 @@ class SaleController extends Controller {
         }
     }
 
-    private function sendWhatsapp($link, $message, $phone) {
+    private function sendWhatsapp($link, $message, $phone, $token = null) {
 
         $client = new Client();
 
-        $url = 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
+        $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
         try {
 
             $response = $client->post($url, [
