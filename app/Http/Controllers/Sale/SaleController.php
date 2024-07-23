@@ -112,7 +112,7 @@ class SaleController extends Controller {
                     $sale->token_contract = $document['token'];
                     $sale->url_contract   = $document['signers'][0]['sign_url'];
 
-                    $seller = User::find($request->id_seller);
+                    $seller = User::find(!empty($request->id_seller) ? $request->id_seller : Auth::id());
                     if($seller->api_token_zapapi) {
                         $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado Cliente, segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼 \r\n"."\r\n ⚠ Salva o contato se não tiver aparecendo o link.", $user->phone, $seller->api_token_zapapi);
                     } else {
