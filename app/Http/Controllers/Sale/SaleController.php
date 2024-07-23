@@ -113,7 +113,12 @@ class SaleController extends Controller {
                     $sale->url_contract   = $document['signers'][0]['sign_url'];
 
                     $seller = User::find($request->id_seller);
-                    $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado Cliente, segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼 \r\n"."\r\n ⚠ Salva o contato se não tiver aparecendo o link.", $user->phone, $seller->api_token_zapapi);
+                    if($seller->api_token_zapapi) {
+                        $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado Cliente, segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼 \r\n"."\r\n ⚠ Salva o contato se não tiver aparecendo o link.", $user->phone, $seller->api_token_zapapi);
+                    } else {
+                        $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado Cliente, segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼 \r\n"."\r\n ⚠ Salva o contato se não tiver aparecendo o link.", $user->phone);
+                    }
+                        
 
                     if($sale->save()) {
                         return redirect()->back()->with('success', 'Sucesso! O contrato foi enviado para o cliente via WhatsApp.');
