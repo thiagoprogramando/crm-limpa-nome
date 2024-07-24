@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Assas;
 use App\Http\Controllers\Controller;
 
 use App\Models\Invoice;
+use App\Models\Lists;
 use App\Models\Notification;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\User;
+
+use Carbon\Carbon;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
@@ -499,6 +502,11 @@ class AssasController extends Controller {
                     if($invoice->num == 1) {
                         if($sale) {
                             $sale->status = 1;
+                            $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
+                            if($list) {
+                                $sale->id_list = $list->id;
+                            }
+
                             $sale->save();
                         }
                     }
