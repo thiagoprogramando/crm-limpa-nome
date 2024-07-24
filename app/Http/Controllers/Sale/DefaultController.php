@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Sale;
 use App\Http\Controllers\Controller;
 
 use App\Models\Invoice;
+use App\Models\Sale;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -29,10 +30,22 @@ class DefaultController extends Controller {
         }        
 
         $user = User::where('id', $invoice->id_user)->first();
-
         $client = new Client();
 
-        $url = 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
+        $sale = Sale::find($invoice->id_sale)->frist();
+        if($sale) {
+
+            $seller = User::find($sale->id_seller);
+            if($seller) {
+                $token = $seller->api_token_zapapi;
+            } else {
+                $token = null;
+            }
+        } else {
+            $token = null;
+        }
+
+        $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
         try {
 
             $response = $client->post($url, [
@@ -43,7 +56,7 @@ class DefaultController extends Controller {
                 ],
                 'json' => [
                     'phone'           => '55' . $user->phone,
-                    'message'         => "Olá, ".$user->name."! \r\n\r\nVocê possui uma fatura em atraso, mas não se preocupe estamos enviando para você a cobrança N° ".$invoice->num." da sua compra em ".env('APP_NAME').".\r\n\r\nPara realizar o pagamento basta clicar no Link abaixo:",
+                    'message'         => "Olá, ".$user->name."! \r\n\r\nVocê possui uma fatura em atraso, mas não se preocupe estamos enviando para você a cobrança N° ".$invoice->num." da sua compra do serviço Limpa Nome.\r\n\r\nPara realizar o pagamento basta clicar no Link abaixo:",
                     'image'           => env('APP_URL_LOGO'),
                     'linkUrl'         => $invoice->url_payment,
                     'title'           => 'Cobrança em atraso',
