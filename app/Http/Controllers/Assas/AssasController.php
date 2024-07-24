@@ -112,13 +112,12 @@ class AssasController extends Controller {
             $invoice->save();
         }
 
-        $invoice = Invoice::where('id_sale', $sale->id)->where('status', 0)->first();
+        $invoice = Invoice::where('id_sale', $sale->id)->where('status', 0)->orderBy('created_at', 'asc')->first();
         if($invoice) {
             $this->sendInvoice($invoice->url_payment, $sale->id_client, $sale->seller->api_token_zapapi);
         }
         
         return true;
-        
     }
 
     private function invoiceCard($value, $commission, $sale, $wallet, $client, $filiate = null) {
