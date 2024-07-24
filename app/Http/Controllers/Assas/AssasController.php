@@ -515,7 +515,7 @@ class AssasController extends Controller {
                     $notification->save();
 
                     $seller = User::find($sale->id_seller);
-                    if($seller->type != 4) {
+                    if($seller->type != 4 && $seller->level != 5) {
                         $totalSales = Sale::where('id_seller', $seller->id)->where('status', 1)->count();
                         switch($totalSales) {
                             case 10:

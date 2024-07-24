@@ -71,7 +71,7 @@
                                 <tr>
                                     <th scope="col">N°</th>
                                     <th scope="col">Nome</th>
-                                    <th scope="col">Nível</th>
+                                    <th scope="col">Graduação</th>
                                     <th scope="col">Situação</th>
                                     <th class="text-center" scope="col">Mens. Abertas</th>
                                     <th class="text-center" scope="col">T. Vendas</th>
@@ -148,6 +148,20 @@
                                                                         <option value="4">Vendendor Interno</option>
                                                                     </select>
                                                                     <label for="floatingType">Tipo</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                                <div class="form-floating">
+                                                                    <select name="level" class="form-select" id="floatingLevel">
+                                                                        <option selected value="{{ $user->type }}">Graduação:</option>
+                                                                        <option value="1">INICIANTE</option>
+                                                                        <option value="2">CONSULTOR</option>
+                                                                        <option value="3">CONSULTOR LÍDER</option>
+                                                                        <option value="4">REGIONAL</option>
+                                                                        <option value="5">GERENTE REGIONAL</option>
+                                                                        <option value="6">VENDEDOR INTERNO</option>
+                                                                    </select>
+                                                                    <label for="floatingLevel">Graduação</label>
                                                                 </div>
                                                             </div>
                                                             <div class="col-12 col-md-12 col-lg-12 mb-1">
