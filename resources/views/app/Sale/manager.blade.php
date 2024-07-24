@@ -132,9 +132,11 @@
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $sale->id }}"> 
                                                 {{-- {{ route('send-contract', ['id' => $sale->id]) }} --}}
-                                                <a href="{{ $sale->url_contract }}" target="_blank" class="btn btn-primary text-light confirm"><i class="bi bi-folder-symlink-fill"></i></a>
-                                                <a href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-primary text-light"><i class="bi bi-arrow-up-right-circle"></i></a>
-                                                <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
+                                                <div class="btn-group" role="group" aria-label="Basic outlined example">
+                                                    <a href="{{ $sale->url_contract }}" target="_blank" class="btn btn-outline-primary"><i class="bi bi-file-earmark-text"></i></a>
+                                                    <a href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="bi bi-currency-dollar"></i></a>
+                                                    <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
+                                                </div>
                                             </form>
                                         </td>
                                     </tr>
