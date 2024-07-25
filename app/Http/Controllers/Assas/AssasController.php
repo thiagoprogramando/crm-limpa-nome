@@ -16,6 +16,7 @@ use Carbon\Carbon;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Auth;
 
 class AssasController extends Controller {
 
@@ -258,6 +259,52 @@ class AssasController extends Controller {
         }
 
         return redirect()->back()->with('error', 'Tivemos um pequeno problema, contate o suporte!');
+    }
+
+    public function createDeposit(Request $request) {
+
+        $user = User::find(Auth::user()->id);
+        if(!$user) {
+            return redirect()->route('logout')->with('error', 'Você precisa fazer login para acessar sua conta!');
+        }
+
+        if(empty($user->customer)) {
+            $customer = $this->createCustomer($user->name, $user->cpfcnpj, $user->phone, $user->email);
+            $user->customer = $customer;
+            $user->save();
+        } else {
+            $customer = $user->customer;
+        }
+
+        try {
+
+            $charge = $this->createCharge($customer, 'PIX', $this->formatarValor($request->value), 'Depósito - ' . env('APP_NAME'), now()->addDay(), 0);
+            if ($charge) {
+                $invoice = new Invoice();
+                $invoice->name          = 'Depósito para Carteira de Investimentos';
+                $invoice->description   = 'Depósito ' . $user->name;
+                $invoice->id_user       = $user->id;
+                $invoice->id_product    = 0;
+                $invoice->value         = $this->formatarValor($request->value);
+                $invoice->commission    = 0;
+                $invoice->status        = 0;
+                $invoice->type          = 4;
+                $invoice->num           = 1;
+                $invoice->due_date      = now()->addDay();
+                $invoice->url_payment   = $charge['invoiceUrl'];
+                $invoice->token_payment = $charge['id'];
+    
+                if ($invoice->save()) {
+                    return redirect($charge['invoiceUrl'])->with('success', 'Agora, será necessário efetuar o pagamento!');
+                } else {
+                    return redirect()->back()->with('error', 'Tivemos um problema ao gerar sua fatura, contate o suporte!');
+                }
+            } else {
+                return redirect()->back()->with('error', 'Verifique seus dados!');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Tivemos um pequeno problema, contate o suporte! ' . $e->getMessage());
+        }
     }
 
     private function createCustomer($name, $cpfcnpj, $mobilePhone, $email) {
@@ -548,6 +595,15 @@ class AssasController extends Controller {
                         return response()->json(['status' => 'success', 'message' => 'Operação Finalizada & ApiKey criada!']);
                     }
                     return response()->json(['status' => 'success', 'message' => 'Operação Finalizada, mas houve um erro na criação da ApiKey!']);
+                }
+
+                if($invoice->type == 4) {
+                    $user = User::find($invoice->id_user);
+                    $user->wallet_off += $invoice->value;
+                    if($user->save()) {
+                        return response()->json(['status' => 'success', 'message' => 'Operação Finalizada & Saldo depositado!']);
+                    }
+                    return response()->json(['status' => 'success', 'message' => 'Operação Finalizada, mas houve um erro no deposito!']);
                 }
 
                 $client = User::find($invoice->id_user);
@@ -852,5 +908,19 @@ class AssasController extends Controller {
         } else {
             return [];
         }
+    }
+
+    private function formatarValor($valor) {
+        // Remove todos os caracteres que não são dígitos ou vírgulas
+        $valor = preg_replace('/[^0-9,]/', '', $valor);
+    
+        // Substitui vírgulas por pontos para tratar decimais no formato brasileiro
+        $valor = str_replace(',', '.', $valor);
+    
+        // Converte o valor para float
+        $valorFloat = floatval($valor);
+    
+        // Formata com duas casas decimais
+        return number_format($valorFloat, 2, '.', '');
     }
 }

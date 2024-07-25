@@ -31,10 +31,12 @@ class User extends Authenticatable {
         'token_acess',
         'wallet',
         'api_key',
+        'api_token_zapapi',
+        'customer',
+        'wallet_off',
 
         'type',
         'filiate',
-        'api_token_zapapi'
     ];
 
     public function invoices() {

@@ -30,7 +30,10 @@ return new class extends Migration {
             $table->longText('token_acess')->nullable();
             $table->longText('wallet')->nullable();
             $table->longText('api_key')->nullable();
+            $table->longText('api_token_zapapi')->nullable();
             $table->longText('customer')->nullable();
+            $table->decimal('wallet_off', 10, 2)->default(0);
+            
 
             $table->integer('type')->nullable()->default('2'); // 1 - Master 2 - Consultor 3 - Cliente 4 - Vendedor Interno 5 - Consultor Indicador
             $table->unsignedBigInteger('filiate')->nullable();

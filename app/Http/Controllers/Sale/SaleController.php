@@ -387,7 +387,7 @@ class SaleController extends Controller {
         return view('app.Sale.manager',  [
             'sales'   => $sales,
             'lists'   => Lists::orderBy('created_at', 'desc')->get(),
-            'sellers' => User::whereIn('type', [1, 2])->get()
+            'sellers' => User::whereIn('type', [1, 2, 4, 5])->orderBy('name', 'asc')->get()
         ]);
     }
 

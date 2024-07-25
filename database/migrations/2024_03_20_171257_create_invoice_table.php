@@ -29,7 +29,7 @@ return new class extends Migration {
             
             $table->integer('status');
             $table->integer('num');
-            $table->integer('type'); // 1 - Mensalidade 2 - Faturas 3 - Extras
+            $table->integer('type'); // 1 - Mensalidade 2 - Faturas 3 - Extras 4 - Saldo em Carteira
 
             $table->timestamps();
         });

@@ -60,6 +60,9 @@ Route::middleware(['auth'])->group(function () {
     
             //Payments
             Route::get('/receivable', [Payment::class, 'receivable'])->name('receivable');
+
+            //Gatway Assas
+            Route::post('create-deposit', [AssasController::class, 'createDeposit'])->name('create-deposit');
         });
 
     });

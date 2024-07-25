@@ -821,23 +821,28 @@ h6 {
 }
 
 .dashboard .sales-card .card-icon {
-  color: #4154f1;
-  background: #f6f6fe;
+  color: #f6f6fe;
+  background: #4154f1;
 }
 
 .dashboard .revenue-card .card-icon {
-  color: #2eca6a;
-  background: #e0f8e9;
+  color: #f6f6fe;
+  background: #2eca6a;
 }
 
 .dashboard .customers-card .card-icon {
-  color: #ff771d;
-  background: #ffecdf;
+  color: #f6f6fe;
+  background: #ff771d;
 }
 
 .dashboard .clock-card .card-icon {
-  color: #002396;
-  background: #f6f6fe;
+  color: #f6f6fe;
+  background: #002396;
+}
+
+.dashboard .wallet-card .card-icon {
+  color: #f6f6fe;
+  background: #030201;
 }
 
 /* Activity */
