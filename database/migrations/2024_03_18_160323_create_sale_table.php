@@ -36,6 +36,7 @@ return new class extends Migration {
             $table->longText('url_contract')->nullable();
 
             $table->integer('status')->nullable(); // 0 - Pendente 1 - Pagamento confirmado 2 - Contrato Assinado 3 - Pendente de Assinatura 4 - Pendente de Pagamento
+            $table->integer('wallet_off')->nullable();
             $table->string('label')->nullable();
 
             $table->timestamps();

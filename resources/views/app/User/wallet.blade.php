@@ -33,6 +33,22 @@
         </div>
 
         <div class="col-xxl-3 col-md-6">
+            <div class="card info-card wallet-card p-2">
+                <div class="card-body">
+                    <h5 class="card-title">Carteira de Investimento</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-tablet-landscape"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6>R$ {{ number_format(Auth::user()->wallet_off, 2, ',', '.') }}</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-3 col-md-6">
             <div class="card info-card sales-card p-2">
 
                 <div class="card-body">
@@ -62,22 +78,6 @@
                         </div>
                         <div class="ps-3">
                             <h6>R$ {{ number_format($accumulated, 2, ',', '.') }}</h6>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xxl-3 col-md-6">
-            <div class="card info-card wallet-card p-2">
-                <div class="card-body">
-                    <h5 class="card-title">Carteira de Investimento</h5>
-                    <div class="d-flex align-items-center">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                        <i class="bi bi-tablet-landscape"></i>
-                        </div>
-                        <div class="ps-3">
-                            <h6>R$ {{ number_format(Auth::user()->wallet_off, 2, ',', '.') }}</h6>
                         </div>
                     </div>
                 </div>

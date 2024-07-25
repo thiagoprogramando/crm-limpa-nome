@@ -106,6 +106,15 @@
                                     </div>
                                 </div>
                             @endif
+                            
+                            @if(Auth::user()->level == 5)
+                                <div class="col-12 col-md-4 col-lg-4 offset-md-8 offset-lg-8 mb-1">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="wallet_off" id="wallet_off">
+                                        <label class="form-check-label" for="wallet_off">Descontar da carteira <span class="badge bg-success">Saldo: {{ Auth::user()->wallet_off }}</span></label>
+                                    </div>
+                                </div>
+                            @endif
 
                             <div class="col-12 col-md-4 col-lg-4 offset-md-8 offset-lg-8 mb-1 d-grid gap-2 mt-3">
                                 <button type="submit" class="btn btn-outline-success rounded-pill" type="button">Gerar Venda</button>

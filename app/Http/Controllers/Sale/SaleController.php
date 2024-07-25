@@ -80,6 +80,29 @@ class SaleController extends Controller {
             if(!$list) {
                 return redirect()->back()->with('error', 'Não há uma lista disponível para vendas!');
             }
+
+            if($request->wallet_off) {
+                if($request->id_seller) {
+                    $user = User::find($request->id_seller);
+                    $walletValue = $user->wallet_off;
+                } else {
+                    $walletValue = Auth::user()->wallet_off;
+                }
+                
+                if($walletValue < ($product->value_cost + $product->value_rate)) {
+                    return redirect()->back()->with('error', 'Ops! Sua carteira não tem saldo suficiente!');
+                }
+
+                if($request->id_seller) {
+                    $user = User::find($request->id_seller);
+                    $user->wallet_off -= ($product->value_cost + $product->value_rate);
+                    $user->Save();
+                } else {
+                    $user = User::find(Auth::id());
+                    $user->wallet_off -= ($product->value_cost + $product->value_rate);
+                    $user->Save();
+                }
+            }
         
             $sale               = new Sale();
             $sale->id_client    = $user->id;
@@ -91,11 +114,16 @@ class SaleController extends Controller {
             $sale->payment      = $method->method;
             $sale->installments = $method->installments;
             $sale->status       = 0;
+            $sale->wallet_off   = $request->has('wallet_off') ? 1 : null;
 
             $sale->value        = $this->formatarValor($request->value) + $method->value_rate;
 
             if(auth()->check()) {
-                $sale->commission = auth()->user()->type == 4 ? 0 : ($this->formatarValor($request->value) - $product->value_cost) - $product->value_rate;
+                if($request->wallet_off) {
+                    $sale->commission = auth()->user()->type == 4 ? 0 : ($this->formatarValor($request->value)) - $product->value_rate;
+                } else {
+                    $sale->commission = auth()->user()->type == 4 ? 0 : ($this->formatarValor($request->value) - $product->value_cost) - $product->value_rate;
+                }
 
                 if(auth()->user()->filiate != null && auth()->user()->type != 4) {
                     $sale->commission -= $sale->commission * 0.20;

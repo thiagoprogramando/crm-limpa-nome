@@ -30,6 +30,7 @@ class Sale extends Model {
         'url_contract',
 
         'status',
+        'wallet_off',
         'label',
     ];
 
