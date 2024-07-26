@@ -28,7 +28,7 @@ class AssasController extends Controller {
         $client    = User::find($sale->id_client);
         $user      = User::find($sale->id_seller);
         
-        if($sale->wallet_of) {
+        if($sale->wallet_off) {
             $commission = $sale->value - $payment->value_rate;
         } else {
             $commission = (($sale->value - $product->value_cost) - $product->value_rate) - $payment->value_rate;
@@ -67,20 +67,28 @@ class AssasController extends Controller {
 
         $valueInstallment = $value / $sale->installments;
 
-        if ($valueInstallment < $value_cost) {
-            
-            $firstInstallmentValue = $value_cost;
-            $installmentValue = ($value - $firstInstallmentValue) / ($sale->installments - 1); 
-            
-            $firstInstallmentCommission = 0;
-            $installmentCommission = ($commission - $firstInstallmentCommission) / max(1, ($sale->installments - 1));
-        } else {
-            
+        if($sale->wallet_off) {
             $firstInstallmentValue = $valueInstallment;
             $installmentValue = $valueInstallment;
     
-            $firstInstallmentCommission = $valueInstallment - $value_cost;
+            $firstInstallmentCommission = $valueInstallment;
             $installmentCommission = ($commission - $firstInstallmentCommission) / max(1, ($sale->installments - 1));
+        } else {
+            if ($valueInstallment < $value_cost) {
+            
+                $firstInstallmentValue = $value_cost;
+                $installmentValue = ($value - $firstInstallmentValue) / ($sale->installments - 1); 
+                
+                $firstInstallmentCommission = 0;
+                $installmentCommission = ($commission - $firstInstallmentCommission) / max(1, ($sale->installments - 1));
+            } else {
+                
+                $firstInstallmentValue = $valueInstallment;
+                $installmentValue = $valueInstallment;
+        
+                $firstInstallmentCommission = $valueInstallment - $value_cost;
+                $installmentCommission = ($commission - $firstInstallmentCommission) / max(1, ($sale->installments - 1));
+            }
         }
         
         $customer = $this->createCustomer($client->name, $client->cpfcnpj, $client->phone, $client->email);
@@ -93,7 +101,7 @@ class AssasController extends Controller {
             $invoice->id_product    = $sale->id_product;
 
             $invoice->name          = env('APP_NAME').' - Fatura';
-            $invoice->description   = 'Fatura N°'.$i.' da venda N°'.$sale->id;
+            $invoice->description   = 'Fatura N° '.$i.' da venda N° '.$sale->id;
 
             $charge = $this->createCharge(
                 $customer,
