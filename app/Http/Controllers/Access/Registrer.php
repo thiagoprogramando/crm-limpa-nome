@@ -11,12 +11,13 @@ use Illuminate\Support\Facades\Auth;
 
 class Registrer extends Controller {
      
-    public function index($id = null) {
+    public function index($id = null, $type = null) {
 
-        return view('registrer', ['id' => $id]);
+        return view('registrer', ['id' => $id, 'type' => $type]);
     }
 
     public function registrerUser(Request $request) {
+
 
         $validator = $request->validate([
             'name'      => 'required',
@@ -39,7 +40,22 @@ class Registrer extends Controller {
         $user->password = bcrypt($request->password);
         
         if($request->filiate) {
+
             $user->filiate = $request->filiate;
+
+            if($request->type == 6) {
+                
+                $rede = User::find($request->filiate);
+                if($rede && !empty($rede->api_key) && !empty($rede->wallet)) {
+                    $user->wallet               = $rede->wallet;
+                    $user->api_key              = $rede->api_key;
+                    $user->api_token_zapapi     = $rede->api_token_zapapi;
+                    $user->status               = 1;
+                    $user->type                 = 6;
+                } else {
+                    return redirect()->back()->with('error', 'Escritório não disponível! Contate o seu indicador.');
+                }
+            }
         }
 
         if($user->save()) {

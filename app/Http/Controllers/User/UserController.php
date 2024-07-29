@@ -158,6 +158,29 @@ class UserController extends Controller {
         return view('app.User.list', ['users' => $users, 'type' => $type]);
     }
 
+    public function listRede(Request $request) {
+
+        $query = User::orderBy('name', 'desc')->where('filiate', Auth::id());
+
+        if (!empty($request->name)) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+
+        if (!empty($request->created_at)) {
+            $query->where('created_at', $request->created_at);
+        }
+
+        $users = $query->get();
+
+        foreach ($users as $user) {
+            $user->commission_total = $user->commissionTotal();
+        }
+
+        $users = $users->sortByDesc('commission_total');
+
+        return view('app.User.list-rede', ['users' => $users]);
+    }
+
     public function deleteUser(Request $request) {
 
         $user = User::find($request->id);

@@ -30,7 +30,7 @@
                         </div>
                     @endif
                     
-                    @if (Auth::user()->api_key != null && Auth::user()->wallet != null)
+                    @if (Auth::user()->api_key != null && Auth::user()->wallet != null && Auth::user()->type != 6)
                         <div class="col-12">
                             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                                 <i class="bi bi-info-circle me-1"></i>
@@ -41,7 +41,7 @@
                             @if(count($mydocuments) > 0)
                                 <div class="card">
                                     <div class="card-body">
-                                        <h5 class="card-title">Pagamentos</h5>
+                                        <h5 class="card-title">Documentos</h5>
                                         <div class="table-responsive">
                                             <table class="table table-hover">
                                                 <thead>

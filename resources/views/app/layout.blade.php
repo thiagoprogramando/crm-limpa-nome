@@ -166,24 +166,32 @@
                         <a class="nav-link collapsed" href="http://consultas.grupo7assessoria.com" target="_blank"> <i class="bi bi-search"></i> <span>Consultas</span> </a>
                     </li>
 
-                    <li class="nav-heading">Financeiro</li>
+                    @if (Auth::user()->type != 6)
+                        <li class="nav-heading">Financeiro</li>
 
-                    <li class="nav-item">
-                        <a class="nav-link collapsed" href="{{ route('wallet') }}"> <i class="bi bi-wallet2"></i> <span>Carteira</span> </a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link collapsed" href="{{ route('wallet') }}"> <i class="bi bi-wallet2"></i> <span>Carteira</span> </a>
+                        </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link collapsed" data-bs-target="#forms-finan" data-bs-toggle="collapse" href="#">
-                            <i class="bi bi-bank"></i><span>Operações</span><i class="bi bi-chevron-down ms-auto"></i>
-                        </a>
-                        <ul id="forms-finan" class="nav-content collapse " data-bs-parent="#sidebar-nav">  
-                            <li><a href="{{ route('withdraw') }}"> <i class="bi bi-circle"></i><span>Saques</span> </a></li>
-                            <li><a href="{{ route('receivable') }}"> <i class="bi bi-circle"></i><span>Recebíveis</span> </a></li>
-                            <li><a href="{{ route('payments') }}"> <i class="bi bi-circle"></i><span>Pagamentos</span> </a></li>
-                        </ul>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link collapsed" data-bs-target="#forms-finan" data-bs-toggle="collapse" href="#">
+                                <i class="bi bi-bank"></i><span>Operações</span><i class="bi bi-chevron-down ms-auto"></i>
+                            </a>
+                            <ul id="forms-finan" class="nav-content collapse " data-bs-parent="#sidebar-nav">  
+                                <li><a href="{{ route('withdraw') }}"> <i class="bi bi-circle"></i><span>Saques</span> </a></li>
+                                <li><a href="{{ route('receivable') }}"> <i class="bi bi-circle"></i><span>Recebíveis</span> </a></li>
+                                <li><a href="{{ route('payments') }}"> <i class="bi bi-circle"></i><span>Pagamentos</span> </a></li>
+                            </ul>
+                        </li>
+                    @endif
 
                     <li class="nav-heading">Gestão</li>
+
+                    @if (Auth::user()->level == 5)
+                        <li class="nav-item">
+                            <a class="nav-link collapsed" href="{{ route('list-rede') }}"> <i class="bi bi-person-lines-fill"></i> <span>Minha Rede</span> </a>
+                        </li>
+                    @endif
 
                     <li class="nav-item">
                         <a class="nav-link collapsed" data-bs-target="#forms-sale" data-bs-toggle="collapse" href="#">

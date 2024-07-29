@@ -50,6 +50,8 @@
                                         </div>
                                     @endif
                                     <input type="hidden" name="filiate" value="{{ isset($id) ? $id : '' }}">
+                                    <input type="hidden" name="type" value="{{ isset($type) ? $type : '' }}">
+
                                     <div class="form-group mb-3">
                                         <input type="text" name="name" class="form-control" placeholder="Nome:" required>
                                     </div>

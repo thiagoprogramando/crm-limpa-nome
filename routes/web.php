@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [Login::class, 'index'])->name('login');
 Route::post('/logon', [Login::class, 'logon'])->name('logon');
 
-Route::get('/registrer/{id?}', [Registrer::class, 'index'])->name('registrer');
+Route::get('/registrer/{id?}/{type?}', [Registrer::class, 'index'])->name('registrer');
 Route::post('registrer-user', [Registrer::class, 'registrerUser'])->name('registrer-user');
 
 Route::get('/forgout/{code?}', [Forgout::class, 'forgout'])->name('forgout');
@@ -85,6 +85,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('delete-user', [UserController::class, 'deleteUser'])->name('delete-user');
     Route::get('/search', [UserController::class, 'search'])->name('search');
     Route::get('/listuser/{type}', [UserController::class, 'listuser'])->name('listuser');
+    Route::get('/list-rede', [UserController::class, 'listRede'])->name('list-rede');
     Route::get('view-notification/{id}', [UserController::class, 'viewNotification'])->name('view-notification');
         //Archive
         Route::get('/my-archive', [UserController::class, 'myArchive'])->name('my-archive');
