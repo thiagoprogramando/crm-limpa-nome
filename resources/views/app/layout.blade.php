@@ -124,10 +124,10 @@
 
             <ul class="sidebar-nav" id="sidebar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('app') }}"> <i class="bi bi-grid"></i> <span>Modo Cal Center</span> </a>
+                    <a class="nav-link" href="{{ route('app') }}"> <i class="bi bi-grid"></i> <span>Dashboard</span> </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ route('apresentation') }}"> <i class="bi bi-book"></i> <span>Apresentação</span> </a>
+                    <a class="nav-link collapsed" href="{{ route('apresentation') }}"> <i class="bi bi-book"></i> <span>Material de apoio</span> </a>
                 </li>
 
                 @if (Auth::user()->type != 3)
@@ -163,7 +163,7 @@
 
                 @if (Auth::user()->type != 3)
                     <li class="nav-item">
-                        <a class="nav-link collapsed" href="http://consultas.grupo7assessoria.com" target="_blank"> <i class="bi bi-search"></i> <span>Consultas</span> </a>
+                        <a class="nav-link collapsed" href="http://buscasafe.co/login" target="_blank"> <i class="bi bi-search"></i> <span>Consultas</span> </a>
                     </li>
 
                     @if (Auth::user()->type != 6)
