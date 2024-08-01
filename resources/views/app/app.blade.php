@@ -6,7 +6,7 @@
     <h1>Dashboard</h1>
     <nav>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('app') }}">Escritório</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('app') }}">Modo Cal Center</a></li>
             <li class="breadcrumb-item active">Dashboard</li>
         </ol>
     </nav>
@@ -107,14 +107,14 @@
                     <div class="card info-card customers-card">
 
                         <div class="card-body">
-                            <h5 class="card-title">T. Vendas (R$)</h5>
+                            <h5 class="card-title">Graduação</h5>
 
                             <div class="d-flex align-items-center">
                                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                     <i class="bi bi-award"></i>
                                 </div>
                                 <div class="ps-3">
-                                    <h6>{{ number_format($saleValue, 2, ',', '.') }}</h6>
+                                    <p>{{ Auth::user()->levelLabel() }}</p>
                                 </div>
                             </div>
                         </div>

@@ -124,7 +124,7 @@
 
             <ul class="sidebar-nav" id="sidebar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('app') }}"> <i class="bi bi-grid"></i> <span>Escritório</span> </a>
+                    <a class="nav-link" href="{{ route('app') }}"> <i class="bi bi-grid"></i> <span>Modo Cal Center</span> </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="{{ route('apresentation') }}"> <i class="bi bi-book"></i> <span>Apresentação</span> </a>

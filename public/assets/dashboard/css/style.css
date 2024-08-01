@@ -811,6 +811,14 @@ h6 {
   padding: 0;
 }
 
+.dashboard .info-card p {
+  font-size: 18px;
+  color: #012970;
+  font-weight: 700;
+  margin: 0;
+  padding: 0;
+}
+
 .dashboard .card-icon {
   font-size: 32px;
   line-height: 0;

@@ -5,7 +5,7 @@
         <h1>Configurações do Produto: {{ $product->name }}</h1>
         <nav>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('app') }}">Escritório</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('app') }}">Modo Cal Center</a></li>
                 <li class="breadcrumb-item active">Configurações do Produto: {{ $product->name }}</li>
             </ol>
         </nav>
@@ -161,10 +161,46 @@
                                                 <form action="{{ route('delete-payment') }}" method="POST" class="delete">
                                                     @csrf
                                                     <input type="hidden" name="id" value="{{ $payment->id }}">
+                                                    <button type="button" data-bs-toggle="modal" data-bs-target="#methodModal{{ $payment->id }}" class="btn btn-warning text-light"><i class="bi bi-pen"></i></button>
                                                     <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
                                                 </form>
                                             </td>
                                         </tr>
+
+                                        <div class="modal fade" id="methodModal{{ $payment->id }}" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <form action="{{ route('update-payment') }}" method="POST">
+                                                        @csrf
+                                                        <input type="hidden" name="id" value="{{ $payment->id }}">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Preencha os dados</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="row">
+                                                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                    <div class="form-floating">
+                                                                        <input type="number" name="installments" class="form-control" id="installments" placeholder="Parcelas:" value="{{ $payment->installments }}">
+                                                                        <label for="installments">Parcelas:</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                    <div class="form-floating">
+                                                                        <input type="text" name="value_rate" class="form-control" id="floatingValueRate" placeholder="Taxas:" oninput="mascaraReal(this)" value="{{ $payment->value_rate }}">
+                                                                        <label for="floatingValueRate">Taxas:</label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+                                                            <button type="submit" class="btn btn-success">Atualizar</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
                                     @endforeach
                                 </tbody>
                             </table>

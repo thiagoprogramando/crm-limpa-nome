@@ -6,7 +6,7 @@
     <h1>Gestão de Vendas</h1>
     <nav>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('app') }}">Escritório</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('app') }}">Modo Cal Center</a></li>
             <li class="breadcrumb-item active">Gestão de Vendas</li>
         </ol>
     </nav>
@@ -106,6 +106,7 @@
                             <thead>
                                 <tr>
                                     <th scope="col">N°</th>
+                                    <th scope="col">Lista</th>
                                     <th scope="col">Produto</th>
                                     <th scope="col">Cliente</th>
                                     <th>CPF/CNPJ</th>
@@ -120,6 +121,7 @@
                                 @foreach ($sales as $sale)
                                     <tr>
                                         <th scope="row">{{ $sale->id }}</th>
+                                        <th>{{ $sale->list->name }}</th>
                                         <td title="{{ $sale->product->name }}">{{ substr($sale->product->name, 0, 15) }}</td>
                                         <td>{{ $sale->user->name }}</td>
                                         <td>{{ $sale->user->cpfcnpj }}</td>

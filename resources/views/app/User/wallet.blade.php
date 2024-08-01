@@ -6,7 +6,7 @@
     <h1>Carteira Digital</h1>
     <nav>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('app') }}">Escritório</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('app') }}">Modo Cal Center</a></li>
             <li class="breadcrumb-item active">Carteira Digital</li>
         </ol>
     </nav>
@@ -35,7 +35,7 @@
         <div class="col-xxl-3 col-md-6">
             <div class="card info-card wallet-card p-2">
                 <div class="card-body">
-                    <h5 class="card-title">Carteira de Investimento</h5>
+                    <h5 class="card-title">CARTEIRA DE INVESTIDOR</h5>
                     <div class="d-flex align-items-center">
                         <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                         <i class="bi bi-tablet-landscape"></i>
@@ -88,7 +88,7 @@
             <div class="card p-5">
 
                 <div class="btn-group mb-3 w-25" role="group">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#depModal">Depositar</button>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#depModal">Depositar investimento</button>
                     <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
                 </div>
 

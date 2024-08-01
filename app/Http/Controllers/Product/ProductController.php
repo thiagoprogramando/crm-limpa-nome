@@ -134,6 +134,22 @@ class ProductController extends Controller {
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, dados do Produto não encontrados!');
     }
 
+    public function updatePayment(Request $request) {
+
+        $payment = Payment::find($request->id);
+        if($payment) {
+
+            $payment->installments  = $request->installments;
+            $payment->value_rate    = $this->formatarValor($request->value_rate);
+            if($payment->save()) {
+                return redirect()->back()->with('success', 'Dados atualizados com sucesso!');
+            }
+
+            return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
+        }
+        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, dados do Método não encontrados!');
+    }
+
     public function deletePayment(Request $request) {
 
         $payment = Payment::find($request->id);

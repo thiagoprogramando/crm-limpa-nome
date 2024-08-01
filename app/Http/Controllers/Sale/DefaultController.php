@@ -32,7 +32,7 @@ class DefaultController extends Controller {
         $user = User::where('id', $invoice->id_user)->first();
         $client = new Client();
 
-        $sale = Sale::find($invoice->id_sale)->frist();
+        $sale = Sale::find($invoice->id_sale)->first();
         if($sale) {
 
             $seller = User::find($sale->id_seller);
