@@ -328,6 +328,7 @@ class AssasController extends Controller {
             'headers' => [
                 'Content-Type' => 'application/json',
                 'access_token' => env('API_TOKEN_ASSAS'),
+                'User-Agent'   => env('APP_NAME')
             ],
             'json' => [
                 'name'          => $name,
@@ -357,6 +358,7 @@ class AssasController extends Controller {
             'headers' => [
                 'Content-Type' => 'application/json',
                 'access_token' => env('API_TOKEN_ASSAS'),
+                'User-Agent'   => env('APP_NAME')
             ],
             'json' => [
                 'customer'          => $customer,
@@ -474,6 +476,7 @@ class AssasController extends Controller {
                     'headers' => [
                         'Content-Type' => 'application/json',
                         'access_token' => env('API_TOKEN_ASSAS'),
+                        'User-Agent'   => env('APP_NAME')
                     ],
                     'json' => [
                         'name'          => $user->name,
@@ -665,6 +668,7 @@ class AssasController extends Controller {
             'headers' => [
                 'Content-Type' => 'application/json',
                 'access_token' => $user->api_key,
+                'User-Agent'   => env('APP_NAME')
             ],
             'verify' => false
         ];
@@ -694,8 +698,9 @@ class AssasController extends Controller {
 
         $response = $client->request('GET',  env('API_URL_ASSAS') . "v3/financialTransactions?startDate={$startDate}&finishDate={$finishDate}&order=desc", [
             'headers' => [
-                'accept' => 'application/json',
-                'access_token' => $user->api_key,
+                'accept'        => 'application/json',
+                'access_token'  => $user->api_key,
+                'User-Agent'    => env('APP_NAME')
             ],
             'verify' => false,
         ]);
@@ -716,8 +721,9 @@ class AssasController extends Controller {
 
         $response = $client->request('GET',  env('API_URL_ASSAS') . 'v3/finance/balance', [
             'headers' => [
-                'accept' => 'application/json',
+                'accept'       => 'application/json',
                 'access_token' => $user->api_key,
+                'User-Agent'   => env('APP_NAME')
             ],
             'verify' => false,
         ]);
@@ -740,8 +746,9 @@ class AssasController extends Controller {
 
         $response = $client->request('GET',  env('API_URL_ASSAS') . 'v3/finance/split/statistics', [
             'headers' => [
-                'accept' => 'application/json',
-                'access_token' => $user->api_key,
+                'accept'        => 'application/json',
+                'access_token'  => $user->api_key,
+                'User-Agent'    => env('APP_NAME')
             ],
             'verify' => false,
         ]);
@@ -766,8 +773,9 @@ class AssasController extends Controller {
     
             $response = $client->request('GET',  env('API_URL_ASSAS') . "v3/financialTransactions?startDate={$startDate}&finishDate={$finishDate}&order=desc", [
                 'headers' => [
-                    'accept' => 'application/json',
-                    'access_token' => $user->api_key,
+                    'accept'        => 'application/json',
+                    'access_token'  => $user->api_key,
+                    'User-Agent'    => env('APP_NAME')
                 ],
                 'verify' => false,
             ]);
@@ -870,6 +878,7 @@ class AssasController extends Controller {
                     'accept'       => 'application/json',
                     'Content-Type' => 'application/json',
                     'access_token' => $user->api_key,
+                    'User-Agent'   => env('APP_NAME')
                 ],
                 'json' => [
                     'value' => $value,
@@ -908,8 +917,9 @@ class AssasController extends Controller {
 
         $response = $client->request('GET',  env('API_URL_ASSAS') . "v3/financialTransactions?startDate={$startDate}&finishDate={$finishDate}&order=desc", [
             'headers' => [
-                'accept' => 'application/json',
-                'access_token' => $user->api_key,
+                'accept'        => 'application/json',
+                'access_token'  => $user->api_key,
+                'User-Agent'    => env('APP_NAME')
             ],
             'verify' => false,
         ]);
