@@ -129,6 +129,9 @@
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="{{ route('apresentation') }}"> <i class="bi bi-book"></i> <span>Material de apoio</span> </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="{{ route('photoshop') }}"> <i class="bi bi-palette"></i> <span>Marketing</span> </a>
+                </li>
 
                 @if (Auth::user()->type != 3)
                     <li class="nav-item">

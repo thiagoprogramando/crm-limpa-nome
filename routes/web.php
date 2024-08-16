@@ -6,6 +6,7 @@ use App\Http\Controllers\Access\Registrer;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\Assas\AssasController;
 use App\Http\Controllers\Payment\Payment;
+use App\Http\Controllers\Photoshop\PhotoshopController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Sale\DefaultController;
 use App\Http\Controllers\Sale\SaleController;
@@ -14,7 +15,6 @@ use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\WalletController;
 
 use App\Http\Middleware\Monthly;
-
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [Login::class, 'index'])->name('login');
@@ -63,6 +63,12 @@ Route::middleware(['auth'])->group(function () {
 
             //Gatway Assas
             Route::post('create-deposit', [AssasController::class, 'createDeposit'])->name('create-deposit');
+
+            //Photoshop
+            Route::get('/photoshop', [PhotoshopController::class, 'list'])->name('photoshop');
+            Route::post('/create-photoshop', [PhotoshopController::class, 'createPhotoshop'])->name('create-photoshop');
+            Route::post('/delete-photoshop', [PhotoshopController::class, 'deletePhotoshop'])->name('delete-photoshop');
+            Route::post('/create-midia', [PhotoshopController::class, 'createMidia'])->name('create-midia');
         });
 
     });
