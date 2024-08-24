@@ -208,7 +208,7 @@ class AssasController extends Controller {
                     ],
                     'json' => [
                         'phone'           => '55' . $user->phone,
-                        'message'         => "Prezado cliente, *estamos enviando o link para pagamento* da sua compra aos serviços do ".env('APP_NAME').": \r\n \r\n FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳",
+                        'message'         => "Prezado cliente, estamos enviando o link para pagamento da sua contratação aos serviços da nossa assessoria.  \r\n\r\n FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳",
                         'image'           => env('APP_URL_LOGO'),
                         'linkUrl'         => $url_payment,
                         'title'           => 'Pagamento de Fatura',
@@ -623,8 +623,10 @@ class AssasController extends Controller {
                 }
 
                 $client = User::find($invoice->id_user);
-                if($client) {
-                    $this->sendWhatsapp("", "Olá, ".$client->name."! Agradecemos pelo seu pagamento! \r\n Tenha a certeza de que sua situação está em boas mãos. \r\n\r\n *Nos próximos 30 dias úteis*, nossa equipe especializada acompanhará de perto todo o processo para garantir que seu nome seja limpo o mais rápido possível. \r\n\r\n Estamos à disposição para qualquer dúvida ou esclarecimento.", $client->phone, $seller->api_token_zapapi);
+                if($client && $invoice->num == 1) {
+                    $this->sendWhatsapp("", "Olá, ".$client->name."! Agradecemos pelo seu pagamento! \r\n Tenha a certeza de que sua situação está em boas mãos. \r\n *Nos próximos 30 dias úteis, nossa equipe especializada acompanhará de perto todo o processo para garantir que seu nome seja limpo o mais rápido possível. \r\n Estamos à disposição para qualquer dúvida ou esclarecimento.", $client->phone, $seller->api_token_zapapi);
+                } else {
+                    $this->sendWhatsapp("", $client->name."! Agradecemos por manter o compromisso e realizar o pagamento do boleto, o que garante a continuidade e a validade da garantia do serviço.", $client->phone, $seller->api_token_zapapi);
                 }
                 
                 return response()->json(['status' => 'success', 'message' => 'Operação Finalizada!']);
