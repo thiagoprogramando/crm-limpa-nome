@@ -628,6 +628,24 @@ class AssasController extends Controller {
                 } else {
                     $this->sendWhatsapp("", $client->name."! Agradecemos por manter o compromisso e realizar o pagamento do boleto, o que garante a continuidade e a validade da garantia do serviço.", $client->phone, $seller->api_token_zapapi);
                 }
+
+                if($invoice->num == 1 && $invoice->type == 3) {
+                    $message =  "Olá, {$seller->name}, Espero que esteja bem! 😊\r\n\r\n"
+                                . "Gostaria de informar que uma nova venda foi realizada com sucesso.🤑💸\r\n\r\n"
+                                . "Cliente: {$client->name}\r\n"
+                                . "Produto/Serviço: {$product->name}\r\n"
+                                . "Valor Total: R$ " . number_format($sale->value, 2, ',', '.') . "\r\n"
+                                . "Data da Venda: " . $sale->created_at->format('d/m/Y H:i') . "\r\n\r\n"
+                                . "Obrigado pelo excelente trabalho!🥇\r\n\r\n"
+                                . "Atenciosamente,\r\n"
+                                . "Equipe G7 Assessoria";
+                    $this->sendWhatsapp(
+                        "",
+                        $message,
+                        $seller->phone,
+                        $seller->api_token_zapapi
+                    );
+                }
                 
                 return response()->json(['status' => 'success', 'message' => 'Operação Finalizada!']);
             }
