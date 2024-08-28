@@ -67,7 +67,13 @@ class User extends Authenticatable {
                 break; 
             case 6:
                 return 'VENDEDOR INTERNO';
-                break;         
+                break;  
+            case 7:
+                return 'CONSULTOR MASTER';
+                break;
+            case 8:
+                return 'VENDEDOR MASTER';
+                break;       
             return $this->method;
         }
     }
