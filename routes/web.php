@@ -10,6 +10,7 @@ use App\Http\Controllers\Photoshop\PhotoshopController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Sale\DefaultController;
 use App\Http\Controllers\Sale\SaleController;
+use App\Http\Controllers\Upload\UploadController;
 use App\Http\Controllers\User\ListController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\WalletController;
@@ -52,7 +53,11 @@ Route::middleware(['auth'])->group(function () {
     
             Route::get('/send-default-whatsapp/{id}', [DefaultController::class, 'sendWhatsapp'])->name('send-default-whatsapp');
             Route::get('/send-contract/{id}', [SaleController::class, 'sendContractWhatsapp'])->name('send-contract');
-    
+
+            //Upload
+            Route::get('/createupload/{id}', [UploadController::class, 'create'])->name('createupload');
+            Route::post('create-upload', [UploadController::class, 'createSale'])->name('create-upload');
+
             //Wallet
             Route::get('/wallet', [WalletController::class, 'wallet'])->name('wallet');
             Route::get('/withdraw', [WalletController::class, 'withdraw'])->name('withdraw');

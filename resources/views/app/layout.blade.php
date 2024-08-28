@@ -140,29 +140,28 @@
                         </a>
                         <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                             @foreach($business as $busines)
-                                <li><a href="{{ route('createsale', ['id' => $busines->id]) }}"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
+                                <li><a href="@if(Auth::user()->type == 7) {{ route('createupload', ['id' => $busines->id]) }} @else {{ route('createsale', ['id' => $busines->id]) }} @endif"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
+                            @endforeach
+                        </ul>
+                    </li>
+                @endif
+
+                @if (Auth::user()->type != 7)
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" data-bs-target="#forms-bussines" data-bs-toggle="collapse" href="#">
+                            <i class="bi bi-briefcase"></i><span>Gerar Contrato (Links)</span><i class="bi bi-chevron-down ms-auto"></i>
+                        </a>
+                        <ul id="forms-bussines" class="nav-content collapse " data-bs-parent="#sidebar-bussines">
+                            @foreach($businessLink as $busines)
+                                <li><a class="business-link" data-id="{{ $busines->id }}" data-max="{{ $busines->value_max }}" data-min="{{ $busines->value_min }}"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
                             @endforeach
                         </ul>
                     </li>
                 @endif
 
                 <li class="nav-item">
-                    <a class="nav-link collapsed" data-bs-target="#forms-bussines" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-briefcase"></i><span>Gerar Contrato (Links)</span><i class="bi bi-chevron-down ms-auto"></i>
-                    </a>
-                    <ul id="forms-bussines" class="nav-content collapse " data-bs-parent="#sidebar-bussines">
-                        @foreach($businessLink as $busines)
-                            <li><a class="business-link" data-id="{{ $busines->id }}" data-max="{{ $busines->value_max }}" data-min="{{ $busines->value_min }}"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
-                        @endforeach
-                    </ul>
-                </li>
-
-                <li class="nav-item">
                     <a class="nav-link collapsed" href="{{ route('my-shop') }}"> <i class="bi bi-shop-window"></i> <span>Minhas compras</span> </a>
                 </li>
-                {{-- <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ route('my-archive') }}"> <i class="bi bi-ui-checks"></i> <span>Consulta Serasa</span> </a>
-                </li> --}}
 
                 @if (Auth::user()->type != 3)
                     <li class="nav-item">
@@ -253,6 +252,8 @@
                                 <li> <a href="{{ route('listuser', ['type' => 2]) }}"><i class="bi bi-circle"></i><span>Consultores</span></a>
                                 <li> <a href="{{ route('listuser', ['type' => 5]) }}"><i class="bi bi-circle"></i><span>Consultores Indicadores</span></a> </li>
                                 <li> <a href="{{ route('listuser', ['type' => 4]) }}"><i class="bi bi-circle"></i><span>Vendedor Interno</span></a> </li>
+                                <li> <a href="{{ route('listuser', ['type' => 7]) }}"><i class="bi bi-circle"></i><span>Consultor Master</span></a> </li>
+                                <li> <a href="{{ route('listuser', ['type' => 8]) }}"><i class="bi bi-circle"></i><span>Vendedor Master</span></a> </li>
                             </ul>
                         </li>
                     @endif

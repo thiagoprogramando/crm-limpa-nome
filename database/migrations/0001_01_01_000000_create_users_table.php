@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->string('password');
             
 
-            $table->integer('level')->nullable()->default('1'); // 1 - INICIANTE 2 - CONSULTOR 3 - CONSULTOR LÍDER 4 - REGIONAL 5 - GERENTE REGIONAL 6 - VENDEDOR INTERNO
+            $table->integer('level')->nullable()->default('1'); // 1 - INICIANTE 2 - CONSULTOR 3 - CONSULTOR LÍDER 4 - REGIONAL 5 - GERENTE REGIONAL 6 - VENDEDOR INTERNO 7 - CONSULTOR MASTER
             $table->integer('status')->nullable()->default('4'); // 1 - Ativo 2 - Documentos Pendentes 3 - Filiação Pendente 4 - Estado inicial
 
             $table->string('postal_code')->nullable();
@@ -35,7 +35,7 @@ return new class extends Migration {
             $table->decimal('wallet_off', 10, 2)->default(0);
             
 
-            $table->integer('type')->nullable()->default('2'); // 1 - Master 2 - Consultor 3 - Cliente 4 - Vendedor Interno 5 - Consultor Indicador 6 - Rede
+            $table->integer('type')->nullable()->default('2'); // 1 - Master 2 - Consultor 3 - Cliente 4 - Vendedor Interno 5 - Consultor Indicador 6 - Rede 7 - Consultor Master
             $table->unsignedBigInteger('filiate')->nullable();
 
             $table->timestamps();

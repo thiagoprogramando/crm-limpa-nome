@@ -144,8 +144,10 @@
                                                                         <option value="1">Administrador</option>
                                                                         <option value="2">Consultor</option>
                                                                         <option value="5">Consultor (Indicador)</option>
+                                                                        <option value="7">Consultor (Master)</option>
                                                                         <option value="3">Cliente</option>
                                                                         <option value="4">Vendendor Interno</option>
+                                                                        <option value="8">Vendendor Master</option>
                                                                     </select>
                                                                     <label for="floatingType">Tipo</label>
                                                                 </div>
@@ -157,9 +159,11 @@
                                                                         <option value="1">INICIANTE</option>
                                                                         <option value="2">CONSULTOR</option>
                                                                         <option value="3">CONSULTOR LÍDER</option>
+                                                                        <option value="7">CONSULTOR MASTER</option>
                                                                         <option value="4">REGIONAL</option>
                                                                         <option value="5">GERENTE REGIONAL</option>
                                                                         <option value="6">VENDEDOR INTERNO</option>
+                                                                        <option value="8">VENDEDOR MASTER</option>
                                                                     </select>
                                                                     <label for="floatingLevel">Graduação</label>
                                                                 </div>

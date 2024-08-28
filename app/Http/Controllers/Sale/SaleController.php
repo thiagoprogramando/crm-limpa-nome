@@ -362,16 +362,11 @@ class SaleController extends Controller {
     }
 
     private function formatarValor($valor) {
-        // Remove todos os caracteres que não são dígitos ou vírgulas
+        
         $valor = preg_replace('/[^0-9,]/', '', $valor);
-    
-        // Substitui vírgulas por pontos para tratar decimais no formato brasileiro
         $valor = str_replace(',', '.', $valor);
-    
-        // Converte o valor para float
         $valorFloat = floatval($valor);
     
-        // Formata com duas casas decimais
         return number_format($valorFloat, 2, '.', '');
     }       
 
