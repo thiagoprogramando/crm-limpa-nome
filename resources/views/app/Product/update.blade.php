@@ -65,9 +65,11 @@
                                         <option value="1">INICIANTE</option>
                                         <option value="2">CONSULTOR</option>
                                         <option value="3">CONSULTOR LÍDER</option>
+                                        <option value="7">CONSULTOR MASTER</option>
                                         <option value="4">REGIONAL</option>
                                         <option value="5">GERENTE REGIONAL</option>
                                         <option value="6">VENDEDOR INTERNO</option>
+                                        <option value="8">VENDEDOR MASTER</option>
                                         <option value="">Todos</option>
                                     </select>
                                     <label for="floatingSelect">Níveis</label>
