@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+use Carbon\Carbon;
+
 class User extends Authenticatable {
     use HasFactory, Notifiable;
 
@@ -107,6 +109,31 @@ class User extends Authenticatable {
                 break;         
             return $this->method;
         }
+    }
+
+    public function indicator() {
+        
+        if ($this->filiate !== null) {
+            
+            $affiliate = User::find($this->filiate);
+            return $affiliate ? $affiliate->name : "---";
+        }
+
+        return "---";
+    }
+
+    public function timeMonthly() {
+       
+        $lastInvoice = $this->invoices()->orderBy('due_date', 'desc')->first();
+        if ($lastInvoice) {
+            
+            $nextInvoiceDate = Carbon::parse($lastInvoice->due_date)->addDays(30);
+            $daysRemaining = Carbon::now()->diffInDays($nextInvoiceDate, false);
+
+            return $daysRemaining > 0 ? $daysRemaining : 0;
+        }
+
+        return 30;
     }
 
     protected $hidden = [

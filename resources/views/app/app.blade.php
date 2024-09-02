@@ -18,7 +18,7 @@
         <div class="col-lg-12">
             <div class="row">
 
-                <div class="col-12 mb-3">
+                {{-- <div class="col-12 mb-3">
                     <div class="dropdown">
                         <button class="btn btn-primary dropdown-toggle p-2 w-25" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Listas</button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -27,7 +27,7 @@
                             @endforeach
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 @if (Auth::user()->phone == null || Auth::user()->wallet == null || Auth::user()->api_key == null)
                     <div class="col-12">

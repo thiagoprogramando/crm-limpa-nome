@@ -104,6 +104,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/create-archive', [UserController::class, 'createArchive'])->name('create-archive');
         Route::post('/delete-archive', [UserController::class, 'deleteArchive'])->name('delete-archive');
 
+        //Active
+        Route::get('/list-active/{status}', [UserController::class, 'listActive'])->name('list-active');
+        Route::get('/send-active/{id}', [UserController::class, 'sendActive'])->name('send-active');
+
     //List
     Route::get('/lists', [ListController::class, 'list'])->name('lists');
     Route::get('/createlist', [ListController::class, 'create'])->name('createlist');

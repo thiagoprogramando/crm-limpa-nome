@@ -12,6 +12,9 @@ use App\Models\Notification;
 use App\Models\Sale;
 use App\Models\User;
 
+use Carbon\Carbon;
+
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -302,5 +305,89 @@ class UserController extends Controller {
         }
 
         return redirect()->back()->with('error', 'Não foram localizados dados do Material!');
+    }
+
+    public function listActive($status = null) {
+
+        $dateLimit = Carbon::now()->subDays(90);
+
+        if ($status == 1) {
+            $users = User::whereHas('invoices', function($query) use ($dateLimit) {
+                $query->where('status', 1)
+                      ->where('due_date', '>=', $dateLimit);
+            })->get();
+        } elseif ($status == 2) {
+            $users = User::whereDoesntHave('invoices', function($query) use ($dateLimit) {
+                $query->where('status', 1)
+                      ->where('due_date', '>=', $dateLimit);
+            })->orWhereHas('invoices', function($query) use ($dateLimit) {
+                $query->where('status', 0)
+                      ->where('due_date', '>=', $dateLimit);
+            })->get();
+        } else {
+            return redirect()->back()->with('error', 'Dados não encontrados para a pesquisa!');
+        }
+
+        return view('app.User.active', ['users' => $users]);
+    }
+
+    public function sendActive($id) {
+
+        $user = User::find($id);
+        if($user) {
+
+            $message =  "Olá, {$user->name},\r\n\r\n"
+                        . "Sua conta na plataforma da G7 ainda não foi ativada. Para continuar a ganhar comissões e aproveitar nossos benefícios, ative sua conta até ". Carbon::now()->addDays(30)->format('d/m/Y') ." \r\n\r\n"
+                        . "*Instruções para ativação:*\r\n\r\n"
+                        . "Acesse: https://app.grupo7assessoria.com/\r\n"
+                        . "Faça login com seu e-mail e CPF. \r\n"
+                        . "Complete a ativação \r\n"
+                        . "Após a data limite, o acesso será desativado permanentemente. \r\n\r\n"
+                        . "Precisa de ajuda? Estamos aqui para você!\r\n\r\n"
+                        . "Atenciosamente,\r\n"
+                        . "Equipe G7 Assessoria";
+            $this->sendWhatsapp(
+                "https://app.grupo7assessoria.com/",
+                $message,
+                $user->phone,
+                $user->api_token_zapapi
+            );
+
+            return redirect()->back()->with('success', 'mensagem enviada com sucesso!');
+        }
+
+    }
+
+    private function sendWhatsapp($link, $message, $phone, $token = null) {
+
+        $client = new Client();
+        $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
+    
+        try {
+            $response = $client->post($url, [
+                'headers' => [
+                    'Content-Type'  => 'application/json',
+                    'Accept'        => 'application/json',
+                    'Client-Token'  => 'Fabe25dbd69e54f34931e1c5f0dda8c5bS',
+                ],
+                'json' => [
+                    'phone'           => '55' . $phone,
+                    'message'         => $message,
+                    'image'           => env('APP_URL_LOGO'),
+                    'linkUrl'         => $link,
+                    'title'           => 'Assinatura de Documento',
+                    'linkDescription' => 'Link para Assinatura Digital',
+                ],
+                'verify' => false
+            ]);
+    
+            if ($response->getStatusCode() == 200) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }

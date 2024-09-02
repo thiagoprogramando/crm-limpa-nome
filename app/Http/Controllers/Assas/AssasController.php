@@ -646,6 +646,25 @@ class AssasController extends Controller {
                         $seller->api_token_zapapi
                     );
                 }
+
+                if($invoice->num != 1 && $invoice->type == 3 && $invoice->commission > 0) {
+                    $message =  "Olá, {$seller->name}, Espero que esteja bem! 😊\r\n\r\n"
+                                . "Gostaria de informar que uma nova COMISSÃO FOI RECEBIDA com sucesso.🤑💸\r\n\r\n"
+                                . "Cliente: {$client->name}\r\n"
+                                . "Produto/Serviço: {$product->name}\r\n"
+                                . "Fatura N° {$invoice->num}\r\n"
+                                . "Valor apróximado: R$ " . number_format($invoice->commission, 2, ',', '.') . "\r\n"
+                                . "Data da Venda: " . $sale->created_at->format('d/m/Y H:i') . "\r\n\r\n"
+                                . "Obrigado pelo excelente trabalho!🥇\r\n\r\n"
+                                . "Atenciosamente,\r\n"
+                                . "Equipe G7 Assessoria";
+                    $this->sendWhatsapp(
+                        "",
+                        $message,
+                        $seller->phone,
+                        $seller->api_token_zapapi
+                    );
+                }
                 
                 return response()->json(['status' => 'success', 'message' => 'Operação Finalizada!']);
             }

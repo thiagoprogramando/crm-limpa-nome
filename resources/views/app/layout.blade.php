@@ -52,6 +52,12 @@
                         <a class="nav-link nav-icon search-bar-toggle " href="#"><i class="bi bi-search"></i></a>
                     </li>
 
+                    <li class="nav-item">
+                        <a class="nav-link nav-icon" href="#">
+                            <i class="bi bi-alarm"></i> {{ Auth::user()->timeMonthly() }} <small>dias restantes</small>
+                        </a>
+                    </li>
+
                     <li class="nav-item dropdown">
                         <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
                             <i class="bi bi-bell"></i>
@@ -254,6 +260,16 @@
                                 <li> <a href="{{ route('listuser', ['type' => 4]) }}"><i class="bi bi-circle"></i><span>Vendedor Interno</span></a> </li>
                                 <li> <a href="{{ route('listuser', ['type' => 7]) }}"><i class="bi bi-circle"></i><span>Consultor Master</span></a> </li>
                                 <li> <a href="{{ route('listuser', ['type' => 8]) }}"><i class="bi bi-circle"></i><span>Vendedor Master</span></a> </li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link collapsed" data-bs-target="#forms-actvie" data-bs-toggle="collapse" href="#">
+                                <i class="bi bi-person-bounding-box"></i><span>Atividade</span><i class="bi bi-chevron-down ms-auto"></i>
+                            </a>
+                            <ul id="forms-actvie" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                                <li> <a href="{{ route('list-active', ['status' => 1]) }}"><i class="bi bi-circle"></i><span>Ativos</span></a> </li>
+                                <li> <a href="{{ route('list-active', ['status' => 2]) }}"><i class="bi bi-circle"></i><span>Inativos</span></a> </li>
                             </ul>
                         </li>
                     @endif

@@ -125,7 +125,7 @@
                                         <td title="{{ $sale->product->name }}">{{ substr($sale->product->name, 0, 15) }}</td>
                                         <td>{{ $sale->user->name }}</td>
                                         <td>{{ $sale->user->cpfcnpj }}</td>
-                                        <td title="{{ $sale->seller->name }}">{{ substr($sale->seller->name, 0, 15) }}..</td>
+                                        <td title="{{ $sale->seller->indicator() }}">{{ substr($sale->seller->name, 0, 15) }}..</td>
                                         <td class="text-center">R$ {{ number_format($sale->value, 2, ',', '.') }}</td>
                                         <td class="text-center">R$ {{ number_format($sale->commission, 2, ',', '.') }}</td>
                                         <td class="text-center">{{ $sale->statusLabel() }} - {{ \Carbon\Carbon::parse($sale->created_at)->format('d/m/Y') }}</td>
