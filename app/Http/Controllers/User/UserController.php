@@ -312,15 +312,18 @@ class UserController extends Controller {
         $dateLimit = Carbon::now()->subDays(90);
 
         if ($status == 1) {
-            $users = User::whereHas('invoices', function($query) use ($dateLimit) {
+            $users = User::whereIn('type', [2, 5, 6, 7]) // Filtra tipos específicos
+            ->whereHas('invoices', function($query) use ($dateLimit) {
                 $query->where('status', 1)
                       ->where('due_date', '>=', $dateLimit);
             })->get();
         } elseif ($status == 2) {
-            $users = User::whereDoesntHave('invoices', function($query) use ($dateLimit) {
+            $users = User::whereIn('type', [2, 5, 6, 7]) // Filtra tipos específicos
+            ->whereDoesntHave('invoices', function($query) use ($dateLimit) {
                 $query->where('status', 1)
                       ->where('due_date', '>=', $dateLimit);
-            })->orWhereHas('invoices', function($query) use ($dateLimit) {
+            })
+            ->orWhereHas('invoices', function($query) use ($dateLimit) {
                 $query->where('status', 0)
                       ->where('due_date', '>=', $dateLimit);
             })->get();
