@@ -111,46 +111,50 @@
                     </div>
 
                     @php
-                    $saleTotal = Auth::user()->saleTotal();
-                    
-                    $maxSalesConsultor = 2;
-                    $maxSalesConsultorLider = 10;
-                    $maxSalesRegional = 50;
-                    $maxSalesRegionalLider = 100;
-                    
-                    $progressConsultor = min(100, ($saleTotal / $maxSalesConsultor) * 100);
-                    $progressConsultorLider = min(100, ($saleTotal / $maxSalesConsultorLider) * 100);
-                    $progressRegional = min(100, ($saleTotal / $maxSalesRegional) * 100);
-                    $progressRegionalLider = min(100, ($saleTotal / $maxSalesRegionalLider) * 100);
-                @endphp
+                        $saleTotal = Auth::user()->saleCount();
+                        
+                        $maxSalesConsultor = 2;
+                        $maxSalesConsultorLider = 10;
+                        $maxSalesRegional = 50;
+                        $maxSalesRegionalLider = 100;
+
+                        $progressConsultor = min(100, ($saleTotal / $maxSalesConsultor) * 100);
+                        $progressConsultorLider = min(100, ($saleTotal / $maxSalesConsultorLider) * 100);
+                        $progressRegional = min(100, ($saleTotal / $maxSalesRegional) * 100);
+                        $progressRegionalLider = min(100, ($saleTotal / $maxSalesRegionalLider) * 100);
+
+                        $nivel = '';
+                        $progressAtual = 0;
+                        $maxSalesAtual = 0;
+
+                        if ($saleTotal < $maxSalesConsultor) {
+                            $nivel = 'Consultor';
+                            $progressAtual = $progressConsultor;
+                            $maxSalesAtual = $maxSalesConsultor;
+                        } elseif ($saleTotal < $maxSalesConsultorLider) {
+                            $nivel = 'Consultor Líder';
+                            $progressAtual = $progressConsultorLider;
+                            $maxSalesAtual = $maxSalesConsultorLider;
+                        } elseif ($saleTotal < $maxSalesRegional) {
+                            $nivel = 'Regional';
+                            $progressAtual = $progressRegional;
+                            $maxSalesAtual = $maxSalesRegional;
+                        } elseif ($saleTotal < $maxSalesRegionalLider) {
+                            $nivel = 'Gerente Regional';
+                            $progressAtual = $progressRegionalLider;
+                            $maxSalesAtual = $maxSalesRegionalLider;
+                        }
+                    @endphp
 
                     <div class="col-12 col-sm-12 col-lg-6">
                         <div class="card info-card clock-card">
                             <div class="card-body">
-                                <h5 class="card-title">Níveis</h5>
+                                <h5 class="card-title">Nível Atual</h5>
                                 
-                                <small>Consultor</small>
+                                <small>{{ $nivel }}</small>
                                 <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: {{ $progressConsultor }}%" aria-valuenow="{{ $progressConsultor }}" aria-valuemin="0" aria-valuemax="{{ $maxSalesConsultor }}"></div>
-                                    <small>Faltam {{ max(0, $maxSalesConsultor - $saleTotal) }} vendas</small>
-                                </div>
-                            
-                                <small>Consultor Líder</small>
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: {{ $progressConsultorLider }}%" aria-valuenow="{{ $progressConsultorLider }}" aria-valuemin="0" aria-valuemax="{{ $maxSalesConsultorLider }}"></div>
-                                    <small>Faltam {{ max(0, $maxSalesConsultorLider - $saleTotal) }} vendas</small>
-                                </div>
-                            
-                                <small>Regional</small>
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: {{ $progressRegional }}%" aria-valuenow="{{ $progressRegional }}" aria-valuemin="0" aria-valuemax="{{ $maxSalesRegional }}"></div>
-                                    <small>Faltam {{ max(0, $maxSalesRegional - $saleTotal) }} vendas</small>
-                                </div>
-                            
-                                <small>Gerente Regional</small>
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: {{ $progressRegionalLider }}%" aria-valuenow="{{ $progressRegionalLider }}" aria-valuemin="0" aria-valuemax="{{ $maxSalesRegionalLider }}"></div>
-                                    <small>Faltam {{ max(0, $maxSalesRegionalLider - $saleTotal) }} vendas</small>
+                                    <div class="progress-bar" role="progressbar" style="width: {{ $progressAtual }}%" aria-valuenow="{{ $progressAtual }}" aria-valuemin="0" aria-valuemax="{{ $maxSalesAtual }}"></div>
+                                    <small>Faltam {{ max(0, $maxSalesAtual - $saleTotal) }} vendas para o próximo nível</small>
                                 </div>
                             </div>
                         </div>

@@ -174,7 +174,7 @@ class AssasController extends Controller {
 
         $notification               = new Notification();
         $notification->name         = 'Faturas criada';
-        $notification->description  = 'Faturas geradas para venda N°'.$sale->id;
+        $notification->description  = 'Faturas geradas para venda N° '.$sale->id;
         $notification->type         = 1;
         $notification->id_user      = $sale->id_seller; 
         $notification->save();
@@ -208,7 +208,7 @@ class AssasController extends Controller {
                     ],
                     'json' => [
                         'phone'           => '55' . $user->phone,
-                        'message'         => "Prezado cliente, estamos enviando o link para pagamento da sua contratação aos serviços da nossa assessoria.  \r\n\r\n\r\n FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳 \r\n\r\n\r\n",
+                        'message'         => "Prezado cliente, estamos enviando o link para pagamento da sua contratação aos serviços da nossa assessoria.  \r\n\r\n\r\n FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳 \r\n",
                         'image'           => env('APP_URL_LOGO'),
                         'linkUrl'         => $url_payment,
                         'title'           => 'Pagamento de Fatura',
@@ -682,8 +682,139 @@ class AssasController extends Controller {
                 $notification->name         = 'Fatura N°'.$invoice->id;
                 $notification->description  = 'Faturas vencida sem conciliação de pagamento!';
                 $notification->type         = 1;
-                $notification->id_user      = $invoice->id_seller; 
+                $notification->id_user      = $invoice->sale->seller->id; 
                 $notification->save();
+
+                switch ($invoice->notification_number) {
+                    case 1:
+                        $value      = $invoice->value - ($invoice->value * 0.10);
+                        $commission = $invoice->commission - ($invoice->commission * 0.15);
+                        $dueDate    = Carbon::parse($invoice->due_date)->addDays(15);
+                        $wallet     = $invoice->sale->seller->wallet;
+
+                        $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
+                        if($charge) {
+
+                           $invoice->due_date               = $dueDate;
+                           $invoice->value                  = $value;
+                           $invoice->commission             = $commission;
+                           $invoice->url_payment            = $charge['invoiceUrl'];
+                           $invoice->token_payment          = $charge['id'];
+                           $invoice->notification_number    += 1;
+                           $invoice->save(); 
+
+                           $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
+                           $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
+                            . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 10% se o pagamento for feito até {$dueDateFormatted}.\r\n"
+                            . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n"
+                            . "Atenciosamente, Equipe G7 Assessoria \r\n";
+
+                            $this->sendWhatsapp(
+                                $charge['invoiceUrl'],
+                                $message,
+                                $invoice->user->phone,
+                                $invoice->sale->seller->api_token_zapapi
+                            );
+                        }
+                        break;
+                    case 2:
+                        $value      = $invoice->value - ($invoice->value * 0.10);
+                        $commission = $invoice->commission - ($invoice->commission * 0.15);
+                        $dueDate    = Carbon::parse($invoice->due_date)->addDays(15);
+                        $wallet     = $invoice->sale->seller->wallet;
+
+                        $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
+                        if($charge) {
+
+                           $invoice->due_date               = $dueDate;
+                           $invoice->value                  = $value;
+                           $invoice->commission             = $commission;
+                           $invoice->url_payment            = $charge['invoiceUrl'];
+                           $invoice->token_payment          = $charge['id'];
+                           $invoice->notification_number    += 1;
+                           $invoice->save(); 
+
+                           $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
+                           $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
+                            . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 20% se o pagamento for feito até {$dueDateFormatted}.\r\n"
+                            . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n"
+                            . "Atenciosamente, Equipe G7 Assessoria \r\n";
+
+                            $this->sendWhatsapp(
+                                $charge['invoiceUrl'],
+                                $message,
+                                $invoice->user->phone,
+                                $invoice->sale->seller->api_token_zapapi
+                            );
+                        }
+                        break;     
+                    case 3:
+                        $value      = $invoice->value - ($invoice->value * 0.10);
+                        $commission = $invoice->commission - ($invoice->commission * 0.15);
+                        $dueDate    = Carbon::parse($invoice->due_date)->addDays(15);
+                        $wallet     = $invoice->sale->seller->wallet;
+
+                        $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
+                        if($charge) {
+
+                            $invoice->due_date               = $dueDate;
+                            $invoice->value                  = $value;
+                            $invoice->commission             = $commission;
+                            $invoice->url_payment            = $charge['invoiceUrl'];
+                            $invoice->token_payment          = $charge['id'];
+                            $invoice->notification_number    += 1;
+                            $invoice->save(); 
+
+                            $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
+                            $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
+                                . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 30% se o pagamento for feito até {$dueDateFormatted}.\r\n"
+                                . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n"
+                                . "Atenciosamente, Equipe G7 Assessoria \r\n";
+
+                            $this->sendWhatsapp(
+                                $charge['invoiceUrl'],
+                                $message,
+                                $invoice->user->phone,
+                                $invoice->sale->seller->api_token_zapapi
+                            );
+                        }
+                        break;
+                    case 4:
+                        $value      = $invoice->value - ($invoice->value * 0.20);
+                        $commission = $invoice->commission - ($invoice->commission * 0.20);
+                        $dueDate    = Carbon::parse($invoice->due_date)->addDays(15);
+                        $wallet     = $invoice->sale->seller->wallet;
+
+                        $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
+                        if($charge) {
+
+                            $invoice->due_date               = $dueDate;
+                            $invoice->value                  = $value;
+                            $invoice->commission             = $commission;
+                            $invoice->url_payment            = $charge['invoiceUrl'];
+                            $invoice->token_payment          = $charge['id'];
+                            $invoice->notification_number    += 1;
+                            $invoice->save(); 
+
+                            $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
+                            $message =  "Assunto: Urgente: Fatura Atrasada \r\n\r\n Olá, {$invoice->user->name}!\r\n\r\n"
+                                . "Sua fatura {$invoice->num} está gravemente atrasada. Oferecemos um desconto de 50% se o pagamento for feito até {$dueDateFormatted}.\r\n"
+                                . "*Após essa data, a multa será aplicada e a garantia do produto será cancelada, o que pode resultar em custos extras e prejuízos adicionais.*\r\n\r\n"
+                                . "Além disso, seu nome voltará a ficar sujo e toda a boa reputação que trabalhamos para recuperar para você será perdida. Não deixe essa oportunidade passar e evite impactos negativos em sua situação financeira e reputacional. \r\n\r\n\r\n"
+                                . "Atenciosamente, Equipe G7 Assessoria \r\n";
+
+                            $this->sendWhatsapp(
+                                $charge['invoiceUrl'],
+                                $message,
+                                $invoice->user->phone,
+                                $invoice->sale->seller->api_token_zapapi
+                            );
+                        }
+                        break;
+                    default:
+                        return response()->json(['status' => 'success', 'message' => 'Notificação de vencimento gerada!']);
+                        break;
+                }
 
                 return response()->json(['status' => 'success', 'message' => 'Notificação de vencimento gerada!']);
             }
@@ -692,6 +823,49 @@ class AssasController extends Controller {
         }
 
         return response()->json(['status' => 'success', 'message' => 'Webhook não utilizado!']);
+    }
+
+    private function addDiscount($id, $value, $dueDate, $commission = null, $wallet = null) {
+
+        $client = new Client();
+
+        $options = [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'access_token' => env('API_TOKEN_ASSAS'),
+                'User-Agent'   => env('APP_NAME')
+            ],
+            'json' => [
+                'value'             => number_format($value, 2, '.', ''),
+                'dueDate'           => $dueDate,
+                'description'       => 'Acordo de cobrança vencida',
+            ],
+            'verify' => false
+        ];
+
+        // if ($commission > 0) {
+        //     if (!isset($options['json']['split'])) {
+        //         $options['json']['split'] = [];
+        //     }
+
+        //     $options['json']['split'][] = [
+        //         'walletId'        => $wallet,
+        //         'totalFixedValue' => number_format($commission, 2, '.', '')
+        //     ];
+        // }
+
+        $response = $client->put(env('API_URL_ASSAS') . 'v3/payments/'.$id, $options);
+        $body = (string) $response->getBody();
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode($body, true);
+            return $dados['json'] = [
+                'id'            => $data['id'],
+                'invoiceUrl'    => $data['invoiceUrl'],
+            ];
+        } else {
+            return false;
+        }
     }
 
     public function myDocuments() {
@@ -973,16 +1147,11 @@ class AssasController extends Controller {
     }
 
     private function formatarValor($valor) {
-        // Remove todos os caracteres que não são dígitos ou vírgulas
+        
         $valor = preg_replace('/[^0-9,]/', '', $valor);
-    
-        // Substitui vírgulas por pontos para tratar decimais no formato brasileiro
         $valor = str_replace(',', '.', $valor);
-    
-        // Converte o valor para float
         $valorFloat = floatval($valor);
-    
-        // Formata com duas casas decimais
+
         return number_format($valorFloat, 2, '.', '');
     }
 }

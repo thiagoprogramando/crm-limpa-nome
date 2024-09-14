@@ -61,9 +61,6 @@
                                     <div class="form-group mb-3">
                                         <input type="email" name="email" class="form-control" placeholder="Email:" required>
                                     </div>
-                                    <div class="form-group mb-3">
-                                        <input type="password" name="password" class="form-control" placeholder="Senha:" required>
-                                    </div>
                                     <div class="form-group d-md-flex">
                                         <div class="w-100 text-left">
                                             <label class="checkbox-wrap checkbox-primary mb-0">Concordo com os termos de uso <input type="checkbox" name="terms" checked> <span class="checkmark"></span> </label>
