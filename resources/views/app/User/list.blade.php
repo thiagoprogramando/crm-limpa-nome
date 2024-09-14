@@ -18,7 +18,7 @@
 
             <div class="btn-group mb-3" role="group">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
-                <a href="{{ route('registrer') }}" target="_blank" class="btn btn-outline-primary">Cadastrar</a>
+                <a href="{{ route('registrer') }}" id="copy-url-btn" class="btn btn-outline-primary">Cadastrar</a>
                 <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
             </div>
 
@@ -194,5 +194,27 @@
         </div>
     </div>
 </section>
+
+<script>
+    document.getElementById('copy-url-btn').addEventListener('click', function(event) {
+
+        event.preventDefault(); 
+        const tempInput = document.createElement('input');
+        tempInput.value = this.href;
+        document.body.appendChild(tempInput);
+
+        tempInput.select();
+        document.execCommand('copy');
+
+        document.body.removeChild(tempInput);
+
+        Swal.fire({
+            title: 'Sucesso!',
+            text: 'Copiado para área de trabalho.',
+            icon: 'success',
+            timer: 2000
+        });
+    });
+</script>
 
 @endsection

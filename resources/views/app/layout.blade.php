@@ -53,8 +53,8 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link nav-icon" href="#">
-                            <i class="bi bi-alarm"></i> {{ Auth::user()->timeMonthly() }} <small>dias restantes</small>
+                        <a class="nav-link nav-icon" href="#" style="font-size: 14px !important;">
+                            <i class="bi bi-alarm"></i> <small>{{ Auth::user()->timeMonthly() }} dias restantes</small>
                         </a>
                     </li>
 

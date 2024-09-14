@@ -86,6 +86,12 @@ class User extends Authenticatable {
         return Sale::where('id_seller', $id)->where('status', 1)->sum('value');
     }
 
+    public function saleCount() {
+
+        $id = $this->id;
+        return Sale::where('id_seller', $id)->where('status', 1)->count();
+    }
+
     public function commissionTotal() {
 
         $id = $this->id;
@@ -130,7 +136,7 @@ class User extends Authenticatable {
             $nextInvoiceDate = Carbon::parse($lastInvoice->due_date)->addDays(30);
             $daysRemaining = Carbon::now()->diffInDays($nextInvoiceDate, false);
 
-            return $daysRemaining > 0 ? $daysRemaining : 0;
+            return intval($daysRemaining > 0 ? $daysRemaining : 0);
         }
 
         return 30;
