@@ -109,6 +109,7 @@
                                     <th scope="col">Lista</th>
                                     <th scope="col">Produto</th>
                                     <th scope="col">Cliente</th>
+                                    <th class="d-none">Telefone</th>
                                     <th>CPF/CNPJ</th>
                                     <th scope="col">Vendedor</th>
                                     <th class="text-center" scope="col">V. Venda</th>
@@ -124,7 +125,8 @@
                                         <th>{{ $sale->list->name }}</th>
                                         <td title="{{ $sale->product->name }}">{{ substr($sale->product->name, 0, 15) }}</td>
                                         <td>{{ $sale->user->name }}</td>
-                                        <td>{{ $sale->user->cpfcnpj }}</td>
+                                        <td class="d-none">{{ $sale->user->phone }}</td>
+                                        <td>{{ $sale->user->cpfcnpjLabel() }}</td>
                                         <td title="{{ $sale->seller->indicator() }}">{{ substr($sale->seller->name, 0, 15) }}..</td>
                                         <td class="text-center">R$ {{ number_format($sale->value, 2, ',', '.') }}</td>
                                         <td class="text-center">R$ {{ number_format($sale->commission, 2, ',', '.') }}</td>
