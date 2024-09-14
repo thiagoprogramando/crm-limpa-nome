@@ -178,9 +178,9 @@
                                 <h5 class="card-title">Rank <span>| Dados gerados pelo sistema.</span></h5>
                                  
                                 <div class="table-responsive">
-                                    <table class="table table-hover" id="table">
+                                    <table class="table table table-striped" id="table">
                                         <thead>
-                                            <tr>
+                                            <tr class="table-dark">
                                                 <th scope="col">--</th>
                                                 <th scope="col">N°</th>
                                                 <th scope="col">Vendedor</th>
