@@ -184,7 +184,7 @@
                                 <div class="table-responsive">
                                     <table class="table table table-striped" id="table">
                                         <thead>
-                                            <tr class="table-dark">
+                                            <tr class="table-primary">
                                                 <th scope="col">--</th>
                                                 <th scope="col">N°</th>
                                                 <th scope="col">Vendedor</th>
@@ -195,7 +195,22 @@
                                         <tbody>
                                             @foreach ($users as $key => $user)
                                                 <tr>
-                                                    <td scope="row"><i class="bi bi-award text-primary"></i></td>
+                                                    <td scope="row">
+                                                        @switch($loop->iteration)
+                                                            @case(1)
+                                                                <i class="bi bi-award" style="color: #FFD700;"></i>
+                                                                @break
+                                                            @case(2)
+                                                                <i class="bi bi-award" style="color: #C0C0C0;"></i>
+                                                                @break
+                                                            @case(3)
+                                                                <i class="bi bi-award" style="color: #A62A2A;"></i>
+                                                                @break
+                                                            @default
+                                                                <i class="bi bi-award text-primary"></i>
+                                                                @break  
+                                                        @endswitch
+                                                    </td>
                                                     <th scope="row">{{ $loop->iteration }}</th>
                                                     <td>{{ $user->name }}</td>
                                                     <td>R$ {{ number_format($user->saleTotal(), 2, ',', '.') }}</td>

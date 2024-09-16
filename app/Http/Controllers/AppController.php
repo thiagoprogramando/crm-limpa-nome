@@ -34,11 +34,6 @@ class AppController extends Controller {
             ->where('status', 1)
             ->sum('commission');
     
-        $commission = Invoice::where('id_user', Auth::id())
-            ->where('status', 1)
-            ->whereIn('type', [2, 3])
-            ->sum('commission');
-    
         $invoicing = Sale::where('id_seller', Auth::id())
             ->where('status', 1)
             ->sum('value');
@@ -57,11 +52,10 @@ class AppController extends Controller {
             $remainingTime = 0;
         }
 
-        $users = User::whereIn('type', [2, 3, 4, 5, 6, 7])->paginate(20)->sortByDesc(function($user) {
+        $users = User::whereIn('type', [2, 5, 6, 7])->paginate(20)->sortByDesc(function($user) {
             return $user->saleTotal();
         });
 
-    
         return view('app.app', [
             'sales'         => $sales,
             'salesDay'      => $salesDay,
