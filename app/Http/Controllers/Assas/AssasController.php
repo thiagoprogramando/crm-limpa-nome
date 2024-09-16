@@ -685,77 +685,47 @@ class AssasController extends Controller {
                 $notification->id_user      = $invoice->sale->seller->id; 
                 $notification->save();
 
-                switch ($invoice->notification_number) {
-                    case 1:
-                        $value      = $invoice->value - ($invoice->value * 0.10);
-                        $commission = $invoice->commission - ($invoice->commission * 0.15);
-                        $dueDate    = Carbon::parse($invoice->due_date)->addDays(15);
-                        $wallet     = $invoice->sale->seller->wallet;
+                if($invoice->type == 2) {
+                    switch ($invoice->notification_number) {
+                        case 1:
+                            $value      = $invoice->value - ($invoice->value * 0.10);
+                            $commission = $invoice->commission - ($invoice->commission * 0.15);
+                            $dueDate    = Carbon::now()->addDays(15);
+                            $wallet     = $invoice->sale->seller->wallet;
 
-                        $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
-                        if($charge) {
+                            $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
+                            if($charge) {
 
-                           $invoice->due_date               = $dueDate;
-                           $invoice->value                  = $value;
-                           $invoice->commission             = $commission;
-                           $invoice->url_payment            = $charge['invoiceUrl'];
-                           $invoice->token_payment          = $charge['id'];
-                           $invoice->notification_number    += 1;
-                           $invoice->save(); 
+                            $invoice->due_date               = $dueDate;
+                            $invoice->value                  = $value;
+                            $invoice->commission             = $commission;
+                            $invoice->url_payment            = $charge['invoiceUrl'];
+                            $invoice->token_payment          = $charge['id'];
+                            $invoice->notification_number    += 1;
+                            $invoice->save(); 
 
-                           $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
-                           $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
-                            . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 10% se o pagamento for feito até {$dueDateFormatted}.\r\n"
-                            . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n"
-                            . "Atenciosamente, Equipe G7 Assessoria \r\n";
+                            $dueDateFormatted = Carbon::parse($dueDate)->format('d/m/Y');
+                            $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
+                                . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 10% se o pagamento for feito até {$dueDateFormatted}.\r\n"
+                                . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n"
+                                . "Atenciosamente, Equipe G7 Assessoria \r\n";
 
-                            $this->sendWhatsapp(
-                                $charge['invoiceUrl'],
-                                $message,
-                                $invoice->user->phone,
-                                $invoice->sale->seller->api_token_zapapi
-                            );
-                        }
-                        break;
-                    case 2:
-                        $value      = $invoice->value - ($invoice->value * 0.10);
-                        $commission = $invoice->commission - ($invoice->commission * 0.15);
-                        $dueDate    = Carbon::parse($invoice->due_date)->addDays(15);
-                        $wallet     = $invoice->sale->seller->wallet;
+                                $this->sendWhatsapp(
+                                    $charge['invoiceUrl'],
+                                    $message,
+                                    $invoice->user->phone,
+                                    $invoice->sale->seller->api_token_zapapi
+                                );
+                            }
+                            break;
+                        case 2:
+                            $value      = $invoice->value - ($invoice->value * 0.10);
+                            $commission = $invoice->commission - ($invoice->commission * 0.15);
+                            $dueDate    = Carbon::now()->addDays(15);
+                            $wallet     = $invoice->sale->seller->wallet;
 
-                        $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
-                        if($charge) {
-
-                           $invoice->due_date               = $dueDate;
-                           $invoice->value                  = $value;
-                           $invoice->commission             = $commission;
-                           $invoice->url_payment            = $charge['invoiceUrl'];
-                           $invoice->token_payment          = $charge['id'];
-                           $invoice->notification_number    += 1;
-                           $invoice->save(); 
-
-                           $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
-                           $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
-                            . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 20% se o pagamento for feito até {$dueDateFormatted}.\r\n"
-                            . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n"
-                            . "Atenciosamente, Equipe G7 Assessoria \r\n";
-
-                            $this->sendWhatsapp(
-                                $charge['invoiceUrl'],
-                                $message,
-                                $invoice->user->phone,
-                                $invoice->sale->seller->api_token_zapapi
-                            );
-                        }
-                        break;     
-                    case 3:
-                        $value      = $invoice->value - ($invoice->value * 0.10);
-                        $commission = $invoice->commission - ($invoice->commission * 0.15);
-                        $dueDate    = Carbon::parse($invoice->due_date)->addDays(15);
-                        $wallet     = $invoice->sale->seller->wallet;
-
-                        $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
-                        if($charge) {
+                            $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
+                            if($charge) {
 
                             $invoice->due_date               = $dueDate;
                             $invoice->value                  = $value;
@@ -767,56 +737,88 @@ class AssasController extends Controller {
 
                             $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
                             $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
-                                . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 30% se o pagamento for feito até {$dueDateFormatted}.\r\n"
+                                . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 20% se o pagamento for feito até {$dueDateFormatted}.\r\n"
                                 . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n"
                                 . "Atenciosamente, Equipe G7 Assessoria \r\n";
 
-                            $this->sendWhatsapp(
-                                $charge['invoiceUrl'],
-                                $message,
-                                $invoice->user->phone,
-                                $invoice->sale->seller->api_token_zapapi
-                            );
-                        }
-                        break;
-                    case 4:
-                        $value      = $invoice->value - ($invoice->value * 0.20);
-                        $commission = $invoice->commission - ($invoice->commission * 0.20);
-                        $dueDate    = Carbon::parse($invoice->due_date)->addDays(15);
-                        $wallet     = $invoice->sale->seller->wallet;
+                                $this->sendWhatsapp(
+                                    $charge['invoiceUrl'],
+                                    $message,
+                                    $invoice->user->phone,
+                                    $invoice->sale->seller->api_token_zapapi
+                                );
+                            }
+                            break;     
+                        case 3:
+                            $value      = $invoice->value - ($invoice->value * 0.10);
+                            $commission = $invoice->commission - ($invoice->commission * 0.15);
+                            $dueDate    = Carbon::now()->addDays(15);
+                            $wallet     = $invoice->sale->seller->wallet;
 
-                        $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
-                        if($charge) {
+                            $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
+                            if($charge) {
 
-                            $invoice->due_date               = $dueDate;
-                            $invoice->value                  = $value;
-                            $invoice->commission             = $commission;
-                            $invoice->url_payment            = $charge['invoiceUrl'];
-                            $invoice->token_payment          = $charge['id'];
-                            $invoice->notification_number    += 1;
-                            $invoice->save(); 
+                                $invoice->due_date               = $dueDate;
+                                $invoice->value                  = $value;
+                                $invoice->commission             = $commission;
+                                $invoice->url_payment            = $charge['invoiceUrl'];
+                                $invoice->token_payment          = $charge['id'];
+                                $invoice->notification_number    += 1;
+                                $invoice->save(); 
 
-                            $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
-                            $message =  "Assunto: Urgente: Fatura Atrasada \r\n\r\n Olá, {$invoice->user->name}!\r\n\r\n"
-                                . "Sua fatura {$invoice->num} está gravemente atrasada. Oferecemos um desconto de 50% se o pagamento for feito até {$dueDateFormatted}.\r\n"
-                                . "*Após essa data, a multa será aplicada e a garantia do produto será cancelada, o que pode resultar em custos extras e prejuízos adicionais.*\r\n\r\n"
-                                . "Além disso, seu nome voltará a ficar sujo e toda a boa reputação que trabalhamos para recuperar para você será perdida. Não deixe essa oportunidade passar e evite impactos negativos em sua situação financeira e reputacional. \r\n\r\n\r\n"
-                                . "Atenciosamente, Equipe G7 Assessoria \r\n";
+                                $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
+                                $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
+                                    . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 30% se o pagamento for feito até {$dueDateFormatted}.\r\n"
+                                    . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n"
+                                    . "Atenciosamente, Equipe G7 Assessoria \r\n";
 
-                            $this->sendWhatsapp(
-                                $charge['invoiceUrl'],
-                                $message,
-                                $invoice->user->phone,
-                                $invoice->sale->seller->api_token_zapapi
-                            );
-                        }
-                        break;
-                    default:
-                        return response()->json(['status' => 'success', 'message' => 'Notificação de vencimento gerada!']);
-                        break;
+                                $this->sendWhatsapp(
+                                    $charge['invoiceUrl'],
+                                    $message,
+                                    $invoice->user->phone,
+                                    $invoice->sale->seller->api_token_zapapi
+                                );
+                            }
+                            break;
+                        case 4:
+                            $value      = $invoice->value - ($invoice->value * 0.20);
+                            $commission = $invoice->commission - ($invoice->commission * 0.20);
+                            $dueDate    = Carbon::now()->addDays(15);
+                            $wallet     = $invoice->sale->seller->wallet;
+
+                            $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
+                            if($charge) {
+
+                                $invoice->due_date               = $dueDate;
+                                $invoice->value                  = $value;
+                                $invoice->commission             = $commission;
+                                $invoice->url_payment            = $charge['invoiceUrl'];
+                                $invoice->token_payment          = $charge['id'];
+                                $invoice->notification_number    += 1;
+                                $invoice->save(); 
+
+                                $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
+                                $message =  "Assunto: Urgente: Fatura Atrasada \r\n\r\n Olá, {$invoice->user->name}!\r\n\r\n"
+                                    . "Sua fatura {$invoice->num} está gravemente atrasada. Oferecemos um desconto de 50% se o pagamento for feito até {$dueDateFormatted}.\r\n"
+                                    . "*Após essa data, a multa será aplicada e a garantia do produto será cancelada, o que pode resultar em custos extras e prejuízos adicionais.*\r\n\r\n"
+                                    . "Além disso, seu nome voltará a ficar sujo e toda a boa reputação que trabalhamos para recuperar para você será perdida. Não deixe essa oportunidade passar e evite impactos negativos em sua situação financeira e reputacional. \r\n\r\n\r\n"
+                                    . "Atenciosamente, Equipe G7 Assessoria \r\n";
+
+                                $this->sendWhatsapp(
+                                    $charge['invoiceUrl'],
+                                    $message,
+                                    $invoice->user->phone,
+                                    $invoice->sale->seller->api_token_zapapi
+                                );
+                            }
+                            break;
+                        default:
+                            return response()->json(['status' => 'success', 'message' => 'Notificação de vencimento gerada!']);
+                            break;
+                    }
                 }
 
-                return response()->json(['status' => 'success', 'message' => 'Notificação de vencimento gerada!']);
+                return response()->json(['status' => 'success', 'message' => 'Não é cobrança de Produto!']);
             }
 
             return response()->json(['status' => 'success', 'message' => 'Nenhum Fatura encontrada!']);
