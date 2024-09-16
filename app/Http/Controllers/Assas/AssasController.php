@@ -685,7 +685,7 @@ class AssasController extends Controller {
                 $notification->id_user      = $invoice->sale->seller->id; 
                 $notification->save();
 
-                if($invoice->type == 2 && $invoice->sale->seller->api_token_zapapi != null) {
+                if(($invoice->type == 2 || $invoice->type == 3) && $invoice->sale->seller->api_token_zapapi != null) {
                     switch ($invoice->notification_number) {
                         case 1:
                             $value      = $invoice->value - ($invoice->value * 0.10);
