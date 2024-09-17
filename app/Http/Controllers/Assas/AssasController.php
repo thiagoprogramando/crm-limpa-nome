@@ -677,13 +677,6 @@ class AssasController extends Controller {
             $token = $jsonData['payment']['id'];
             $invoice = Invoice::where('token_payment', $token)->where('status', 0)->first();
             if($invoice) {
-                
-                $notification               = new Notification();
-                $notification->name         = 'Fatura N°'.$invoice->id;
-                $notification->description  = 'Faturas vencida sem conciliação de pagamento!';
-                $notification->type         = 1;
-                $notification->id_user      = $invoice->sale->seller->id; 
-                $notification->save();
 
                 if(($invoice->type == 2 || $invoice->type == 3) && $invoice->sale->seller->api_token_zapapi != null) {
                     switch ($invoice->notification_number) {

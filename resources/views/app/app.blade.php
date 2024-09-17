@@ -182,7 +182,7 @@
                                 <h5 class="card-title">Rank <span>| Dados gerados pelo sistema.</span></h5>
                                  
                                 <div class="table-responsive">
-                                    <table class="table table table-striped" id="table">
+                                    <table class="table table" id="table">
                                         <thead>
                                             <tr class="table-primary">
                                                 <th scope="col">--</th>
