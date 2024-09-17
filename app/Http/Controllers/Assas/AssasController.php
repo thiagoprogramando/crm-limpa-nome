@@ -689,19 +689,19 @@ class AssasController extends Controller {
                             $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
                             if($charge) {
 
-                            $invoice->due_date               = $dueDate;
-                            $invoice->value                  = $value;
-                            $invoice->commission             = $commission;
-                            $invoice->url_payment            = $charge['invoiceUrl'];
-                            $invoice->token_payment          = $charge['id'];
-                            $invoice->notification_number    += 1;
-                            $invoice->save(); 
+                                $invoice->due_date               = $dueDate;
+                                $invoice->value                  = $value;
+                                $invoice->commission             = $commission;
+                                $invoice->url_payment            = $charge['invoiceUrl'];
+                                $invoice->token_payment          = $charge['id'];
+                                $invoice->notification_number    += 1;
+                                $invoice->save(); 
 
-                            $dueDateFormatted = Carbon::parse($dueDate)->format('d/m/Y');
-                            $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
-                                . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 10% se o pagamento for feito até {$dueDateFormatted}.\r\n"
-                                . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n"
-                                . "Atenciosamente, Equipe G7 Assessoria \r\n";
+                                $dueDateFormatted = Carbon::parse($dueDate)->format('d/m/Y');
+                                $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
+                                    . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 10% se o pagamento for feito até {$dueDateFormatted}.\r\n"
+                                    . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n"
+                                    . "Atenciosamente, Equipe G7 Assessoria \r\n";
 
                                 $this->sendWhatsapp(
                                     $charge['invoiceUrl'],
@@ -720,19 +720,19 @@ class AssasController extends Controller {
                             $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
                             if($charge) {
 
-                            $invoice->due_date               = $dueDate;
-                            $invoice->value                  = $value;
-                            $invoice->commission             = $commission;
-                            $invoice->url_payment            = $charge['invoiceUrl'];
-                            $invoice->token_payment          = $charge['id'];
-                            $invoice->notification_number    += 1;
-                            $invoice->save(); 
+                                $invoice->due_date               = $dueDate;
+                                $invoice->value                  = $value;
+                                $invoice->commission             = $commission;
+                                $invoice->url_payment            = $charge['invoiceUrl'];
+                                $invoice->token_payment          = $charge['id'];
+                                $invoice->notification_number    += 1;
+                                $invoice->save(); 
 
-                            $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
-                            $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
-                                . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 20% se o pagamento for feito até {$dueDateFormatted}.\r\n"
-                                . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n"
-                                . "Atenciosamente, Equipe G7 Assessoria \r\n";
+                                $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
+                                $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
+                                    . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 20% se o pagamento for feito até {$dueDateFormatted}.\r\n"
+                                    . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n"
+                                    . "Atenciosamente, Equipe G7 Assessoria \r\n";
 
                                 $this->sendWhatsapp(
                                     $charge['invoiceUrl'],
@@ -838,16 +838,16 @@ class AssasController extends Controller {
             'verify' => false
         ];
 
-        // if ($commission > 0) {
-        //     if (!isset($options['json']['split'])) {
-        //         $options['json']['split'] = [];
-        //     }
+        if ($commission > 0) {
+            if (!isset($options['json']['split'])) {
+                $options['json']['split'] = [];
+            }
 
-        //     $options['json']['split'][] = [
-        //         'walletId'        => $wallet,
-        //         'totalFixedValue' => number_format($commission, 2, '.', '')
-        //     ];
-        // }
+            $options['json']['split'][] = [
+                'walletId'        => $wallet,
+                'totalFixedValue' => number_format($commission, 2, '.', '')
+            ];
+        }
 
         $response = $client->put(env('API_URL_ASSAS') . 'v3/payments/'.$id, $options);
         $body = (string) $response->getBody();
