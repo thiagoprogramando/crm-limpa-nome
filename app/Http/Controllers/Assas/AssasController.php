@@ -821,9 +821,9 @@ class AssasController extends Controller {
     }
 
     private function addDiscount($id, $value, $dueDate, $commission = null, $wallet = null) {
-
+        
         $client = new Client();
-
+        
         $options = [
             'headers' => [
                 'Content-Type' => 'application/json',
@@ -831,37 +831,48 @@ class AssasController extends Controller {
                 'User-Agent'   => env('APP_NAME')
             ],
             'json' => [
-                'value'             => number_format($value, 2, '.', ''),
-                'dueDate'           => $dueDate,
-                'description'       => 'Acordo de cobrança vencida',
+                'value'       => number_format($value, 2, '.', ''),
+                'dueDate'     => $dueDate,
+                'description' => 'Acordo de cobrança vencida',
             ],
             'verify' => false
         ];
-
+    
         if ($commission > 0) {
             if (!isset($options['json']['split'])) {
                 $options['json']['split'] = [];
             }
-
+    
             $options['json']['split'][] = [
                 'walletId'        => $wallet,
                 'totalFixedValue' => number_format($commission, 2, '.', '')
             ];
         }
+    
+        try {
 
-        $response = $client->put(env('API_URL_ASSAS') . 'v3/payments/'.$id, $options);
-        $body = (string) $response->getBody();
+            $response = $client->put(env('API_URL_ASSAS') . 'v3/payments/' . $id, $options);
+            $body = (string) $response->getBody();
 
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($body, true);
-            return $dados['json'] = [
-                'id'            => $data['id'],
-                'invoiceUrl'    => $data['invoiceUrl'],
-            ];
-        } else {
+            if ($response->getStatusCode() === 200) {
+                $data = json_decode($body, true);
+                return [
+                    'id'         => $data['id'],
+                    'invoiceUrl' => $data['invoiceUrl'],
+                ];
+            }
+    
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $responseBody = $e->getResponse()->getBody()->getContents();
+            $error = json_decode($responseBody, true);
+
+            return false;
+        } catch (\Exception $e) {    
             return false;
         }
-    }
+  
+        return false;
+    }    
 
     public function myDocuments() {
         
