@@ -67,7 +67,6 @@ class UploadController extends Controller {
             $sale->id_client    = $user->id;
             $sale->id_product   = $request->product;
             $sale->id_list      = $list->id;
-            $sale->id_payment   = 0;
             $sale->id_seller    = !empty($request->id_seller) ? $request->id_seller : Auth::id();
             $sale->payment      = 'CARTEIRA DE INVESTIMENTO';
             $sale->installments = 1;

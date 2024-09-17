@@ -52,9 +52,14 @@ class AppController extends Controller {
             $remainingTime = 0;
         }
 
-        $users = User::whereIn('type', [2, 5, 6, 7])->paginate(20)->sortByDesc(function($user) {
+        $users = User::whereIn('type', [2, 5, 6, 7])->get();
+
+        $sortedUsers = $users->sortByDesc(function($user) {
             return $user->saleTotal();
         });
+
+        $users = $sortedUsers->take(10);
+
 
         return view('app.app', [
             'sales'         => $sales,
