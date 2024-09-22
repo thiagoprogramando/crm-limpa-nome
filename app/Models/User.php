@@ -157,6 +157,18 @@ class User extends Authenticatable {
         return 30;
     }
 
+    public function promoCruzeiro() {
+        
+        $saleCount = $this->saleCount();
+        if ($saleCount < 100) {
+            return $saleCount;
+        } elseif ($saleCount >= 100 && $saleCount <= 200) {
+            return $saleCount - 100;
+        } else {
+            return 100;
+        }
+    }
+
     protected $hidden = [
         'password',
         'remember_token',

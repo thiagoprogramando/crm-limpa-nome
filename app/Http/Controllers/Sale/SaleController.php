@@ -405,7 +405,7 @@ class SaleController extends Controller {
             $query->where('id_seller', Auth::user()->id);
         }
 
-        $sales = $query->get();
+        $sales = $query->paginate(100);
 
         return view('app.Sale.manager',  [
             'sales'   => $sales,
@@ -458,22 +458,6 @@ class SaleController extends Controller {
         }
     }
 
-    // public function default(Request $request) {
-
-    //     $user = Auth::user();
-    //     if ($user->type == 1) {
-    //         $invoices = Invoice::where('due_date', '<', now())->where('status', 0)->get();
-    //     } else {
-    //         $invoices = Invoice::whereHas('sale', function ($query) use ($user) { $query->where('id_seller', $user->id); })->where('due_date', '<', now())->where('status', 0)->get();
-    //     }
-    
-    //     return view('app.Sale.default', [
-    //         'invoices' => $invoices,
-    //         'lists'   => Lists::orderBy('created_at', 'desc')->get(),
-    //         'sellers' => User::whereIn('type', [1, 2])->get()
-    //     ]);
-    // }
-
     public function default(Request $request) {
         
         $user = Auth::user();
@@ -513,7 +497,7 @@ class SaleController extends Controller {
             });
         }
     
-        $invoices = $query->get();
+        $invoices = $query->paginate(100);
     
         return view('app.Sale.default', [
             'invoices' => $invoices,

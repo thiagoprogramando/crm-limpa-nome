@@ -42,7 +42,7 @@
                                         <td class="text-center">{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</td>
                                         <td class="text-center">{{ $list->statusLabel() }}</td>
                                         <td class="text-center">
-                                            <form action="{{ route('delete-list') }}" method="POST" class="delete">
+                                            <form action="{{ route('delete-list') }}" method="POST" class="delete btn-group">
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $list->id }}">
                                                 @if (Auth::user()->type == 1)

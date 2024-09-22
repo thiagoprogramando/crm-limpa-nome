@@ -1249,3 +1249,12 @@ h6 {
   font-size: 13px;
   color: #012970;
 }
+
+.card-dashbord {
+  border: 1px solid #CDCDCD;
+}
+
+.card-dashbord p {
+  text-align: left;
+  color: #5A65A0;
+}

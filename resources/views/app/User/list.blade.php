@@ -188,7 +188,9 @@
                             </tbody>
                         </table>
                     </div>
-
+                    <div class="text-center">
+                        {{ $users->appends(request()->query())->links() }}
+                    </div>
                 </div>
             </div>
         </div>

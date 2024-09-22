@@ -148,7 +148,9 @@
                             </tbody>
                         </table>
                     </div>
-
+                    <div class="text-center">
+                        {{ $sales->appends(request()->query())->links() }}
+                    </div>
                 </div>
             </div>
         </div>

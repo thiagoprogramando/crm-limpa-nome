@@ -40,7 +40,7 @@
                                         <td class="text-center">R$ {{ number_format($product->value_max, 2, ',', '.') }}</td>
                                         <td class="text-center">{{ $product->totalSale() }}</td>
                                         <td class="text-center">
-                                            <form action="{{ route('delete-product') }}" method="POST" class="delete">
+                                            <form action="{{ route('delete-product') }}" method="POST" class="delete btn-group">
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $product->id }}">
                                                 <a href="{{ route('updateproduct', ['id' => $product->id]) }}" class="btn btn-warning text-light"><i class="bi bi-pencil-square"></i></a>

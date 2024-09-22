@@ -98,7 +98,7 @@
                                         <td class="text-center">R$ {{ number_format($invoice->value, 2, ',', '.') }}</td>
                                         <td class="text-center">R$ {{ number_format($invoice->commission, 2, ',', '.') }}</td>
                                         <td class="text-center">{{ $invoice->statusLabel() }}</td>
-                                        <td class="text-center">
+                                        <td class="text-center btn-group">
                                             <a href="{{ $invoice->url_payment }}" target="_blank" class="btn btn-primary text-light"><i class="bi bi-subtract"></i></a>
                                             <a href="{{ route('send-default-whatsapp', ['id' => $invoice->id]) }}" class="btn btn-success text-light confirm"><i class="bi bi-whatsapp"></i></a>
                                         </td>
@@ -106,6 +106,9 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+                    <div class="text-center">
+                        {{ $invoices->appends(request()->query())->links() }}
                     </div>
                 </div>
             </div>

@@ -683,7 +683,7 @@ class AssasController extends Controller {
                         case 1:
                             $value      = $invoice->value - ($invoice->value * 0.10);
                             $commission = $invoice->commission - ($invoice->commission * 0.15);
-                            $dueDate    = Carbon::now()->addDays(15);
+                            $dueDate    = Carbon::now()->addDays(7);
                             $wallet     = $invoice->sale->seller->wallet;
 
                             $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
@@ -714,7 +714,7 @@ class AssasController extends Controller {
                         case 2:
                             $value      = $invoice->value - ($invoice->value * 0.10);
                             $commission = $invoice->commission - ($invoice->commission * 0.15);
-                            $dueDate    = Carbon::now()->addDays(15);
+                            $dueDate    = Carbon::now()->addDays(7);
                             $wallet     = $invoice->sale->seller->wallet;
 
                             $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
@@ -745,7 +745,7 @@ class AssasController extends Controller {
                         case 3:
                             $value      = $invoice->value - ($invoice->value * 0.10);
                             $commission = $invoice->commission - ($invoice->commission * 0.15);
-                            $dueDate    = Carbon::now()->addDays(15);
+                            $dueDate    = Carbon::now()->addDays(7);
                             $wallet     = $invoice->sale->seller->wallet;
 
                             $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
@@ -776,7 +776,7 @@ class AssasController extends Controller {
                         case 4:
                             $value      = $invoice->value - ($invoice->value * 0.20);
                             $commission = $invoice->commission - ($invoice->commission * 0.20);
-                            $dueDate    = Carbon::now()->addDays(15);
+                            $dueDate    = Carbon::now()->addDays(7);
                             $wallet     = $invoice->sale->seller->wallet;
 
                             $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);

@@ -6,6 +6,7 @@ use App\Models\Invoice;
 use App\Models\Lists;
 use App\Models\Sale;
 use App\Models\User;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -70,6 +71,63 @@ class AppController extends Controller {
             'invoicing'     => $invoicing,
             'lists'         => Lists::orderBy('id', 'desc')->get(),
             'users'         => $users
+        ]);
+    }
+
+    public function dashboard() {
+
+        $today = Carbon::today();
+
+        $clients['inadimplentes'] = User::where('type', '=', 3)
+            ->whereHas('invoices', function ($query) use ($today) {
+                $query->where('status', 0)
+                    ->where('due_date', '<', $today);
+            })->count();
+
+        $clients['inday'] = User::where('type', '=', 3)
+            ->whereHas('invoices', function ($query) use ($today) {
+                $query->where('status', 0)
+                      ->where('due_date', '>=', $today);
+            })->count();
+
+        $invoices = [
+            'previstas' => Invoice::where('status', 0)
+                ->where('due_date', '>=', $today)
+                ->count(),
+
+            'vencidas' => Invoice::where('status', 0)
+                ->where('due_date', '<', $today)
+                ->count(),
+    
+            'recebidas' => Invoice::where('status', 1)
+                ->count(),
+        ];
+
+        $invoicing = [
+            'previstas' => Invoice::where('status', 0)
+                ->where('due_date', '>=', $today)
+                ->sum('value'),
+
+            'vencidas' => Invoice::where('status', 0)
+                ->where('due_date', '<', $today)
+                ->sum('value'),
+    
+            'recebidas' => Invoice::where('status', 1)
+                ->sum('value'),
+        ];
+
+        $users = User::whereIn('type', [2, 5, 6, 7])->get();
+        $sortedUsers = $users->sortByDesc(function($user) {
+            return $user->saleTotal();
+        });
+        $users = $sortedUsers->take(10);
+
+        return view('app.app', [
+            'clients'   => $clients,
+            'invoices'  => $invoices,
+            'invoicing' => $invoicing,
+            'users'     => $users,
+            'dashboard' => true
         ]);
     }
     

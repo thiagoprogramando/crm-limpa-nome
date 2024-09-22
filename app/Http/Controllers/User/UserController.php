@@ -150,13 +150,15 @@ class UserController extends Controller {
 
         $query->where('type', $type);
 
-        $users = $query->get();
+        $users = $query->paginate(100);
 
-        foreach ($users as $user) {
+        $users->getCollection()->transform(function ($user) {
             $user->commission_total = $user->commissionTotal();
-        }
+            return $user;
+        });
 
-        $users = $users->sortByDesc('commission_total');
+        $sortedUsers = $users->sortByDesc('commission_total');
+        $users->setCollection($sortedUsers);
 
         return view('app.User.list', ['users' => $users, 'type' => $type]);
     }
