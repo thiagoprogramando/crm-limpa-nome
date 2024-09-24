@@ -14,30 +14,28 @@
     
     <section class="section dashboard">
 
-        @if(Auth::user()->level == 4 || Auth::user()->level == 5)
-            <div class="card p-3" data-bs-toggle="modal" data-bs-target="#cruzeiroModal">
-                <p class="lead"><i class="bi bi-bell text-warning"></i> Promoção Cruzeiro! Com 100 vendas cabine s/acompanhante ou 200 vendas c/acompanhante!</p>
-                <div class="progress mt-3 mb-3" style="height: 25px;">
-                    <div class="progress-bar text-light text-center" role="progressbar" style="width: {{ Auth::user()->promoCruzeiro() }}%" aria-valuenow="{{ Auth::user()->promoCruzeiro() }}" aria-valuemin="0" aria-valuemax="100">
-                        Você tem {{ Auth::user()->promoCruzeiro() }} vendas confirmadas.
+        <div class="card p-3" data-bs-toggle="modal" data-bs-target="#cruzeiroModal">
+            <p class="lead"><i class="bi bi-bell text-warning"></i> Promoção Cruzeiro! Com 100 vendas cabine s/acompanhante ou 200 vendas c/acompanhante!</p>
+            <div class="progress mt-3 mb-3" style="height: 25px;">
+                <div class="progress-bar text-light text-center" role="progressbar" style="width: {{ Auth::user()->promoCruzeiro() }}%" aria-valuenow="{{ Auth::user()->promoCruzeiro() }}" aria-valuemin="0" aria-valuemax="100">
+                    Você tem {{ Auth::user()->promoCruzeiro() }} vendas confirmadas.
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="cruzeiroModal" tabindex="-1" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <img class="img-fluid" src="{{ asset('assets/dashboard/img/cruzeiro.jpg') }}" alt="Cruzeiro">
+                    </div>
+                    <div class="modal-footer btn-group">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                     </div>
                 </div>
             </div>
-
-            <div class="modal fade" id="cruzeiroModal" tabindex="-1" aria-hidden="true" style="display: none;">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-body">
-                            <img class="img-fluid" src="{{ asset('assets/dashboard/img/cruzeiro.jpg') }}" alt="Cruzeiro">
-                        </div>
-                        <div class="modal-footer btn-group">
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
-
+        </div>
+       
         @if(empty($dashboard))
             <div class="row">
                 <div class="col-lg-12">

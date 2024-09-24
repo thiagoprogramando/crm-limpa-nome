@@ -16,6 +16,16 @@ use Carbon\Carbon;
 
 class AppController extends Controller {
 
+    public function handleApp() {
+
+        $user = Auth::user();
+        if ($user->type == 1) {
+            return $this->dashboard();
+        } else {
+            return $this->app();
+        }
+    }
+
     public function app() {
     
         $sales = Sale::where('id_seller', Auth::id())

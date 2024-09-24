@@ -53,23 +53,31 @@ class ListController extends Controller {
         $list = Lists::find($id);
         return view('app.List.update', ['list' => $list]);
     }
-
-    public function updateList(Request $request) {
-
-        $list = Lists::find($request->id);
-        if($list) {
-            
-            if(!empty($request->date_end) && !empty($request->date_end)) {
-                $startDate = Carbon::parse($request->date_start);
-                $endDate = Carbon::parse($request->date_end);
     
+    public function updateList(Request $request) {
+        $list = Lists::find($request->id);
+    
+        if ($list) {
+            // Converte as datas atuais para instâncias de Carbon
+            $currentStartDate = Carbon::parse($list->start);
+            $currentEndDate = Carbon::parse($list->end);
+    
+            // Converte as datas do request para instâncias de Carbon, se fornecidas
+            $newStartDate = !empty($request->date_start) ? Carbon::parse($request->date_start) : null;
+            $newEndDate = !empty($request->date_end) ? Carbon::parse($request->date_end) : null;
+    
+            // Verifica se as datas são diferentes das atuais
+            $isDateRangeDifferent = !($currentStartDate->eq($newStartDate) && $currentEndDate->eq($newEndDate));
+    
+            if ($isDateRangeDifferent && $newStartDate && $newEndDate) {
+                // Verifica a sobreposição de datas com outras listas apenas se as datas foram alteradas
                 $existingListOverlap = Lists::where('id', '!=', $list->id)
-                    ->where(function ($query) use ($startDate, $endDate) {
-                        $query->whereBetween('start', [$startDate, $endDate])
-                            ->orWhereBetween('end', [$startDate, $endDate])
-                            ->orWhere(function ($query) use ($startDate, $endDate) {
-                                $query->where('start', '<=', $startDate)
-                                        ->where('end', '>=', $endDate);
+                    ->where(function ($query) use ($newStartDate, $newEndDate) {
+                        $query->whereBetween('start', [$newStartDate, $newEndDate])
+                            ->orWhereBetween('end', [$newStartDate, $newEndDate])
+                            ->orWhere(function ($query) use ($newStartDate, $newEndDate) {
+                                $query->where('start', '<=', $newStartDate)
+                                      ->where('end', '>=', $newEndDate);
                             });
                     })
                     ->exists();
@@ -77,32 +85,43 @@ class ListController extends Controller {
                 if ($existingListOverlap) {
                     return redirect()->back()->with('error', 'Já existe uma Lista nesse período!');
                 }
+    
+                // Atualiza as datas apenas se houve alteração e não há sobreposição
+                $list->start = $newStartDate;
+                $list->end = $newEndDate;
             }
-
-            if($request->name) {
+    
+            // Atualiza os campos que foram enviados no request
+            if ($request->name) {
                 $list->name = $request->name;
             }
-            if($request->description) {
+            if ($request->description) {
                 $list->description = $request->description;
             }
-            if($request->status) {
+            if ($request->status) {
                 $list->status = $request->status;
             }
-
-            if(!empty($endDate && !empty($startDate))) {
-                $list->start = $startDate;
-                $list->end   = $endDate;
+    
+            // Atualiza os novos status criados
+            if ($request->has('serasa_status')) {
+                $list->serasa_status = $request->serasa_status;
             }
-            
-            if($list->save()) {
+            if ($request->has('status_spc')) {
+                $list->status_spc = $request->status_spc;
+            }
+            if ($request->has('status_boa_vista')) {
+                $list->status_boa_vista = $request->status_boa_vista;
+            }
+    
+            if ($list->save()) {
                 return redirect()->back()->with('success', 'Lista atualizada com sucesso!');
             }
-
+    
             return redirect()->route('lists')->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
         }
-
+    
         return redirect()->route('lists')->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
-    }
+    }    
 
     public function delete(Request $request) {
 

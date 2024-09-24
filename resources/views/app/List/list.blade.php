@@ -29,6 +29,9 @@
                                     <th class="text-center" scope="col">Início</th>
                                     <th class="text-center" scope="col">Encerramento</th>
                                     <th class="text-center" scope="col">Status</th>
+                                    <th class="text-center" scope="col">Status Serasa</th>
+                                    <th class="text-center" scope="col">Status SPC</th>
+                                    <th class="text-center" scope="col">Status Boa Vista</th>
                                     <th class="text-center" scope="col">Opções</th>
                                 </tr>
                             </thead>
@@ -41,6 +44,9 @@
                                         <td class="text-center">{{ \Carbon\Carbon::parse($list->start)->format('d/m/Y') }}</td>
                                         <td class="text-center">{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</td>
                                         <td class="text-center">{{ $list->statusLabel() }}</td>
+                                        <td class="text-center">{{ $list->serasa_status }}</td>
+                                        <td class="text-center">{{ $list->status_spc }}</td>
+                                        <td class="text-center">{{ $list->status_boa_vista }}</td>
                                         <td class="text-center">
                                             <form action="{{ route('delete-list') }}" method="POST" class="delete btn-group">
                                                 @csrf

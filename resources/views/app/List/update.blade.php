@@ -23,10 +23,41 @@
 
                             <input type="hidden" name="id" value="{{ $list->id }}">
 
-                            <div class="col-12 col-md-12 col-lg-12 mb-1">
+                            <div class="col-12 col-md-6 col-lg-6 mb-1">
                                 <div class="form-floating">
                                     <input type="text" name="name" class="form-control" id="floatingName" placeholder="Indique um nome para a Lista:" value="{{ $list->name }}" required>
                                     <label for="floatingName">Indique um nome para a Lista:</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-2 col-lg-2 mb-1">
+                                <div class="form-floating">
+                                    <select name="serasa_status" class="form-select" id="floatingStatus">
+                                        <option selected value="{{ $list->serasa_status }}">Situação Serasa:</option>
+                                        <option value="Baixado">Baixado</option>
+                                        <option value="Pendente">Pendente</option>
+                                    </select>
+                                    <label for="floatingStatus">Situação Serasa:</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-2 col-lg-2 mb-1">
+                                <div class="form-floating">
+                                    <select name="status_spc" class="form-select" id="floatingSPC">
+                                        <option selected value="{{ $list->status_spc }}">Situação SPC:</option>
+                                        <option value="Baixado">Baixado</option>
+                                        <option value="Pendente">Pendente</option>
+                                    </select>
+                                    <label for="floatingSPC">Situação SPC:</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-2 col-lg-2 mb-1">
+                                <div class="form-floating">
+                                    <select name="status_boa_vista" class="form-select" id="floatingStatus">
+                                        <option selected value="{{ $list->status_boa_vista }}">Situação Boa Vista:</option>
+                                        <option value="Baixado">Baixado</option>
+                                        <option value="Pendente">Pendente</option>
+                                    </select>
+                                    <label for="floatingStatus">Situação Boa Vista:</label>
                                 </div>
                             </div>
 

@@ -5,6 +5,8 @@ use App\Http\Controllers\Access\Login;
 use App\Http\Controllers\Access\Registrer;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\Assas\AssasController;
+use App\Http\Controllers\Client\AppController as ClientAppController;
+use App\Http\Controllers\Client\LoginController;
 use App\Http\Controllers\Payment\Payment;
 use App\Http\Controllers\Photoshop\PhotoshopController;
 use App\Http\Controllers\Product\ProductController;
@@ -21,6 +23,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [Login::class, 'index'])->name('login');
 Route::post('/logon', [Login::class, 'logon'])->name('logon');
 
+Route::get('/login-cliente', [LoginController::class, 'login'])->name('login.cliente');
+Route::post('/logon-cliente', [LoginController::class, 'logon'])->name('logon.cliente');
+
 Route::get('/registrer/{id?}/{type?}', [Registrer::class, 'index'])->name('registrer');
 Route::post('registrer-user', [Registrer::class, 'registrerUser'])->name('registrer-user');
 
@@ -32,8 +37,8 @@ Route::get('/sale-link/{product}/{user}/{value}', [SaleController::class, 'saleL
 Route::post('create-sale-external', [SaleController::class, 'createSale'])->name('create-sale-external');
 
 Route::middleware(['auth'])->group(function () {
-
-    Route::get('/app', [AppController::class, 'dashboard'])->name('app');
+    
+    Route::get('/app', [AppController::class, 'handleApp'])->name('app');
     Route::get('/apresentation', [UserController::class, 'apresentation'])->name('apresentation');
     Route::post('create-apresentation', [UserController::class, 'createApresentation'])->name('create-apresentation');
     Route::post('delete-apresentation', [UserController::class, 'deleteApresentation'])->name('delete-apresentation');
@@ -126,4 +131,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/my-product/{id}', [SaleController::class, 'myProduct'])->name('my-product');
     
     Route::get('/logout', [Login::class, 'logout'])->name('logout');
+
+    // === Client Model === //
+    Route::get('/app-cliente', [ClientAppController::class, 'app'])->name('app.cliente');
+    Route::get('/invoice-cliente/{sale?}', [ClientAppController::class, 'invoice'])->name('invoice.cliente');
+    Route::get('/logout-cliente', [ClientAppController::class, 'logout'])->name('logout.cliente');
 });
