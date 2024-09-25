@@ -21,7 +21,7 @@
                 <div class="row justify-content-center">
                     <div class="col-md-12 col-lg-10">
 
-                        <div class="wrap d-md-flex" style="min-height: 60vh;">
+                        <div class="wrap d-md-flex" style="min-height: 70vh;">
                             <div class="img" style="background-image: url({{ asset('assets/login-form/images/bg_client.png') }}); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
 
                             <div class="login-wrap p-4 p-md-5">

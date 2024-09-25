@@ -624,9 +624,9 @@ class AssasController extends Controller {
 
                 $client = User::find($invoice->id_user);
                 if($client && $invoice->num == 1) {
-                    $this->sendWhatsapp("", "Olá, ".$client->name."! \r\n\r\n Agradecemos pelo seu pagamento! \r\n\r\n\r\n Tenha a certeza de que sua situação está em boas mãos. \r\n\r\n\r\n *Nos próximos 30 dias úteis*, nossa equipe especializada acompanhará de perto todo o processo para garantir que seu nome seja limpo o mais rápido possível. \r\n\r\n\r\n Estamos à disposição para qualquer dúvida ou esclarecimento.", $client->phone, $seller->api_token_zapapi);
+                    $this->sendWhatsapp(env('APP_URL').'login-cliente', "Olá, ".$client->name."! \r\n\r\n Agradecemos pelo seu pagamento! \r\n\r\n\r\n Tenha a certeza de que sua situação está em boas mãos. \r\n\r\n\r\n *Nos próximos 30 dias úteis*, nossa equipe especializada acompanhará de perto todo o processo para garantir que seu nome seja limpo o mais rápido possível. \r\n\r\n\r\n Estamos à disposição para qualquer dúvida ou esclarecimento. \r\n\r\n Você pode acompanhar o processo acessando nosso sistema no link abaixo: \r\n\r\n", $client->phone, $seller->api_token_zapapi);
                 } else {
-                    $this->sendWhatsapp("", $client->name."! \r\n\r\n Agradecemos por manter o compromisso e realizar o pagamento do boleto, o que garante a continuidade e a validade da garantia do serviço.", $client->phone, $seller->api_token_zapapi);
+                    $this->sendWhatsapp(env('APP_URL').'login-cliente', $client->name."! \r\n\r\n Agradecemos por manter o compromisso e realizar o pagamento do boleto, o que garante a continuidade e a validade da garantia do serviço.", $client->phone, $seller->api_token_zapapi);
                 }
 
                 if($invoice->num == 1 && $invoice->type == 3) {
