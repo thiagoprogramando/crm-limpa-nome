@@ -159,7 +159,7 @@ class SaleController extends Controller {
                 $sale->save();
 
                 $assas = new AssasController();
-                $invoice = $assas->createSalePayment($sale->id);
+                $invoice = $assas->createSalePayment($sale->id, true);
                 if($invoice) {
                     return redirect()->back()->with('success', 'Sucesso! Os dados de pagamento foram enviados para o Cliente!');
                 }
@@ -544,12 +544,15 @@ class SaleController extends Controller {
 
     public function saleLink($product, $user, $value) {
 
-        $payments = Payment::where('id_product', $product)->get();
+        $payments       = Payment::where('id_product', $product)->get();
+        $productSale    = Product::find($product);
+
         return view('form.sale', [
-            'id_product' => $product, 
-            'payments' => $payments, 
-            'id_seller' => $user, 
-            'value' => $value
+            'id_product'    => $product, 
+            'payments'      => $payments, 
+            'id_seller'     => $user, 
+            'value'         => $value,
+            'product'       => $productSale
         ]);
     }
 

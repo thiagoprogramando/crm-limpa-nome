@@ -33,15 +33,25 @@
                                     <label class="form-check-label" for="address">Solicitar Endereço ao Cliente</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="createuser" id="user">
-                                    <label class="form-check-label" for="user">Venda por Link</label>
+                                    <input class="form-check-input" type="checkbox" name="terms" id="terms">
+                                    <label class="form-check-label" for="terms">Solicitar aceite de termos</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="createuser" id="link">
+                                    <label class="form-check-label" for="link">Venda por Link</label>
                                 </div>
                             </div>
 
-                            <div class="col-12 col-md-12 col-lg-12 mb-1">
+                            <div class="col-12 col-md-8 col-lg-8 mb-1">
                                 <div class="form-floating">
                                     <textarea name="description" class="form-control" placeholder="Descrição" id="floatingTextarea" style="height: 100px;"></textarea>
                                     <label for="floatingTextarea">Indique uma descrição para o Produto:</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4 col-lg-4 mb-1">
+                                <div class="form-floating">
+                                    <textarea name="terms_text" class="form-control" placeholder="Indique uma descrição para os Termos" id="floatingTextarea" style="height: 100px;"></textarea>
+                                    <label for="floatingTextarea">Indique uma descrição para os Termos:</label>
                                 </div>
                             </div>
 

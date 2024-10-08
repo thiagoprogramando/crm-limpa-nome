@@ -29,9 +29,11 @@ class ProductController extends Controller {
         $product                = new Product();
         $product->name          = $request->name;
         $product->description   = $request->description;
+        $product->terms_text    = $request->terms_text;
 
         $product->address       = $request->has('address') ? 1 : 0;
         $product->createuser    = $request->has('createuser') ? 1 : 0;
+        $product->terms         = $request->has('terms') ? 1 : 0;
         $product->level         = $request->level;
         $product->contract      = $request->contract;
 
@@ -73,9 +75,13 @@ class ProductController extends Controller {
             if($request->description) {
                 $product->description = $request->description;
             }
+            if($request->terms_text) {
+                $product->terms_text = $request->terms_text;
+            }
             
-            $product->address = $request->has('address') ? 1 : 0;
-            $product->createuser = $request->has('createuser') ? 1 : 0;
+            $product->address       = $request->has('address') ? 1 : 0;
+            $product->createuser    = $request->has('createuser') ? 1 : 0;
+            $product->terms         = $request->has('terms') ? 1 : 0;
             
             $product->level = $request->level;
             

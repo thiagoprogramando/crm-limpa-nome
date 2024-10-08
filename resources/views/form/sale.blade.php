@@ -12,6 +12,11 @@
         <link rel="stylesheet" href="{{ asset('assets/login-form/css/style.css') }}">
 
         <script src="{{ asset('assets/dashboard/js/sweetalert.js')}}"></script>
+        <style>
+            input[type="checkbox"] {
+                width: 20px;
+            }
+        </style>        
 	</head>
 	<body>
 
@@ -80,6 +85,15 @@
                                 <div class="form-group col-sm-12 col-md-3 col-lg-3 mb-3">
                                     <input type="text" name="state" class="form-control" placeholder="Estado:" required>
                                 </div>
+
+                                @if($product->terms) 
+                                    <div class="col-sm-12 col-md-12 col-lg-12 mb-3">
+                                        <div class="d-flex">
+                                            <input type="checkbox" name="terms" id="terms" class="form-control" checked>
+                                            <label for="terms" class="m-2">{{ $product->terms_text }}</label>
+                                        </div>
+                                    </div>
+                                @endif
 
                                 <div class="form-group col-sm-12 col-md-12 col-lg-12">
                                     <button type="submit" class="form-control btn btn-primary rounded submit px-3">Enviar dados</button>
