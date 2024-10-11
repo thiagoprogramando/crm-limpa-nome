@@ -678,12 +678,14 @@ class AssasController extends Controller {
 
                 $sale = Sale::where('id', $invoice->id_sale)->first();
                 
-                $invoices = $this->createSalePayment($sale->id);
-                if($invoices == false) {
-                    $invoice->status = 0;
-                    $invoice->save();
+                if($sale) {
+                    $invoices = $this->createSalePayment($sale->id);
+                    if($invoices == false) {
+                        $invoice->status = 0;
+                        $invoice->save();
 
-                    return response()->json(['status' => 'error', 'message' => 'Não foi possível confirmar o pagamento da fatura e gerar às demais faturas!']);
+                        return response()->json(['status' => 'error', 'message' => 'Não foi possível confirmar o pagamento da fatura e gerar às demais faturas!']);
+                    }
                 }
                 
                 $product = $invoice->id_product != null ? Product::where('id', $invoice->id_product)->first() : false;
