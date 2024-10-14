@@ -88,18 +88,6 @@ class AppController extends Controller {
 
         $today = Carbon::today();
 
-        $clients['inadimplentes'] = User::where('type', '=', 3)
-            ->whereHas('invoices', function ($query) use ($today) {
-                $query->where('status', 0)
-                    ->where('due_date', '<', $today);
-            })->count();
-
-        $clients['inday'] = User::where('type', '=', 3)
-            ->whereHas('invoices', function ($query) use ($today) {
-                $query->where('status', 0)
-                      ->where('due_date', '>=', $today);
-            })->count();
-
         $invoices = [
             'previstas' => Invoice::where('status', 0)
                 ->where('due_date', '>=', $today)
@@ -132,12 +120,37 @@ class AppController extends Controller {
         });
         $users = $sortedUsers->take(10);
 
+        $list = Lists::where('start', '<=', now())
+            ->where('end', '>=', now())
+            ->first();
+    
+        if ($list) {
+            $createdAt = new Carbon($list->end);
+            $now = now();
+            $diff = $now->diff($createdAt);
+    
+            $remainingTime = $diff->format('%dd %hh %im %ss');
+        } else {
+            $remainingTime = 0;
+        }
+
+        $salesDay = Auth::user()->type == 1
+            ? Sale::where('status', 1)
+                ->whereDate('created_at', Carbon::today())
+                ->count()
+            : Sale::where('id_seller', Auth::id())
+                ->where('status', 1)
+                ->whereDate('created_at', Carbon::today())
+                ->count();
+
         return view('app.app', [
-            'clients'   => $clients,
-            'invoices'  => $invoices,
-            'invoicing' => $invoicing,
-            'users'     => $users,
-            'dashboard' => true
+            'invoices'      => $invoices,
+            'invoicing'     => $invoicing,
+            'users'         => $users,
+            'dashboard'     => true,
+            'list'          => $list,
+            'remainingTime' => $remainingTime,
+            'salesDay'      => $salesDay,
         ]);
     }
     

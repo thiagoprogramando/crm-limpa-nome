@@ -40,6 +40,12 @@
                                     </div>
                                     <div class="col-12 col-md-6 col-lg-6 mb-1">
                                         <div class="form-floating">
+                                            <input type="number" name="cpfcnpj" class="form-control" id="floatingCpfCnpj" placeholder="CPF ou CNPJ:">
+                                            <label for="floatingCpfCnpj">CPF ou CNPJ:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                        <div class="form-floating">
                                             <input type="date" name="created_at" class="form-control" id="floatingCreated_at" placeholder="Informe a data:">
                                             <label for="floatingCreated_at">Data:</label>
                                         </div>

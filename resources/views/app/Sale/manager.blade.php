@@ -19,6 +19,11 @@
             <div class="btn-group mb-3" role="group">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
                 <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
+                @if(Auth::user()->type == 1)
+                    <a href="#" class="btn btn-danger" onclick="confirmDelete()">
+                        <i class="bi bi-trash"></i> Não Assinados
+                    </a>
+                @endif
             </div>
 
             <div class="modal fade" id="filterModal" tabindex="-1">
@@ -156,5 +161,24 @@
         </div>
     </div>
 </section>
+
+<script>
+    function confirmDelete() {
+        Swal.fire({
+            title: 'Você tem certeza?',
+            text: "Essa ação irá remover todas as vendas e faturas pendentes!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, deletar!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ route('delete-sales-pending') }}";
+            }
+        });
+    }
+</script>
 
 @endsection

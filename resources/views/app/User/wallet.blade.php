@@ -88,7 +88,9 @@
             <div class="card p-5">
 
                 <div class="btn-group mb-3 w-25" role="group">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#depModal">Depositar investimento</button>
+                    @if(Auth::user()->level == 7)
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#depModal">Depositar investimento</button>
+                    @endif
                     <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
                 </div>
 

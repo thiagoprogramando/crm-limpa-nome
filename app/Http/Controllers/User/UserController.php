@@ -145,7 +145,7 @@ class UserController extends Controller {
         }
 
         if (!empty($request->cpfcnpj)) {
-            $query->where('cpfcnpj', 'like', '%' . $request->cpfcnpj . '%');
+            $query->where('cpfcnpj', $request->cpfcnpj);
         }
 
         $query->where('type', $type);

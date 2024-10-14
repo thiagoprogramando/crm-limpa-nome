@@ -14,14 +14,16 @@
     
     <section class="section dashboard">
 
-        <div class="card p-3" data-bs-toggle="modal" data-bs-target="#cruzeiroModal">
-            <p class="lead"><i class="bi bi-bell text-warning"></i> Promoção Cruzeiro! Com 100 vendas cabine s/acompanhante ou 200 vendas c/acompanhante!</p>
-            <div class="progress mt-3 mb-3" style="height: 25px;">
-                <div class="progress-bar text-light text-center" role="progressbar" style="width: {{ Auth::user()->promoCruzeiro() }}%" aria-valuenow="{{ Auth::user()->promoCruzeiro() }}" aria-valuemin="0" aria-valuemax="100">
-                    Você tem {{ Auth::user()->promoCruzeiro() }} vendas confirmadas.
+        @if(Auth::user()->type <> 1)
+            <div class="card p-3" data-bs-toggle="modal" data-bs-target="#cruzeiroModal">
+                <p class="lead"><i class="bi bi-bell text-warning"></i> Promoção Cruzeiro! Com 100 vendas cabine s/acompanhante ou 200 vendas c/acompanhante!</p>
+                <div class="progress mt-3 mb-3" style="height: 25px;">
+                    <div class="progress-bar text-light text-center" role="progressbar" style="width: {{ Auth::user()->promoCruzeiro() }}%" aria-valuenow="{{ Auth::user()->promoCruzeiro() }}" aria-valuemin="0" aria-valuemax="100">
+                        Você tem {{ Auth::user()->promoCruzeiro() }} vendas confirmadas.
+                    </div>
                 </div>
             </div>
-        </div>
+        @endif
 
         <div class="modal fade" id="cruzeiroModal" tabindex="-1" aria-hidden="true" style="display: none;">
             <div class="modal-dialog modal-lg">
@@ -207,18 +209,35 @@
                 <div class="col-sm-12 col-md-4 col-lg-4">
                     <div class="card">
                         <div class="card-header text-dark" style="background-color: #F5F5F5;">
-                            <b><i class="bi bi-person-fill"></i> Clientes</b>
+                            <b><i class="bi bi-grid"></i> Dados</b>
                         </div>
 
-                        <div class="card-body p-2">
-                            <div class="card-dashbord p-3 m-3">
-                                <p>EM DIA</p>
-                                <h1 class="display-3 text-success text-center"><b>{{ $clients['inday'] }}</b></h1>
+                        <div class="card info-card sales-card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">T. Vendas (Hoje)</h5>
+
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-cart-check-fill"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6>{{ $salesDay }}</h6>
+                                    </div>
+                                </div>
                             </div>
-                            
-                            <div class="card-dashbord p-3 m-3">
-                                <p>INADIMPLENTES</p>
-                                <h1 class="display-3 text-danger text-center"><b>{{ $clients['inadimplentes'] }}</b></h1>
+                        </div>
+
+                        <div class="card info-card clock-card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">Próxima Lista @if($list) <span>{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</span> @else Não há lista disponível @endif</h5>
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-clock-history"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6>{{ $remainingTime }}</h6>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -754,7 +754,7 @@ class AssasController extends Controller {
                 if($client && $invoice->num == 1) {
                     $this->sendWhatsapp(env('APP_URL').'login-cliente', "Olá, ".$client->name."!\r\n\r\nAgradecemos pelo seu pagamento! \r\n\r\n\r\n Tenha a certeza de que sua situação está em boas mãos. \r\n\r\n\r\n *Nos próximos 30 dias úteis*, nossa equipe especializada acompanhará de perto todo o processo para garantir que seu nome seja limpo o mais rápido possível. \r\n\r\n\r\n Estamos à disposição para qualquer dúvida ou esclarecimento. \r\n\r\n Você pode acompanhar o processo acessando nosso sistema no link abaixo: \r\n\r\n", $client->phone, $seller->api_token_zapapi);
                 } else {
-                    $this->sendWhatsapp(env('APP_URL').'login-cliente', $client->name."!\r\n\r\nAgradecemos por manter o compromisso e realizar o pagamento do boleto, o que garante a continuidade e a validade da garantia do serviço.", $client->phone, $seller->api_token_zapapi);
+                    $this->sendWhatsapp(env('APP_URL').'login-cliente', $client->name."!\r\n\r\nAgradecemos por manter o compromisso e realizar o pagamento do boleto, o que garante a continuidade e a validade da garantia do serviço. \r\n\r\n Acesse o Painel do cliente👇", $client->phone, $seller->api_token_zapapi);
                 }
 
                 if($invoice->num == 1 && $invoice->type == 3) {
@@ -798,7 +798,7 @@ class AssasController extends Controller {
             $invoice = Invoice::where('token_payment', $token)->where('status', 0)->first();
             if($invoice) {
 
-                if(($invoice->type == 2 || $invoice->type == 3) && $invoice->sale->seller->api_token_zapapi != null) {
+                if(($invoice->type == 2 || $invoice->type == 3) && $invoice->num <> 1) {
                     switch ($invoice->notification_number) {
                         case 1:
                             $value      = $invoice->value - ($invoice->value * 0.10);

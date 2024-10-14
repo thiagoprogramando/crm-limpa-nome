@@ -458,6 +458,17 @@ class SaleController extends Controller {
         }
     }
 
+    public function deleteSalesPending() {
+
+        $sales = Sale::whereIn('status', [0, 3])->get();
+        $saleIds = $sales->pluck('id')->toArray();
+
+        Invoice::whereIn('id_sale', $saleIds)->delete();
+        Sale::whereIn('id', $saleIds)->delete();
+
+        return redirect()->back()->with('success', 'Vendas pendentes removidas com sucesso!');
+    }
+
     public function default(Request $request) {
         
         $user = Auth::user();

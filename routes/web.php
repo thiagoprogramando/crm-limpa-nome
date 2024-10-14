@@ -55,6 +55,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/update-sale/{id}', [SaleController::class, 'viewSale'])->name('update-sale');
             Route::get('/invoice-default', [SaleController::class, 'default'])->name('invoice-default');
             Route::post('delete-sale', [SaleController::class, 'deleteSale'])->name('delete-sale');
+            Route::get('delete-sales-pending', [SaleController::class, 'deleteSalesPending'])->name('delete-sales-pending');
     
             Route::get('/send-default-whatsapp/{id}', [DefaultController::class, 'sendWhatsapp'])->name('send-default-whatsapp');
             Route::get('/send-contract/{id}', [SaleController::class, 'sendContractWhatsapp'])->name('send-contract');
