@@ -422,6 +422,21 @@ class SaleController extends Controller {
         return view('app.Sale.view', ['sale' => $sale, 'invoices' => $invoices]);
     }
 
+    public function updatedSale(Request $request) {
+
+        $sale = Sale::find($request->id);
+        if(!$sale) {
+            return redirect()->back()->with('error', 'Não encontramos dados da venda!');
+        }
+
+        $sale->status = $request->status;
+        if($sale->save()) {
+            return redirect()->back()->with('success', 'Dados alterados com sucesso!');
+        }
+
+        return redirect()->back()->with('error', 'Não foi possível alterar os dados da venda!');
+    }
+
     public function deleteSale(Request $request) {
 
         $sale = Sale::find($request->id);
@@ -473,12 +488,10 @@ class SaleController extends Controller {
         
         $user = Auth::user();
     
-        // Obter parâmetros de filtro da solicitação
         $id_seller = $request->input('id_seller');
         $id_list = $request->input('id_list');
         $name = $request->input('name');
     
-        // Iniciar a consulta de faturas
         $query = Invoice::query();
     
         if ($user->type == 1) {
@@ -489,7 +502,6 @@ class SaleController extends Controller {
             })->where('due_date', '<', now())->where('status', 0);
         }
     
-        // Aplicar filtros opcionais
         if ($id_seller) {
             $query->whereHas('sale', function ($query) use ($id_seller) {
                 $query->where('id_seller', $id_seller);
@@ -566,5 +578,4 @@ class SaleController extends Controller {
             'product'       => $productSale
         ]);
     }
-
 }

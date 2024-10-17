@@ -61,81 +61,7 @@ class AssasController extends Controller {
         }
     
         return false;
-    }   
-    
-    // private function invoiceBoleto($value, $value_cost, $commission, $sale, $wallet, $client, $filiate = null) {
-
-    //     $valueInstallment = $value / $sale->installments;
-
-    //     if($sale->wallet_off) {
-    //         $firstInstallmentValue = $valueInstallment;
-    //         $installmentValue = $valueInstallment;
-    
-    //         $firstInstallmentCommission = $valueInstallment;
-    //         $installmentCommission = ($commission - $firstInstallmentCommission) / max(1, ($sale->installments - 1));
-    //     } else {
-    //         if ($valueInstallment < $value_cost) {
-            
-    //             $firstInstallmentValue = $value_cost;
-    //             $installmentValue = ($value - $firstInstallmentValue) / ($sale->installments - 1); 
-                
-    //             $firstInstallmentCommission = 0;
-    //             $installmentCommission = ($commission - $firstInstallmentCommission) / max(1, ($sale->installments - 1));
-    //         } else {
-                
-    //             $firstInstallmentValue = $valueInstallment;
-    //             $installmentValue = $valueInstallment;
-        
-    //             $firstInstallmentCommission = $valueInstallment - $value_cost;
-    //             $installmentCommission = ($commission - $firstInstallmentCommission) / max(1, ($sale->installments - 1));
-    //         }
-    //     }
-        
-    //     $customer = $this->createCustomer($client->name, $client->cpfcnpj, $client->phone, $client->email);
-
-    //     for ($i = 1; $i <= $sale->installments; $i++) {
-
-    //         $invoice                = new Invoice();
-    //         $invoice->id_user       = $sale->id_client;
-    //         $invoice->id_sale       = $sale->id;
-    //         $invoice->id_product    = $sale->id_product;
-
-    //         $invoice->name          = env('APP_NAME').' - Fatura';
-    //         $invoice->description   = 'Fatura N° '.$i.' da venda N° '.$sale->id;
-
-    //         $charge = $this->createCharge(
-    //             $customer,
-    //             $sale->payment, 
-    //             ($i == 1) ? $firstInstallmentValue : $installmentValue, 
-    //             'Fatura N°'.$i.' da venda N°'.$sale->id,
-    //             ($i == 1) ? now()->addDay() : now()->addMonths($i - 1),
-    //             null,
-    //             $wallet,
-    //             ($i == 1) ? max(0, $firstInstallmentCommission - 2) : max(0, $installmentCommission - 2),
-    //             $filiate
-    //         );  
-            
-    //         if($charge) {
-    //             $invoice->url_payment   = $charge['invoiceUrl'];
-    //             $invoice->token_payment = $charge['id'];
-    //         }
-
-    //         $invoice->value         = ($i == 1) ? $firstInstallmentValue : $installmentValue;
-    //         $invoice->commission    = ($i == 1) ? max(0, $firstInstallmentCommission - 2) : max(0, $installmentCommission - 2);
-    //         $invoice->due_date      = ($i == 1) ? now()->addDay() : now()->addMonths($i - 1);
-    //         $invoice->num           =  $i;
-    //         $invoice->type          =  3;
-    //         $invoice->status        =  0;
-    //         $invoice->save();
-    //     }
-
-    //     $invoice = Invoice::where('id_sale', $sale->id)->where('status', 0)->orderBy('created_at', 'asc')->first();
-    //     if($invoice) {
-    //         $this->sendInvoice($invoice->url_payment, $sale->id_client, $sale->seller->api_token_zapapi);
-    //     }
-        
-    //     return true;
-    // }
+    }
 
     private function invoiceBoleto($value, $value_cost, $commission, $sale, $wallet, $client, $filiate = null, $notification = null) {
     
@@ -490,45 +416,47 @@ class AssasController extends Controller {
             'verify' => false
         ];
 
-        if ($filiate != null && $commission > 0) {
-            if (!isset($options['json']['split'])) {
-                $options['json']['split'] = [];
+        if(env('APP_ENV') <> 'local') {
+            if ($filiate != null && $commission > 0) {
+                if (!isset($options['json']['split'])) {
+                    $options['json']['split'] = [];
+                }
+
+                $affiliateCommission = $commission * 0.20;
+                $commission = $commission - $affiliateCommission;
+            
+                $options['json']['split'][] = [
+                    'walletId'          => $filiate,
+                    'totalFixedValue' => number_format($affiliateCommission, 2, '.', '')
+                ];
             }
 
-            $affiliateCommission = $commission * 0.20;
-            $commission = $commission - $affiliateCommission;
+            if ($commission > 0) {
+                if (!isset($options['json']['split'])) {
+                    $options['json']['split'] = [];
+                }
+
+                $g7Commission = $commission * 0.05;
+                $commission = $commission - $g7Commission;
+
+                $options['json']['split'][] = [
+                    'walletId'          => env('WALLET_G7'),
+                    'totalFixedValue' => number_format($g7Commission, 2, '.', '')
+                ];
+            }
+
+            if ($wallet != null && $commission > 0) {
+                if (!isset($options['json']['split'])) {
+                    $options['json']['split'] = [];
+                }
+            
+                $options['json']['split'][] = [
+                    'walletId'          => $wallet,
+                    'totalFixedValue' => number_format($commission, 2, '.', '')
+                ];
+            }
+        }
         
-            $options['json']['split'][] = [
-                'walletId'          => $filiate,
-                'totalFixedValue' => number_format($affiliateCommission, 2, '.', '')
-            ];
-        }
-
-        if ($commission > 0) {
-            if (!isset($options['json']['split'])) {
-                $options['json']['split'] = [];
-            }
-
-            $g7Commission = $commission * 0.05;
-            $commission = $commission - $g7Commission;
-
-            $options['json']['split'][] = [
-                'walletId'          => env('WALLET_G7'),
-                'totalFixedValue' => number_format($g7Commission, 2, '.', '')
-            ];
-        }
-
-        if ($wallet != null && $commission > 0) {
-            if (!isset($options['json']['split'])) {
-                $options['json']['split'] = [];
-            }
-        
-            $options['json']['split'][] = [
-                'walletId'          => $wallet,
-                'totalFixedValue' => number_format($commission, 2, '.', '')
-            ];
-        }
-
         $response = $client->post(env('API_URL_ASSAS') . 'v3/payments', $options);
         $body = (string) $response->getBody();
 
@@ -1280,4 +1208,15 @@ class AssasController extends Controller {
 
         return number_format($valorFloat, 2, '.', '');
     }
+
+    public function requestInvoice($id) {
+
+        $assas = new AssasController();
+        $invoices = $assas->createSalePayment($id, true);
+        if($invoices <> false) {
+            return redirect()->back()->with('success', 'Faturas geradas com sucesso!');
+        }
+
+        return redirect()->back()->with('error', 'Não foi possível Gerar Faturas!');
+    } 
 }

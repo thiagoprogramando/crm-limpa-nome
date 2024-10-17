@@ -314,21 +314,24 @@ class UserController extends Controller {
         $dateLimit = Carbon::now()->subDays(90);
 
         if ($status == 1) {
-            $users = User::whereIn('type', [2, 5, 6, 7]) // Filtra tipos específicos
+            $users = User::whereNotIn('type', [1, 3])
             ->whereHas('invoices', function($query) use ($dateLimit) {
                 $query->where('status', 1)
                       ->where('due_date', '>=', $dateLimit);
             })->get();
         } elseif ($status == 2) {
-            $users = User::whereIn('type', [2, 5, 6, 7]) // Filtra tipos específicos
-            ->whereDoesntHave('invoices', function($query) use ($dateLimit) {
-                $query->where('status', 1)
-                      ->where('due_date', '>=', $dateLimit);
-            })
-            ->orWhereHas('invoices', function($query) use ($dateLimit) {
-                $query->where('status', 0)
-                      ->where('due_date', '>=', $dateLimit);
-            })->get();
+            $users = User::whereNotIn('type', [1, 3])
+                ->where(function($query) use ($dateLimit) {
+                    $query->whereDoesntHave('invoices', function($subQuery) use ($dateLimit) {
+                        $subQuery->where('status', 1)
+                                 ->where('due_date', '>=', $dateLimit);
+                    })
+                    ->orWhereHas('invoices', function($subQuery) use ($dateLimit) {
+                        $subQuery->where('status', 0)
+                                 ->where('due_date', '>=', $dateLimit);
+                    });
+                })
+                ->get();
         } else {
             return redirect()->back()->with('error', 'Dados não encontrados para a pesquisa!');
         }

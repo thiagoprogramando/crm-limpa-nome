@@ -15,12 +15,53 @@
 <section class="section dashboard">
     <div class="row">
         <div class="col-12">
+
+            <div class="btn-group mb-3" role="group">
+                @if(Auth::user()->type == 1) <a href="{{ route('request-invoices', ['id' => $sale->id]) }}" class="btn btn-primary">Gerar Faturas</a> @endif
+                @if (Auth::user()->type == 1) <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#updatedModal">Alterar dados</button> @endif
+                <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
+            </div>
+
+            <div class="modal fade" id="updatedModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form action="{{ route('updated-sale') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="id" value="{{ $sale->id }}">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Dados da venda</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                        <div class="form-floating">
+                                            <select name="status" class="form-select" id="floatingSeller">
+                                                <option value="">Status:</option>
+                                                <option @selected($sale->status == 1) value="1">Aprovado</option>
+                                                <option @selected($sale->status == 2) value="2">Assinado</option>
+                                                <option @selected($sale->status == 3) value="3">Pendente</option>
+                                            </select>
+                                            <label for="floatingSeller">Status</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer btn-group">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn btn-success">Salvar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Faturas associadas</h5>
                     
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover" id="table">
                             <thead>
                                 <tr>
                                     <th scope="col">N°</th>

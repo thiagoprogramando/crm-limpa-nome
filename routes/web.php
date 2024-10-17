@@ -54,6 +54,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/manager-sale', [SaleController::class, 'manager'])->name('manager-sale');
             Route::get('/update-sale/{id}', [SaleController::class, 'viewSale'])->name('update-sale');
             Route::get('/invoice-default', [SaleController::class, 'default'])->name('invoice-default');
+            Route::post('updated-sale', [SaleController::class, 'updatedSale'])->name('updated-sale');
             Route::post('delete-sale', [SaleController::class, 'deleteSale'])->name('delete-sale');
             Route::get('delete-sales-pending', [SaleController::class, 'deleteSalesPending'])->name('delete-sales-pending');
     
@@ -126,6 +127,7 @@ Route::middleware(['auth'])->group(function () {
     //Payments Assas
     Route::get('/createMonthly/{id}', [AssasController::class, 'createMonthly'])->name('createMonthly');
     Route::get('/payments', [Payment::class, 'payments'])->name('payments');
+    Route::get('/request-invoices/{id}', [AssasController::class, 'requestInvoice'])->name('request-invoices');
 
     //Client
     Route::get('/my-shop', [SaleController::class, 'myShop'])->name('my-shop');
