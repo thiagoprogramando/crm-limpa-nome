@@ -37,13 +37,13 @@ Route::get('/sale-link/{product}/{user}/{value}', [SaleController::class, 'saleL
 Route::post('create-sale-external', [SaleController::class, 'createSale'])->name('create-sale-external');
 
 Route::middleware(['auth'])->group(function () {
-    
-    Route::get('/app', [AppController::class, 'handleApp'])->name('app');
-    Route::get('/apresentation', [UserController::class, 'apresentation'])->name('apresentation');
-    Route::post('create-apresentation', [UserController::class, 'createApresentation'])->name('create-apresentation');
-    Route::post('delete-apresentation', [UserController::class, 'deleteApresentation'])->name('delete-apresentation');
 
     Route::middleware(['monthly'])->group(function () {
+
+        Route::get('/app', [AppController::class, 'handleApp'])->name('app');
+        Route::get('/apresentation', [UserController::class, 'apresentation'])->name('apresentation');
+        Route::post('create-apresentation', [UserController::class, 'createApresentation'])->name('create-apresentation');
+        Route::post('delete-apresentation', [UserController::class, 'deleteApresentation'])->name('delete-apresentation');
 
         Route::middleware(['verify'])->group(function () {
         

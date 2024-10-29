@@ -145,7 +145,7 @@ class User extends Authenticatable {
 
     public function timeMonthly() {
        
-        $lastInvoice = $this->invoices()->orderBy('due_date', 'desc')->first();
+        $lastInvoice = $this->invoices()->where('type', 1)->orderBy('due_date', 'desc')->first();
         if ($lastInvoice) {
             
             $nextInvoiceDate = Carbon::parse($lastInvoice->due_date)->addDays(30);
@@ -154,7 +154,7 @@ class User extends Authenticatable {
             return intval($daysRemaining > 0 ? $daysRemaining : 0);
         }
 
-        return 30;
+        return 0;
     }
 
     public function promoCruzeiro() {

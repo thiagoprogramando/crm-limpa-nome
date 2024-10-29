@@ -30,7 +30,7 @@
                         </div>
                     @endif
                     
-                    @if (Auth::user()->api_key != null && Auth::user()->wallet != null && Auth::user()->type != 6)
+                    @if ((Auth::user()->api_key != null && Auth::user()->wallet != null && Auth::user()->type != 6) && Auth::user()->status <> 1)
                         <div class="col-12">
                             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                                 <i class="bi bi-info-circle me-1"></i>
@@ -39,65 +39,61 @@
                             </div>
 
                             @if(count($mydocuments) > 0)
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Documentos</h5>
-                                        <div class="table-responsive">
-                                            <table class="table table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Situação</th>
-                                                        <th>Documento</th>
-                                                        <th>Descrição</th>
-                                                        <th class="text-center">Opções</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach ($mydocuments as $key => $myDocument)
-                                                        <tr>
-                                                            <td>
-                                                                @switch($myDocument['status'])
-                                                                    @case('NOT_SENT')
-                                                                        Não enviado
-                                                                        @break
-                                                                    @case('PENDING')
-                                                                        Em Análise
-                                                                        @break
-                                                                    @case('APPROVED')
-                                                                        Aprovado
-                                                                        @break
-                                                                    @case('REJECTED')
-                                                                        Rejeitado
-                                                                        @break
-                                                                    @default
-                                                                @endswitch
-                                                            </td>
-                                                            <td>{{ $myDocument['title'] }}</td>
-                                                            <td>Para enviar/reenviar esse documento utilize o botão ao lado.</td>
-                                                            <td class="text-center">
-                                                                @switch($myDocument['status'])
-                                                                    @case('NOT_SENT')
-                                                                    <a class="btn btn-primary" target="_blank" href="{{ $myDocument['onboardingUrl'] }}"><i class="bi bi-arrow-up-right-circle"></i></a>
-                                                                        @break
-                                                                    @case('PENDING')
-                                                                        Em Análise
-                                                                        @break
-                                                                    @case('APPROVED')
-                                                                        Aprovado
-                                                                        @break
-                                                                    @case('REJECTED')
-                                                                        <a class="btn btn-primary" target="_blank" href="{{ $myDocument['onboardingUrl'] }}"><i class="far fa-paper-plane"></i></a>
-                                                                        @break
-                                                                    @default
-                                                                @endswitch
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
+                                <h5 class="card-title">Documentos</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Situação</th>
+                                                <th>Documento</th>
+                                                <th>Descrição</th>
+                                                <th class="text-center">Opções</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($mydocuments as $key => $myDocument)
+                                                <tr>
+                                                    <td>
+                                                        @switch($myDocument['status'])
+                                                            @case('NOT_SENT')
+                                                                Não enviado
+                                                                @break
+                                                            @case('PENDING')
+                                                                Em Análise
+                                                                @break
+                                                            @case('APPROVED')
+                                                                Aprovado
+                                                                @break
+                                                            @case('REJECTED')
+                                                                Rejeitado
+                                                                @break
+                                                            @default
+                                                        @endswitch
+                                                    </td>
+                                                    <td>{{ $myDocument['title'] }}</td>
+                                                    <td>Para enviar/reenviar esse documento utilize o botão ao lado.</td>
+                                                    <td class="text-center">
+                                                        @switch($myDocument['status'])
+                                                            @case('NOT_SENT')
+                                                            <a class="btn btn-primary" target="_blank" href="{{ $myDocument['onboardingUrl'] }}"><i class="bi bi-arrow-up-right-circle"></i></a>
+                                                                @break
+                                                            @case('PENDING')
+                                                                Em Análise
+                                                                @break
+                                                            @case('APPROVED')
+                                                                Aprovado
+                                                                @break
+                                                            @case('REJECTED')
+                                                                <a class="btn btn-primary" target="_blank" href="{{ $myDocument['onboardingUrl'] }}"><i class="far fa-paper-plane"></i></a>
+                                                                @break
+                                                            @default
+                                                        @endswitch
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>   
                             @endif
                         </div>
                     @endif

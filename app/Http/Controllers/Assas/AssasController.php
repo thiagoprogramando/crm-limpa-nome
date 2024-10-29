@@ -281,7 +281,6 @@ class AssasController extends Controller {
         }
 
         if($user->customer == null) {
-
             $customer = $this->createCustomer($user->name, $user->cpfcnpj, $user->phone, $user->email);
             if($customer) {
                 $user->customer = $customer;
@@ -291,7 +290,7 @@ class AssasController extends Controller {
             }
         }
 
-        $charge = $this->createCharge($user->customer, 'PIX', '99.00', 'Assinatura -'.env('APP_NAME'), now()->addDay(), 0, env('WALLET_HEFESTO'), 20);
+        $charge = $this->createCharge($user->customer, 'PIX', '99.00', 'Assinatura -'.env('APP_NAME'), now()->addDay(), null, env('WALLET_HEFESTO'), 20);
         if($charge != false) {
 
             $invoice = new Invoice();
@@ -371,6 +370,7 @@ class AssasController extends Controller {
         $options = [
             'headers' => [
                 'Content-Type' => 'application/json',
+                'accept'       => 'application/json',
                 'access_token' => env('API_TOKEN_ASSAS'),
                 'User-Agent'   => env('APP_NAME')
             ],
@@ -412,50 +412,51 @@ class AssasController extends Controller {
                 'description'       => $description,
                 'installmentCount'  => $installments != null ? $installments : 1,
                 'installmentValue'  => $installments != null ? number_format(($value / intval($installments)), 2, '.', '') : $value,
+                'isAddressRequired' => false
             ],
             'verify' => false
         ];
 
-        if(env('APP_ENV') <> 'local') {
-            if ($filiate != null && $commission > 0) {
-                if (!isset($options['json']['split'])) {
-                    $options['json']['split'] = [];
-                }
+        // if(env('APP_ENV') <> 'local') {
+        //     if ($filiate != null && $commission > 0) {
+        //         if (!isset($options['json']['split'])) {
+        //             $options['json']['split'] = [];
+        //         }
 
-                $affiliateCommission = $commission * 0.20;
-                $commission = $commission - $affiliateCommission;
+        //         $affiliateCommission = $commission * 0.20;
+        //         $commission = $commission - $affiliateCommission;
             
-                $options['json']['split'][] = [
-                    'walletId'          => $filiate,
-                    'totalFixedValue' => number_format($affiliateCommission, 2, '.', '')
-                ];
-            }
+        //         $options['json']['split'][] = [
+        //             'walletId'          => $filiate,
+        //             'totalFixedValue' => number_format($affiliateCommission, 2, '.', '')
+        //         ];
+        //     }
 
-            if ($commission > 0) {
-                if (!isset($options['json']['split'])) {
-                    $options['json']['split'] = [];
-                }
+        //     if ($commission > 0) {
+        //         if (!isset($options['json']['split'])) {
+        //             $options['json']['split'] = [];
+        //         }
 
-                $g7Commission = $commission * 0.05;
-                $commission = $commission - $g7Commission;
+        //         $g7Commission = $commission * 0.05;
+        //         $commission = $commission - $g7Commission;
 
-                $options['json']['split'][] = [
-                    'walletId'          => env('WALLET_G7'),
-                    'totalFixedValue' => number_format($g7Commission, 2, '.', '')
-                ];
-            }
+        //         $options['json']['split'][] = [
+        //             'walletId'          => env('WALLET_G7'),
+        //             'totalFixedValue' => number_format($g7Commission, 2, '.', '')
+        //         ];
+        //     }
 
-            if ($wallet != null && $commission > 0) {
-                if (!isset($options['json']['split'])) {
-                    $options['json']['split'] = [];
-                }
+        //     if ($wallet != null && $commission > 0) {
+        //         if (!isset($options['json']['split'])) {
+        //             $options['json']['split'] = [];
+        //         }
             
-                $options['json']['split'][] = [
-                    'walletId'          => $wallet,
-                    'totalFixedValue' => number_format($commission, 2, '.', '')
-                ];
-            }
-        }
+        //         $options['json']['split'][] = [
+        //             'walletId'          => $wallet,
+        //             'totalFixedValue' => number_format($commission, 2, '.', '')
+        //         ];
+        //     }
+        // }
         
         $response = $client->post(env('API_URL_ASSAS') . 'v3/payments', $options);
         $body = (string) $response->getBody();
