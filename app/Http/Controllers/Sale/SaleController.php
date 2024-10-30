@@ -83,8 +83,8 @@ class SaleController extends Controller {
 
             if($request->wallet_off) {
                 if($request->id_seller) {
-                    $user = User::find($request->id_seller);
-                    $walletValue = $user->wallet_off;
+                    $userWallet = User::find($request->id_seller);
+                    $walletValue = $userWallet->wallet_off;
                 } else {
                     $walletValue = Auth::user()->wallet_off;
                 }
@@ -94,13 +94,13 @@ class SaleController extends Controller {
                 }
 
                 if($request->id_seller) {
-                    $user = User::find($request->id_seller);
-                    $user->wallet_off -= ($product->value_cost + $product->value_rate);
-                    $user->Save();
+                    $userWallet = User::find($request->id_seller);
+                    $userWallet->wallet_off -= ($product->value_cost + $product->value_rate);
+                    $userWallet->Save();
                 } else {
-                    $user = User::find(Auth::id());
-                    $user->wallet_off -= ($product->value_cost + $product->value_rate);
-                    $user->Save();
+                    $userWallet = User::find(Auth::id());
+                    $userWallet->wallet_off -= ($product->value_cost + $product->value_rate);
+                    $userWallet->Save();
                 }
             }
         
@@ -142,12 +142,11 @@ class SaleController extends Controller {
 
                     $seller = User::find(!empty($request->id_seller) ? $request->id_seller : Auth::id());
                     if($seller->api_token_zapapi) {
-                        $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado Cliente, segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ⚠ Se não estiver aparecendo o link, Salva o nosso contato que aparecerá! \r\n\r\n\r\n ASSINAR O CONTRATO TOCANDO NO LINK 👇🏼✍🏼 \r\n", $user->phone, $seller->api_token_zapapi);
+                        $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado ".$user->name.", segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ⚠ Se não estiver aparecendo o link, Salva o nosso contato que aparecerá! \r\n\r\n\r\n ASSINAR O CONTRATO TOCANDO NO LINK 👇🏼✍🏼 \r\n", $user->phone, $seller->api_token_zapapi);
                     } else {
-                        $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado Cliente, segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ⚠ Se não estiver aparecendo o link, Salva o nosso contato que aparecerá! \r\n\r\n\r\n ASSINAR O CONTRATO TOCANDO NO LINK 👇🏼✍🏼 \r\n", $user->phone);
+                        $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado ".$user->name.", segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ⚠ Se não estiver aparecendo o link, Salva o nosso contato que aparecerá! \r\n\r\n\r\n ASSINAR O CONTRATO TOCANDO NO LINK 👇🏼✍🏼 \r\n", $user->phone);
                     }
                         
-
                     if($sale->save()) {
                         return redirect()->back()->with('success', 'Sucesso! O contrato foi enviado para o cliente via WhatsApp.');
                     }
@@ -157,7 +156,7 @@ class SaleController extends Controller {
             } else {
 
                 $sale->save();
-
+                
                 $assas = new AssasController();
                 $invoice = $assas->createSalePayment($sale->id, true);
                 if($invoice) {
@@ -401,6 +400,10 @@ class SaleController extends Controller {
             $query->where('status', $request->status);
         }
 
+        if (!empty($request->label)) {
+            $query->where('label', $request->label);
+        }
+
         if(Auth::user()->type != 1) {
             $query->where('id_seller', Auth::user()->id);
         }
@@ -529,7 +532,6 @@ class SaleController extends Controller {
         ]);
     }
     
-    
     public function sendContractWhatsapp($id) {
 
         $sale = Sale::find($id);
@@ -550,7 +552,7 @@ class SaleController extends Controller {
                 ],
                 'json' => [
                     'phone'           => '55' . $sale->user->phone,
-                    'message'         => "Prezado Cliente, segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼 \r\n ⚠ Salva o contato se não tiver aparecendo o link.",
+                    'message'         => "Prezado ".$sale->user->name.", segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼 \r\n ⚠ Salva o contato se não tiver aparecendo o link.",
                     'image'           => env('APP_URL_LOGO'),
                     'linkUrl'         => $sale->url_contract,
                     'title'           => 'Assinatura de Documento',
@@ -577,5 +579,48 @@ class SaleController extends Controller {
             'value'         => $value,
             'product'       => $productSale
         ]);
+    }
+
+    public function reprotocolSale($id) {
+
+        $sale = Sale::find($id);
+        if(!$sale) {
+            return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');   
+        }
+
+        $sale->label = $sale->label === 'REPROTOCOLADO' ? null : 'REPROTOCOLADO';
+        if($sale->save()) {
+
+            if ($sale->label === 'REPROTOCOLADO') {
+                $clientName     = $sale->user->name;
+                $phone          = $sale->user->phone;
+                $sellerApiToken = $sale->seller->api_token_zapapi;
+            
+                $message = "*Assunto: Reprotocolamento de Processo Judicial*\r\n\r\n" .
+                           "{$clientName},\r\n\r\n" .
+                           "Gostaríamos de informar que o *seu processo* foi *reprotocolado com sucesso.*\r\n\r\n" .
+                           "A partir de agora, será necessário *aguardar o prazo estimado de 20 a 30 dias*, " .
+                           "conforme estipulado pelos trâmites judiciais, para a análise e andamento do seu caso.\r\n\r\n" .
+                           "Estamos acompanhando de perto o andamento do processo e *entraremos em contato assim que houver novidades.*\r\n\r\n" .
+                           "Agradecemos sua paciência e estamos à disposição para esclarecer qualquer dúvida.";
+            
+                $this->sendWhatsapp(env('APP_URL') . 'login-cliente', $message, $phone, $sellerApiToken);
+            } else {
+                $clientName     = $sale->user->name;
+                $phone          = $sale->user->phone;
+                $sellerApiToken = $sale->seller->api_token_zapapi;
+            
+                $message = "*Assunto: Conclusão do Processo Judicial*\r\n\r\n" .
+                           "{$clientName},\r\n\r\n" .
+                           "É com satisfação que informamos que o *seu processo foi concluído com sucesso!*\r\n\r\n" .
+                           "Agradecemos pela confiança em nosso trabalho.";
+            
+                $this->sendWhatsapp(env('APP_URL') . 'login-cliente', $message, $phone, $sellerApiToken);
+            }            
+
+            return redirect()->back()->with('success', 'Venda alterada com sucesso!');
+        }
+
+        return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');
     }
 }

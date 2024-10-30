@@ -57,6 +57,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('updated-sale', [SaleController::class, 'updatedSale'])->name('updated-sale');
             Route::post('delete-sale', [SaleController::class, 'deleteSale'])->name('delete-sale');
             Route::get('delete-sales-pending', [SaleController::class, 'deleteSalesPending'])->name('delete-sales-pending');
+            Route::get('reprotocol-sale/{id}', [SaleController::class, 'reprotocolSale'])->name('reprotocol-sale');
     
             Route::get('/send-default-whatsapp/{id}', [DefaultController::class, 'sendWhatsapp'])->name('send-default-whatsapp');
             Route::get('/send-contract/{id}', [SaleController::class, 'sendContractWhatsapp'])->name('send-contract');
@@ -75,12 +76,6 @@ Route::middleware(['auth'])->group(function () {
 
             //Gatway Assas
             Route::post('create-deposit', [AssasController::class, 'createDeposit'])->name('create-deposit');
-
-            //Photoshop
-            Route::get('/photoshop', [PhotoshopController::class, 'list'])->name('photoshop');
-            Route::post('/create-photoshop', [PhotoshopController::class, 'createPhotoshop'])->name('create-photoshop');
-            Route::post('/delete-photoshop', [PhotoshopController::class, 'deletePhotoshop'])->name('delete-photoshop');
-            Route::post('/create-midia', [PhotoshopController::class, 'createMidia'])->name('create-midia');
         });
 
     });
@@ -106,14 +101,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/listuser/{type}', [UserController::class, 'listuser'])->name('listuser');
     Route::get('/list-rede', [UserController::class, 'listRede'])->name('list-rede');
     Route::get('view-notification/{id}', [UserController::class, 'viewNotification'])->name('view-notification');
-        //Archive
-        Route::get('/my-archive', [UserController::class, 'myArchive'])->name('my-archive');
-        Route::post('/create-archive', [UserController::class, 'createArchive'])->name('create-archive');
-        Route::post('/delete-archive', [UserController::class, 'deleteArchive'])->name('delete-archive');
+    
+    //Archive
+    Route::get('/my-archive', [UserController::class, 'myArchive'])->name('my-archive');
+    Route::post('/create-archive', [UserController::class, 'createArchive'])->name('create-archive');
+    Route::post('/delete-archive', [UserController::class, 'deleteArchive'])->name('delete-archive');
 
-        //Active
-        Route::get('/list-active/{status}', [UserController::class, 'listActive'])->name('list-active');
-        Route::get('/send-active/{id}', [UserController::class, 'sendActive'])->name('send-active');
+    //Active
+    Route::get('/list-active/{status}', [UserController::class, 'listActive'])->name('list-active');
+    Route::get('/send-active/{id}', [UserController::class, 'sendActive'])->name('send-active');
 
     //List
     Route::get('/lists', [ListController::class, 'list'])->name('lists');

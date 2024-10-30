@@ -78,6 +78,15 @@
                                             <label for="floatingStatus">Status</label>
                                         </div>
                                     </div>
+                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                        <div class="form-floating">
+                                            <select name="label" class="form-select" id="floatingLabel">
+                                                <option selected value="">Label:</option>
+                                                <option value="REPROTOCOLADO">Reprotocolado</option>
+                                            </select>
+                                            <label for="floatingLabel">Label</label>
+                                        </div>
+                                    </div>
                                     @if (Auth::user()->type == 1)
                                         <div class="col-12 col-md-12 col-lg-12 mb-1">
                                             <div class="form-floating">
@@ -126,7 +135,7 @@
                             <tbody>
                                 @foreach ($sales as $sale)
                                     <tr>
-                                        <th scope="row">{{ $sale->id }}</th>
+                                        <th scope="row">{{ $sale->id }} <br> @if($sale->label) <span class="badge bg-primary">{{ $sale->label }}</span> @endif</th>
                                         <th>{{ $sale->list->name }}</th>
                                         <td title="{{ $sale->product->name }}">{{ substr($sale->product->name, 0, 15) }}</td>
                                         <td>{{ $sale->user->name }}</td>
@@ -140,10 +149,10 @@
                                             <form action="{{ route('delete-sale') }}" method="POST" class="delete">
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $sale->id }}"> 
-                                                {{-- {{ route('send-contract', ['id' => $sale->id]) }} --}}
                                                 <div class="btn-group" role="group" aria-label="Basic outlined example">
-                                                    <a href="{{ $sale->url_contract }}" target="_blank" class="btn btn-outline-primary"><i class="bi bi-file-earmark-text"></i></a>
-                                                    <a href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="bi bi-currency-dollar"></i></a>
+                                                    <a title="Contrato" href="{{ $sale->url_contract }}" target="_blank" class="btn btn-outline-primary"><i class="bi bi-file-earmark-text"></i></a>
+                                                    <a title="Faturas" href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="bi bi-currency-dollar"></i></a>
+                                                    <a title="Reprotocolar" href="{{ route('reprotocol-sale', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="bx bx-check-shield"></i></a>
                                                     <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
                                                 </div>
                                             </form>

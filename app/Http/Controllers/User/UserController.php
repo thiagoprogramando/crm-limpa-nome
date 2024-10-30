@@ -347,7 +347,7 @@ class UserController extends Controller {
             $message =  "Olá, {$user->name},\r\n\r\n"
                         . "Sua conta na plataforma da G7 ainda não foi ativada. Para continuar a ganhar comissões e aproveitar nossos benefícios, ative sua conta até ". Carbon::now()->addDays(30)->format('d/m/Y') ." \r\n\r\n"
                         . "*Instruções para ativação:*\r\n\r\n"
-                        . "Acesse: https://app.grupo7assessoria.com/\r\n"
+                        . "Acesse: ".env('APP_URL')."\r\n"
                         . "Faça login com seu e-mail e CPF. \r\n"
                         . "Complete a ativação \r\n"
                         . "Após a data limite, o acesso será desativado permanentemente. \r\n\r\n"

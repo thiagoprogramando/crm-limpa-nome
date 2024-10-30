@@ -13,31 +13,6 @@
 
     
     <section class="section dashboard">
-
-        @if(Auth::user()->type <> 1)
-            <div class="card p-3" data-bs-toggle="modal" data-bs-target="#cruzeiroModal">
-                <p class="lead"><i class="bi bi-bell text-warning"></i> Promoção Cruzeiro! Com 100 vendas cabine s/acompanhante ou 200 vendas c/acompanhante!</p>
-                <div class="progress mt-3 mb-3" style="height: 25px;">
-                    <div class="progress-bar text-light text-center" role="progressbar" style="width: {{ Auth::user()->promoCruzeiro() }}%" aria-valuenow="{{ Auth::user()->promoCruzeiro() }}" aria-valuemin="0" aria-valuemax="100">
-                        Você tem {{ Auth::user()->promoCruzeiro() }} vendas confirmadas.
-                    </div>
-                </div>
-            </div>
-        @endif
-
-        <div class="modal fade" id="cruzeiroModal" tabindex="-1" aria-hidden="true" style="display: none;">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <img class="img-fluid" src="{{ asset('assets/dashboard/img/cruzeiro.jpg') }}" alt="Cruzeiro">
-                    </div>
-                    <div class="modal-footer btn-group">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-       
         @if(empty($dashboard))
             <div class="row">
                 <div class="col-lg-12">
@@ -100,10 +75,8 @@
 
                         <div class="col-sm-12 col-md-4 col-lg-3">
                             <div class="card info-card revenue-card">
-
                                 <div class="card-body">
                                     <h5 class="card-title">T. Faturamento (R$)</h5>
-
                                     <div class="d-flex align-items-center">
                                         <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                         <i class="bi bi-currency-dollar"></i>
@@ -113,26 +86,61 @@
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
 
                         <div class="col-sm-12 col-md-4 col-lg-3">
-                            <div class="card info-card customers-card">
-
+                            <div class="card info-card revenue-card">
                                 <div class="card-body">
-                                    <h5 class="card-title">Graduação</h5>
-
+                                    <h5 class="card-title">T. Faturamento (R$ Hoje)</h5>
                                     <div class="d-flex align-items-center">
                                         <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                            <i class="bi bi-award"></i>
+                                        <i class="ri-money-dollar-circle-line"></i>
                                         </div>
                                         <div class="ps-3">
-                                            <p>{{ Auth::user()->levelLabel() }}</p>
+                                            <h6>{{ number_format($invoicingDay, 2, ',', '.') }}</h6>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
 
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                            <div class="card info-card clock-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">PROMOÇÃO CRUZEIRO</h5>
+                                    <div class="d-flex align-items-center justify-content-around">
+                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                            <i class="ri-ship-line"></i>
+                                        </div>
+                                        <div class="ps-3">
+                                            <small>100 Vendas - 1 Pessoa</small> <br>
+                                            <small>200 Vendas - 2 Pessoas</small> <br>
+                                            <small><b>Válido até 31 de Dezembro</b></small>
+                                        </div>
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <div class="circular-progress" data-sales="{{ Auth::user()->promoCruzeiro() }}">
+                                                <span class="percentage-text" id="percentage">0%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-sm-12 col-md-3 col-lg-3">
+                            <div class="card info-card clock-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Próxima Lista @if($list) <span>{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</span> @else Não há lista disponível @endif</h5>
+                                    <div class="d-flex align-items-center">
+                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-clock-history"></i>
+                                        </div>
+                                        <div class="ps-3">
+                                            <h6>{{ $remainingTime }}</h6>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -172,30 +180,20 @@
                             }
                         @endphp
 
-                        <div class="col-12 col-sm-12 col-lg-6">
-                            <div class="card info-card clock-card">
+                        <div class="col-sm-12 col-md-4 col-lg-3">
+                            <div class="card info-card customers-card">
                                 <div class="card-body">
-                                    <h5 class="card-title">Nível Atual</h5>
-                                    
-                                    <small>{{ $nivel }}</small>
-                                    <div class="progress">
-                                        <div class="progress-bar" role="progressbar" style="width: {{ $progressAtual }}%" aria-valuenow="{{ $progressAtual }}" aria-valuemin="0" aria-valuemax="{{ $maxSalesAtual }}"></div>
-                                        <small>Faltam {{ max(0, $maxSalesAtual - $saleTotal) }} vendas para o próximo nível</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-sm-12 col-lg-6">
-                            <div class="card info-card clock-card">
-                                <div class="card-body">
-                                    <h5 class="card-title">Próxima Lista @if($list) <span>{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</span> @else Não há lista disponível @endif</h5>
+                                    <h5 class="card-title">Graduação</h5>
                                     <div class="d-flex align-items-center">
                                         <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                            <i class="bi bi-clock-history"></i>
+                                            <i class="bi bi-award"></i>
                                         </div>
                                         <div class="ps-3">
-                                            <h6>{{ $remainingTime }}</h6>
+                                            <p>{{ Auth::user()->levelLabel() }}</p>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" style="width: {{ $progressAtual }}%" aria-valuenow="{{ $progressAtual }}" aria-valuemin="0" aria-valuemax="{{ $maxSalesAtual }}"></div>
+                                                <small>{{ $progressAtual }}%</small>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -215,7 +213,6 @@
                         <div class="card info-card sales-card text-center">
                             <div class="card-body">
                                 <h5 class="card-title">T. Vendas (Hoje)</h5>
-
                                 <div class="d-flex align-items-center justify-content-center">
                                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                         <i class="bi bi-cart-check-fill"></i>
@@ -322,8 +319,9 @@
                                         <th scope="col">--</th>
                                         <th scope="col">N°</th>
                                         <th scope="col">Vendedor</th>
+                                        <th scope="col" class="text-center">Estado</th>
                                         <th scope="col">Faturamento</th>
-                                        <th scope="col">Qtd</th>
+                                        <th scope="col">Graduação</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -347,8 +345,9 @@
                                             </td>
                                             <th scope="row">{{ $loop->iteration }}</th>
                                             <td>{{ $user->name }}</td>
+                                            <td class="text-center">{{ $user->state }}</th>
                                             <td>R$ {{ number_format($user->saleTotal(), 2, ',', '.') }}</td>
-                                            <td>{{ $user->saleCount() }}</td>
+                                            <td>{{ $user->levelLabel() }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -359,4 +358,36 @@
             </div>
         </div>
     </section>
+
+    <style>
+        .circular-progress {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: conic-gradient(#004AAD calc(var(--percentage) * 1%), #dee4f0 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #000000;
+        }
+    
+        .percentage-text {
+            position: absolute;
+            font-weight: bold;
+            color: #000000;
+        }
+    </style>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const progressElement = document.querySelector('.circular-progress');
+            const sales = parseInt(progressElement.getAttribute('data-sales'), 10) || 0;
+            const percentage = Math.min((sales / 100) * 100, 100);
+  
+            progressElement.style.setProperty('--percentage', percentage);
+            document.getElementById('percentage').textContent = Math.round(percentage) + '%';
+        });
+    </script>
 @endsection

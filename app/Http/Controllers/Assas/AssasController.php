@@ -252,7 +252,7 @@ class AssasController extends Controller {
                     ],
                     'json' => [
                         'phone'           => '55' . $user->phone,
-                        'message'         => "Prezado cliente, estamos enviando o link para pagamento da sua contratação aos serviços da nossa assessoria.  \r\n\r\n\r\n FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳 \r\n",
+                        'message'         => "Prezado ".$user->name.", estamos enviando o link para pagamento da sua contratação aos serviços da nossa assessoria.  \r\n\r\n\r\n FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳 \r\n",
                         'image'           => env('APP_URL_LOGO'),
                         'linkUrl'         => $url_payment,
                         'title'           => 'Pagamento de Fatura',
@@ -417,46 +417,48 @@ class AssasController extends Controller {
             'verify' => false
         ];
 
-        // if(env('APP_ENV') <> 'local') {
-        //     if ($filiate != null && $commission > 0) {
-        //         if (!isset($options['json']['split'])) {
-        //             $options['json']['split'] = [];
-        //         }
+        if(env('APP_ENV') <> 'local') {
+            if ($filiate != null && $commission > 0) {
+                if (!isset($options['json']['split'])) {
+                    $options['json']['split'] = [];
+                }
 
-        //         $affiliateCommission = $commission * 0.20;
-        //         $commission = $commission - $affiliateCommission;
+                $affiliateCommission = $commission * 0.20;
+                $commission = $commission - $affiliateCommission;
             
-        //         $options['json']['split'][] = [
-        //             'walletId'          => $filiate,
-        //             'totalFixedValue' => number_format($affiliateCommission, 2, '.', '')
-        //         ];
-        //     }
+                $options['json']['split'][] = [
+                    'walletId'          => $filiate,
+                    'totalFixedValue' => number_format($affiliateCommission, 2, '.', '')
+                ];
+            }
 
-        //     if ($commission > 0) {
-        //         if (!isset($options['json']['split'])) {
-        //             $options['json']['split'] = [];
-        //         }
+            if ($commission > 0) {
+                if (!isset($options['json']['split'])) {
+                    $options['json']['split'] = [];
+                }
 
-        //         $g7Commission = $commission * 0.05;
-        //         $commission = $commission - $g7Commission;
+                $g7Commission = $commission * 0.05;
+                $commission = $commission - $g7Commission;
 
-        //         $options['json']['split'][] = [
-        //             'walletId'          => env('WALLET_G7'),
-        //             'totalFixedValue' => number_format($g7Commission, 2, '.', '')
-        //         ];
-        //     }
+                if($wallet <> env('WALLET_HEFESTO')) {
+                    $options['json']['split'][] = [
+                        'walletId'          => env('WALLET_G7'),
+                        'totalFixedValue' => number_format($g7Commission, 2, '.', '')
+                    ];
+                }
+            }
 
-        //     if ($wallet != null && $commission > 0) {
-        //         if (!isset($options['json']['split'])) {
-        //             $options['json']['split'] = [];
-        //         }
+            if ($wallet != null && $commission > 0) {
+                if (!isset($options['json']['split'])) {
+                    $options['json']['split'] = [];
+                }
             
-        //         $options['json']['split'][] = [
-        //             'walletId'          => $wallet,
-        //             'totalFixedValue' => number_format($commission, 2, '.', '')
-        //         ];
-        //     }
-        // }
+                $options['json']['split'][] = [
+                    'walletId'          => $wallet,
+                    'totalFixedValue' => number_format($commission, 2, '.', '')
+                ];
+            }
+        }
         
         $response = $client->post(env('API_URL_ASSAS') . 'v3/payments', $options);
         $body = (string) $response->getBody();
@@ -727,7 +729,7 @@ class AssasController extends Controller {
             $invoice = Invoice::where('token_payment', $token)->where('status', 0)->first();
             if($invoice) {
 
-                if(($invoice->type == 2 || $invoice->type == 3) && $invoice->num <> 1) {
+                if(($invoice->type == 2 || $invoice->type == 3) && $invoice->num > 1) {
                     switch ($invoice->notification_number) {
                         case 1:
                             $value      = $invoice->value - ($invoice->value * 0.10);
