@@ -32,6 +32,7 @@ class Sale extends Model {
         'status',
         'wallet_off',
         'label',
+        'guarantee'
     ];
 
     public function product() {

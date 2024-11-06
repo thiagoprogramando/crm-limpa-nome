@@ -137,7 +137,10 @@
                                     <tr>
                                         <th scope="row">{{ $sale->id }} <br> @if($sale->label) <span class="badge bg-primary">{{ $sale->label }}</span> @endif</th>
                                         <th>{{ $sale->list->name }}</th>
-                                        <td title="{{ $sale->product->name }}">{{ substr($sale->product->name, 0, 15) }}</td>
+                                        <td title="{{ $sale->product->name }}">
+                                            {{ substr($sale->product->name, 0, 15) }} <br>
+                                            <span class="badge bg-primary">Garantia: @if($sale->guarantee) {{ \Carbon\Carbon::parse($sale->guarantee)->format('d/m/Y') }} @else --- @endif</span>
+                                        </td>
                                         <td>{{ $sale->user->name }}</td>
                                         <td class="d-none">{{ $sale->user->phone }}</td>
                                         <td>{{ $sale->user->cpfcnpjLabel() }}</td>

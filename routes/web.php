@@ -122,6 +122,7 @@ Route::middleware(['auth'])->group(function () {
 
     //Payments Assas
     Route::get('/createMonthly/{id}', [AssasController::class, 'createMonthly'])->name('createMonthly');
+    Route::get('/payMonthly/{id}', [AssasController::class, 'payMonthly'])->name('payMonthly');
     Route::get('/payments', [Payment::class, 'payments'])->name('payments');
     Route::get('/request-invoices/{id}', [AssasController::class, 'requestInvoice'])->name('request-invoices');
 

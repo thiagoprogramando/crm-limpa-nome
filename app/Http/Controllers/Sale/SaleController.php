@@ -447,33 +447,22 @@ class SaleController extends Controller {
             return redirect()->back()->with('error', 'Não encontramos dados da venda!');
         }
 
-        $user = User::find($sale->id_client);
-        if ($user) {
-            $saleUser = Sale::where('id_client', $user->id)->count();
+        $invoices = Invoice::where('id_sale', $sale->id)->get();
+        foreach ($invoices as $invoice) {
+           
+            $assasController = new AssasController();
+            if($invoice->status <> 1) {
+                $assasController->cancelInvoice($invoice->token_payment);
+            }
+            
+            $invoice->delete();
         }
 
-        Invoice::where('id_sale', $sale->id)->delete();
-
-        switch ($sale->status) {
-            case 0:
-            case 3:
-            case 4:
-                $sale->delete();
-                if ($user && $saleUser <= 1) {
-                    $user->delete();
-                }                
-                return redirect()->back()->with('success', 'Dados da venda eliminados do sistema!');
-                break;
-            case 1:
-                return redirect()->back()->with('error', 'Existem pagamentos atribuídos ao N° da venda, contate o suporte!');
-                break;
-            case 2:
-                return redirect()->back()->with('error', 'Existem contratos atribuídos ao N° da venda, contate o suporte!');
-                break;
-            default:
-                return redirect()->back()->with('error', 'Erro desconhecido ao excluir a venda!');
-                break;
+        if($sale->delete()) {
+            return redirect()->back()->with('success', 'Venda e Faturas excluídas com sucesso!');
         }
+        
+        return redirect()->back()->with('error', 'Não foi possível excluir a venda!');
     }
 
     public function deleteSalesPending() {
