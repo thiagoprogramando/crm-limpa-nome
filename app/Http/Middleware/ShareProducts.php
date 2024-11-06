@@ -18,13 +18,18 @@ class ShareProducts {
     public function handle(Request $request, Closure $next): Response {
 
         if (Auth::check()) {
-            $business = Product::where('level', null)
-                ->orWhere('level', Auth::user()->level)
+            $business = Product::where('active', 1)
+                ->where(function ($query) {
+                    $query->where('level', null)
+                        ->orWhere('level', Auth::user()->level);
+                })
                 ->get();
             
             $businessLink = Product::where('createuser', 1)
+                ->where('active', 1)
                 ->where(function ($query) {
-                    $query->where('level', null)->orWhere('level', Auth::user()->level);
+                    $query->where('level', null)
+                          ->orWhere('level', Auth::user()->level);
                 })
                 ->get();
 

@@ -36,6 +36,7 @@ class ProductController extends Controller {
         $product->terms         = $request->has('terms') ? 1 : 0;
         $product->level         = $request->level;
         $product->contract      = $request->contract;
+        $product->active        = $request->active;
 
         $product->value_cost    = $this->formatarValor($request->value_cost);
         $product->value_rate    = $this->formatarValor($request->value_rate);
@@ -87,6 +88,9 @@ class ProductController extends Controller {
             
             if($request->contract) {
                 $product->contract = $request->contract;
+            }
+            if($request->active) {
+                $product->active = $request->active;
             }
             if($request->value_cost) {
                 $product->value_cost = $this->formatarValor($request->value_cost);

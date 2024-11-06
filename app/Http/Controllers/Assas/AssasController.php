@@ -649,15 +649,38 @@ class AssasController extends Controller {
                         switch($totalSales) {
                             case 10:
                                 $seller->level = 2;
+                                $notification               = new Notification();
+                                $notification->name         = 'Novo nível!';
+                                $notification->description  = $seller->name.' Alcançou o nível: CONSULTOR';
+                                $notification->type         = 2;
+                                $notification->id_user      = 14; 
+                                $notification->save();
                                 break;
                             case 30:
                                 $seller->level = 3;
+                                $notification               = new Notification();
+                                $notification->name         = 'Novo nível!';
+                                $notification->description  = $seller->name.' Alcançou o nível: CONSULTOR LÍDER';
+                                $notification->type         = 2;
+                                $notification->id_user      = 14; 
+                                $notification->save();
                                 break;
                             case 50:
                                 $seller->level = 4;
+                                $notification               = new Notification();
+                                $notification->name         = 'Novo nível!';
+                                $notification->description  = $seller->name.' Alcançou o nível: REGIONAL';
+                                $notification->type         = 2;
+                                $notification->id_user      = 14; 
+                                $notification->save();
                                 break;
                             case 100:
                                 $seller->level = 5;
+                                $notification               = new Notification();
+                                $notification->name         = 'Novo nível!';
+                                $notification->description  = $seller->name.' Alcançou o nível: GERENTE REGIONAL';
+                                $notification->type         = 2;
+                                $notification->id_user      = 14; 
                                 break;
                         }
                         $seller->save();

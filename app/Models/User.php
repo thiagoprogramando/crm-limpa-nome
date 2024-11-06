@@ -46,9 +46,10 @@ class User extends Authenticatable {
         return $this->hasMany(Invoice::class, 'id_user');
     }
 
-    public function invoicesPendent() {
-        return $this->invoices()->where('type', 1)->where('status', 0)->count();
-    }
+    // Comentado em 06/11 esperar próximos dois packs para excluir
+    // public function invoicesPendent() {
+    //     return $this->invoices()->where('type', 1)->where('status', 0)->count();
+    // }
 
     public function levelLabel() {
 

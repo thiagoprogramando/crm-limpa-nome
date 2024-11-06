@@ -42,70 +42,83 @@
                                 </div>
                             </div>
 
-                            <div class="col-12 col-md-8 col-lg-8 mb-1">
-                                <div class="form-floating">
-                                    <textarea name="description" class="form-control" placeholder="Descrição" id="floatingTextarea" style="height: 100px;"></textarea>
-                                    <label for="floatingTextarea">Indique uma descrição para o Produto:</label>
+                            <div class="col-12 col-md-8 col-lg-8 row">
+                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                    <div class="form-floating">
+                                        <textarea name="description" class="form-control" placeholder="Descrição" id="floatingTextarea" style="height: 100px;"></textarea>
+                                        <label for="floatingTextarea">Indique uma descrição para o Produto:</label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <textarea name="terms_text" class="form-control" placeholder="Indique uma descrição para os Termos" id="floatingTextarea" style="height: 100px;"></textarea>
-                                    <label for="floatingTextarea">Indique uma descrição para os Termos:</label>
+                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                    <div class="form-floating">
+                                        <textarea name="terms_text" class="form-control" placeholder="Indique uma descrição para os Termos" id="floatingTextarea" style="height: 100px;"></textarea>
+                                        <label for="floatingTextarea">Indique uma descrição para os Termos:</label>
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" name="value_cost" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
-                                    <label for="floatingContract">Indique o custo do Produto:</label>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" name="value_rate" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
-                                    <label for="floatingContract">Indique o custo de taxas do Produto:</label>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <select name="level" class="form-select" id="floatingSelect">
-                                        <option selected="">Indique qual nível terá acesso:</option>
-                                        <option value="1">INICIANTE</option>
-                                        <option value="2">CONSULTOR</option>
-                                        <option value="3">CONSULTOR LÍDER</option>
-                                        <option value="7">CONSULTOR MASTER</option>
-                                        <option value="4">REGIONAL</option>
-                                        <option value="5">GERENTE REGIONAL</option>
-                                        <option value="6">VENDEDOR INTERNO</option>
-                                        <option value="8">VENDEDOR MASTER</option>
-                                        <option value="">Todos</option>
-                                    </select>
-                                    <label for="floatingSelect">Níveis</label>
+                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                    <div class="form-floating">
+                                        <input type="text" name="contract" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:">
+                                        <label for="floatingContract">Indique um ID de contrato para o Produto:</label>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" name="contract" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:">
-                                    <label for="floatingContract">Indique um ID de contrato para o Produto:</label>
+                            <div class="col-12 col-md-4 col-lg-4 row">
+                                <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                    <div class="form-floating">
+                                        <input type="text" name="value_cost" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
+                                        <label for="floatingContract">Custo:</label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" name="value_min" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
-                                    <label for="floatingContract">Indique o valor mín de venda para o Produto:</label>
+                                <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                    <div class="form-floating">
+                                        <input type="text" name="value_rate" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
+                                        <label for="floatingContract">Taxas:</label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" name="value_max" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
-                                    <label for="floatingContract">Indique o valor máx de venda para o Produto:</label>
+                                <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                    <div class="form-floating">
+                                        <input type="text" name="value_min" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
+                                        <label for="floatingContract">Mín de venda :</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                    <div class="form-floating">
+                                        <input type="text" name="value_max" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
+                                        <label for="floatingContract">Máx de venda:</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                    <div class="form-floating">
+                                        <select name="level" class="form-select" id="floatingSelect">
+                                            <option selected="">Nível com acesso:</option>
+                                            <option value="1">INICIANTE</option>
+                                            <option value="2">CONSULTOR</option>
+                                            <option value="3">CONSULTOR LÍDER</option>
+                                            <option value="7">CONSULTOR MASTER</option>
+                                            <option value="4">REGIONAL</option>
+                                            <option value="5">GERENTE REGIONAL</option>
+                                            <option value="6">VENDEDOR INTERNO</option>
+                                            <option value="8">VENDEDOR MASTER</option>
+                                            <option value="">TODOS</option>
+                                        </select>
+                                        <label for="floatingSelect">Opções</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                    <div class="form-floating">
+                                        <select name="active" class="form-select" id="floatingSelect">
+                                            <option selected="">Situação:</option>
+                                            <option value="1">Ativo</option>
+                                            <option value="2">Inativo</option>
+                                        </select>
+                                        <label for="floatingSelect">Opções</label>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="col-12 col-md-4 col-lg-4 offset-md-8 offset-lg-8 mb-1 d-grid gap-2 mt-3">
-                                <button type="submit" class="btn btn-outline-success rounded-pill" type="button">Salvar</button>
+                                <button type="submit" class="btn btn-success" type="button">Salvar</button>
                             </div>
                         </form>
                     </div>

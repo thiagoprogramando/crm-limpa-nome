@@ -16,92 +16,107 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Altere apenas o que precisar.</h5>
+                       
         
-                        <form action="{{ route('update-product') }}" method="POST" class="row g-3">
+                        <form action="{{ route('update-product') }}" method="POST" class="row">
                             @csrf
                             <input type="hidden" name="id" value="{{ $product->id }}">
-                            <div class="col-12 col-md-8 col-lg-8 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" name="name" value="{{ $product->name }}" class="form-control" id="floatingName" placeholder="Indique um nome para o Produto:" required>
-                                    <label for="floatingName">Indique um nome para o Produto:</label>
+                            <div class="col-12 col-md-12 col-lg-12 row mt-3">
+                                <div class="col-12 col-md-8 col-lg-8 mb-2">
+                                    <div class="form-floating">
+                                        <input type="text" name="name" value="{{ $product->name }}" class="form-control" id="floatingName" placeholder="Indique um nome para o Produto:" required>
+                                        <label for="floatingName">Nome do Produto:</label>
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="address" id="address" @if($product->address) checked @endif>
-                                    <label class="form-check-label" for="address">Solicitar Endereço ao Cliente</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="terms" id="terms" @if($product->terms) checked @endif>
-                                    <label class="form-check-label" for="terms">Solicitar aceite de termos</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="createuser" id="user" @if($product->createuser) checked @endif>
-                                    <label class="form-check-label" for="user">Venda por Link</label>
-                                </div>
-                            </div>
-
-                            <div class="col-12 col-md-12 col-lg-12 mb-1">
-                                <div class="form-floating">
-                                    <textarea name="description" class="form-control" placeholder="Descrição" id="floatingTextarea" style="height: 100px;">{{ $product->description }}</textarea>
-                                    <label for="floatingTextarea">Indique uma descrição para o Produto:</label>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <textarea name="terms_text" class="form-control" placeholder="Indique uma descrição para os Termos" id="floatingTextarea" style="height: 100px;">{{ $product->terms_text }}</textarea>
-                                    <label for="floatingTextarea">Indique uma descrição para os Termos:</label>
+                                <div class="col-12 col-md-4 col-lg-4 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="address" id="address" @if($product->address) checked @endif>
+                                        <label class="form-check-label" for="address">Endereço ao Cliente</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="terms" id="terms" @if($product->terms) checked @endif>
+                                        <label class="form-check-label" for="terms">Aceite de termos</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="createuser" id="user" @if($product->createuser) checked @endif>
+                                        <label class="form-check-label" for="user">Venda por Link</label>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" name="value_cost" value="{{ $product->value_cost }}" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
-                                    <label for="floatingContract">Indique o custo do Produto:</label>
+                            <div class="col-12 col-md-8 col-lg-8 row">
+                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                    <div class="form-floating">
+                                        <textarea name="description" class="form-control" placeholder="Descrição" id="floatingTextarea" style="height: 100px;">{{ $product->description }}</textarea>
+                                        <label for="floatingTextarea">Indique uma descrição para o Produto:</label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" name="value_rate" value="{{ $product->value_rate }}" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
-                                    <label for="floatingContract">Indique o custo de taxas do Produto:</label>
+                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                    <div class="form-floating">
+                                        <textarea name="terms_text" class="form-control" placeholder="Indique uma descrição para os Termos" id="floatingTextarea" style="height: 100px;">{{ $product->terms_text }}</textarea>
+                                        <label for="floatingTextarea">Indique uma descrição para os Termos:</label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <select name="level" class="form-select" id="floatingSelect">
-                                        <option selected value="{{ $product->level }}">Indique qual nível terá acesso:</option>
-                                        <option value="1">INICIANTE</option>
-                                        <option value="2">CONSULTOR</option>
-                                        <option value="3">CONSULTOR LÍDER</option>
-                                        <option value="7">CONSULTOR MASTER</option>
-                                        <option value="4">REGIONAL</option>
-                                        <option value="5">GERENTE REGIONAL</option>
-                                        <option value="6">VENDEDOR INTERNO</option>
-                                        <option value="8">VENDEDOR MASTER</option>
-                                        <option value="">Todos</option>
-                                    </select>
-                                    <label for="floatingSelect">Níveis</label>
+                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                    <div class="form-floating">
+                                        <input type="text" name="contract" value="{{ $product->contract }}" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:">
+                                        <label for="floatingContract">Indique um ID de contrato para o Produto:</label>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" name="contract" value="{{ $product->contract }}" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:">
-                                    <label for="floatingContract">Indique um ID de contrato para o Produto:</label>
+                            <div class="col-12 col-md-4 col-lg-4 row">
+
+                                <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                    <div class="form-floating">
+                                        <input type="text" name="value_cost" value="{{ $product->value_cost }}" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
+                                        <label for="floatingContract">Custo:</label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" name="value_min" value="{{ $product->value_min }}" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
-                                    <label for="floatingContract">Indique o valor mín de venda para o Produto:</label>
+                                <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                    <div class="form-floating">
+                                        <input type="text" name="value_rate" value="{{ $product->value_rate }}" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
+                                        <label for="floatingContract">Taxas:</label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                <div class="form-floating">
-                                    <input type="text" name="value_max" value="{{ $product->value_max }}" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
-                                    <label for="floatingContract">Indique o valor máx de venda para o Produto:</label>
+                                <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                    <div class="form-floating">
+                                        <input type="text" name="value_min" value="{{ $product->value_min }}" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
+                                        <label for="floatingContract">Mín de venda:</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                    <div class="form-floating">
+                                        <input type="text" name="value_max" value="{{ $product->value_max }}" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
+                                        <label for="floatingContract">Máx de venda:</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                    <div class="form-floating">
+                                        <select name="level" class="form-select" id="floatingSelect">
+                                            <option selected value="{{ $product->level }}">Nível com acesso:</option>
+                                            <option value="1" @selected($product->level == 1)>INICIANTE</option>
+                                            <option value="2" @selected($product->level == 2)>CONSULTOR</option>
+                                            <option value="3" @selected($product->level == 3)>CONSULTOR LÍDER</option>
+                                            <option value="7" @selected($product->level == 7)>CONSULTOR MASTER</option>
+                                            <option value="4" @selected($product->level == 4)>REGIONAL</option>
+                                            <option value="5" @selected($product->level == 5)>GERENTE REGIONAL</option>
+                                            <option value="6" @selected($product->level == 6)>VENDEDOR INTERNO</option>
+                                            <option value="8" @selected($product->level == 8)>VENDEDOR MASTER</option>
+                                            <option value="">Todos</option>
+                                        </select>
+                                        <label for="floatingSelect">Opções</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                    <div class="form-floating">
+                                        <select name="active" class="form-select" id="floatingSelect">
+                                            <option value="{{ $product->active }}">Situação:</option>
+                                            <option value="1" @selected($product->active == 1)>Ativo</option>
+                                            <option value="2" @selected($product->active == 2)>Inativo</option>
+                                        </select>
+                                        <label for="floatingSelect">Opções</label>
+                                    </div>
                                 </div>
                             </div>
 

@@ -33,7 +33,7 @@
                                     <div class="w-100">
                                         <p class="social-media d-flex justify-content-end">
                                             <a href="https://www.facebook.com/diegoduarteg7/" target="_blank" class="social-icon d-flex align-items-center justify-content-center"><span class="fa fa-facebook"></span></a>
-                                            <a href="https://www.instagram.com/grupo7assessoria" target="_blank" class="social-icon d-flex align-items-center justify-content-center"><span class="fa fa-instagram"></span></a>
+                                            <a href="https://www.instagram.com/g7assessoria/" target="_blank" class="social-icon d-flex align-items-center justify-content-center"><span class="fa fa-instagram"></span></a>
                                         </p>
                                     </div>
                                 </div>

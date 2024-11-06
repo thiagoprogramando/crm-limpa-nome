@@ -281,7 +281,7 @@ class UserController extends Controller {
         $apresentation->title  = $request->title;
         $apresentation->level  = $request->level;
 
-        if ($request->hasFile('file') && $request->file('file')->isValid()) {
+        if ($request->hasFile('file')) {
             $apresentation->file = $request->file->store('public/apresentation');
         } else {
             return redirect()->back()->with('error', 'Não foi possível processar o arquivo, tente novamente mais tarde!');
