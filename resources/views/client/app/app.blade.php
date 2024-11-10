@@ -11,64 +11,72 @@
         </nav>
     </div>
 
-    
     <section class="section dashboard">
         <div class="row">
-
-            <div class="col-12">
-
+            <div class="col-12 co-sm-12 col-md-12 col-lg-12">
                 <div class="btn-group mb-3" role="group">
                     <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
                 </div>
     
-                <div class="card p-5">
+                <div class="card p-3">
                     <div class="card-body">
-                        <h5 class="card-title">Vendas</h5>
-                        
-                        <div class="table-responsive">
-                            <table class="table table-hover" id="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">N°</th>
-                                        <th scope="col">Lista</th>
-                                        <th scope="col">Produto</th>
-                                        <th scope="col">Vendedor</th>
-                                        <th class="text-center" scope="col">Status - Data</th>
-                                        <th class="text-center" scope="col">Status Serasa</th>
-                                        <th class="text-center" scope="col">Status SPC</th>
-                                        <th class="text-center" scope="col">Status Boa Vista</th>
-                                        <th class="text-center" scope="col">Opções</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($sales as $sale)
-                                        <tr>
-                                            <th scope="row">{{ $sale->id }}</th>
-                                            <th>{{ $sale->list->name }}</th>
-                                            <td title="{{ $sale->product->name }}">{{ $sale->product->name }}</td>
-                                            <td>{{ $sale->user->name }}</td>
-                                            <td class="text-center">{{ $sale->statusLabel() }} - {{ \Carbon\Carbon::parse($sale->created_at)->format('d/m/Y') }}</td>
-                                            <td class="text-center">{{ $sale->list->serasa_status }}</td>
-                                            <td class="text-center">{{ $sale->list->status_spc }}</td>
-                                            <td class="text-center">{{ $sale->list->status_boa_vista }}</td>
-                                            <td class="text-center">
-                                                <div class="btn-group" role="group" aria-label="Basic outlined example">
-                                                    <a href="{{ $sale->url_contract }}" target="_blank" class="btn btn-outline-primary"><i class="bi bi-file-earmark-text"></i></a>
-                                                    <a href="{{ route('invoice.cliente', ['sale' => $sale->id]) }}" class="btn btn-outline-primary"><i class="bi bi-currency-dollar"></i></a>
+                        <h2>Compras</h2>
+                        <hr>
+
+                        <div class="row">
+                            @foreach ($sales as $sale)
+                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                    <div class="card mb-3">
+                                        <div class="row g-0">
+                                            <div class="col-md-7">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">Lista {{ $sale->list->name }}</h5>
+                                                    <p class="card-text">
+                                                        {{$sale->list->description }}
+                                                        <span class="badge bg-primary">{{ \Carbon\Carbon::parse($sale->list->end)->format('d/m/Y') }}</span>
+                                                    </p>
+                                                    @if($sale->label) <span class="badge bg-primary">{{ $sale->label }}</span> @endif
+                                                    <div class="table-responsive">
+                                                        <table class="table table-hover">
+                                                            <thead>
+                                                                <th class="text-center">Serasa</th>
+                                                                <th class="text-center">SPC</th>
+                                                                <th class="text-center">B. Vista</th>
+                                                            </thead>
+                                                            <tbody>
+                                                                <td class="text-center">{{ $sale->list->serasa_status }}</td>
+                                                                <td class="text-center">{{ $sale->list->status_spc }}</td>
+                                                                <td class="text-center">{{ $sale->list->status_boa_vista }}</td>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">{{$sale->product->name }}</h5>
+                                                    <p class="card-text">
+                                                        {{$sale->product->description }}
+                                                        <span class="badge bg-dark">{{ $sale->statusLabel() }} </br> {{ \Carbon\Carbon::parse($sale->created_at)->format('d/m/Y') }}</span>
+                                                    </p>
+                                                    <div class="btn-group" role="group">
+                                                        <a title="Acessar Contrato" href="{{ $sale->url_contract }}" target="_blank" class="btn btn-outline-primary card-link"><i class="bi bi-file-earmark-text"></i></a>
+                                                        <a title="Acessar Faturas" href="{{ route('invoice.cliente', ['sale' => $sale->id]) }}" class="btn btn-outline-primary card-link"><i class="bi bi-currency-dollar"></i></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
+                        
                         <div class="text-center">
                             {{ $sales->appends(request()->query())->links() }}
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </section>
 @endsection

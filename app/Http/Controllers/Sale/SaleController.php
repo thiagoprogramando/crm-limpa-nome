@@ -118,14 +118,14 @@ class SaleController extends Controller {
 
             $sale->value        = $this->formatarValor($request->value) + $method->value_rate;
 
-            if(auth()->check()) {
+            if (Auth::check()) {
                 if($request->wallet_off) {
-                    $sale->commission = auth()->user()->type == 4 ? 0 : ($this->formatarValor($request->value)) - $product->value_rate;
+                    $sale->commission = Auth::user()->type == 4 ? 0 : ($this->formatarValor($request->value)) - $product->value_rate;
                 } else {
-                    $sale->commission = auth()->user()->type == 4 ? 0 : ($this->formatarValor($request->value) - $product->value_cost) - $product->value_rate;
+                    $sale->commission = Auth::user()->type == 4 ? 0 : ($this->formatarValor($request->value) - $product->value_cost) - $product->value_rate;
                 }
 
-                if(auth()->user()->filiate != null && auth()->user()->type != 4) {
+                if(Auth::user()->filiate != null && Auth::user()->type != 4) {
                     $sale->commission -= $sale->commission * 0.20;
                 }
             } else {
@@ -419,10 +419,15 @@ class SaleController extends Controller {
 
     public function viewSale($id) {
 
-        $sale = Sale::find($id);
-        $invoices = Invoice::where('id_sale', $sale->id)->get();
+        $sale       = Sale::find($id);
+        $invoices   = Invoice::where('id_sale', $sale->id)->get();
+        $users      = User::whereIn('type', [1, 2, 5, 6, 7])->orderBy('name', 'asc')->get();
 
-        return view('app.Sale.view', ['sale' => $sale, 'invoices' => $invoices]);
+        return view('app.Sale.view', [
+            'sale'      => $sale, 
+            'invoices'  => $invoices,
+            'users'     => $users
+        ]);
     }
 
     public function updatedSale(Request $request) {
@@ -478,11 +483,10 @@ class SaleController extends Controller {
 
     public function default(Request $request) {
         
-        $user = Auth::user();
-    
-        $id_seller = $request->input('id_seller');
-        $id_list = $request->input('id_list');
-        $name = $request->input('name');
+        $user       = Auth::user();
+        $id_seller  = $request->input('id_seller');
+        $id_list    = $request->input('id_list');
+        $name       = $request->input('name');
     
         $query = Invoice::query();
     
@@ -529,10 +533,8 @@ class SaleController extends Controller {
         }
 
         $client = new Client();
-
         $url = 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
         try {
-
             $response = $client->post($url, [
                 'headers' => [
                     'Content-Type'  => 'application/json',
@@ -611,5 +613,68 @@ class SaleController extends Controller {
         }
 
         return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');
+    }
+
+    public function deleteInvoice($id) {
+
+        $invoice = Invoice::find($id);
+        if(!$invoice) {
+            return redirect()->back()->with('info', 'Não foi possível localizar os dados da Fatura!');
+        }
+
+        $assasController = new AssasController();
+        if($invoice->status <> 1) {
+            $cancelInvoice = $assasController->cancelInvoice($invoice->token_payment);
+
+            if($cancelInvoice && $invoice->delete()) {
+                return redirect()->back()->with('success', 'Fatura excluída com sucesso!');
+            }
+        }
+
+        return redirect()->back()->with('error', 'Não é possível excluir uma Fatura já conciliada!');
+    }
+
+    public function createInvoice(Request $request) {
+
+        $product = Product::find($request->product_id);
+        if (!$product) {
+            return redirect()->back()->with('info', 'Não foi possível localizar os dados do Produto!');
+        }
+
+        $sale = Sale::find($request->sale_id);
+        if (!$sale) {
+            return redirect()->back()->with('info', 'Não foi possível localizar os dados da Venda!');
+        }
+
+        if (!empty($request->wallet) && $this->formatarValor($request->commission) <= 0) {
+            return redirect()->back()->with('info', 'Informe um valor de comissão!');
+        }
+
+        $assasController = new AssasController();
+        $assasInvoice = $assasController->createCharge($sale->user->customer, $request->billingType, $this->formatarValor($request->value), 'Fatura única para venda N°'.$sale->id, $request->due_date, 1, $sale->seller->wallet, $this->formatarValor($request->commission));
+        if ($assasInvoice <> false) {
+
+            $invoice                = new Invoice();
+            $invoice->id_user       = $sale->id_client;
+            $invoice->id_product    = $product->id;
+            $invoice->id_sale       = $sale->id;
+            $invoice->name          = 'Fatura única para venda N°'.$sale->id;
+            $invoice->description   = 'Fatura única para venda N°'.$sale->id;
+            $invoice->token_payment = $assasInvoice['id'];
+            $invoice->url_payment   = $assasInvoice['invoiceUrl'];
+            $invoice->due_date      = $request->due_date;
+            $invoice->value         = $this->formatarValor($request->value);
+            $invoice->commission    = $this->formatarValor($request->commission);
+            $invoice->status        = 0;
+            $invoice->num           = 1;
+            $invoice->type          = 3;
+            if($invoice->save()) {
+                return redirect()->back()->with('success', 'Fatura adicionada com sucesso!');
+            }
+
+            return redirect()->back()->with('info', 'Não foi possível adicionar Fatura, verifique os dados e tentar novamente!');
+        }
+            
+        return redirect()->back()->with('info', 'Não foi possível adicionar Fatura, verifique os dados e tentar novamente!');
     }
 }

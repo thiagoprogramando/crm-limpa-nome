@@ -54,6 +54,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/manager-sale', [SaleController::class, 'manager'])->name('manager-sale');
             Route::get('/update-sale/{id}', [SaleController::class, 'viewSale'])->name('update-sale');
             Route::get('/invoice-default', [SaleController::class, 'default'])->name('invoice-default');
+            Route::get('/delete-invoice/{id}', [SaleController::class, 'deleteInvoice'])->name('delete-invoice');
+            Route::post('create-invoice', [SaleController::class, 'createInvoice'])->name('create-invoice');
             Route::post('updated-sale', [SaleController::class, 'updatedSale'])->name('updated-sale');
             Route::post('delete-sale', [SaleController::class, 'deleteSale'])->name('delete-sale');
             Route::get('delete-sales-pending', [SaleController::class, 'deleteSalesPending'])->name('delete-sales-pending');

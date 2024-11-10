@@ -394,7 +394,7 @@ class AssasController extends Controller {
         }
     }
 
-    private function createCharge($customer, $billingType, $value, $description, $dueDate, $installments = null, $wallet= null, $commission = null, $filiate = null) {
+    public function createCharge($customer, $billingType, $value, $description, $dueDate, $installments = null, $wallet= null, $commission = null, $filiate = null) {
 
         $client = new Client();
 

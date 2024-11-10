@@ -17,8 +17,11 @@
         <div class="col-12">
 
             <div class="btn-group mb-3" role="group">
-                @if(Auth::user()->type == 1) <a href="{{ route('request-invoices', ['id' => $sale->id]) }}" class="btn btn-primary">Gerar Faturas</a> @endif
-                @if (Auth::user()->type == 1) <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#updatedModal">Alterar dados</button> @endif
+                @if(Auth::user()->type == 1) 
+                    <a href="{{ route('request-invoices', ['id' => $sale->id]) }}" class="btn btn-primary">Gerar Faturas</a>
+                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#updatedModal">Alterar dados</button>
+                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#invoiceModal">Adicionar Fatura</button> 
+                @endif
                 <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
             </div>
 
@@ -56,6 +59,70 @@
                 </div>
             </div>
 
+            <div class="modal fade" id="invoiceModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form action="{{ route('create-invoice') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="sale_id" value="{{ $sale->id }}">
+                            <input type="hidden" name="product_id" value="{{ $sale->product->id }}">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Dados da Fatura</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                        <div class="form-floating">
+                                            <input type="text" name="value" class="form-control" id="floatingValue" placeholder="Valor:" oninput="mascaraReal(this)" required>
+                                            <label for="floatingValue">Valor:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                        <div class="form-floating">
+                                            <input type="date" name="due_date" class="form-control" id="floatingDueDate" placeholder="Vencimento:" required>
+                                            <label for="floatingDueDate">Vencimento:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                        <div class="form-floating">
+                                            <select name="wallet" class="form-select" id="floatingSeller">
+                                                <option value="">Comissão (opcional):</option>
+                                                @foreach ($users as $user)
+                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            <label for="floatingSeller">Consultores</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                        <div class="form-floating">
+                                            <input type="text" name="commission" class="form-control" id="floatingCommission" placeholder="Comissão (valor):" oninput="mascaraReal(this)">
+                                            <label for="floatingCommission">Comissão (valor):</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                        <div class="form-floating">
+                                            <select name="billingType" class="form-select" id="floatingSeller" required>
+                                                <option value="">Método de Pagemento:</option>
+                                                <option value="PIX">Pix</option>
+                                                <option value="BOLETO">Boleto</option>
+                                                <option value="CREDIT_CARD">Cartão de Créditp</option>
+                                            </select>
+                                            <label for="floatingSeller">Métodos</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer btn-group">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn btn-success">Criar cobrança</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Faturas associadas</h5>
@@ -83,8 +150,13 @@
                                         <td class="text-center">R$ {{ number_format($invoice->commission, 2, ',', '.') }}</td>
                                         <td class="text-center">{{ $invoice->statusLabel() }}</td>
                                         <td class="text-center">
-                                            <a href="{{ $invoice->url_payment }}" target="_blank" class="btn btn-primary text-light"><i class="bi bi-upc"></i></a>
-                                            <a href="{{ route('send-default-whatsapp', ['id' => $invoice->id]) }}" class="btn btn-success text-light"><i class="bi bi-whatsapp"></i></a>
+                                            <div class="btn-group">
+                                                <a href="{{ $invoice->url_payment }}" target="_blank" class="btn btn-primary text-light"><i class="bi bi-upc"></i></a>
+                                                <a href="{{ route('send-default-whatsapp', ['id' => $invoice->id]) }}" class="btn btn-success text-light"><i class="bi bi-whatsapp"></i></a>
+                                                @if(Auth::user()->type == 1)
+                                                    <a href="{{ route('delete-invoice', ['id' => $invoice->id]) }}" class="btn btn-danger text-light confirm"><i class="bi bi-trash"></i></a>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach
