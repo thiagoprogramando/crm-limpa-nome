@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->string('name')->unique();
             $table->longText('description')->nullable();
             $table->decimal('percentage', 5, 2);
-            $table->integer('qtd')->default(0);
+            $table->integer('qtd')->default(1);
             $table->date('expiry_date')->nullable();
             $table->timestamps();
         });
