@@ -203,12 +203,11 @@
                             <i class="bi bi-bag"></i><span>Vendas</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
                         <ul id="forms-sale" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                            <li>
-                                <a href="{{ route('manager-sale') }}"> <i class="bi bi-circle"></i><span>Vendas</span> </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('invoice-default') }}"> <i class="bi bi-circle"></i><span>Inadimplência</span> </a>
-                            </li>
+                            <li> <a href="{{ route('manager-sale') }}"> <i class="bi bi-circle"></i><span>Vendas</span> </a> </li>
+                            <li> <a href="{{ route('invoice-default') }}"> <i class="bi bi-circle"></i><span>Inadimplência</span> </a> </li>
+                            @if (Auth::user()->type == 1)
+                                <li><a href="{{ route('coupons') }}"> <i class="bi bi-circle"></i><span>Cupons</span> </a></li>
+                            @endif
                         </ul>
                     </li>
 
@@ -242,9 +241,7 @@
                                 </li>
                             </ul>
                         </li>
-                    @endif
-
-                    @if (Auth::user()->type == 1)
+                    
                         <li class="nav-item">
                             <a class="nav-link collapsed" data-bs-target="#forms-users" data-bs-toggle="collapse" href="#">
                                 <i class="bi bi-file-earmark-person"></i><span>Pessoas</span><i class="bi bi-chevron-down ms-auto"></i>

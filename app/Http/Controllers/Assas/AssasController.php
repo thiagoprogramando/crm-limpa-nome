@@ -474,7 +474,7 @@ class AssasController extends Controller {
         }
     }
 
-    private function sendWhatsapp($link, $message, $phone, $token = null) {
+    public function sendWhatsapp($link, $message, $phone, $token = null) {
 
         $client = new Client();
         $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
@@ -897,7 +897,7 @@ class AssasController extends Controller {
         return response()->json(['status' => 'success', 'message' => 'Webhook não utilizado!']);
     }
 
-    private function addDiscount($id, $value, $dueDate, $commission = null, $wallet = null) {
+    public function addDiscount($id, $value, $dueDate, $commission = null, $wallet = null) {
         
         $client = new Client();
         
@@ -914,16 +914,18 @@ class AssasController extends Controller {
             ],
             'verify' => false
         ];
-    
-        if ($commission > 0) {
-            if (!isset($options['json']['split'])) {
-                $options['json']['split'] = [];
+        
+        if(env('APP_ENV') <> 'local') {
+            if ($commission > 0) {
+                if (!isset($options['json']['split'])) {
+                    $options['json']['split'] = [];
+                }
+        
+                $options['json']['split'][] = [
+                    'walletId'        => $wallet,
+                    'totalFixedValue' => number_format($commission, 2, '.', '')
+                ];
             }
-    
-            $options['json']['split'][] = [
-                'walletId'        => $wallet,
-                'totalFixedValue' => number_format($commission, 2, '.', '')
-            ];
         }
     
         try {

@@ -10,6 +10,7 @@ use App\Http\Controllers\Client\LoginController;
 use App\Http\Controllers\Payment\Payment;
 use App\Http\Controllers\Photoshop\PhotoshopController;
 use App\Http\Controllers\Product\ProductController;
+use App\Http\Controllers\Sale\CouponController;
 use App\Http\Controllers\Sale\DefaultController;
 use App\Http\Controllers\Sale\SaleController;
 use App\Http\Controllers\Upload\UploadController;
@@ -63,6 +64,12 @@ Route::middleware(['auth'])->group(function () {
     
             Route::get('/send-default-whatsapp/{id}', [DefaultController::class, 'sendWhatsapp'])->name('send-default-whatsapp');
             Route::get('/send-contract/{id}', [SaleController::class, 'sendContractWhatsapp'])->name('send-contract');
+
+            //Coupon
+            Route::get('/coupons', [CouponController::class, 'coupons'])->name('coupons');
+            Route::post('create-coupon', [CouponController::class, 'createCoupon'])->name('create-coupon');
+            Route::post('delete-coupon', [CouponController::class, 'deleteCoupon'])->name('delete-coupon');
+            Route::post('add-coupon', [CouponController::class, 'addCoupon'])->name('add-coupon');
 
             //Upload
             Route::get('/createupload/{id}', [UploadController::class, 'create'])->name('createupload');

@@ -151,14 +151,44 @@
                                         <td class="text-center">{{ $invoice->statusLabel() }}</td>
                                         <td class="text-center">
                                             <div class="btn-group">
+                                                <button type="button" class="btn btn-dark text-light" data-bs-toggle="modal" data-bs-target="#couponModal{{ $invoice->id }}"><i class="bi bi-percent"></i> Aplicar CUPOM</button>
                                                 <a href="{{ $invoice->url_payment }}" target="_blank" class="btn btn-primary text-light"><i class="bi bi-upc"></i></a>
-                                                <a href="{{ route('send-default-whatsapp', ['id' => $invoice->id]) }}" class="btn btn-success text-light"><i class="bi bi-whatsapp"></i></a>
+                                                <a href="{{ route('send-default-whatsapp', ['id' => $invoice->id]) }}" class="btn btn-success text-light confirm"><i class="bi bi-whatsapp"></i></a>
                                                 @if(Auth::user()->type == 1)
                                                     <a href="{{ route('delete-invoice', ['id' => $invoice->id]) }}" class="btn btn-danger text-light confirm"><i class="bi bi-trash"></i></a>
                                                 @endif
                                             </div>
                                         </td>
                                     </tr>
+
+                                    <div class="modal fade" id="couponModal{{ $invoice->id }}" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <form action="{{ route('add-coupon') }}" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="invoice_id" value="{{ $invoice->id }}">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">CUPOM:</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                                <div class="form-floating">
+                                                                    <input type="text" name="name" class="form-control" id="floatingName" placeholder="Código:">
+                                                                    <label for="floatingName">Código:</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer btn-group">
+                                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+                                                        <button type="submit" class="btn btn-success">Adicionar</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                                 @endforeach
                             </tbody>
                         </table>
