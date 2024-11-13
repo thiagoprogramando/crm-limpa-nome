@@ -92,33 +92,19 @@ class AppController extends Controller {
 
     public function dashboard() {
 
-        $today = Carbon::today();
-
-        $invoices = [
-            'previstas' => Invoice::where('status', 0)
-                ->where('due_date', '>=', $today)
-                ->count(),
-
-            'vencidas' => Invoice::where('status', 0)
-                ->where('due_date', '<', $today)
-                ->count(),
+        $sales = Sale::where('status', 1)
+            ->count();
     
-            'recebidas' => Invoice::where('status', 1)
-                ->count(),
-        ];
-
-        $invoicing = [
-            'previstas' => Invoice::where('status', 0)
-                ->where('due_date', '>=', $today)
-                ->sum('value'),
-
-            'vencidas' => Invoice::where('status', 0)
-                ->where('due_date', '<', $today)
-                ->sum('value'),
+        $salesDay = Sale::where('status', 1)
+                ->whereDate('created_at', Carbon::today())
+                ->count();
+        
+        $invoicing = Sale::where('status', 1)
+            ->sum('value');
     
-            'recebidas' => Invoice::where('status', 1)
-                ->sum('value'),
-        ];
+        $invoicingDay = Sale::where('status', 1)
+            ->whereDate('updated_at', Carbon::today())
+            ->sum('value');
 
         $users = User::whereIn('type', [2, 5, 6, 7])->get();
         $sortedUsers = $users->sortByDesc(function($user) {
@@ -140,23 +126,38 @@ class AppController extends Controller {
             $remainingTime = 0;
         }
 
-        $salesDay = Auth::user()->type == 1
-            ? Sale::where('status', 1)
-                ->whereDate('created_at', Carbon::today())
-                ->count()
-            : Sale::where('id_seller', Auth::id())
-                ->where('status', 1)
-                ->whereDate('created_at', Carbon::today())
-                ->count();
+        $salesDay = Sale::where('status', 1)
+                    ->whereDate('created_at', Carbon::today())
+                    ->count();
+
+        $consultant = [
+            'CONSULTOR' => User::where('level', 2)->count(),
+            'LIDER'     => User::where('level', 3)->count(),
+            'REGIONAL'  => User::where('level', 4)->count(),
+            'GERENTE'   => User::where('level', 5)->count(),
+        ];
+
+        $actives = User::where('type', 2)->whereDoesntHave('invoices', function ($query) {
+            $query->where('type', 1)
+                  ->where('status', 0);
+        })->count();
+        $inactives = User::where('type', 2)->whereHas('invoices', function ($query) {
+            $query->where('type', 1)
+                  ->where('status', 0);
+        })->count();
 
         return view('app.app', [
-            'invoices'      => $invoices,
+            'sales'         => $sales,
+            'salesDay'      => $salesDay,
             'invoicing'     => $invoicing,
+            'invoicingDay'  => $invoicingDay,
             'users'         => $users,
             'dashboard'     => true,
             'list'          => $list,
             'remainingTime' => $remainingTime,
-            'salesDay'      => $salesDay,
+            'consultant'    => $consultant,
+            'actives'       => $actives,
+            'inactives'     => $inactives
         ]);
     }
     

@@ -57,20 +57,22 @@
                         </div>
 
                         <div class="col-sm-12 col-md-4 col-lg-3">
-                            <div class="card info-card sales-card">
-                                <div class="card-body">
-                                    <h5 class="card-title">T. Vendas (Hoje)</h5>
+                            <a href="{{ route('manager-sale') }}?created_at={{ now()->format('Y-m-d') }}">
+                                <div class="card info-card sales-card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">T. Vendas (Hoje)</h5>
 
-                                    <div class="d-flex align-items-center">
-                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                            <i class="bi bi-cart-check-fill"></i>
-                                        </div>
-                                        <div class="ps-3">
-                                            <h6>{{ $salesDay }}</h6>
+                                        <div class="d-flex align-items-center">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                <i class="bi bi-cart-check-fill"></i>
+                                            </div>
+                                            <div class="ps-3">
+                                                <h6>{{ $salesDay }}</h6>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
 
                         <div class="col-sm-12 col-md-4 col-lg-3">
@@ -203,31 +205,83 @@
                 </div>
             </div>
         @else
-            <div class="row">
-                <div class="col-sm-12 col-md-4 col-lg-4">
-                    <div class="card">
-                        <div class="card-header text-dark" style="background-color: #F5F5F5;">
-                            <b><i class="bi bi-grid"></i> Dados</b>
-                        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="row">
 
-                        <div class="card info-card sales-card text-center">
+                    <div class="col-sm-12 col-md-4 col-lg-3">
+                        <div class="card info-card sales-card">
                             <div class="card-body">
-                                <h5 class="card-title">T. Vendas (Hoje)</h5>
-                                <div class="d-flex align-items-center justify-content-center">
+                                <h5 class="card-title">T. Vendas (N°)</h5>
+
+                                <div class="d-flex align-items-center">
                                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-cart-check-fill"></i>
+                                        <i class="bi bi-cart"></i>
                                     </div>
                                     <div class="ps-3">
-                                        <h6>{{ $salesDay }}</h6>
+                                        <h6>{{ $sales }}</h6>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="card info-card clock-card text-center">
+                    <div class="col-sm-12 col-md-4 col-lg-3">
+                        <a href="{{ route('manager-sale') }}?created_at={{ now()->format('Y-m-d') }}">
+                            <div class="card info-card sales-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">T. Vendas (Hoje)</h5>
+
+                                    <div class="d-flex align-items-center">
+                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-cart-check-fill"></i>
+                                        </div>
+                                        <div class="ps-3">
+                                            <h6>{{ $salesDay }}</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-sm-12 col-md-4 col-lg-3">
+                        <div class="card info-card revenue-card">
+                            <div class="card-body">
+                                <h5 class="card-title">T. Faturamento (R$)</h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-currency-dollar"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6>{{ number_format($invoicing, 2, ',', '.') }}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-4 col-lg-3">
+                        <div class="card info-card revenue-card">
+                            <div class="card-body">
+                                <h5 class="card-title">T. Faturamento (R$ Hoje)</h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="ri-money-dollar-circle-line"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6>{{ number_format($invoicingDay, 2, ',', '.') }}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">Próxima Lista @if($list) <span>{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</span> @else Não há lista disponível @endif</h5>
-                                <div class="d-flex align-items-center justify-content-center">
+                                <div class="d-flex align-items-center">
                                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                         <i class="bi bi-clock-history"></i>
                                     </div>
@@ -238,73 +292,64 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-sm-12 col-md-4 col-lg-4">
-                    <div class="card">
-                        <div class="card-header text-dark" style="background-color: #F5F5F5;">
-                            <b><i class="bi bi-person-fill"></i> Cobranças</b>
-                        </div>
-
-                        <div class="card-body p-2">
-                            <div class="card-dashbord p-1 m-3">
-                                <p class="m-1">PREVISTAS</p>
-                                <h1 class="display-6 text-warning text-center"><b>{{ $invoices['previstas'] }}</b></h1>
-                            </div>
-                            
-                            <div class="card-dashbord p-1 m-3">
-                                <p class="m-1">INADIMPLENTES</p>
-                                <h1 class="display-6 text-danger text-center"><b>{{ $invoices['vencidas'] }}</b></h1>
-                            </div>
-
-                            <div class="card-dashbord p-1 m-3">
-                                <p class="m-1">RECEBIDAS</p>
-                                <h1 class="display-6 text-success text-center"><b>{{ $invoices['recebidas'] }}</b></h1>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-12 col-md-4 col-lg-4">
-                    <div class="card">
-                        <div class="card-header text-dark" style="background-color: #F5F5F5;">
-                            <b><i class="bi bi-graph-up"></i> Faturamento</b>
-                        </div>
-
-                        <div class="card-body p-2">
-                            <div class="card-dashbord p-1 m-3">
-                                <p class="m-1">PREVISTAS</p>
-                                <h1 class="text-warning text-center">
-                                    <b>
-                                        <small style="font-size: 16px;">R$</small> 
-                                        {{ number_format($invoicing['previstas'], 2, ',', '.') }}
-                                    </b>
-                                </h1>
-                            </div>
-                            
-                            <div class="card-dashbord p-1 m-3">
-                                <p class="m-1">INADIMPLENTES</p>
-                                <h1 class="text-danger text-center">
-                                    <b>
-                                        <small style="font-size: 16px;">R$</small> 
-                                        {{ number_format($invoicing['vencidas'], 2, ',', '.') }}
-                                    </b>
-                                </h1>
-                            </div>
-
-                            <div class="card-dashbord p-1 m-3">
-                                <p class="m-1">RECEBIDAS</p>
-                                <h1 class="text-success text-center">
-                                    <b>
-                                        <small style="font-size: 16px;">R$</small> 
-                                        {{ number_format($invoicing['recebidas'], 2, ',', '.') }}
-                                    </b>
-                                </h1>
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="card info-card clock-card">
+                            <div class="card-body">
+                                <h5 class="card-title">T. de Consultores</h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-clock-history"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-sm table-striped text-center" style="font-size: 14px !important; margin: 0;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Consultor</th>
+                                                        <th>Líder</th>
+                                                        <th>Regional</th>
+                                                        <th>Gerente</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>{{ $consultant['CONSULTOR'] }}</td>
+                                                        <td>{{ $consultant['LIDER'] }}</td>
+                                                        <td>{{ $consultant['REGIONAL'] }}</td>
+                                                        <td>{{ $consultant['GERENTE'] }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="card info-card clock-card">
+                            <div class="card-body">
+                                <h5 class="card-title">Ativos/Inativos</h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-clock-history"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <p>
+                                            Ativos : {{ $actives }} <br>
+                                            Inativo: {{ $inactives }} <br>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
+        </div>
         @endif
         <div class="row">
             <div class="col-12 col-sm-12 col-lg-12">
