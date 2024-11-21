@@ -290,7 +290,7 @@ class AssasController extends Controller {
             }
         }
 
-        $charge = $this->createCharge($user->customer, 'PIX', '99.00', 'Assinatura -'.env('APP_NAME'), now()->addDay(), null, env('WALLET_HEFESTO'), 20);
+        $charge = $this->createCharge($user->customer, 'PIX', '49.90', 'Assinatura -'.env('APP_NAME'), now()->addDay(), null, env('WALLET_HEFESTO'), 20);
         if($charge != false) {
 
             $invoice = new Invoice();
@@ -299,7 +299,7 @@ class AssasController extends Controller {
 
             $invoice->id_user       = $user->id;
             $invoice->id_product    = 0;
-            $invoice->value         = 99;
+            $invoice->value         = 49.99;
             $invoice->commission    = 20;
             $invoice->status        = 0;
             $invoice->type          = 1;
