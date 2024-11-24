@@ -17,6 +17,11 @@ class Lists extends Model {
         'start',
         'end',
         'status',
+        'serasa_status',
+        'status_spc',
+        'status_boa_vista',
+        'status_quod',
+        'status_cenprot',
     ];
 
     public function statusLabel() {

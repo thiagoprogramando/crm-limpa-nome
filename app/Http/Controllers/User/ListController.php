@@ -55,22 +55,20 @@ class ListController extends Controller {
     }
     
     public function updateList(Request $request) {
+
         $list = Lists::find($request->id);
-    
         if ($list) {
-            // Converte as datas atuais para instâncias de Carbon
+            
             $currentStartDate = Carbon::parse($list->start);
             $currentEndDate = Carbon::parse($list->end);
     
-            // Converte as datas do request para instâncias de Carbon, se fornecidas
             $newStartDate = !empty($request->date_start) ? Carbon::parse($request->date_start) : null;
             $newEndDate = !empty($request->date_end) ? Carbon::parse($request->date_end) : null;
     
-            // Verifica se as datas são diferentes das atuais
             $isDateRangeDifferent = !($currentStartDate->eq($newStartDate) && $currentEndDate->eq($newEndDate));
     
             if ($isDateRangeDifferent && $newStartDate && $newEndDate) {
-                // Verifica a sobreposição de datas com outras listas apenas se as datas foram alteradas
+                
                 $existingListOverlap = Lists::where('id', '!=', $list->id)
                     ->where(function ($query) use ($newStartDate, $newEndDate) {
                         $query->whereBetween('start', [$newStartDate, $newEndDate])
@@ -85,13 +83,11 @@ class ListController extends Controller {
                 if ($existingListOverlap) {
                     return redirect()->back()->with('error', 'Já existe uma Lista nesse período!');
                 }
-    
-                // Atualiza as datas apenas se houve alteração e não há sobreposição
+
                 $list->start = $newStartDate;
                 $list->end = $newEndDate;
             }
-    
-            // Atualiza os campos que foram enviados no request
+
             if ($request->name) {
                 $list->name = $request->name;
             }
@@ -101,8 +97,7 @@ class ListController extends Controller {
             if ($request->status) {
                 $list->status = $request->status;
             }
-    
-            // Atualiza os novos status criados
+
             if ($request->has('serasa_status')) {
                 $list->serasa_status = $request->serasa_status;
             }
@@ -111,6 +106,12 @@ class ListController extends Controller {
             }
             if ($request->has('status_boa_vista')) {
                 $list->status_boa_vista = $request->status_boa_vista;
+            }
+            if ($request->has('status_quod')) {
+                $list->status_quod = $request->status_quod;
+            }
+            if ($request->has('status_cenprot')) {
+                $list->status_cenprot = $request->status_cenprot;
             }
     
             if ($list->save()) {

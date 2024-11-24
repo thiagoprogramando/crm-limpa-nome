@@ -89,11 +89,17 @@
                                 @if($product->terms) 
                                     <div class="col-sm-12 col-md-12 col-lg-12 mb-3">
                                         <div class="d-flex">
-                                            <input type="checkbox" name="terms" id="terms" class="form-control" checked>
-                                            <label for="terms" class="m-2">{{ $product->terms_text }}</label>
+                                            <input type="checkbox" name="terms" id="terms" class="form-control">
+                                            <label for="terms" class="m-2">Você concorda e aceita os termos de contratação do Produto</label>
                                         </div>
                                     </div>
                                 @endif
+
+                                <div class="card p-3 mb-3" id="terms-card" style="display: none;">
+                                    <p>
+                                        {{ $product->terms_text }}
+                                    </p>
+                                </div>
 
                                 <div class="form-group col-sm-12 col-md-12 col-lg-12">
                                     <button type="submit" class="form-control btn btn-primary rounded submit px-3">Enviar dados</button>
@@ -130,6 +136,26 @@
                     timer: 2000
                 })
             @endif
+
+            document.querySelector('form').addEventListener('submit', function(event) {
+                const termsCheckbox = document.getElementById('terms');
+                
+                if (!termsCheckbox.checked) {
+                    alert('Você precisa aceitar os termos de contratação para continuar.');
+                    event.preventDefault();
+                }
+            });
+
+            const termsCheckbox = document.getElementById('terms');
+            const termsCard = document.getElementById('terms-card');
+            
+            termsCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    termsCard.style.display = 'block';
+                } else {
+                    termsCard.style.display = 'none';
+                }
+            });
         </script>
 	</body>
 </html>

@@ -70,6 +70,7 @@ class ProductController extends Controller {
 
         $product = Product::find($request->id);
         if($product) {
+            
             if($request->name) {
                 $product->name = $request->name;
             }
@@ -84,27 +85,14 @@ class ProductController extends Controller {
             $product->createuser    = $request->has('createuser') ? 1 : 0;
             $product->terms         = $request->has('terms') ? 1 : 0;
             
-            $product->level = $request->level;
-            
-            if($request->contract) {
-                $product->contract = $request->contract;
-            }
-            if($request->active) {
-                $product->active = $request->active;
-            }
-            if($request->value_cost) {
-                $product->value_cost = $this->formatarValor($request->value_cost);
-            }
-            if($request->value_rate) {
-                $product->value_rate = $this->formatarValor($request->value_rate);
-            }
-            if($request->value_min) {
-                $product->value_min = $this->formatarValor($request->value_min);
-            }
-            if($request->value_max) {
-                $product->value_max = $this->formatarValor($request->value_max);
-            }
-
+            $product->level         = $request->level;
+            $product->contract      = $request->contract ?? '';
+            $product->active        = $request->active;
+            $product->value_cost    = $this->formatarValor($request->value_cost) ?? 0;
+            $product->value_rate    = $this->formatarValor($request->value_rate) ?? 0;
+            $product->value_min     = $this->formatarValor($request->value_min) ?? 0;
+            $product->value_max     = $this->formatarValor($request->value_max) ?? 0;
+    
             if($product->save()) {
                 return redirect()->back()->with('success', 'Produto atualizado com sucesso!');
             }    

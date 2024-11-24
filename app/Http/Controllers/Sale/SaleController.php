@@ -142,9 +142,9 @@ class SaleController extends Controller {
 
                     $seller = User::find(!empty($request->id_seller) ? $request->id_seller : Auth::id());
                     if($seller->api_token_zapapi) {
-                        $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado ".$user->name.", segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ⚠ Se não estiver aparecendo o link, Salva o nosso contato que aparecerá! \r\n\r\n\r\n ASSINAR O CONTRATO TOCANDO NO LINK 👇🏼✍🏼 \r\n", $user->phone, $seller->api_token_zapapi);
+                        $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado(a) ".$user->name.", segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ⚠ Se não estiver aparecendo o link, Salva o nosso contato que aparecerá! \r\n\r\n\r\n ASSINAR O CONTRATO TOCANDO NO LINK 👇🏼✍🏼 \r\n", $user->phone, $seller->api_token_zapapi);
                     } else {
-                        $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado ".$user->name.", segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ⚠ Se não estiver aparecendo o link, Salva o nosso contato que aparecerá! \r\n\r\n\r\n ASSINAR O CONTRATO TOCANDO NO LINK 👇🏼✍🏼 \r\n", $user->phone);
+                        $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado(a) ".$user->name.", segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ⚠ Se não estiver aparecendo o link, Salva o nosso contato que aparecerá! \r\n\r\n\r\n ASSINAR O CONTRATO TOCANDO NO LINK 👇🏼✍🏼 \r\n", $user->phone);
                     }
                         
                     if($sale->save()) {
@@ -543,7 +543,7 @@ class SaleController extends Controller {
                 ],
                 'json' => [
                     'phone'           => '55' . $sale->user->phone,
-                    'message'         => "Prezado ".$sale->user->name.", segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼 \r\n ⚠ Salva o contato se não tiver aparecendo o link.",
+                    'message'         => "Prezado(a) ".$sale->user->name.", segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼 \r\n ⚠ Salva o contato se não tiver aparecendo o link.",
                     'image'           => env('APP_URL_LOGO'),
                     'linkUrl'         => $sale->url_contract,
                     'title'           => 'Assinatura de Documento',
@@ -577,6 +577,14 @@ class SaleController extends Controller {
         $sale = Sale::find($id);
         if(!$sale) {
             return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');   
+        }
+
+        $invoices = Invoice::where('id_sale', $sale->id)->get();
+        $tomorrow = now()->addDay();
+        foreach ($invoices as $invoice) {
+            if ($invoice->due_date <= $tomorrow && $invoice->status == 0) {
+                return redirect()->back()->with('error', 'Existem faturas vencidas associadas a Venda!');
+            }
         }
 
         $sale->label = $sale->label === 'REPROTOCOLADO' ? null : 'REPROTOCOLADO';

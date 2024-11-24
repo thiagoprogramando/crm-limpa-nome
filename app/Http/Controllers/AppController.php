@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Invoice;
 use App\Models\Lists;
 use App\Models\Sale;
 use App\Models\User;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 use Carbon\Carbon;
 
@@ -27,6 +25,8 @@ class AppController extends Controller {
     }
 
     public function app() {
+
+        $now = now()->setTimezone('America/Sao_Paulo');
     
         $sales = Sale::where('id_seller', Auth::id())
             ->where('status', 1)
@@ -34,11 +34,11 @@ class AppController extends Controller {
     
         $salesDay = Auth::user()->type == 1
             ? Sale::where('status', 1)
-                ->whereDate('created_at', Carbon::today())
+                ->whereDate('created_at', $now->toDateString())
                 ->count()
             : Sale::where('id_seller', Auth::id())
                 ->where('status', 1)
-                ->whereDate('created_at', Carbon::today())
+                ->whereDate('created_at', $now->toDateString())
                 ->count();
     
         $saleValue = Sale::where('id_seller', Auth::id())
@@ -48,35 +48,34 @@ class AppController extends Controller {
         $invoicing = Sale::where('id_seller', Auth::id())
             ->where('status', 1)
             ->sum('value');
-
+    
         $invoicingDay = Sale::where('id_seller', Auth::id())
             ->where('status', 1)
-            ->whereDate('updated_at', Carbon::today())
+            ->whereDate('updated_at', $now->toDateString())
             ->sum('value');
     
-        $list = Lists::where('start', '<=', now())
-            ->where('end', '>=', now())
+        $list = Lists::where('start', '<=', $now)
+            ->where('end', '>=', $now)
             ->first();
     
         if ($list) {
-            $createdAt = new Carbon($list->end);
-            $now = now();
-            $diff = $now->diff($createdAt);
-    
-            $remainingTime = $diff->format('%dd %hh %im %ss');
+            $endTime = Carbon::parse($list->end)->setTimezone('America/Sao_Paulo');
+            
+            $totalDays = ceil($now->diffInHours($endTime) / 24);
+            $totalHours = $now->diffInHours($endTime) % 24;
+            $remainingTime = sprintf('%dd %dh', $totalDays, $totalHours);
         } else {
-            $remainingTime = 0;
+            $remainingTime = '0d 0h';
         }
-
+    
         $users = User::whereIn('type', [2, 5, 6, 7])->get();
-
+    
         $sortedUsers = $users->sortByDesc(function($user) {
             return $user->saleTotal();
         });
-
+    
         $users = $sortedUsers->take(10);
-
-
+    
         return view('app.app', [
             'sales'         => $sales,
             'salesDay'      => $salesDay,
@@ -88,64 +87,62 @@ class AppController extends Controller {
             'lists'         => Lists::orderBy('id', 'desc')->get(),
             'users'         => $users
         ]);
-    }
+    }    
 
     public function dashboard() {
-
+        $now = now()->setTimezone('America/Sao_Paulo');
+    
         $sales = Sale::where('status', 1)
             ->count();
     
         $salesDay = Sale::where('status', 1)
-                ->whereDate('created_at', Carbon::today())
-                ->count();
-        
+            ->whereDate('created_at', $now->toDateString())
+            ->count();
+    
         $invoicing = Sale::where('status', 1)
             ->sum('value');
     
         $invoicingDay = Sale::where('status', 1)
-            ->whereDate('updated_at', Carbon::today())
+            ->whereDate('updated_at', $now->toDateString())
             ->sum('value');
-
+    
         $users = User::whereIn('type', [2, 5, 6, 7])->get();
         $sortedUsers = $users->sortByDesc(function($user) {
             return $user->saleTotal();
         });
         $users = $sortedUsers->take(10);
-
-        $list = Lists::where('start', '<=', now())
-            ->where('end', '>=', now())
+    
+        $list = Lists::where('start', '<=', $now)
+            ->where('end', '>=', $now)
             ->first();
     
         if ($list) {
-            $createdAt = new Carbon($list->end);
-            $now = now();
-            $diff = $now->diff($createdAt);
+            $endTime = Carbon::parse($list->end)->setTimezone('America/Sao_Paulo');
     
-            $remainingTime = $diff->format('%dd %hh %im %ss');
+            $totalDays = ceil($now->diffInHours($endTime) / 24);
+            $totalHours = $now->diffInHours($endTime) % 24;
+            $remainingTime = sprintf('%dd %dh', $totalDays, $totalHours);
         } else {
-            $remainingTime = 0;
+            $remainingTime = '0d 0h';
         }
-
-        $salesDay = Sale::where('status', 1)
-                    ->whereDate('created_at', Carbon::today())
-                    ->count();
-
+    
         $consultant = [
             'CONSULTOR' => User::where('level', 2)->count(),
             'LIDER'     => User::where('level', 3)->count(),
             'REGIONAL'  => User::where('level', 4)->count(),
             'GERENTE'   => User::where('level', 5)->count(),
         ];
-
+    
         $actives = User::where('type', 2)->whereDoesntHave('invoices', function ($query) {
             $query->where('type', 1)
-                  ->where('status', 0);
+                ->where('status', 0);
         })->count();
+    
         $inactives = User::where('type', 2)->whereHas('invoices', function ($query) {
             $query->where('type', 1)
-                  ->where('status', 0);
+                ->where('status', 0);
         })->count();
-
+    
         return view('app.app', [
             'sales'         => $sales,
             'salesDay'      => $salesDay,
@@ -159,6 +156,5 @@ class AppController extends Controller {
             'actives'       => $actives,
             'inactives'     => $inactives
         ]);
-    }
-    
+    }    
 }

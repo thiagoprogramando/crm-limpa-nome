@@ -94,7 +94,7 @@ class Forgout extends Controller {
                 ],
                 'json' => [
                     'phone'           => '55' . $phone,
-                    'message'         => "Prezado parceiro, segue seu *código* de redefinição: ".$code."\r\n",
+                    'message'         => "Prezado(a) parceiro, segue seu *código* de redefinição: ".$code."\r\n",
                 ],
                 'verify' => false
             ]);

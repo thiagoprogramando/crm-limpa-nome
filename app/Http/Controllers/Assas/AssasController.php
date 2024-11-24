@@ -252,7 +252,7 @@ class AssasController extends Controller {
                     ],
                     'json' => [
                         'phone'           => '55' . $user->phone,
-                        'message'         => "Prezado ".$user->name.", estamos enviando o link para pagamento da sua contratação aos serviços da nossa assessoria.  \r\n\r\n\r\n FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳 \r\n",
+                        'message'         => "Prezado(a) ".$user->name.", estamos enviando o link para pagamento da sua contratação aos serviços da nossa assessoria.  \r\n\r\n\r\n FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳 \r\n",
                         'image'           => env('APP_URL_LOGO'),
                         'linkUrl'         => $url_payment,
                         'title'           => 'Pagamento de Fatura',

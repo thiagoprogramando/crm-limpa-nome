@@ -136,7 +136,14 @@
                                 @foreach ($sales as $sale)
                                     <tr>
                                         <th scope="row">{{ $sale->id }} <br> @if($sale->label) <span class="badge bg-primary">{{ $sale->label }}</span> @endif</th>
-                                        <th>{{ $sale->list->name }}</th>
+                                        <th>
+                                            {{ $sale->list->name }} <br>
+                                            <span class="badge bg-dark">Serasa {{ $sale->list->serasa_status }}</span>
+                                            <span class="badge bg-dark">SPC {{ $sale->list->status_spc }}</span>
+                                            <span class="badge bg-dark">Boa Vista {{ $sale->list->status_boa_vista }}</span>
+                                            <span class="badge bg-dark">QUOD {{ $sale->list->status_quod }}</span>
+                                            <span class="badge bg-dark">CENPROT {{ $sale->list->status_cenprot }}</span>
+                                        </th>
                                         <td title="{{ $sale->product->name }}">
                                             {{ substr($sale->product->name, 0, 15) }} <br>
                                             <span class="badge bg-primary">Garantia: @if($sale->guarantee) {{ \Carbon\Carbon::parse($sale->guarantee)->format('d/m/Y') }} @else --- @endif</span>
