@@ -31,7 +31,7 @@
                                 <h3 class="mb-4">Bem-vindo(a), complete com os seus dados.</h3>
                             </div>
                                 
-                            <form action="{{ route('create-sale-external') }}" method="POST" class="signin-form row">
+                            <form action="{{ route('create-sale-external') }}" method="POST" class="row">
                                 @csrf
                                 <div class="form-group col-sm-12 col-md-12 col-lg-12 mb-3">
                                     @if (session('error'))
@@ -48,43 +48,55 @@
                                 <div class="form-group col-sm-12 col-md-6 col-lg-6 mb-3">
                                     <input type="text" name="name" class="form-control" placeholder="Nome completo:" required>
                                 </div>
-                                <div class="form-group col-sm-12 col-md-3 col-lg-3 mb-3">
+
+                                <div class="form-group col-sm-12 col-md-4 col-lg-4 mb-3">
                                     <input type="number" name="cpfcnpj" class="form-control" placeholder="CPF ou CNPJ:" required>
                                 </div>
-                                <div class="form-group col-sm-12 col-md-3 col-lg-3 mb-3">
+                                <div class="form-group col-sm-12 col-md-2 col-lg-2 mb-3">
                                     <input type="text" name="birth_date" class="form-control" placeholder="Data de Nascimento:" oninput="mascaraData(this)" required>
                                 </div>
 
-                                <div class="form-group col-sm-12 col-md-3 col-lg-3 mb-3">
+                                <div class="form-group col-sm-12 col-md-4 col-lg-4 mb-3">
                                     <input type="email" name="email" class="form-control" placeholder="Email:" required>
                                 </div>
-                                <div class="form-group col-sm-12 col-md-3 col-lg-3 mb-3">
+                                <div class="form-group col-sm-12 col-md-2 col-lg-2 mb-3">
                                     <input type="text" name="phone" class="form-control" placeholder="WhatsApp:" oninput="mascaraTelefone(this)" required>
                                 </div>
-                                <div class="form-group col-sm-12 col-md-6 col-lg-6 mb-3">
+
+                                <div class="form-group col-sm-12 col-md-4 col-lg-4 mb-3">
                                     <select name="payment" class="form-control" required>
-                                        <option selected>Escolha entre uma das opções de pagamento disponível:</option>
+                                        <option selected>Opções de Pagamento:</option>
                                         @foreach ($payments as $payment)
                                             <option value="{{ $payment->id }}">{{ $payment->methodLabel() }} - {{ $payment->installments }}X @if($payment->value_rate > 0) com juros @else sem juros @endif</option>  
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="form-group col-sm-12 col-md-2 col-lg-2 mb-3">
+                                    <input type="text" name="coupon" class="form-control" placeholder="CUPOM:">
+                                </div>
 
                                 <div class="form-group col-sm-12 col-md-2 col-lg-2 mb-3">
                                     <input type="number" name="postal_code" class="form-control" placeholder="CEP:" onblur="consultaCEP()" required>
                                 </div>
-                                <div class="form-group col-sm-12 col-md-1 col-lg-1 mb-3">
-                                    <input type="number" name="num" class="form-control w-100" placeholder="N°:" required>
+                                <div class="form-group col-sm-12 col-md-2 col-lg-2 mb-3">
+                                    <input type="number" name="num" class="form-control" placeholder="N°:" required>
                                 </div>
-                                <div class="form-group col-sm-12 col-md-3 col-lg-3 mb-3">
+
+                                
+                                <div class="form-group col-sm-12 col-md-4 col-lg-4 mb-3">
                                     <input type="text" name="address" class="form-control" placeholder="Endereço:" required>
                                 </div>
-                                <div class="form-group col-sm-12 col-md-3 col-lg-3 mb-3">
-                                    <input type="text" name="city" class="form-control" placeholder="Cidade:" required>
-                                </div>
-                                <div class="form-group col-sm-12 col-md-3 col-lg-3 mb-3">
+                                
+
+                                <div class="form-group col-sm-12 col-md-2 col-lg-2 mb-3">
                                     <input type="text" name="state" class="form-control" placeholder="Estado:" required>
                                 </div>
+                                <div class="form-group col-sm-12 col-md-2 col-lg-2 mb-3">
+                                    <input type="text" name="city" class="form-control" placeholder="Cidade:" required>
+                                </div>
+                                
+                                
+                                
 
                                 @if($product->terms) 
                                     <div class="col-sm-12 col-md-12 col-lg-12 mb-3">

@@ -135,7 +135,10 @@
                             <tbody>
                                 @foreach ($sales as $sale)
                                     <tr>
-                                        <th scope="row">{{ $sale->id }} <br> @if($sale->label) <span class="badge bg-primary">{{ $sale->label }}</span> @endif</th>
+                                        <th scope="row">
+                                            {{ $sale->id }} <br> 
+                                            @if($sale->label) <span class="badge bg-primary">{{ $sale->label }} - {{ \Carbon\Carbon::parse($sale->update_at)->format('d/m/Y') }}</span> @endif
+                                        </th>
                                         <th>
                                             {{ $sale->list->name }} <br>
                                             <span class="badge bg-dark">Serasa {{ $sale->list->serasa_status }}</span>

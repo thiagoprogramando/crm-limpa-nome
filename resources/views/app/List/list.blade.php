@@ -24,14 +24,15 @@
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">Nome</th>
-                                    <th scope="col">Descrição</th>
+                                    <th scope="col">Lista</th>
                                     <th class="text-center" scope="col">Início</th>
                                     <th class="text-center" scope="col">Encerramento</th>
                                     <th class="text-center" scope="col">Status</th>
-                                    <th class="text-center" scope="col">Status Serasa</th>
-                                    <th class="text-center" scope="col">Status SPC</th>
-                                    <th class="text-center" scope="col">Status Boa Vista</th>
+                                    <th class="text-center" scope="col">Serasa</th>
+                                    <th class="text-center" scope="col">SPC</th>
+                                    <th class="text-center" scope="col">Boa Vista</th>
+                                    <th class="text-center" scope="col">QUOD</th>
+                                    <th class="text-center" scope="col">CENPROT</th>
                                     <th class="text-center" scope="col">Opções</th>
                                 </tr>
                             </thead>
@@ -39,14 +40,18 @@
                                 @foreach ($lists as $list)
                                     <tr>
                                         <th scope="row">{{ $list->id }}</th>
-                                        <td>{{ $list->name }}</td>
-                                        <td>{{ $list->description }}</td>
+                                        <td>
+                                            {{ $list->name }} <br>
+                                            <span class="badge bg-dark"> {{ $list->description }} </span>
+                                        </td>
                                         <td class="text-center">{{ \Carbon\Carbon::parse($list->start)->format('d/m/Y') }}</td>
                                         <td class="text-center">{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</td>
                                         <td class="text-center">{{ $list->statusLabel() }}</td>
                                         <td class="text-center">{{ $list->serasa_status }}</td>
                                         <td class="text-center">{{ $list->status_spc }}</td>
                                         <td class="text-center">{{ $list->status_boa_vista }}</td>
+                                        <td class="text-center">{{ $list->status_quod }}</td>
+                                        <td class="text-center">{{ $list->status_cenprot }}</td>
                                         <td class="text-center">
                                             <form action="{{ route('delete-list') }}" method="POST" class="delete btn-group">
                                                 @csrf

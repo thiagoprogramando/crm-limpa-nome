@@ -12,6 +12,7 @@ use App\Models\Product;
 use App\Models\Sale;
 use App\Models\User;
 use App\Models\Item;
+use App\Models\Coupon;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -63,37 +64,70 @@ class SaleController extends Controller {
                 return redirect()->back()->with('error', 'Produto não disponível!');
             }
 
-            if($this->formatarValor($request->value) < $product->value_min) {
+            $baseValue = $this->formatarValor($request->value);
+            $discountPercentage = 0;
+
+            if ($request->has('coupon') && !empty($request->coupon)) {
+
+                $coupon = Coupon::where('name', $request->coupon)->first();
+                if ($coupon) {
+                    if ($coupon->qtd < 1) {
+                        return redirect()->back()->with('info', 'CUPOM esgotado!');
+                    }
+        
+                    if (!empty($coupon->expiry_date) && $coupon->expiry_date < now()) {
+                        return redirect()->back()->with('info', 'CUPOM expirado!');
+                    }
+        
+                    $discountPercentage = $coupon->percentage;
+                    $coupon->qtd -= 1;
+                    $coupon->save();
+                } else {
+                    return redirect()->back()->with('info', 'Nenhum CUPOM encontrado!');
+                }
+            }
+
+            if ($this->formatarValor($request->value) < $product->value_min) {
                 return redirect()->back()->with('error', 'O valor mín de venda é: R$ '.$product->value_min.'!');
             }
 
-            if($this->formatarValor($request->value) > $product->value_max && $product->value_max > 0) {
+            if ($this->formatarValor($request->value) > $product->value_max && $product->value_max > 0) {
                 return redirect()->back()->with('error', 'O valor max de venda é: R$ '.$product->value_max.'!');
             }
 
             $method = Payment::where('id', $request->payment)->first();
-            if(!$method) {
+            if (!$method) {
                 return redirect()->back()->with('error', 'Forma de pagamento não disponível!');
             }
 
             $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
-            if(!$list) {
+            if (!$list) {
                 return redirect()->back()->with('error', 'Não há uma lista disponível para vendas!');
             }
 
-            if($request->wallet_off) {
-                if($request->id_seller) {
+            $discountedValue = $baseValue * (1 - $discountPercentage / 100);
+
+            $commission = Auth::check() ? 
+                (($discountedValue - $product->value_cost) - $product->value_rate) : 
+                (($discountedValue - $product->value_cost) - $product->value_rate);
+
+            if (Auth::check() && Auth::user()->filiate != null && Auth::user()->type != 4) {
+                $commission -= $commission * 0.20; // Reduzir 20% para afiliados
+            }
+
+            if ($request->wallet_off) {
+                if ($request->id_seller) {
                     $userWallet = User::find($request->id_seller);
                     $walletValue = $userWallet->wallet_off;
                 } else {
                     $walletValue = Auth::user()->wallet_off;
                 }
                 
-                if($walletValue < ($product->value_cost + $product->value_rate)) {
+                if ($walletValue < ($product->value_cost + $product->value_rate)) {
                     return redirect()->back()->with('error', 'Ops! Sua carteira não tem saldo suficiente!');
                 }
 
-                if($request->id_seller) {
+                if ($request->id_seller) {
                     $userWallet = User::find($request->id_seller);
                     $userWallet->wallet_off -= ($product->value_cost + $product->value_rate);
                     $userWallet->Save();
@@ -116,21 +150,22 @@ class SaleController extends Controller {
             $sale->status       = 0;
             $sale->wallet_off   = $request->has('wallet_off') ? 1 : null;
 
-            $sale->value        = $this->formatarValor($request->value) + $method->value_rate;
+            $sale->value        = $discountedValue + $method->value_rate;
+            $sale->commission   = $commission;
 
-            if (Auth::check()) {
-                if($request->wallet_off) {
-                    $sale->commission = Auth::user()->type == 4 ? 0 : ($this->formatarValor($request->value)) - $product->value_rate;
-                } else {
-                    $sale->commission = Auth::user()->type == 4 ? 0 : ($this->formatarValor($request->value) - $product->value_cost) - $product->value_rate;
-                }
+            // if (Auth::check()) {
+            //     if($request->wallet_off) {
+            //         $sale->commission = Auth::user()->type == 4 ? 0 : ($this->formatarValor($request->value)) - $product->value_rate;
+            //     } else {
+            //         $sale->commission = Auth::user()->type == 4 ? 0 : ($this->formatarValor($request->value) - $product->value_cost) - $product->value_rate;
+            //     }
 
-                if(Auth::user()->filiate != null && Auth::user()->type != 4) {
-                    $sale->commission -= $sale->commission * 0.20;
-                }
-            } else {
-                $sale->commission = ($this->formatarValor($request->value) - $product->value_cost) - $product->value_rate;
-            }
+            //     if(Auth::user()->filiate != null && Auth::user()->type != 4) {
+            //         $sale->commission -= $sale->commission * 0.20;
+            //     }
+            // } else {
+            //     $sale->commission = ($this->formatarValor($request->value) - $product->value_cost) - $product->value_rate;
+            // }
             
             if(!empty($product->contract)) {
 
@@ -421,7 +456,7 @@ class SaleController extends Controller {
 
         $sale       = Sale::find($id);
         $invoices   = Invoice::where('id_sale', $sale->id)->get();
-        $users      = User::whereIn('type', [1, 2, 5, 6, 7])->orderBy('name', 'asc')->get();
+        $users      = User::whereIn('type', [1, 2, 5])->orderBy('name', 'asc')->get();
 
         return view('app.Sale.view', [
             'sale'      => $sale, 
@@ -579,6 +614,11 @@ class SaleController extends Controller {
             return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');   
         }
 
+        $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
+        if(!$list) {
+            return redirect()->back()->with('error', 'Não há uma lista disponível para reprotocolar a venda!');
+        }
+
         $invoices = Invoice::where('id_sale', $sale->id)->get();
         $tomorrow = now()->addDay();
         foreach ($invoices as $invoice) {
@@ -586,8 +626,8 @@ class SaleController extends Controller {
                 return redirect()->back()->with('error', 'Existem faturas vencidas associadas a Venda!');
             }
         }
-
-        $sale->label = $sale->label === 'REPROTOCOLADO' ? null : 'REPROTOCOLADO';
+        $sale->id_list = $sale->label === 'REPROTOCOLADO' ? $sale->id_list : $list->id;
+        $sale->label   = $sale->label === 'REPROTOCOLADO' ? null : 'REPROTOCOLADO';
         if($sale->save()) {
 
             if ($sale->label === 'REPROTOCOLADO') {

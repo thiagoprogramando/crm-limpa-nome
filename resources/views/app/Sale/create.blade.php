@@ -62,15 +62,21 @@
                                     <label for="floatingValue">Informe o valor da venda:</label>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-6 col-lg-6 mb-1">
+                            <div class="col-12 col-md-4 col-lg-4 mb-1">
                                 <div class="form-floating">
                                     <select name="payment" class="form-select" id="floatingSelect" required>
-                                        <option selected="">Escolha entre uma das opções de pagamento disponível:</option>
+                                        <option selected="">Opções:</option>
                                         @foreach ($payments as $payment)
                                             <option value="{{ $payment->id }}">{{ $payment->methodLabel() }} - {{ $payment->installments }}X @if($payment->value_rate > 0) com juros @else sem juros @endif</option>  
                                         @endforeach
                                     </select>
                                     <label for="floatingSelect">Forma de Pagamento</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-2 col-lg-2 mb-1">
+                                <div class="form-floating">
+                                    <input type="text" name="coupon" class="form-control" id="floatingCoupon" placeholder="CUPOM:">
+                                    <label for="floatingCoupon">CUPOM:</label>
                                 </div>
                             </div>
 

@@ -28,41 +28,49 @@
                                 <div class="col-sm-12 col-md-6 col-lg-6">
                                     <div class="card mb-3">
                                         <div class="row g-0">
-                                            <div class="col-md-7">
+                                            <div class="col-12 col-sm-12 col-md-7 col-lg-7">
                                                 <div class="card-body">
                                                     <h5 class="card-title">Lista {{ $sale->list->name }}</h5>
                                                     <p class="card-text">
                                                         {{$sale->list->description }}
                                                         <span class="badge bg-primary">{{ \Carbon\Carbon::parse($sale->list->end)->format('d/m/Y') }}</span>
                                                     </p>
-                                                    @if($sale->label) <span class="badge bg-primary">{{ $sale->label }}</span> @endif
-                                                    <div class="table-responsive">
-                                                        <table class="table table-hover">
-                                                            <thead>
-                                                                <th class="text-center">Serasa</th>
-                                                                <th class="text-center">SPC</th>
-                                                                <th class="text-center">B. Vista</th>
-                                                            </thead>
-                                                            <tbody>
-                                                                <td class="text-center">{{ $sale->list->serasa_status }}</td>
-                                                                <td class="text-center">{{ $sale->list->status_spc }}</td>
-                                                                <td class="text-center">{{ $sale->list->status_boa_vista }}</td>
-                                                            </tbody>
-                                                        </table>
+                                                    @if ($sale->label) 
+                                                        <span class="badge bg-primary">{{ $sale->label }}</span> 
+                                                    @endif
+                                                    <div class="btn-group" role="group">
+                                                        <a title="Acessar Contrato" href="{{ $sale->url_contract }}" target="_blank" class="btn btn-outline-primary card-link">Contrato <i class="bi bi-file-earmark-text"></i></a>
+                                                        <a title="Acessar Faturas" href="{{ route('invoice.cliente', ['sale' => $sale->id]) }}" class="btn btn-outline-primary card-link">Faturas <i class="bi bi-currency-dollar"></i></a>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-5">
+                                            <div class="col-12 col-sm-12 col-md-5 col-lg-5">
                                                 <div class="card-body">
                                                     <h5 class="card-title">{{$sale->product->name }}</h5>
                                                     <p class="card-text">
                                                         {{$sale->product->description }}
                                                         <span class="badge bg-dark">{{ $sale->statusLabel() }} </br> {{ \Carbon\Carbon::parse($sale->created_at)->format('d/m/Y') }}</span>
                                                     </p>
-                                                    <div class="btn-group" role="group">
-                                                        <a title="Acessar Contrato" href="{{ $sale->url_contract }}" target="_blank" class="btn btn-outline-primary card-link"><i class="bi bi-file-earmark-text"></i></a>
-                                                        <a title="Acessar Faturas" href="{{ route('invoice.cliente', ['sale' => $sale->id]) }}" class="btn btn-outline-primary card-link"><i class="bi bi-currency-dollar"></i></a>
-                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                                                <div class="table-responsive">
+                                                    <table class="table table-hover">
+                                                        <thead>
+                                                            <th class="text-center">Serasa</th>
+                                                            <th class="text-center">SPC</th>
+                                                            <th class="text-center">B. Vista</th>
+                                                            <th class="text-center">QUOD</th>
+                                                            <th class="text-center">CENPROT</th>
+                                                        </thead>
+                                                        <tbody>
+                                                            <td class="text-center">{{ $sale->list->serasa_status }}</td>
+                                                            <td class="text-center">{{ $sale->list->status_spc }}</td>
+                                                            <td class="text-center">{{ $sale->list->status_boa_vista }}</td>
+                                                            <td class="text-center">{{ $sale->list->status_quod }}</td>
+                                                            <td class="text-center">{{ $sale->list->status_cenprot }}</td>
+                                                        </tbody>
+                                                    </table>
                                                 </div>
                                             </div>
                                         </div>
