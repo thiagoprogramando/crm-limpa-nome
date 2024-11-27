@@ -128,7 +128,7 @@
                     <div id="action-buttons" class="d-none btn-group mb-3">
                         @if(Auth::user()->type == 9)
                             <button id="gerar-pagamento" class="btn btn-outline-success">Gerar Pagamento</button>
-                        </div>
+                        @endif
                         @if(Auth::user()->type == 1)
                             <button id="aprovar-todos" class="btn btn-outline-warning">Aprovar Todos</button>
                         @endif
