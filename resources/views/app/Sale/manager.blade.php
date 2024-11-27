@@ -226,12 +226,13 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        const toggleSelectBtn = document.getElementById('toggle-select');
+
+        const toggleSelectBtn   = document.getElementById('toggle-select');
         const selectAllCheckbox = document.getElementById('select-all');
-        const rowCheckboxes = document.querySelectorAll('.row-checkbox');
-        const actionButtons = document.getElementById('action-buttons');
+        const rowCheckboxes     = document.querySelectorAll('.row-checkbox');
+        const actionButtons     = document.getElementById('action-buttons');
         const gerarPagamentoBtn = document.getElementById('gerar-pagamento');
-        const aprovarTodosBtn = document.getElementById('aprovar-todos');
+        const aprovarTodosBtn   = document.getElementById('aprovar-todos');
 
         let isSelecting = false;
 
@@ -270,7 +271,6 @@
                 .map(checkbox => checkbox.value);
         }
 
-        const gerarPagamentoBtn = document.getElementById('gerarPagamentoBtn');
         if (gerarPagamentoBtn) {
             gerarPagamentoBtn.addEventListener('click', () => {
                 const selectedIds = getSelectedIds();
@@ -278,7 +278,6 @@
             });
         }
 
-        const aprovarTodosBtn = document.getElementById('aprovarTodosBtn');
         if (aprovarTodosBtn) {
             aprovarTodosBtn.addEventListener('click', () => {
                 const selectedIds = getSelectedIds();
