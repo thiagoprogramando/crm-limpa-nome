@@ -270,15 +270,21 @@
                 .map(checkbox => checkbox.value);
         }
 
-        gerarPagamentoBtn.addEventListener('click', () => {
-            const selectedIds = getSelectedIds();
-            sendToApi('api/create-payment', selectedIds);
-        });
+        const gerarPagamentoBtn = document.getElementById('gerarPagamentoBtn');
+        if (gerarPagamentoBtn) {
+            gerarPagamentoBtn.addEventListener('click', () => {
+                const selectedIds = getSelectedIds();
+                sendToApi('api/create-payment', selectedIds);
+            });
+        }
 
-        aprovarTodosBtn.addEventListener('click', () => {
-            const selectedIds = getSelectedIds();
-            sendToApi('api/approved-all', selectedIds);
-        });
+        const aprovarTodosBtn = document.getElementById('aprovarTodosBtn');
+        if (aprovarTodosBtn) {
+            aprovarTodosBtn.addEventListener('click', () => {
+                const selectedIds = getSelectedIds();
+                sendToApi('api/approved-all', selectedIds);
+            });
+        }
 
         function sendToApi(route, ids) {
 
