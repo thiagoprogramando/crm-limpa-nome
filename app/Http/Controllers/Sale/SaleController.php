@@ -725,4 +725,38 @@ class SaleController extends Controller {
             
         return redirect()->back()->with('info', 'Não foi possível adicionar Fatura, verifique os dados e tentar novamente!');
     }
+
+    public function approvedAll(Request $request) {
+
+        try {
+            
+            $sales = Sale::whereIn('id', $request['ids'])->get();
+            if ($sales->isEmpty()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Nenhuma venda encontrada!',
+                ], 404);
+            }
+    
+            foreach ($sales as $sale) {
+                $sale->status = 1;
+                $sale->save();
+            }
+    
+            return response()->json([
+                'success'       => true,
+                'status'        => 'success',
+                'message'       => 'Vendas aprovadas com sucesso!',
+                'approved_ids'  => $sales->pluck('id')
+            ], 200);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'success'   => false,
+                'status'    => 'error',
+                'message'   => 'Ocorreu um erro ao aprovar as vendas!',
+                'details'   => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

@@ -13,10 +13,11 @@ use App\Models\Sale;
 use App\Models\User;
 
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use GuzzleHttp\Client;
+use Illuminate\Support\Facades\DB;
 
 class AssasController extends Controller {
 
@@ -745,6 +746,15 @@ class AssasController extends Controller {
                 
                 return response()->json(['status' => 'success', 'message' => 'Operação Finalizada!']);
             }
+
+            $sales = Sale::where('token_payment', $token)->where('status', 0)->get();
+            if ($sales->isNotEmpty()) {
+
+                Sale::whereIn('id', $sales->pluck('id'))
+                    ->update(['status' => 1]);
+            
+                return response()->json(['success' => true, 'message' => 'Status das vendas atualizado com sucesso.']);
+            }
             
             return response()->json(['status' => 'success', 'message' => 'Nenhum Fatura encontrada!']);
         }
@@ -1378,6 +1388,91 @@ class AssasController extends Controller {
             return $data;
         } else {
             return false;
+        }
+    }
+
+    public function createPayment(Request $request) {
+
+        DB::beginTransaction();
+
+        $user = User::where('customer', $request->customer)->first();
+        if (!$user || empty($user->customer)) {
+            return response()->json(['success' => false, 'message' => 'Verifique seus dados e tente novamente'], 404);
+        }
+
+        try {
+ 
+            $sales = Sale::whereIn('id', $request['ids'])->with('product')->get();
+            if ($sales->isEmpty()) {
+                return response()->json(['success' => false, 'message' => 'Nenhuma venda encontrada.'], 404);
+            }
+
+            $totalValue = 0;
+            $description = 'Fatura referente às vendas';
+
+            foreach ($sales as $sale) {
+                if ($sale->product) {
+                    $totalValue += $sale->product->value_cost + $sale->product->value_rate;
+                }
+            }
+
+            if ($totalValue <= 0) {
+                return response()->json(['success' => false, 'message' => 'Valor total inválido.'], 400);
+            }
+
+            $customer       = $user->customer;
+            $billingType    = 'PIX';
+            $dueDate        = now()->addDays(2)->toDateString();
+
+            $charge = $this->createCharge(
+                $customer,
+                $billingType,
+                $totalValue,
+                $description,
+                $dueDate,
+                null,
+                null,
+                0, 
+                null
+            );
+
+            if (!$charge || empty($charge['id'])) {
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'Erro ao criar fatura!'], 500);
+            }
+
+            // $invoice = new Invoice();
+            // $invoice->name          = $description;
+            // $invoice->description   = $description;
+            // $invoice->id_user       = $user->id;
+            // $invoice->id_product    = 0;
+            // $invoice->value         = $totalValue;
+            // $invoice->commission    = 0;
+            // $invoice->status        = 0;
+            // $invoice->type          = 2;
+            // $invoice->num           = 1;
+            // $invoice->due_date      = now()->addDay(2);
+            // $invoice->url_payment   = $charge['invoiceUrl'];
+            // $invoice->token_payment = $charge['id'];
+            // $invoice->save();
+
+            $paymentToken = $charge['id'];
+            Sale::whereIn('id', $request['ids'])->update(['token_payment' => $paymentToken]);
+
+            DB::commit();
+
+            return response()->json([
+                'success'    => true,
+                'message'    => 'Fatura criada com sucesso.',
+                'invoiceUrl' => $charge['invoiceUrl'],
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro no processo: ' . $e->getMessage(),
+            ], 500);
         }
     }
 }

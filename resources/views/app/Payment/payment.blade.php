@@ -45,7 +45,7 @@
                                             <td class="text-center">R$ {{ $payment->value }}</td>
                                             <td class="text-center">{{ $payment->statusLabel() }}</td>
                                             <td class="text-center">{{ \Carbon\Carbon::parse($payment->due_date)->format('d/m/Y') }}</td>
-                                            <td class="text-center">
+                                            <td class="text-center btn-group">
                                                 <a href="{{ route('payMonthly', ['id' => $payment->id]) }}" class="btn btn-success text-light">
                                                     <i class="bi bi-credit-card"></i> Pagar com saldo
                                                 </a>

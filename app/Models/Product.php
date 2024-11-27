@@ -28,12 +28,10 @@ class Product extends Model {
     ];
 
     public function totalSale() {
-
         return $this->sales()->whereIn('status', [1, 2])->count();
     }
 
     public function sales() {
-
         return $this->hasMany(Sale::class, 'id_product');
     }
 }

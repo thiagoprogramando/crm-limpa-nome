@@ -143,13 +143,13 @@
                         </a>
                         <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                             @foreach($business as $busines)
-                                <li><a href="@if(Auth::user()->type == 7) {{ route('createupload', ['id' => $busines->id]) }} @else {{ route('createsale', ['id' => $busines->id]) }} @endif"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
+                                <li><a href="@if(Auth::user()->type == 7 || Auth::user()->type == 9) {{ route('createupload', ['id' => $busines->id]) }} @else {{ route('createsale', ['id' => $busines->id]) }} @endif"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
                             @endforeach
                         </ul>
                     </li>
                 @endif
 
-                @if (Auth::user()->type != 7)
+                @if (Auth::user()->type != 7 && Auth::user()->type != 9)
                     <li class="nav-item">
                         <a class="nav-link collapsed" data-bs-target="#forms-bussines" data-bs-toggle="collapse" href="#">
                             <i class="bi bi-briefcase"></i><span>Gerar Contrato (Links)</span><i class="bi bi-chevron-down ms-auto"></i>
@@ -192,7 +192,7 @@
 
                     <li class="nav-heading">Gestão</li>
 
-                    @if (Auth::user()->level == 5)
+                    @if (Auth::user()->type == 5 || Auth::user()->type == 7 || Auth::user()->type == 9)
                         <li class="nav-item">
                             <a class="nav-link collapsed" href="{{ route('list-rede') }}"> <i class="bi bi-person-lines-fill"></i> <span>Minha Rede</span> </a>
                         </li>

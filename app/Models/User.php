@@ -46,11 +46,6 @@ class User extends Authenticatable {
         return $this->hasMany(Invoice::class, 'id_user');
     }
 
-    // Comentado em 06/11 esperar próximos dois packs para excluir
-    // public function invoicesPendent() {
-    //     return $this->invoices()->where('type', 1)->where('status', 0)->count();
-    // }
-
     public function levelLabel() {
 
         switch ($this->level) {
@@ -77,6 +72,9 @@ class User extends Authenticatable {
                 break;
             case 8:
                 return 'VENDEDOR MASTER';
+                break; 
+            case 9:
+                return 'CONSULTOR VIP';
                 break;       
             return $this->method;
         }

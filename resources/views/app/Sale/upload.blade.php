@@ -39,20 +39,20 @@
 
                             <div class="col-12 col-md-4 col-lg-4 mb-1">
                                 <div class="form-floating">
-                                    <input type="text" name="birth_date" class="form-control" id="floatingBirth_date" placeholder="Data Nascimento:" oninput="mascaraData(this)" required>
+                                    <input type="text" name="birth_date" class="form-control" id="floatingBirth_date" placeholder="Data Nascimento:" oninput="mascaraData(this)">
                                     <label for="floatingBirth_date">Data Nascimento:</label>
                                 </div>
                             </div>
 
                             <div class="col-12 col-md-4 col-lg-4 mb-1">
                                 <div class="form-floating">
-                                    <input type="text" name="email" class="form-control" id="floatingEmail" placeholder="Informe o email do Cliente:" required>
+                                    <input type="text" name="email" class="form-control" id="floatingEmail" placeholder="Informe o email do Cliente:">
                                     <label for="floatingEmail">Email:</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4 col-lg-4 mb-1">
                                 <div class="form-floating">
-                                    <input type="text" name="phone" class="form-control" id="floatingPhone" placeholder="Informe o whatsapp do Cliente:" oninput="mascaraTelefone(this)" required>
+                                    <input type="text" name="phone" class="form-control" id="floatingPhone" placeholder="Informe o whatsapp do Cliente:" oninput="mascaraTelefone(this)">
                                     <label for="floatingPhone">WhatsApp:</label>
                                 </div>
                             </div>
@@ -66,40 +66,40 @@
                             @if ($product->address)
                                 <div class="col-12 col-md-2 col-lg-2 mb-1">
                                     <div class="form-floating">
-                                        <input type="number" name="postal_code" onblur="consultaCEP()" class="form-control" id="floatingPostal" placeholder="CEP:" required>
+                                        <input type="number" name="postal_code" onblur="consultaCEP()" class="form-control" id="floatingPostal" placeholder="CEP:">
                                         <label for="floatingPostal">CEP:</label>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-1 col-lg-1 mb-1">
                                     <div class="form-floating">
-                                        <input type="number" name="num" class="form-control" id="floatingNumber" placeholder="N°:" required>
+                                        <input type="number" name="num" class="form-control" id="floatingNumber" placeholder="N°:">
                                         <label for="floatingNumber">N°:</label>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-3 col-lg-3 mb-1">
                                     <div class="form-floating">
-                                        <input type="text" name="address" class="form-control" id="floatingAddress" placeholder="Endereço:" required>
+                                        <input type="text" name="address" class="form-control" id="floatingAddress" placeholder="Endereço:">
                                         <label for="floatingAddress">Endereço:</label>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-3 col-lg-3 mb-1">
                                     <div class="form-floating">
-                                        <input type="text" name="city" class="form-control" id="floatingCity" placeholder="Cidade:" required>
+                                        <input type="text" name="city" class="form-control" id="floatingCity" placeholder="Cidade:">
                                         <label for="floatingCity">Cidade:</label>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-3 col-lg-3 mb-1">
                                     <div class="form-floating">
-                                        <input type="text" name="state" class="form-control" id="floatingState" placeholder="Estado:" required>
+                                        <input type="text" name="state" class="form-control" id="floatingState" placeholder="Estado:">
                                         <label for="floatingState">Estado:</label>
                                     </div>
                                 </div>
                             @endif
                             
-                            @if(Auth::user()->level == 5 || Auth::user()->type == 7)
+                            @if(Auth::user()->type == 7 || Auth::user()->type == 9)
                                 <div class="col-12 col-md-4 col-lg-4 offset-md-8 offset-lg-8 mb-1">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="wallet_off" id="wallet_off" @checked(Auth::user()->type == 7) @disabled(Auth::user()->type == 7)>
+                                        <input class="form-check-input" type="checkbox" name="wallet_off" id="wallet_off" @checked(Auth::user()->type == 7)>
                                         <label class="form-check-label" for="wallet_off">Descontar da carteira <span class="badge bg-success">Saldo: {{ Auth::user()->wallet_off }}</span></label>
                                     </div>
                                 </div>

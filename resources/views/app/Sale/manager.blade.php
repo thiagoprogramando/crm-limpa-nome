@@ -2,6 +2,16 @@
 @section('title') Gestão de Vendas @endsection
 @section('conteudo')
 
+<style>
+    tr.selected {
+        background-color: #d1e7dd;
+    }
+
+    input[type="checkbox"]:checked + tr {
+        background-color: #d1e7dd;
+    }
+</style>
+
 <div class="pagetitle">
     <h1>Gestão de Vendas</h1>
     <nav>
@@ -17,6 +27,7 @@
         <div class="col-12">
 
             <div class="btn-group mb-3" role="group">
+                <button id="toggle-select" class="btn btn-primary">Selecionar</button>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
                 <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
                 @if(Auth::user()->type == 1)
@@ -113,13 +124,19 @@
 
             <div class="card p-5">
                 <div class="card-body">
+
+                    <div id="action-buttons" class="d-none btn-group mb-3">
+                        <button id="gerar-pagamento" class="btn btn-outline-success">Gerar Pagamento</button>
+                        <button id="aprovar-todos" class="btn btn-outline-warning">Aprovar Todos</button>
+                    </div>
+
                     <h5 class="card-title">Vendas</h5>
                     
                     <div class="table-responsive">
                         <table class="table table-hover" id="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">N°</th>
+                                    <th scope="col"><input type="checkbox" id="select-all">N°</th>
                                     <th scope="col">Lista</th>
                                     <th scope="col">Produto</th>
                                     <th scope="col">Cliente</th>
@@ -136,16 +153,15 @@
                                 @foreach ($sales as $sale)
                                     <tr>
                                         <th scope="row">
-                                            {{ $sale->id }} <br> 
-                                            @if($sale->label) <span class="badge bg-primary">{{ $sale->label }} - {{ \Carbon\Carbon::parse($sale->update_at)->format('d/m/Y') }}</span> @endif
+                                            <input type="checkbox" class="row-checkbox" value="{{ $sale->id }}"> {{ $sale->id }} - <br> 
                                         </th>
                                         <th>
                                             {{ $sale->list->name }} <br>
-                                            <span class="badge bg-dark">Serasa {{ $sale->list->serasa_status }}</span>
-                                            <span class="badge bg-dark">SPC {{ $sale->list->status_spc }}</span>
-                                            <span class="badge bg-dark">Boa Vista {{ $sale->list->status_boa_vista }}</span>
-                                            <span class="badge bg-dark">QUOD {{ $sale->list->status_quod }}</span>
-                                            <span class="badge bg-dark">CENPROT {{ $sale->list->status_cenprot }}</span>
+                                            <span class="badge bg-primary">Serasa {{ $sale->list->serasa_status }}</span>
+                                            <span class="badge bg-primary">SPC {{ $sale->list->status_spc }}</span>
+                                            <span class="badge bg-primary">Boa Vista {{ $sale->list->status_boa_vista }}</span>
+                                            <span class="badge bg-primary">QUOD {{ $sale->list->status_quod }}</span>
+                                            <span class="badge bg-primary">CENPROT {{ $sale->list->status_cenprot }}</span>
                                         </th>
                                         <td title="{{ $sale->product->name }}">
                                             {{ substr($sale->product->name, 0, 15) }} <br>
@@ -153,7 +169,10 @@
                                         </td>
                                         <td>{{ $sale->user->name }}</td>
                                         <td class="d-none">{{ $sale->user->phone }}</td>
-                                        <td>{{ $sale->user->cpfcnpjLabel() }}</td>
+                                        <td>
+                                            {{ $sale->user->cpfcnpjLabel() }} <br>
+                                            @if($sale->label) <span class="badge bg-primary">{{ $sale->label }} - {{ \Carbon\Carbon::parse($sale->update_at)->format('d/m/Y') }}</span> @endif
+                                        </td>
                                         <td title="{{ $sale->seller->indicator() }}">{{ substr($sale->seller->name, 0, 15) }}..</td>
                                         <td class="text-center">R$ {{ number_format($sale->value, 2, ',', '.') }}</td>
                                         <td class="text-center">R$ {{ number_format($sale->commission, 2, ',', '.') }}</td>
@@ -201,6 +220,126 @@
             }
         });
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggleSelectBtn = document.getElementById('toggle-select');
+        const selectAllCheckbox = document.getElementById('select-all');
+        const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+        const actionButtons = document.getElementById('action-buttons');
+        const gerarPagamentoBtn = document.getElementById('gerar-pagamento');
+        const aprovarTodosBtn = document.getElementById('aprovar-todos');
+
+        let isSelecting = false;
+
+        toggleSelectBtn.addEventListener('click', () => {
+            isSelecting = !isSelecting;
+
+            rowCheckboxes.forEach(checkbox => checkbox.checked = isSelecting);
+            toggleSelectBtn.textContent = isSelecting ? 'Cancelar' : 'Selecionar';
+            updateActionButtons();
+        });
+
+        selectAllCheckbox.addEventListener('change', (e) => {
+            const isChecked = e.target.checked;
+            rowCheckboxes.forEach(checkbox => checkbox.checked = isChecked);
+            isSelecting = isChecked;
+            toggleSelectBtn.textContent = isChecked ? 'Cancelar' : 'Selecionar';
+            updateActionButtons();
+        });
+
+        rowCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateActionButtons);
+        });
+
+        function updateActionButtons() {
+            const selectedIds = getSelectedIds();
+            if (selectedIds.length > 0) {
+                actionButtons.classList.remove('d-none');
+            } else {
+                actionButtons.classList.add('d-none');
+            }
+        }
+
+        function getSelectedIds() {
+            return Array.from(rowCheckboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+        }
+
+        gerarPagamentoBtn.addEventListener('click', () => {
+            const selectedIds = getSelectedIds();
+            sendToApi('api/create-payment', selectedIds);
+        });
+
+        aprovarTodosBtn.addEventListener('click', () => {
+            const selectedIds = getSelectedIds();
+            sendToApi('api/approved-all', selectedIds);
+        });
+
+        function sendToApi(route, ids) {
+
+            if (ids.length === 0) {
+                Swal.fire({
+                    title: 'Atenção!',
+                    text: 'Nenhuma venda selecionada!',
+                    icon: 'info',
+                    timer: 2000
+                });
+                return;
+            }
+
+            var userCustomer = @json(Auth::user()->customer);
+
+            fetch(route, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ 
+                    ids, 
+                    customer: userCustomer  
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Sucesso!',
+                        text: 'Processo concluído! A página será recarregada para atualizar às informações.',
+                        icon: 'success',
+                        showCancelButton: false,
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'OK',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            if (data.invoiceUrl) {
+                                window.location.href = data.invoiceUrl;
+                                return;
+                            }
+                            
+                            location.reload();
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Atenção!',
+                        text: data.message,
+                        icon: 'info',
+                        timer: 2000
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Atenção!',
+                    text: error,
+                    icon: 'info',
+                    timer: 2000
+                });
+            });
+        }
+    });
 </script>
 
 @endsection

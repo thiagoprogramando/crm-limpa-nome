@@ -152,6 +152,7 @@
                                                                         <option value="3">Cliente</option>
                                                                         <option value="4">Vendendor Interno</option>
                                                                         <option value="8">Vendendor Master</option>
+                                                                        <option value="9">Consultor VIP</option>
                                                                     </select>
                                                                     <label for="floatingType">Tipo</label>
                                                                 </div>
@@ -159,7 +160,7 @@
                                                             <div class="col-12 col-md-12 col-lg-12 mb-1">
                                                                 <div class="form-floating">
                                                                     <select name="level" class="form-select" id="floatingLevel">
-                                                                        <option selected value="{{ $user->type }}">Graduação:</option>
+                                                                        <option selected value="{{ $user->level }}">Graduação:</option>
                                                                         <option value="1">INICIANTE</option>
                                                                         <option value="2">CONSULTOR</option>
                                                                         <option value="3">CONSULTOR LÍDER</option>
@@ -168,6 +169,7 @@
                                                                         <option value="5">GERENTE REGIONAL</option>
                                                                         <option value="6">VENDEDOR INTERNO</option>
                                                                         <option value="8">VENDEDOR MASTER</option>
+                                                                        <option value="9">CONSULTOR VIP</option>
                                                                     </select>
                                                                     <label for="floatingLevel">Graduação</label>
                                                                 </div>

@@ -100,6 +100,7 @@
                                             <option value="5">GERENTE REGIONAL</option>
                                             <option value="6">VENDEDOR INTERNO</option>
                                             <option value="8">VENDEDOR MASTER</option>
+                                            <option value="9">CONSULTOR VIP</option>
                                             <option value="">TODOS</option>
                                         </select>
                                         <label for="floatingSelect">Opções</label>

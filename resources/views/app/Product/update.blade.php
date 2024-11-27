@@ -103,6 +103,7 @@
                                             <option value="5" @selected($product->level == 5)>GERENTE REGIONAL</option>
                                             <option value="6" @selected($product->level == 6)>VENDEDOR INTERNO</option>
                                             <option value="8" @selected($product->level == 8)>VENDEDOR MASTER</option>
+                                            <option value="8" @selected($product->level == 9)>CONSULTOR VIP</option>
                                             <option value="">Todos</option>
                                         </select>
                                         <label for="floatingSelect">Opções</label>
