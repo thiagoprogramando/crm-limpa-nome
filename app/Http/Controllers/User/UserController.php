@@ -79,6 +79,10 @@ class UserController extends Controller {
         if(!empty($request->api_token_zapapi)) {
             $user->api_token_zapapi = $request->api_token_zapapi;
         }
+
+        if(!empty($request->fixed_cost)) {
+            $user->fixed_cost = $this->formatarValor($request->fixed_cost);
+        }
         
         if(!empty($request->level)) {
             $user->level = $request->level;
@@ -398,4 +402,13 @@ class UserController extends Controller {
             return false;
         }
     }
+
+    private function formatarValor($valor) {
+        
+        $valor = preg_replace('/[^0-9,]/', '', $valor);
+        $valor = str_replace(',', '.', $valor);
+        $valorFloat = floatval($valor);
+    
+        return number_format($valorFloat, 2, '.', '');
+    } 
 }

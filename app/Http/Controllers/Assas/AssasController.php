@@ -29,38 +29,40 @@ class AssasController extends Controller {
         $client    = User::find($sale->id_client);
         $user      = User::find($sale->id_seller);
         
-        if($sale->wallet_off) {
+        $productCost = $client->fixed_cost > 0 ? $client->fixed_cost : $product->value_cost;
+
+        if ($sale->wallet_off) {
             $commission = $sale->value - $payment->value_rate;
         } else {
-            $commission = (($sale->value - $product->value_cost) - $product->value_rate) - $payment->value_rate;
+            $commission = (($sale->value - $productCost) - $product->value_rate) - $payment->value_rate;
         }
-        
-        if($user->filiate != null) {
+
+        if ($user->filiate != null) {
             $filiate = User::where('id', $user->filiate)->first();
             $filiate = !empty($filiate) ? $filiate->wallet : null;
         } else {
             $filiate = null;
         }
 
-        if($user->type == 4) {
+        if ($user->type == 4) {
             $commission = 0;
         }
-    
-        switch($sale->payment) {
+
+        switch ($sale->payment) {
             case 'BOLETO':
-                return $this->invoiceBoleto($sale->value, $product->value_cost, $commission, $sale, $user->wallet, $client, $filiate, $notification);
+                return $this->invoiceBoleto($sale->value, $productCost, $commission, $sale, $user->wallet, $client, $filiate, $notification);
                 break;
             case 'CREDIT_CARD':
                 return $this->invoiceCard($sale->value, $commission, $sale, $user->wallet, $client, $filiate);
                 break;
             case 'PIX':
-                return $this->invoiceBoleto($sale->value, $product->value_cost, $commission, $sale, $user->wallet, $client, $filiate, $notification);
+                return $this->invoiceBoleto($sale->value, $productCost, $commission, $sale, $user->wallet, $client, $filiate, $notification);
                 break;
             default:
                 return false;
                 break;
         }
-    
+
         return false;
     }
 

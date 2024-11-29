@@ -40,6 +40,8 @@ class User extends Authenticatable {
 
         'type',
         'filiate',
+
+        'fixed_cost'
     ];
 
     public function invoices() {

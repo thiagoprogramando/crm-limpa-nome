@@ -105,14 +105,15 @@ class SaleController extends Controller {
                 return redirect()->back()->with('error', 'Não há uma lista disponível para vendas!');
             }
 
+            $productCost = $user->fixed_cost > 0 ? $user->fixed_cost : $product->value_cost;
             $discountedValue = $baseValue * (1 - $discountPercentage / 100);
 
             $commission = Auth::check() ? 
-                (($discountedValue - $product->value_cost) - $product->value_rate) : 
-                (($discountedValue - $product->value_cost) - $product->value_rate);
+                (($discountedValue - $productCost) - $product->value_rate) : 
+                (($discountedValue - $productCost) - $product->value_rate);
 
             if (Auth::check() && Auth::user()->filiate != null && Auth::user()->type != 4) {
-                $commission -= $commission * 0.20; // Reduzir 20% para afiliados
+                $commission -= $commission * 0.20;
             }
 
             if ($request->wallet_off) {
@@ -123,22 +124,22 @@ class SaleController extends Controller {
                     $walletValue = Auth::user()->wallet_off;
                 }
                 
-                if ($walletValue < ($product->value_cost + $product->value_rate)) {
+                if ($walletValue < ($productCost + $product->value_rate)) {
                     return redirect()->back()->with('error', 'Ops! Sua carteira não tem saldo suficiente!');
                 }
 
                 if ($request->id_seller) {
                     $userWallet = User::find($request->id_seller);
-                    $userWallet->wallet_off -= ($product->value_cost + $product->value_rate);
+                    $userWallet->wallet_off -= ($productCost + $product->value_rate);
                     $userWallet->Save();
                 } else {
                     $userWallet = User::find(Auth::id());
-                    $userWallet->wallet_off -= ($product->value_cost + $product->value_rate);
+                    $userWallet->wallet_off -= ($productCost + $product->value_rate);
                     $userWallet->Save();
                 }
             }
-        
-            $sale               = new Sale();
+    
+            $sale = new Sale();
             $sale->id_client    = $user->id;
             $sale->id_product   = $request->product;
             $sale->id_list      = $list->id;
@@ -153,20 +154,6 @@ class SaleController extends Controller {
             $sale->value        = $discountedValue + $method->value_rate;
             $sale->commission   = $commission;
 
-            // if (Auth::check()) {
-            //     if($request->wallet_off) {
-            //         $sale->commission = Auth::user()->type == 4 ? 0 : ($this->formatarValor($request->value)) - $product->value_rate;
-            //     } else {
-            //         $sale->commission = Auth::user()->type == 4 ? 0 : ($this->formatarValor($request->value) - $product->value_cost) - $product->value_rate;
-            //     }
-
-            //     if(Auth::user()->filiate != null && Auth::user()->type != 4) {
-            //         $sale->commission -= $sale->commission * 0.20;
-            //     }
-            // } else {
-            //     $sale->commission = ($this->formatarValor($request->value) - $product->value_cost) - $product->value_rate;
-            // }
-            
             if(!empty($product->contract)) {
 
                 $document = $this->sendContract($user->id, $product->contract, $request->value, $request->payment);
