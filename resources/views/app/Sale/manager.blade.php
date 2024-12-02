@@ -161,11 +161,11 @@
                                         </th>
                                         <th>
                                             {{ $sale->list->name }} <br>
-                                            <span class="badge bg-primary">Serasa {{ $sale->list->serasa_status }}</span>
-                                            <span class="badge bg-primary">SPC {{ $sale->list->status_spc }}</span>
-                                            <span class="badge bg-primary">Boa Vista {{ $sale->list->status_boa_vista }}</span>
-                                            <span class="badge bg-primary">QUOD {{ $sale->list->status_quod }}</span>
-                                            <span class="badge bg-primary">CENPROT {{ $sale->list->status_cenprot }}</span>
+                                            @if(($sale->list->serasa_status != 'Pendente') && ($sale->list->status_spc != 'Pendente') && ($sale->list->status_boa_vista != 'Pendente') && ($sale->list->status_quod != 'Pendente') && ($sale->list->status_cenprot != 'Pendente'))
+                                                <span class="badge bg-success">Baixada</span>
+                                            @else
+                                                <span class="badge bg-warning">Pendente</span>
+                                            @endif
                                         </th>
                                         <td title="{{ $sale->product->name }}">
                                             {{ substr($sale->product->name, 0, 15) }} <br>

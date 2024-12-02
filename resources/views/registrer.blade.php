@@ -59,6 +59,9 @@
                                         <input type="number" name="cpfcnpj" class="form-control" placeholder="CPF ou CNPJ:" required>
                                     </div>
                                     <div class="form-group mb-3">
+                                        <input type="number" name="phone" class="form-control" placeholder="Telefone:" required>
+                                    </div>
+                                    <div class="form-group mb-3">
                                         <input type="email" name="email" class="form-control" placeholder="Email:" required>
                                     </div>
                                     <div class="form-group d-md-flex">

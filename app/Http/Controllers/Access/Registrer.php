@@ -19,7 +19,6 @@ class Registrer extends Controller {
 
     public function registrerUser(Request $request) {
 
-
         $validator = $request->validate([
             'name'      => 'required',
             'email'     => 'required|unique:users,email',
@@ -33,15 +32,16 @@ class Registrer extends Controller {
         ]);
 
         $user = new User();
-        $user->name = $request->name;
-        $user->cpfcnpj = preg_replace('/\D/', '', $request->cpfcnpj);
-        $user->email = $request->email;
-        $user->password = bcrypt(preg_replace('/\D/', '', $request->cpfcnpj));
+        $user->name     = $request->name;
+        $user->cpfcnpj  = preg_replace('/\D/', '', $request->cpfcnpj);
+        $user->phone    = preg_replace('/\D/', '', $request->phone);
+        $user->email    = $request->email;
+        $password       = preg_replace('/\D/', '', $request->cpfcnpj);
+        $user->password = bcrypt($password);
         
-        if($request->filiate) {
+        if(!empty($request->filiate)) {
 
             $user->filiate = $request->filiate;
-
             if($request->type == 6) {
                 
                 $rede = User::find($request->filiate);
@@ -61,11 +61,10 @@ class Registrer extends Controller {
 
             $this->sendActive($user->id);
 
-            $credentials = $request->only(['email', 'password']);
-            if (Auth::attempt($credentials)) {
+            if (Auth::attempt(['email' => $user->email, 'password' => $password])) {
                 return redirect()->route('app');
             } else {
-                return redirect()->route('index')->with('success', 'Bem-vindo(a)! Faça Login para acessar o sistema.');
+                return redirect()->route('login')->with('success', 'Bem-vindo(a)! Faça Login para acessar o sistema.');
             }
         }
 
