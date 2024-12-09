@@ -192,7 +192,7 @@
 
                     <li class="nav-heading">Gestão</li>
 
-                    @if (Auth::user()->type == 1 || Auth::user()->type == 7 || Auth::user()->type == 9)
+                    @if (empty(Auth::user()->filiate))
                         <li class="nav-item">
                             <a class="nav-link collapsed" href="{{ route('list-rede') }}"> <i class="bi bi-person-lines-fill"></i> <span>Minha Rede</span> </a>
                         </li>
