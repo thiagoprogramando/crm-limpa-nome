@@ -250,9 +250,9 @@
                                 <li> <a href="{{ route('listuser', ['type' => 1]) }}"><i class="bi bi-circle"></i><span>Administradores</span></a> </li>
                                 <li> <a href="{{ route('listuser', ['type' => 3]) }}"><i class="bi bi-circle"></i><span>Clientes</span></a> </li>
                                 <li> <a href="{{ route('listuser', ['type' => 2]) }}"><i class="bi bi-circle"></i><span>Consultores</span></a>
-                                <li> <a href="{{ route('listuser', ['type' => 5]) }}"><i class="bi bi-circle"></i><span>Consultores Indicadores</span></a> </li>
                                 <li> <a href="{{ route('listuser', ['type' => 4]) }}"><i class="bi bi-circle"></i><span>Vendedor Interno</span></a> </li>
                                 <li> <a href="{{ route('listuser', ['type' => 7]) }}"><i class="bi bi-circle"></i><span>Consultor Master</span></a> </li>
+                                <li> <a href="{{ route('listuser', ['type' => 9]) }}"><i class="bi bi-circle"></i><span>Consultor VIP</span></a> </li>
                                 <li> <a href="{{ route('listuser', ['type' => 8]) }}"><i class="bi bi-circle"></i><span>Vendedor Master</span></a> </li>
                             </ul>
                         </li>
