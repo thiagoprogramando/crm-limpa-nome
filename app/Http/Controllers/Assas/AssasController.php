@@ -438,7 +438,7 @@ class AssasController extends Controller {
             'verify' => false
         ];
 
-        // if(env('APP_ENV') <> 'local') {
+        if(env('APP_ENV') <> 'local') {
             if (($filiate <> null) && ($commission > 0) && ($commission_filiate > 0)) {
                 if (!isset($options['json']['split'])) {
                     $options['json']['split'] = [];
@@ -452,21 +452,21 @@ class AssasController extends Controller {
                 $commission -= $commission_filiate;
             }
 
-            // if ($commission > 0) {
-            //     if (!isset($options['json']['split'])) {
-            //         $options['json']['split'] = [];
-            //     }
+            if ($commission > 0) {
+                if (!isset($options['json']['split'])) {
+                    $options['json']['split'] = [];
+                }
 
-            //     $g7Commission = $commission * 0.05;
-            //     $commission = $commission - $g7Commission;
+                $g7Commission = $commission * 0.05;
+                $commission = $commission - $g7Commission;
 
-            //     if($wallet <> env('WALLET_HEFESTO')) {
-            //         $options['json']['split'][] = [
-            //             'walletId'          => env('WALLET_G7'),
-            //             'totalFixedValue' => number_format($g7Commission, 2, '.', '')
-            //         ];
-            //     }
-            // }
+                if($wallet <> env('WALLET_HEFESTO')) {
+                    $options['json']['split'][] = [
+                        'walletId'          => env('WALLET_G7'),
+                        'totalFixedValue' => number_format($g7Commission, 2, '.', '')
+                    ];
+                }
+            }
 
             if ($wallet != null && $commission > 0) {
                 if (!isset($options['json']['split'])) {
@@ -478,7 +478,7 @@ class AssasController extends Controller {
                     'totalFixedValue' => number_format($commission, 2, '.', '')
                 ];
             }
-        // }
+        }
         
         $response = $client->post(env('API_URL_ASSAS') . 'v3/payments', $options);
         $body = (string) $response->getBody();
