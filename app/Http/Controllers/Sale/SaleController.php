@@ -123,6 +123,8 @@ class SaleController extends Controller {
 
             if ($seller->filiate <> null) {
                 $commissionFiliate = ($seller->fixed_cost - $seller->parent->fixed_cost);
+            } else {
+                $commissionFiliate = 0;
             }
 
             if ($request->wallet_off) {
