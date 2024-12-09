@@ -22,6 +22,7 @@
                             @csrf
                             
                             <input type="hidden" name="product" value="{{ $product->id }}">
+                            <input type="hidden" name="id_seller" value="{{ Auth::user()->id }}">
 
                             <div class="col-12 col-md-4 col-lg-4 mb-1">
                                 <div class="form-floating">

@@ -24,6 +24,7 @@ class Sale extends Model {
 
         'value',
         'commission',
+        'commission_filiate',
 
         'token_payment',
         'token_contract',

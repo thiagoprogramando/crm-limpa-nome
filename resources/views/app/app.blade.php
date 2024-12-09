@@ -57,7 +57,7 @@
                         </div>
 
                         <div class="col-sm-12 col-md-4 col-lg-3">
-                            <a href="{{ route('manager-sale') }}?created_at={{ now()->format('Y-m-d') }}">
+                            <a href="{{ route('manager-sale') }}?created_at={{ now()->format('Y-m-d') }}&status=1">
                                 <div class="card info-card sales-card">
                                     <div class="card-body">
                                         <h5 class="card-title">T. Vendas (Hoje)</h5>
@@ -227,7 +227,7 @@
                     </div>
 
                     <div class="col-sm-12 col-md-4 col-lg-3">
-                        <a href="{{ route('manager-sale') }}?created_at={{ now()->format('Y-m-d') }}">
+                        <a href="{{ route('manager-sale') }}?created_at={{ now()->format('Y-m-d') }}&status=1">
                             <div class="card info-card sales-card">
                                 <div class="card-body">
                                     <h5 class="card-title">T. Vendas (Hoje)</h5>
@@ -389,7 +389,11 @@
                                                 @endswitch
                                             </td>
                                             <th scope="row">{{ $loop->iteration }}</th>
-                                            <td>{{ $user->name }}</td>
+                                            @if ($user->name == Auth::user()->name)
+                                                <td>{{ $user->name }}</td>
+                                            @else
+                                                <td>{{ $user->maskedName() }}</td>
+                                            @endif
                                             <td class="text-center">{{ $user->state }}</th>
                                             <td>R$ {{ number_format($user->saleTotal(), 2, ',', '.') }}</td>
                                             <td>{{ $user->levelLabel() }}</td>

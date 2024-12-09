@@ -59,6 +59,15 @@ class SaleController extends Controller {
         $user = $this->createUser($request->name, $request->email, $request->cpfcnpj, $request->birth_date, $request->phone, $request->postal_code, $request->address, $request->complement, $request->city, $request->state, $request->num);
         if($user != false) {
 
+            $seller = User::find($request->id_seller);
+            if (!$seller) {
+                return redirect()->back()->with('error', 'Dados do CONSULTOR DE VENDAS não localizados no sistema!');
+            }
+
+            if (($seller && $seller->fixed_cost > 0) && ($this->formatarValor($request->value) < $seller->fixed_cost)) {
+                return redirect()->back()->with('error', 'O valor mín de venda é: R$ '.$seller->fixed_cost.'!');
+            }
+
             $product = Product::where('id', $request->product)->first();
             if(!$product) {
                 return redirect()->back()->with('error', 'Produto não disponível!');
@@ -87,8 +96,10 @@ class SaleController extends Controller {
                 }
             }
 
-            if ($this->formatarValor($request->value) < $product->value_min) {
-                return redirect()->back()->with('error', 'O valor mín de venda é: R$ '.$product->value_min.'!');
+            if (empty($seller->fixed_cost)) {
+                if ($this->formatarValor($request->value) < $product->value_min) {
+                    return redirect()->back()->with('error', 'O valor mín de venda é: R$ '.$product->value_min.'!');
+                }
             }
 
             if ($this->formatarValor($request->value) > $product->value_max && $product->value_max > 0) {
@@ -105,39 +116,27 @@ class SaleController extends Controller {
                 return redirect()->back()->with('error', 'Não há uma lista disponível para vendas!');
             }
 
-            $productCost = $user->fixed_cost > 0 ? $user->fixed_cost : $product->value_cost;
+            $productCost = $seller->fixed_cost > 0 ? $seller->fixed_cost : $product->value_cost;
             $discountedValue = $baseValue * (1 - $discountPercentage / 100);
 
-            $commission = Auth::check() ? 
-                (($discountedValue - $productCost) - $product->value_rate) : 
-                (($discountedValue - $productCost) - $product->value_rate);
+            $commission = (($discountedValue - $productCost) - $product->value_rate);
 
-            if (Auth::check() && Auth::user()->filiate != null && Auth::user()->type != 4) {
-                $commission -= $commission * 0.20;
+            if ($seller->filiate <> null) {
+                $commissionFiliate = ($seller->fixed_cost - $seller->parent->fixed_cost);
             }
 
             if ($request->wallet_off) {
-                if ($request->id_seller) {
-                    $userWallet = User::find($request->id_seller);
-                    $walletValue = $userWallet->wallet_off;
-                } else {
-                    $walletValue = Auth::user()->wallet_off;
-                }
-                
-                if ($walletValue < ($productCost + $product->value_rate)) {
+
+                $userWallet = $request->id_seller ? User::find($request->id_seller) : Auth::user();
+            
+                $requiredAmount = $productCost + $product->value_rate;
+                if ($userWallet->wallet_off < $requiredAmount) {
                     return redirect()->back()->with('error', 'Ops! Sua carteira não tem saldo suficiente!');
                 }
-
-                if ($request->id_seller) {
-                    $userWallet = User::find($request->id_seller);
-                    $userWallet->wallet_off -= ($productCost + $product->value_rate);
-                    $userWallet->Save();
-                } else {
-                    $userWallet = User::find(Auth::id());
-                    $userWallet->wallet_off -= ($productCost + $product->value_rate);
-                    $userWallet->Save();
-                }
-            }
+            
+                $userWallet->wallet_off -= $requiredAmount;
+                $userWallet->save();
+            }            
     
             $sale = new Sale();
             $sale->id_client    = $user->id;
@@ -151,8 +150,9 @@ class SaleController extends Controller {
             $sale->status       = 0;
             $sale->wallet_off   = $request->has('wallet_off') ? 1 : null;
 
-            $sale->value        = $discountedValue + $method->value_rate;
-            $sale->commission   = $commission;
+            $sale->value                = $discountedValue + $method->value_rate;
+            $sale->commission           = max($commission, 0);
+            $sale->commission_filiate   = $commissionFiliate;
 
             if(!empty($product->contract)) {
 

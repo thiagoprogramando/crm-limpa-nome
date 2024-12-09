@@ -161,10 +161,12 @@
                                         </th>
                                         <th>
                                             {{ $sale->list->name }} <br>
-                                            @if(($sale->list->serasa_status != 'Pendente') && ($sale->list->status_spc != 'Pendente') && ($sale->list->status_boa_vista != 'Pendente') && ($sale->list->status_quod != 'Pendente') && ($sale->list->status_cenprot != 'Pendente'))
-                                                <span class="badge bg-success">Baixada</span>
-                                            @else
-                                                <span class="badge bg-warning">Pendente</span>
+                                            @if($sale->status == 1)
+                                                @if(($sale->list->serasa_status != 'Pendente') && ($sale->list->status_spc != 'Pendente') && ($sale->list->status_boa_vista != 'Pendente') && ($sale->list->status_quod != 'Pendente') && ($sale->list->status_cenprot != 'Pendente'))
+                                                    <span class="badge bg-success">Baixada</span>
+                                                @else
+                                                    <span class="badge bg-warning">Pendente</span>
+                                                @endif
                                             @endif
                                         </th>
                                         <td title="{{ $sale->product->name }}">

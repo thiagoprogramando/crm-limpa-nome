@@ -35,7 +35,7 @@ return new class extends Migration {
             $table->decimal('wallet_off', 10, 2)->default(0);
             
 
-            $table->integer('type')->nullable()->default('2'); // 1 - Master 2 - Consultor 3 - Cliente 4 - Vendedor Interno 5 - Consultor Indicador 6 - Rede 7 - Consultor Master 9 - CONSULTOR VIP
+            $table->integer('type')->nullable()->default('2'); // 1 - ADMINISTRADOR 2 - CONSULTOR 3 - CLIENTE 4 - V INTERNO 6 - CONSULTOR REDE 7 - CONSULTOR MASTER 9 - CONSULTOR VIP
             $table->unsignedBigInteger('filiate')->nullable();
 
             $table->timestamps();

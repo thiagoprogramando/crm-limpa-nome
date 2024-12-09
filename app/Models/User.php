@@ -144,6 +144,10 @@ class User extends Authenticatable {
         return "---";
     }
 
+    public function parent() {
+        return $this->belongsTo(User::class, 'filiate');
+    }
+
     public function timeMonthly() {
        
         $lastInvoice = $this->invoices()->where('type', 1)->orderBy('due_date', 'desc')->first();
@@ -168,6 +172,24 @@ class User extends Authenticatable {
         } else {
             return 100;
         }
+    }
+
+    public function maskedName() {
+        
+        if (!$this->name) {
+            return '';
+        }
+
+        $name = explode(' ', $this->name);
+        $maskedParts = [];
+
+        foreach ($name as $part) {
+            $visible = ceil(strlen($part) / 2);
+            $masked = substr($part, 0, $visible) . str_repeat('*', strlen($part) - $visible);
+            $maskedParts[] = $masked;
+        }
+
+        return implode(' ', $maskedParts);
     }
 
     protected $hidden = [

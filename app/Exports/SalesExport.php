@@ -18,12 +18,13 @@ class SalesExport implements FromCollection, WithHeadings, ShouldAutoSize {
     public function collection() {
         return $this->sales->map(function ($sale) {
             return [
-                'ID' => $sale->id,
-                'Produto' => $sale->product->name,
-                'Cliente' => $sale->user->name,
-                'Vendedor' => $sale->seller->name,
-                'Valor' => $sale->value,
-                'Comissão' => $sale->commission,
+                'ID'            => $sale->id,
+                'Produto'       => $sale->product->name,
+                'Cliente'       => $sale->user->name,
+                'CPF/CNPJ'      => $sale->user->cpfcnpj,
+                'Vendedor'      => $sale->seller->name,
+                'Valor'         => $sale->value,
+                'Comissão'      => $sale->commission,
                 'Data da Venda' => $sale->created_at->format('d/m/Y H:i:s')
             ];
         });
@@ -34,6 +35,7 @@ class SalesExport implements FromCollection, WithHeadings, ShouldAutoSize {
             'ID',
             'Produto',
             'Cliente',
+            'CPF/CNPJ',
             'Vendedor',
             'Valor',
             'Comissão',
