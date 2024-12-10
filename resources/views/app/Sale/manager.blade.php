@@ -122,7 +122,7 @@
                 </div>
             </div>
 
-            <div class="card p-5">
+            <div class="card p-2">
                 <div class="card-body">
 
                     <div id="action-buttons" class="d-none btn-group mb-3">

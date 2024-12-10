@@ -19,7 +19,7 @@
                     <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
                 </div>
 
-                <div class="card p-5">
+                <div class="card p-2">
                     <div class="card-body">
                         <h5 class="card-title">Pagamentos</h5>
                         

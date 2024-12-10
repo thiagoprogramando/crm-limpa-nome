@@ -16,7 +16,7 @@
     <div class="row">
 
         <div class="col-xxl-12 col-md-12 mb-3">
-            <div class="card p-5">
+            <div class="card p-2">
                 <h5 class="card-title">Vendas</h5>
 
                 <div class="table-responsive">
@@ -60,7 +60,7 @@
         </div>
 
         <div class="col-xxl-12 col-md-12 mb-3">
-            <div class="card p-5">
+            <div class="card p-2">
                 <h5 class="card-title">Pagamentos</h5>
 
                 <div class="table-responsive">
@@ -99,7 +99,7 @@
         </div>
 
         <div class="col-xxl-12 col-md-12 mb-3">
-            <div class="card p-5">
+            <div class="card p-2">
                 <h5 class="card-title">Listas</h5>
 
                 <div class="table-responsive">

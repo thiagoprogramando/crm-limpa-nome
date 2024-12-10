@@ -211,23 +211,21 @@
                         </ul>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link collapsed" data-bs-target="#forms-list" data-bs-toggle="collapse" href="#">
-                            <i class="bi bi-list-check"></i><span>Lista</span><i class="bi bi-chevron-down ms-auto"></i>
-                        </a>
-                        <ul id="forms-list" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                            <li>
-                                <a href="{{ route('lists') }}"> <i class="bi bi-circle"></i><span>Listas</span> </a>
-                            </li>
-                            @if (Auth::user()->type == 1)
+                    @if (Auth::user()->type == 1)
+                        <li class="nav-item">
+                            <a class="nav-link collapsed" data-bs-target="#forms-list" data-bs-toggle="collapse" href="#">
+                                <i class="bi bi-list-check"></i><span>Lista</span><i class="bi bi-chevron-down ms-auto"></i>
+                            </a>
+                            <ul id="forms-list" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                                <li>
+                                    <a href="{{ route('lists') }}"> <i class="bi bi-circle"></i><span>Listas</span> </a>
+                                </li>
                                 <li>
                                     <a href="{{ route('createlist') }}"> <i class="bi bi-circle"></i><span>Criar Lista</span> </a>
                                 </li>
-                            @endif
-                        </ul>
-                    </li>
-
-                    @if (Auth::user()->type == 1)
+                            </ul>
+                        </li>
+                        
                         <li class="nav-item">
                             <a class="nav-link collapsed" data-bs-target="#forms-product" data-bs-toggle="collapse" href="#">
                                 <i class="bi bi-box"></i><span>Produtos</span><i class="bi bi-chevron-down ms-auto"></i>

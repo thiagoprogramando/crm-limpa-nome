@@ -54,7 +54,7 @@
                     </div>
                 </div>
 
-                <div class="card p-5">
+                <div class="card p-2">
                     <div class="card-body">
                         <h5 class="card-title">Minha Rede</h5>
                         

@@ -85,7 +85,7 @@
         </div>
 
         <div class="col-xxl-12 col-md-12">
-            <div class="card p-5">
+            <div class="card p-2">
 
                 <div class="btn-group mb-3 w-25" role="group">
                     @if(Auth::user()->level == 7 || Auth::user()->level == 9)
