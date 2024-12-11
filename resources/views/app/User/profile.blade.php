@@ -25,7 +25,7 @@
             </div>
         @endif
 
-        @if (Auth::user()->status == 3 && empty(Auth::user()->api_key))
+        @if (Auth::user()->status == 3 && empty(Auth::user()->api_key) && Auth::user()->months() == 0)
             <div class="col-12">
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
                     <i class="bi bi-info-circle me-1"></i>
@@ -40,6 +40,16 @@
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <i class="bi bi-exclamation-octagon me-1"></i>
                     Complete os dados do seu endereço e contatos abaixo!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        @endif
+
+        @if (Auth::user()->api_key == null && Auth::user()->wallet == null && Auth::user()->months() > 0)
+            <div class="col-12">
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Falta pouco! <a href="{{ route('create-wallet') }}">Clique aqui para Criar sua Carteira Digital!</a>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             </div>

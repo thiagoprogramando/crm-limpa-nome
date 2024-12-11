@@ -530,25 +530,22 @@ class AssasController extends Controller {
         }
     }    
 
-    private function createKey($id) {
+    public function createKey($id) {
 
         $invoice = Invoice::find($id);
-        if($invoice) {
-
+        if ($invoice) {
             $user = User::find($invoice->id_user);
-            if($user) {
-
-                if($user->api_key != null) {
-                    return true;
+            if ($user) {
+                if ($user->api_key != null) {
+                    return ['status' => true];
                 }
-
+    
                 $client = new Client();
-
                 $options = [
                     'headers' => [
                         'Content-Type' => 'application/json',
                         'access_token' => env('API_TOKEN_ASSAS'),
-                        'User-Agent'   => env('APP_NAME')
+                        'User-Agent'   => env('APP_NAME'),
                     ],
                     'json' => [
                         'name'          => $user->name,
@@ -556,65 +553,42 @@ class AssasController extends Controller {
                         'cpfCnpj'       => $user->cpfcnpj,
                         'birthDate'     => $user->birth_date,
                         'mobilePhone'   => $user->phone,
-                        'address'       => '09750-730 Rua José Versolato, 101 - Vila da Saúde, São Bernado do Campo',
+                        'address'       => '09750-730 Rua José Versolato, 101 - Vila da Saúde, São Bernardo do Campo',
                         'addressNumber' => '101',
                         'province'      => 'São Paulo',
                         'postalCode'    => '09750730',
                         'companyType'   => strlen($user->cpfcnpj) === 11 ? '' : 'MEI',
                         'incomeValue'   => 1000,
-                        "accountStatusWebhook" => [
-                            "url"           => env('APP_URL')."/api/webhookAccount",
-                            "email"         => env('APP_EMAIL_SUPORT'),
-                            "interrupted"   => false,
-                            "enabled"       => true,
-                            "apiVersion"    => 3,
-                        ],
-                        "transferWebhook"      => [
-                            "url"           => env('APP_URL')."/api/webhookAccount",
-                            "email"         => env('APP_EMAIL_SUPORT'),
-                            "interrupted"   => false,
-                            "enabled"       => true,
-                            "apiVersion"    => 3,
-                        ],
-                        "paymentWebhook"       => [
-                            "url"           => env('APP_URL')."/api/webhookAccount",
-                            "email"         => env('APP_EMAIL_SUPORT'),
-                            "interrupted"   => false,
-                            "enabled"       => true,
-                            "apiVersion"    => 3,
-                        ],
-                        "invoiceWebhook"        => [
-                            "url"           => env('APP_URL')."/api/webhookAccount",
-                            "email"         => env('APP_EMAIL_SUPORT'),
-                            "interrupted"   => false,
-                            "enabled"       => true,
-                            "apiVersion"    => 3,
-                        ],
                     ],
-                    'verify' => false
+                    'verify' => false,
                 ];
-
-                $response = $client->post(env('API_URL_ASSAS') . 'v3/accounts', $options);
-                if ($response->getStatusCode() === 200) {
-                    $body = (string) $response->getBody();
-                    $data = json_decode($body, true);
-
-                    $user->api_key  = $data['apiKey'];
-                    $user->wallet   = $data['walletId'];
-                    $user->status   = 2;
-                    if($user->save()) {
-                        return true;
+    
+                try {
+                    $response = $client->post(env('API_URL_ASSAS') . 'v3/accounts', $options);
+                    if ($response->getStatusCode() === 200) {
+                        $body = (string)$response->getBody();
+                        $data = json_decode($body, true);
+                        $user->api_key = $data['apiKey'];
+                        $user->wallet  = $data['walletId'];
+                        $user->status  = 2;
+                        if ($user->save()) {
+                            return ['status' => true];
+                        }
                     }
-
-                    return false;
-                } else {
-                    return false;
+                    return ['status' => false, 'error' => 'Erro desconhecido.'];
+                } catch (\GuzzleHttp\Exception\ClientException $e) {
+                    $responseBody = (string)$e->getResponse()->getBody();
+                    $errorData = json_decode($responseBody, true);
+                    return [
+                        'status' => false,
+                        'error' => $errorData['errors'][0]['description'] ?? 'Erro desconhecido.',
+                    ];
                 }
             }
         }
-
-        return false;
-    }
+    
+        return ['status' => false, 'error' => 'Dados do usuário ou invoice não encontrados.'];
+    }    
 
     public function webhook(Request $request) {
 
@@ -715,7 +689,7 @@ class AssasController extends Controller {
 
                 if($invoice->type == 1) {
                     $key = $this->createKey($invoice->id);
-                    if($key) {
+                    if($key == true || $key == 1) {
                         return response()->json(['status' => 'success', 'message' => 'Operação Finalizada & ApiKey criada!']);
                     }
                     return response()->json(['status' => 'success', 'message' => 'Operação Finalizada, mas houve um erro na criação da ApiKey!']);

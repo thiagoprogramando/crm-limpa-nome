@@ -131,6 +131,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/list-rede', [UserController::class, 'listRede'])->name('list-rede');
     Route::get('/list-client', [UserController::class, 'listClient'])->name('list-client');
     Route::get('view-notification/{id}', [UserController::class, 'viewNotification'])->name('view-notification');
+    Route::get('/create-wallet', [UserController::class, 'createWallet'])->name('create-wallet');
 
     //Payments Assas
     Route::get('/createMonthly/{id}', [AssasController::class, 'createMonthly'])->name('createMonthly');

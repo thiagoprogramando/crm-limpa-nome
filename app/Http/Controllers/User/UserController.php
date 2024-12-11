@@ -426,5 +426,29 @@ class UserController extends Controller {
         $valorFloat = floatval($valor);
     
         return number_format($valorFloat, 2, '.', '');
-    } 
+    }
+
+    public function createWallet() {
+        if (!Auth::check()) {
+            return redirect()->back()->with('info', 'Verifique seus dados e tente novamente!');
+        }
+    
+        $invoice = Invoice::where('id_user', Auth::user()->id)
+            ->where('type', 1)
+            ->where('status', 1)
+            ->first();
+    
+        if (!$invoice) {
+            return redirect()->back()->with('info', 'Afilie-se conosco para Criar Sua Carteira Digital!');
+        }
+    
+        $assas = new AssasController();
+        $apikey = $assas->createKey($invoice->id);
+    
+        if ($apikey['status'] === true) {
+            return redirect()->route('profile')->with('success', 'Vamos para a próxima etapa!');
+        }
+    
+        return redirect()->back()->with('info', $apikey['error']);
+    }    
 }
