@@ -174,7 +174,7 @@ class UserController extends Controller {
 
     public function listRede(Request $request) {
 
-        $query = User::orderBy('name', 'desc')->where('filiate', Auth::id());
+        $query = User::orderBy('name', 'desc')->where('filiate', Auth::id())->where('type', '!=', '3');
 
         if (!empty($request->name)) {
             $query->where('name', 'like', '%' . $request->name . '%');
@@ -186,13 +186,24 @@ class UserController extends Controller {
 
         $users = $query->get();
 
-        foreach ($users as $user) {
-            $user->commission_total = $user->commissionTotal();
+        return view('app.User.list-rede', ['users' => $users]);
+    }
+
+    public function listClient(Request $request) {
+
+        $query = User::orderBy('name', 'desc')->where('filiate', Auth::id())->where('type', '=', '3');
+
+        if (!empty($request->name)) {
+            $query->where('name', 'like', '%' . $request->name . '%');
         }
 
-        $users = $users->sortByDesc('commission_total');
+        if (!empty($request->created_at)) {
+            $query->where('created_at', $request->created_at);
+        }
 
-        return view('app.User.list-rede', ['users' => $users]);
+        $users = $query->get();
+
+        return view('app.User.list-client', ['users' => $users]);
     }
 
     public function deleteUser(Request $request) {

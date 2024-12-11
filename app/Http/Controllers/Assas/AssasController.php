@@ -294,25 +294,28 @@ class AssasController extends Controller {
     public function createMonthly($id) {
 
         $user = User::find($id);
-        if($user) {
-            $invoice = Invoice::where('id_user', $user->id)->where('type', 1)->where('status', 0)->exists();
-            if($invoice) {
-                return redirect()->route('payments')->with('error', 'Você possui uma mensalidade em aberto!');
-            }
+        if (!$user) {
+            return redirect()->route('profile')->with('info', 'Verifique seus dados e tente novamente!');
         }
-
-        if($user->customer == null) {
+       
+        $invoice = Invoice::where('id_user', $user->id)->where('type', 1)->where('status', 0)->exists();
+        if ($invoice) {
+            return redirect()->route('payments')->with('error', 'Você possui uma mensalidade em aberto!');
+        }
+        
+        if ($user->customer == null) {
+            
             $customer = $this->createCustomer($user->name, $user->cpfcnpj, $user->phone, $user->email);
-            if($customer) {
+            if ($customer) {
                 $user->customer = $customer;
                 $user->save();
             } else {
-                return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
+                return redirect()->route('profile')->with('info', 'Verifique seus dados e tente novamente!');
             }
         }
 
         $charge = $this->createCharge($user->customer, 'PIX', '49.90', 'Assinatura -'.env('APP_NAME'), now()->addDay(), null, env('WALLET_HEFESTO'), 20);
-        if($charge != false) {
+        if($charge <> false) {
 
             $invoice = new Invoice();
             $invoice->name          = 'Mensalidade '.env('APP_NAME');
@@ -331,7 +334,7 @@ class AssasController extends Controller {
             $invoice->token_payment = $charge['id'];
 
             if($invoice->save()) {
-                return redirect()->route('payments')->with('success', 'Agora, será necessário efetuar o pagamento!');
+                return redirect($charge['invoiceUrl']);
             }
         }
 

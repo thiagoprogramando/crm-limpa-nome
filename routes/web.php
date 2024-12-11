@@ -62,43 +62,66 @@ Route::middleware(['auth'])->group(function () {
 
         //Gatway Assas
         Route::post('create-deposit', [AssasController::class, 'createDeposit'])->name('create-deposit');
+
+        //Coupon
+        Route::get('/coupons', [CouponController::class, 'coupons'])->name('coupons');
+        Route::post('create-coupon', [CouponController::class, 'createCoupon'])->name('create-coupon');
+        Route::post('delete-coupon', [CouponController::class, 'deleteCoupon'])->name('delete-coupon');
+        Route::post('add-coupon', [CouponController::class, 'addCoupon'])->name('add-coupon');
+
+        Route::middleware(['monthly'])->group(function () {
+            
+            //Wallet
+            Route::get('/wallet', [WalletController::class, 'wallet'])->name('wallet');
+            Route::get('/withdraw', [WalletController::class, 'withdraw'])->name('withdraw');
+            Route::post('withdraw-send', [WalletController::class, 'withdrawSend'])->name('withdraw-send');
+
+            //Payments
+            Route::get('/receivable', [Payment::class, 'receivable'])->name('receivable');
+        });
+
+        //Product
+        Route::get('/listproduct', [ProductController::class, 'list'])->name('listproduct');
+        Route::get('/createproduct', [ProductController::class, 'create'])->name('createproduct');
+        Route::post('create-product', [ProductController::class, 'createProduct'])->name('create-product');
+        Route::get('/updateproduct/{id}', [ProductController::class, 'update'])->name('updateproduct');
+        Route::post('update-product', [ProductController::class, 'updateProduct'])->name('update-product');
+        Route::post('delete-product', [ProductController::class, 'delete'])->name('delete-product');
+        Route::post('create-payment', [ProductController::class, 'payment'])->name('create-payment');
+        Route::post('delete-payment', [ProductController::class, 'deletePayment'])->name('delete-payment');
+        Route::post('update-payment', [ProductController::class, 'updatePayment'])->name('update-payment');
+        Route::post('create-item', [ProductController::class, 'createItem'])->name('create-item');
+        Route::post('delete-item', [ProductController::class, 'deleteItem'])->name('delete-item');
+        
+        //Archive
+        Route::get('/my-archive', [UserController::class, 'myArchive'])->name('my-archive');
+        Route::post('/create-archive', [UserController::class, 'createArchive'])->name('create-archive');
+        Route::post('/delete-archive', [UserController::class, 'deleteArchive'])->name('delete-archive');
+
+        //Active
+        Route::get('/list-active/{status}', [UserController::class, 'listActive'])->name('list-active');
+        Route::get('/send-active/{id}', [UserController::class, 'sendActive'])->name('send-active');
+
+        //List
+        Route::get('/lists', [ListController::class, 'list'])->name('lists');
+        Route::get('/createlist', [ListController::class, 'create'])->name('createlist');
+        Route::get('/excel-list/{id}', [ListController::class, 'excelList'])->name('excel-list');
+        Route::post('create-list', [ListController::class, 'createList'])->name('create-list');
+        Route::get('/updatelist/{id}', [ListController::class, 'update'])->name('updatelist');
+        Route::post('update-list', [ListController::class, 'updateList'])->name('update-list');
+        Route::post('delete-list', [ListController::class, 'delete'])->name('delete-list');
+
+        //Client
+        Route::get('/my-shop', [SaleController::class, 'myShop'])->name('my-shop');
+        Route::get('/my-product/{id}', [SaleController::class, 'myProduct'])->name('my-product');
     });
 
+    //App 
     Route::get('/app', [AppController::class, 'handleApp'])->name('app');
     Route::get('/apresentation', [UserController::class, 'apresentation'])->name('apresentation');
     Route::post('create-apresentation', [UserController::class, 'createApresentation'])->name('create-apresentation');
     Route::post('delete-apresentation', [UserController::class, 'deleteApresentation'])->name('delete-apresentation');
-
-    //Coupon
-    Route::get('/coupons', [CouponController::class, 'coupons'])->name('coupons');
-    Route::post('create-coupon', [CouponController::class, 'createCoupon'])->name('create-coupon');
-    Route::post('delete-coupon', [CouponController::class, 'deleteCoupon'])->name('delete-coupon');
-    Route::post('add-coupon', [CouponController::class, 'addCoupon'])->name('add-coupon');
-
-    Route::middleware(['monthly'])->group(function () {
-        
-        //Wallet
-        Route::get('/wallet', [WalletController::class, 'wallet'])->name('wallet');
-        Route::get('/withdraw', [WalletController::class, 'withdraw'])->name('withdraw');
-        Route::post('withdraw-send', [WalletController::class, 'withdrawSend'])->name('withdraw-send');
-
-        //Payments
-        Route::get('/receivable', [Payment::class, 'receivable'])->name('receivable');
-    });
-
-    //Product
-    Route::get('/listproduct', [ProductController::class, 'list'])->name('listproduct');
-    Route::get('/createproduct', [ProductController::class, 'create'])->name('createproduct');
-    Route::post('create-product', [ProductController::class, 'createProduct'])->name('create-product');
-    Route::get('/updateproduct/{id}', [ProductController::class, 'update'])->name('updateproduct');
-    Route::post('update-product', [ProductController::class, 'updateProduct'])->name('update-product');
-    Route::post('delete-product', [ProductController::class, 'delete'])->name('delete-product');
-    Route::post('create-payment', [ProductController::class, 'payment'])->name('create-payment');
-    Route::post('delete-payment', [ProductController::class, 'deletePayment'])->name('delete-payment');
-    Route::post('update-payment', [ProductController::class, 'updatePayment'])->name('update-payment');
-    Route::post('create-item', [ProductController::class, 'createItem'])->name('create-item');
-    Route::post('delete-item', [ProductController::class, 'deleteItem'])->name('delete-item');
-
+    
     //User
     Route::get('/profile', [UserController::class, 'profile'])->name('profile');
     Route::post('update-user', [UserController::class, 'updateProfile'])->name('update-user');
@@ -106,25 +129,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/search', [UserController::class, 'search'])->name('search');
     Route::get('/listuser/{type}', [UserController::class, 'listuser'])->name('listuser');
     Route::get('/list-rede', [UserController::class, 'listRede'])->name('list-rede');
+    Route::get('/list-client', [UserController::class, 'listClient'])->name('list-client');
     Route::get('view-notification/{id}', [UserController::class, 'viewNotification'])->name('view-notification');
-    
-    //Archive
-    Route::get('/my-archive', [UserController::class, 'myArchive'])->name('my-archive');
-    Route::post('/create-archive', [UserController::class, 'createArchive'])->name('create-archive');
-    Route::post('/delete-archive', [UserController::class, 'deleteArchive'])->name('delete-archive');
-
-    //Active
-    Route::get('/list-active/{status}', [UserController::class, 'listActive'])->name('list-active');
-    Route::get('/send-active/{id}', [UserController::class, 'sendActive'])->name('send-active');
-
-    //List
-    Route::get('/lists', [ListController::class, 'list'])->name('lists');
-    Route::get('/createlist', [ListController::class, 'create'])->name('createlist');
-    Route::get('/excel-list/{id}', [ListController::class, 'excelList'])->name('excel-list');
-    Route::post('create-list', [ListController::class, 'createList'])->name('create-list');
-    Route::get('/updatelist/{id}', [ListController::class, 'update'])->name('updatelist');
-    Route::post('update-list', [ListController::class, 'updateList'])->name('update-list');
-    Route::post('delete-list', [ListController::class, 'delete'])->name('delete-list');
 
     //Payments Assas
     Route::get('/createMonthly/{id}', [AssasController::class, 'createMonthly'])->name('createMonthly');
@@ -132,10 +138,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/payments', [Payment::class, 'payments'])->name('payments');
     Route::get('/request-invoices/{id}', [AssasController::class, 'requestInvoice'])->name('request-invoices');
 
-    //Client
-    Route::get('/my-shop', [SaleController::class, 'myShop'])->name('my-shop');
-    Route::get('/my-product/{id}', [SaleController::class, 'myProduct'])->name('my-product');
-    
     Route::get('/logout', [Login::class, 'logout'])->name('logout');
 
     // === Client Model === //

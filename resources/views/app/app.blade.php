@@ -18,22 +18,11 @@
                 <div class="col-lg-12">
                     <div class="row">
 
-                        @if (Auth::user()->phone == null || Auth::user()->wallet == null || Auth::user()->api_key == null)
+                        @if (Auth::user()->status <> 1 || Auth::user()->wallet == null || Auth::user()->api_key == null)
                             <div class="col-12">
                                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                     <i class="bi bi-exclamation-octagon me-1"></i>
                                     Você possui pendências no cadastro, <a href="{{ route('profile') }}">complete os dados clicando aqui!</a>
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                            </div>
-                        @endif
-                        
-                        @if(Auth::user()->type == 5)
-                            <div class="col-12">
-                                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                    <i class="bi bi-info-circle me-1"></i>
-                                    Agora você pode montar o seu time e lucrar 20% De todos contratos deles.
-                                    <a href="{{ route('registrer', ['id' => Auth::user()->id]) }}" target="_blank">Você pode indicar clicando aqui.</a>
                                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
                             </div>

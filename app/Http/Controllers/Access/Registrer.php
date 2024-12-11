@@ -76,15 +76,17 @@ class Registrer extends Controller {
         $user = User::find($id);
         if($user) {
 
+            $url = env('APP_URL');
+
             $message =  "Olá, {$user->name}! 😊\r\n\r\n"
-                        . "Seja bem-vindo(a) à G7! \r\n\r\n"
+                        . "Seja bem-vindo(a)! \r\n\r\n"
                         . "Estamos muito felizes em tê-lo(a) conosco. Seu acesso foi criado com sucesso. Aqui estão seus dados de login para que você possa começar a aproveitar todos os benefícios: \r\n\r\n"
-                        . "Acesse: https://app.grupo7assessoria.com/\r\n"
+                        . "Acesse: {$url}\r\n"
                         . "E-mail: {$user->email}\r\n"
                         . "Senha: *CPF/CNPJ (Sem caracteres, apenas letras)* \r\n"
                         . "proveite a sua jornada com a gente e tenha um ótimo dia! \r\n\r\n";
             $this->sendWhatsapp(
-                "https://app.grupo7assessoria.com/",
+                $url,
                 $message,
                 $user->phone,
                 $user->api_token_zapapi

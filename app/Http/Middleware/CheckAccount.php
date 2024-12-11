@@ -15,12 +15,16 @@ class CheckAccount {
         $user = Auth::user();
         if($user && $user->type != 4) {
             if ($user->wallet === null || $user->api_key === null) {
-                return redirect()->route('profile')->with('error', 'Complete seus dados para acessar todos os módulos!');
+                return redirect()->route('profile')->with('info', 'Complete seus dados para acessar todos os módulos!');
+            }
+
+            if ($user->status <> 1) {
+                return redirect()->route('profile')->with('info', 'É necessário finalizar sua documentação!');
             }
 
             $payment = Invoice::where('id_user', $user->id)->where('status', 0)->where('type', 1)->count();
             if($payment >= 1) {
-                return redirect()->route('payments')->with('error', 'Existem mensalidades em aberto!');
+                return redirect()->route('payments')->with('info', 'Existem mensalidades em aberto!');
             }
         }
 
