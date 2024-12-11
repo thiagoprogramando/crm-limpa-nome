@@ -198,12 +198,10 @@
                         </li>
                     @endif
 
-                    @if (empty(Auth::user()->filiate))
-                        <li class="nav-item">
-                            <a class="nav-link collapsed" href="{{ route('list-client') }}"> <i class="bi bi-file-earmark-person"></i> <span>Clientes</span> </a>
-                        </li>
-                    @endif
-
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" href="{{ route('list-client') }}"> <i class="bi bi-file-earmark-person"></i> <span>Clientes</span> </a>
+                    </li>
+                    
                     <li class="nav-item">
                         <a class="nav-link collapsed" data-bs-target="#forms-sale" data-bs-toggle="collapse" href="#">
                             <i class="bi bi-bag"></i><span>Vendas</span><i class="bi bi-chevron-down ms-auto"></i>
