@@ -40,21 +40,7 @@ class Registrer extends Controller {
         $user->password = bcrypt($password);
         
         if(!empty($request->filiate)) {
-
             $user->filiate = $request->filiate;
-            if($request->type == 6) {
-                
-                $rede = User::find($request->filiate);
-                if($rede && !empty($rede->api_key) && !empty($rede->wallet)) {
-                    $user->wallet               = $rede->wallet;
-                    $user->api_key              = $rede->api_key;
-                    $user->api_token_zapapi     = $rede->api_token_zapapi;
-                    $user->status               = 1;
-                    $user->type                 = 6;
-                } else {
-                    return redirect()->back()->with('error', 'Escritório não disponível! Contate o seu indicador.');
-                }
-            }
         }
 
         if($user->save()) {
