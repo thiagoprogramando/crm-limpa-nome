@@ -136,18 +136,16 @@
                     <a class="nav-link collapsed" href="{{ route('apresentation') }}"> <i class="bi bi-book"></i> <span>Material de apoio</span> </a>
                 </li>
 
-                @if (Auth::user()->type != 3)
-                    <li class="nav-item">
-                        <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
-                            <i class="bi bi-briefcase"></i><span>Gerar Contrato</span><i class="bi bi-chevron-down ms-auto"></i>
-                        </a>
-                        <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                            @foreach($business as $busines)
-                                <li><a href="@if(Auth::user()->type == 7 || Auth::user()->type == 9) {{ route('createupload', ['id' => $busines->id]) }} @else {{ route('createsale', ['id' => $busines->id]) }} @endif"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
-                            @endforeach
-                        </ul>
-                    </li>
-                @endif
+                <li class="nav-item">
+                    <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-briefcase"></i><span>Gerar Contrato</span><i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                        @foreach($business as $busines)
+                            <li><a href="@if(Auth::user()->type == 7 || Auth::user()->type == 9) {{ route('createupload', ['id' => $busines->id]) }} @else {{ route('createsale', ['id' => $busines->id]) }} @endif"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
+                        @endforeach
+                    </ul>
+                </li>
 
                 @if (Auth::user()->type != 7 && Auth::user()->type != 9)
                     <li class="nav-item">
@@ -163,112 +161,120 @@
                 @endif
 
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ route('my-shop') }}"> <i class="bi bi-shop-window"></i> <span>Minhas compras</span> </a>
+                    <a class="nav-link collapsed" data-bs-target="#forms-upload" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-cloud-upload"></i><span>Upload de Contratos</span><i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <ul id="forms-upload" class="nav-content collapse " data-bs-parent="#sidebar-upload">
+                        @foreach($business as $busines)
+                            <li><a href="{{ route('createupload', ['id' => $busines->id]) }}"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
+                        @endforeach
+                    </ul>
                 </li>
 
-                @if (Auth::user()->type != 3)
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="{{ route('my-shop') }}"> <i class="bi bi-shop-window"></i> <span>Minhas compras</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="https://servicos.ehmconsultas.com/index.php" target="_blank"> <i class="bi bi-search"></i> <span>Consultas</span> </a>
+                </li>
+
+                @if (Auth::user()->type != 6 && !empty(Auth::user()->api_key) && !empty(Auth::user()->wallet))
+                    <li class="nav-heading">Financeiro</li>
+
                     <li class="nav-item">
-                        <a class="nav-link collapsed" href="http://buscasafe.co/login" target="_blank"> <i class="bi bi-search"></i> <span>Consultas</span> </a>
+                        <a class="nav-link collapsed" href="{{ route('wallet') }}"> <i class="bi bi-wallet2"></i> <span>Carteira</span> </a>
                     </li>
 
-                    @if (Auth::user()->type != 6)
-                        <li class="nav-heading">Financeiro</li>
-
-                        <li class="nav-item">
-                            <a class="nav-link collapsed" href="{{ route('wallet') }}"> <i class="bi bi-wallet2"></i> <span>Carteira</span> </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link collapsed" data-bs-target="#forms-finan" data-bs-toggle="collapse" href="#">
-                                <i class="bi bi-bank"></i><span>Operações</span><i class="bi bi-chevron-down ms-auto"></i>
-                            </a>
-                            <ul id="forms-finan" class="nav-content collapse " data-bs-parent="#sidebar-nav">  
-                                <li><a href="{{ route('withdraw') }}"> <i class="bi bi-circle"></i><span>Saques</span> </a></li>
-                                <li><a href="{{ route('receivable') }}"> <i class="bi bi-circle"></i><span>Recebíveis</span> </a></li>
-                                <li><a href="{{ route('payments') }}"> <i class="bi bi-circle"></i><span>Pagamentos</span> </a></li>
-                            </ul>
-                        </li>
-                    @endif
-
-                    <li class="nav-heading">Gestão</li>
-
-                    @if (empty(Auth::user()->filiate))
-                        <li class="nav-item">
-                            <a class="nav-link collapsed" href="{{ route('list-rede') }}"> <i class="bi bi-person-lines-fill"></i> <span>Minha Rede</span> </a>
-                        </li>
-                    @endif
-
                     <li class="nav-item">
-                        <a class="nav-link collapsed" href="{{ route('list-client') }}"> <i class="bi bi-file-earmark-person"></i> <span>Clientes</span> </a>
+                        <a class="nav-link collapsed" data-bs-target="#forms-finan" data-bs-toggle="collapse" href="#">
+                            <i class="bi bi-bank"></i><span>Operações</span><i class="bi bi-chevron-down ms-auto"></i>
+                        </a>
+                        <ul id="forms-finan" class="nav-content collapse " data-bs-parent="#sidebar-nav">  
+                            <li><a href="{{ route('withdraw') }}"> <i class="bi bi-circle"></i><span>Saques</span> </a></li>
+                            <li><a href="{{ route('receivable') }}"> <i class="bi bi-circle"></i><span>Recebíveis</span> </a></li>
+                            <li><a href="{{ route('payments') }}"> <i class="bi bi-circle"></i><span>Pagamentos</span> </a></li>
+                        </ul>
+                    </li>
+                @endif
+
+                <li class="nav-heading">Gestão</li>
+
+                @if (empty(Auth::user()->filiate))
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" href="{{ route('list-rede') }}"> <i class="bi bi-person-lines-fill"></i> <span>Minha Rede</span> </a>
+                    </li>
+                @endif
+
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="{{ route('list-client') }}"> <i class="bi bi-file-earmark-person"></i> <span>Clientes</span> </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link collapsed" data-bs-target="#forms-sale" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-bag"></i><span>Vendas</span><i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <ul id="forms-sale" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                        <li> <a href="{{ route('manager-sale') }}"> <i class="bi bi-circle"></i><span>Vendas</span> </a> </li>
+                        <li> <a href="{{ route('invoice-default') }}"> <i class="bi bi-circle"></i><span>Inadimplência</span> </a> </li>
+                        @if (Auth::user()->type == 1)
+                            <li><a href="{{ route('coupons') }}"> <i class="bi bi-circle"></i><span>Cupons</span> </a></li>
+                        @endif
+                    </ul>
+                </li>
+
+                @if (Auth::user()->type == 1)
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" data-bs-target="#forms-list" data-bs-toggle="collapse" href="#">
+                            <i class="bi bi-list-check"></i><span>Lista</span><i class="bi bi-chevron-down ms-auto"></i>
+                        </a>
+                        <ul id="forms-list" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                            <li>
+                                <a href="{{ route('lists') }}"> <i class="bi bi-circle"></i><span>Listas</span> </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('createlist') }}"> <i class="bi bi-circle"></i><span>Criar Lista</span> </a>
+                            </li>
+                        </ul>
                     </li>
                     
                     <li class="nav-item">
-                        <a class="nav-link collapsed" data-bs-target="#forms-sale" data-bs-toggle="collapse" href="#">
-                            <i class="bi bi-bag"></i><span>Vendas</span><i class="bi bi-chevron-down ms-auto"></i>
+                        <a class="nav-link collapsed" data-bs-target="#forms-product" data-bs-toggle="collapse" href="#">
+                            <i class="bi bi-box"></i><span>Produtos</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
-                        <ul id="forms-sale" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                            <li> <a href="{{ route('manager-sale') }}"> <i class="bi bi-circle"></i><span>Vendas</span> </a> </li>
-                            <li> <a href="{{ route('invoice-default') }}"> <i class="bi bi-circle"></i><span>Inadimplência</span> </a> </li>
-                            @if (Auth::user()->type == 1)
-                                <li><a href="{{ route('coupons') }}"> <i class="bi bi-circle"></i><span>Cupons</span> </a></li>
-                            @endif
+                        <ul id="forms-product" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                            <li>
+                                <a href="{{ route('listproduct') }}"> <i class="bi bi-circle"></i><span>Produtos</span> </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('createproduct') }}"> <i class="bi bi-circle"></i><span>Criar Produto</span> </a>
+                            </li>
+                        </ul>
+                    </li>
+                
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" data-bs-target="#forms-users" data-bs-toggle="collapse" href="#">
+                            <i class="bi bi-file-earmark-person"></i><span>Pessoas</span><i class="bi bi-chevron-down ms-auto"></i>
+                        </a>
+                        <ul id="forms-users" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                            <li> <a href="{{ route('listuser', ['type' => 1]) }}"><i class="bi bi-circle"></i><span>Administradores</span></a> </li>
+                            <li> <a href="{{ route('listuser', ['type' => 3]) }}"><i class="bi bi-circle"></i><span>Clientes</span></a> </li>
+                            <li> <a href="{{ route('listuser', ['type' => 2]) }}"><i class="bi bi-circle"></i><span>Consultores</span></a>
+                            <li> <a href="{{ route('listuser', ['type' => 4]) }}"><i class="bi bi-circle"></i><span>Vendedor Interno</span></a> </li>
+                            <li> <a href="{{ route('listuser', ['type' => 7]) }}"><i class="bi bi-circle"></i><span>Consultor Master</span></a> </li>
+                            <li> <a href="{{ route('listuser', ['type' => 9]) }}"><i class="bi bi-circle"></i><span>Consultor VIP</span></a> </li>
+                            <li> <a href="{{ route('listuser', ['type' => 8]) }}"><i class="bi bi-circle"></i><span>Vendedor Master</span></a> </li>
                         </ul>
                     </li>
 
-                    @if (Auth::user()->type == 1)
-                        <li class="nav-item">
-                            <a class="nav-link collapsed" data-bs-target="#forms-list" data-bs-toggle="collapse" href="#">
-                                <i class="bi bi-list-check"></i><span>Lista</span><i class="bi bi-chevron-down ms-auto"></i>
-                            </a>
-                            <ul id="forms-list" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                                <li>
-                                    <a href="{{ route('lists') }}"> <i class="bi bi-circle"></i><span>Listas</span> </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('createlist') }}"> <i class="bi bi-circle"></i><span>Criar Lista</span> </a>
-                                </li>
-                            </ul>
-                        </li>
-                        
-                        <li class="nav-item">
-                            <a class="nav-link collapsed" data-bs-target="#forms-product" data-bs-toggle="collapse" href="#">
-                                <i class="bi bi-box"></i><span>Produtos</span><i class="bi bi-chevron-down ms-auto"></i>
-                            </a>
-                            <ul id="forms-product" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                                <li>
-                                    <a href="{{ route('listproduct') }}"> <i class="bi bi-circle"></i><span>Produtos</span> </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('createproduct') }}"> <i class="bi bi-circle"></i><span>Criar Produto</span> </a>
-                                </li>
-                            </ul>
-                        </li>
-                    
-                        <li class="nav-item">
-                            <a class="nav-link collapsed" data-bs-target="#forms-users" data-bs-toggle="collapse" href="#">
-                                <i class="bi bi-file-earmark-person"></i><span>Pessoas</span><i class="bi bi-chevron-down ms-auto"></i>
-                            </a>
-                            <ul id="forms-users" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                                <li> <a href="{{ route('listuser', ['type' => 1]) }}"><i class="bi bi-circle"></i><span>Administradores</span></a> </li>
-                                <li> <a href="{{ route('listuser', ['type' => 3]) }}"><i class="bi bi-circle"></i><span>Clientes</span></a> </li>
-                                <li> <a href="{{ route('listuser', ['type' => 2]) }}"><i class="bi bi-circle"></i><span>Consultores</span></a>
-                                <li> <a href="{{ route('listuser', ['type' => 4]) }}"><i class="bi bi-circle"></i><span>Vendedor Interno</span></a> </li>
-                                <li> <a href="{{ route('listuser', ['type' => 7]) }}"><i class="bi bi-circle"></i><span>Consultor Master</span></a> </li>
-                                <li> <a href="{{ route('listuser', ['type' => 9]) }}"><i class="bi bi-circle"></i><span>Consultor VIP</span></a> </li>
-                                <li> <a href="{{ route('listuser', ['type' => 8]) }}"><i class="bi bi-circle"></i><span>Vendedor Master</span></a> </li>
-                            </ul>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link collapsed" data-bs-target="#forms-actvie" data-bs-toggle="collapse" href="#">
-                                <i class="bi bi-person-bounding-box"></i><span>Atividade</span><i class="bi bi-chevron-down ms-auto"></i>
-                            </a>
-                            <ul id="forms-actvie" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                                <li> <a href="{{ route('list-active', ['status' => 1]) }}"><i class="bi bi-circle"></i><span>Ativos</span></a> </li>
-                                <li> <a href="{{ route('list-active', ['status' => 2]) }}"><i class="bi bi-circle"></i><span>Inativos</span></a> </li>
-                            </ul>
-                        </li>
-                    @endif
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" data-bs-target="#forms-actvie" data-bs-toggle="collapse" href="#">
+                            <i class="bi bi-person-bounding-box"></i><span>Atividade</span><i class="bi bi-chevron-down ms-auto"></i>
+                        </a>
+                        <ul id="forms-actvie" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                            <li> <a href="{{ route('list-active', ['status' => 1]) }}"><i class="bi bi-circle"></i><span>Ativos</span></a> </li>
+                            <li> <a href="{{ route('list-active', ['status' => 2]) }}"><i class="bi bi-circle"></i><span>Inativos</span></a> </li>
+                        </ul>
+                    </li>
                 @endif
             </ul>
 
@@ -279,9 +285,11 @@
         </main>
 
         <footer id="footer" class="footer">
-            <div class="copyright"> &copy; Copyright <strong><span>{{ env('APP_NAME') }}</span></strong>. Todos os direitos reservados </div>
+            <div class="copyright">
+                 &copy; Copyright <strong><span>{{ env('APP_NAME') }}</span></strong>. Todos os direitos reservados 
+            </div>
             <div class="credits">
-                Desenvolvido por <a href="https://grupo7assessoria.com.br/">G7 Assessoria</a>
+                V 0.0.1
             </div>
         </footer>
 
