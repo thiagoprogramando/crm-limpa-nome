@@ -30,10 +30,10 @@
                                         <h3 class="mb-4">Entrar</h3>
                                     </div>
                                     <div class="w-100">
-                                        <p class="social-media d-flex justify-content-end">
+                                        {{-- <p class="social-media d-flex justify-content-end">
                                             <a href="https://www.facebook.com/diegoduarteg7/" target="_blank" class="social-icon d-flex align-items-center justify-content-center"><span class="fa fa-facebook"></span></a>
                                             <a href="https://www.instagram.com/g7assessoria/" target="_blank" class="social-icon d-flex align-items-center justify-content-center"><span class="fa fa-instagram"></span></a>
-                                        </p>
+                                        </p> --}}
                                     </div>
                                 </div>
 
