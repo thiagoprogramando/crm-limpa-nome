@@ -70,7 +70,7 @@ class AssasController extends Controller {
         if ($filiate) {
             $commission_filiate = $sale->seller->fixed_cost - $filiate->fixed_cost;
         } else {
-            $commission_filiate = null;
+            $commission_filiate = 0;
         }
 
         if($sale->wallet_off) {
@@ -198,7 +198,7 @@ class AssasController extends Controller {
         if ($filiate) {
             $commission_filiate = $sale->seller->fixed_cost - $filiate->fixed_cost;
         } else {
-            $commission_filiate = null;
+            $commission_filiate = 0;
         }
 
         $invoice                = new Invoice();
@@ -711,12 +711,14 @@ class AssasController extends Controller {
 
                         $seller->save();
 
-                        $notification               = new Notification();
-                        $notification->name         = 'Novo nível!';
-                        $notification->description  = $seller->name.' Alcançou o nível: '.$nivel;
-                        $notification->type         = 2;
-                        $notification->id_user      = 14; 
-                        $notification->save();
+                        if (!empty($nivel)) {
+                            $notification               = new Notification();
+                            $notification->name         = 'Novo nível!';
+                            $notification->description  = $seller->name.' Alcançou o nível: '.$nivel;
+                            $notification->type         = 2;
+                            $notification->id_user      = 14; 
+                            $notification->save();
+                        }
                     }
                 }
 
