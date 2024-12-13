@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->string('password');
             
 
-            $table->integer('level')->nullable()->default('1'); // 1 - INICIANTE 2 - CONSULTOR 3 - CONSULTOR LÍDER 4 - REGIONAL 5 - GERENTE REGIONAL 6 - VENDEDOR INTERNO 7 - CONSULTOR MASTER 9 - CONSULTOR VIP
+            $table->integer('level')->nullable()->default('1'); // 1 - INICIANTE 2 - CONSULTOR 3 - CONSULTOR LÍDER 4 - REGIONAL 5 - GERENTE REGIONAL
             $table->integer('status')->nullable()->default('4'); // 1 - Ativo 2 - Documentos Pendentes 3 - Filiação Pendente 4 - Estado inicial
 
             $table->string('postal_code')->nullable();

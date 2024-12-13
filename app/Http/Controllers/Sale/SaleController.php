@@ -600,12 +600,16 @@ class SaleController extends Controller {
     public function reprotocolSale($id) {
 
         $sale = Sale::find($id);
-        if(!$sale) {
+        if (!$sale) {
             return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');   
         }
 
+        if ($sale->status <> 1) {
+            return redirect()->back()->with('info', 'Função limitada a vendas confirmadas!');   
+        }
+
         $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
-        if(!$list) {
+        if (!$list) {
             return redirect()->back()->with('error', 'Não há uma lista disponível para reprotocolar a venda!');
         }
 
@@ -618,7 +622,7 @@ class SaleController extends Controller {
         }
         $sale->id_list = $sale->label === 'REPROTOCOLADO' ? $sale->id_list : $list->id;
         $sale->label   = $sale->label === 'REPROTOCOLADO' ? null : 'REPROTOCOLADO';
-        if($sale->save()) {
+        if ($sale->save()) {
 
             if ($sale->label === 'REPROTOCOLADO') {
                 $clientName     = $sale->user->name;

@@ -625,44 +625,59 @@ class AssasController extends Controller {
             
             $token = $jsonData['payment']['id'];
             $invoice = Invoice::where('token_payment', $token)->where('status', 0)->first();
-            if($invoice) {
+            if ($invoice) {
 
                 $invoice->status = 1;
-                if(!$invoice->save()) {
+                if (!$invoice->save()) {
                     return response()->json(['status' => 'error', 'message' => 'Não foi possível confirmar o pagamento da fatura!']);
                 }
 
+                if ($invoice->type == 1) {
+
+                    $key = $this->createKey($invoice->id);
+                    if ($key == true || $key == 1) {
+                        return response()->json(['status' => 'success', 'message' => 'Operação Finalizada & ApiKey criada!']);
+                    }
+
+                    return response()->json(['status' => 'success', 'message' => 'Operação Finalizada, mas houve um erro na criação da ApiKey!']);
+                }
+
+                if ($invoice->type == 4) {
+
+                    $user = User::find($invoice->id_user);
+                    $user->wallet_off += $invoice->value;
+                    if ($user->save()) {
+                        return response()->json(['status' => 'success', 'message' => 'Operação Finalizada & Saldo depositado!']);
+                    }
+
+                    return response()->json(['status' => 'success', 'message' => 'Operação Finalizada, mas houve um erro no deposito!']);
+                }
+
                 $sale = Sale::where('id', $invoice->id_sale)->first();
-                
-                if($sale) {
+                if ($sale) {
+
                     $invoices = $this->createSalePayment($sale->id);
                     if($invoices == false) {
-                        $invoice->status = 0;
-                        $invoice->save();
-
-                        return response()->json(['status' => 'error', 'message' => 'Não foi possível confirmar o pagamento da fatura e gerar às demais faturas!']);
+                        return response()->json(['status' => 'error', 'message' => 'Não foi possível Gerar Faturas para essa venda!']);
                     }
 
                     $sale->guarantee = $sale->installments == 1 ? Carbon::parse($sale->guarantee)->addMonths(12) : Carbon::parse($sale->guarantee)->addMonths(3);
                     $sale->save();
                 }
                 
-                $product = $invoice->id_product != null ? Product::where('id', $invoice->id_product)->first() : false;
-                if($product) {
-                    if($invoice->num == 1) {
-                        if($sale) {
-                            $sale->status = 1;
-                            $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
-                            if($list) {
-                                $sale->id_list = $list->id;
-                            }
-
-                            $sale->save();
-                        }
+                $product = $invoice->id_product <> null ? Product::where('id', $invoice->id_product)->first() : false;
+                if ($product && $invoice->num == 1 && $sale) {
+                        
+                    $sale->status = 1;
+                    $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
+                    if ($list) {
+                        $sale->id_list = $list->id;
                     }
+
+                    $sale->save();
                 }
 
-                if($sale) {
+                if ($sale) {
                     
                     $notification               = new Notification();
                     $notification->name         = 'Fatura N°'.$invoice->id;
@@ -672,74 +687,47 @@ class AssasController extends Controller {
                     $notification->save();
 
                     $seller = User::find($sale->id_seller);
-                    if($seller->type != 4 && $seller->level != 5) {
+                    if($seller->type <> 4) {
+
                         $totalSales = Sale::where('id_seller', $seller->id)->where('status', 1)->count();
                         switch($totalSales) {
                             case 10:
                                 $seller->level = 2;
-                                $notification               = new Notification();
-                                $notification->name         = 'Novo nível!';
-                                $notification->description  = $seller->name.' Alcançou o nível: CONSULTOR';
-                                $notification->type         = 2;
-                                $notification->id_user      = 14; 
-                                $notification->save();
+                                $nivel = 'CONSULTOR'; 
                                 break;
                             case 30:
                                 $seller->level = 3;
-                                $notification               = new Notification();
-                                $notification->name         = 'Novo nível!';
-                                $notification->description  = $seller->name.' Alcançou o nível: CONSULTOR LÍDER';
-                                $notification->type         = 2;
-                                $notification->id_user      = 14; 
-                                $notification->save();
+                                $nivel = 'CONSULTOR LÍDER'; 
                                 break;
                             case 50:
                                 $seller->level = 4;
-                                $notification               = new Notification();
-                                $notification->name         = 'Novo nível!';
-                                $notification->description  = $seller->name.' Alcançou o nível: REGIONAL';
-                                $notification->type         = 2;
-                                $notification->id_user      = 14; 
-                                $notification->save();
+                                $nivel = 'REGIONAL'; 
                                 break;
                             case 100:
                                 $seller->level = 5;
-                                $notification               = new Notification();
-                                $notification->name         = 'Novo nível!';
-                                $notification->description  = $seller->name.' Alcançou o nível: GERENTE REGIONAL';
-                                $notification->type         = 2;
-                                $notification->id_user      = 14; 
+                                $nivel = 'GERENTE REGIONAL'; 
                                 break;
                         }
+
                         $seller->save();
-                    }
-                }
 
-                if($invoice->type == 1) {
-                    $key = $this->createKey($invoice->id);
-                    if($key == true || $key == 1) {
-                        return response()->json(['status' => 'success', 'message' => 'Operação Finalizada & ApiKey criada!']);
+                        $notification               = new Notification();
+                        $notification->name         = 'Novo nível!';
+                        $notification->description  = $seller->name.' Alcançou o nível: '.$nivel;
+                        $notification->type         = 2;
+                        $notification->id_user      = 14; 
+                        $notification->save();
                     }
-                    return response()->json(['status' => 'success', 'message' => 'Operação Finalizada, mas houve um erro na criação da ApiKey!']);
-                }
-
-                if($invoice->type == 4) {
-                    $user = User::find($invoice->id_user);
-                    $user->wallet_off += $invoice->value;
-                    if($user->save()) {
-                        return response()->json(['status' => 'success', 'message' => 'Operação Finalizada & Saldo depositado!']);
-                    }
-                    return response()->json(['status' => 'success', 'message' => 'Operação Finalizada, mas houve um erro no deposito!']);
                 }
 
                 $client = User::find($invoice->id_user);
-                if($client && $invoice->num == 1) {
+                if ($client && $invoice->num == 1) {
                     $this->sendWhatsapp(env('APP_URL').'login-cliente', "Olá, ".$client->name."!\r\n\r\nAgradecemos pelo seu pagamento! \r\n\r\n\r\n Tenha a certeza de que sua situação está em boas mãos. \r\n\r\n\r\n *Nos próximos 30 dias úteis*, nossa equipe especializada acompanhará de perto todo o processo para garantir que seu nome seja limpo o mais rápido possível. \r\n\r\n\r\n Estamos à disposição para qualquer dúvida ou esclarecimento. \r\n\r\n Você pode acompanhar o processo acessando nosso sistema no link abaixo: \r\n\r\n", $client->phone, $seller->api_token_zapapi);
                 } else {
                     $this->sendWhatsapp(env('APP_URL').'login-cliente', $client->name."!\r\n\r\nAgradecemos por manter o compromisso e realizar o pagamento do boleto, o que garante a continuidade e a validade da garantia do serviço. \r\n\r\n Acesse o Painel do cliente👇", $client->phone, $seller->api_token_zapapi);
                 }
 
-                if($invoice->num == 1 && $invoice->type == 3) {
+                if ($invoice->num == 1 && $invoice->type == 3) {
                     $message =  "Olá, {$seller->name}, Espero que esteja bem! 😊\r\n\r\n"
                                 . "Gostaria de informar que uma nova venda foi realizada com sucesso.🤑💸\r\n\r\n"
                                 . "Cliente: {$client->name}\r\n"
@@ -753,7 +741,7 @@ class AssasController extends Controller {
                     $this->sendWhatsapp("", $message, $seller->phone, $seller->api_token_zapapi);
                 }
 
-                if($invoice->num != 1 && $invoice->type == 3 && $invoice->commission > 0) {
+                if ($invoice->num != 1 && $invoice->type == 3 && $invoice->commission > 0) {
                     $message =  "Olá, {$seller->name}, Espero que esteja bem! 😊\r\n\r\n"
                                 . "Gostaria de informar que uma nova COMISSÃO FOI RECEBIDA com sucesso.🤑💸\r\n\r\n"
                                 . "Cliente: {$client->name}\r\n"
@@ -777,10 +765,10 @@ class AssasController extends Controller {
                 Sale::whereIn('id', $sales->pluck('id'))
                     ->update(['status' => 1]);
             
-                return response()->json(['success' => true, 'message' => 'Status das vendas atualizado com sucesso.']);
+                return response()->json(['success' => 'success', 'message' => 'Status das vendas atualizado com sucesso!']);
             }
             
-            return response()->json(['status' => 'success', 'message' => 'Nenhum Fatura encontrada!']);
+            return response()->json(['status' => 'success', 'message' => 'Nenhum Fatura/Venda encontrada!']);
         }
 
         if($jsonData['event'] === 'PAYMENT_OVERDUE') {
