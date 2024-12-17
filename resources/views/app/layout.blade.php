@@ -198,13 +198,10 @@
                 @endif
 
                 <li class="nav-heading">Gestão</li>
-
-                @if (empty(Auth::user()->filiate))
-                    <li class="nav-item">
-                        <a class="nav-link collapsed" href="{{ route('list-rede') }}"> <i class="bi bi-person-lines-fill"></i> <span>Minha Rede</span> </a>
-                    </li>
-                @endif
-
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="{{ route('list-rede') }}"> <i class="bi bi-person-lines-fill"></i> <span>Minha Rede</span> </a>
+                </li>
+           
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="{{ route('list-client') }}"> <i class="bi bi-file-earmark-person"></i> <span>Clientes</span> </a>
                 </li>
