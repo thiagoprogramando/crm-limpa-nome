@@ -126,9 +126,7 @@
                 <div class="card-body">
 
                     <div id="action-buttons" class="d-none btn-group mb-3">
-                        @if(Auth::user()->type == 9)
-                            <button id="gerar-pagamento" class="btn btn-outline-success">Gerar Pagamento</button>
-                        @endif
+                        <button id="gerar-pagamento" class="btn btn-outline-success">Gerar Pagamento</button>
                         @if(Auth::user()->type == 1)
                             <button id="aprovar-todos" class="btn btn-outline-warning">Aprovar Todos</button>
                         @endif
@@ -162,10 +160,10 @@
                                         <th>
                                             {{ $sale->list->name }} <br>
                                             @if($sale->status == 1)
-                                                @if(($sale->list->serasa_status != 'Pendente') && ($sale->list->status_spc != 'Pendente') && ($sale->list->status_boa_vista != 'Pendente') && ($sale->list->status_quod != 'Pendente') && ($sale->list->status_cenprot != 'Pendente'))
+                                                @if(($sale->list->serasa_status != 'Em Andamento') && ($sale->list->status_spc != 'Em Andamento') && ($sale->list->status_boa_vista != 'Em Andamento') && ($sale->list->status_quod != 'Em Andamento') && ($sale->list->status_cenprot != 'Em Andamento'))
                                                     <span class="badge bg-success">Baixada</span>
                                                 @else
-                                                    <span class="badge bg-warning">Pendente</span>
+                                                    <span class="badge bg-warning">Em Andamento</span>
                                                 @endif
                                             @endif
                                         </th>

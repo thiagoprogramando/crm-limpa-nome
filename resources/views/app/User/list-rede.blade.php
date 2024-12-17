@@ -17,7 +17,7 @@
 
                 <div class="btn-group mb-3" role="group">
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
-                    <a href="{{ route('registrer', ['id' => Auth::id()]) }}" target="_blank" class="btn btn-outline-primary">Cadastrar</a>
+                    <a href="javascript:void(0)" id="copyUrlBtn" class="btn btn-outline-primary">Cadastrar</a>
                     <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
                 </div>
 
@@ -156,4 +156,25 @@
             </div>
         </div>
     </section>
+
+    <script>
+        document.getElementById('copyUrlBtn').addEventListener('click', function() {
+            const url = "{{ route('registrer', ['id' => Auth::id()]) }}";
+            navigator.clipboard.writeText(url).then(function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'URL copiada!',
+                    text: 'A URL foi copiada para a área de transferência.',
+                    confirmButtonText: 'OK'
+                });
+            }).catch(function(err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Houve um erro ao copiar a URL: ' + err,
+                    confirmButtonText: 'OK'
+                });
+            });
+        });
+    </script>
 @endsection

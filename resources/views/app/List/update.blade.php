@@ -35,7 +35,7 @@
                                     <select name="serasa_status" class="form-select" id="floatingStatus">
                                         <option selected value="{{ $list->serasa_status }}">Opções:</option>
                                         <option value="Baixado" @selected($list->serasa_status == 'Baixado')>Baixado</option>
-                                        <option value="Pendente" @selected($list->serasa_status == 'Pendente')>Pendente</option>
+                                        <option value="Em Andamento" @selected($list->serasa_status == 'Em Andamento')>Em Andamento</option>
                                     </select>
                                     <label for="floatingStatus">Situação Serasa:</label>
                                 </div>
@@ -45,7 +45,7 @@
                                     <select name="status_spc" class="form-select" id="floatingSPC">
                                         <option selected value="{{ $list->status_spc }}">Opções:</option>
                                         <option value="Baixado" @selected($list->status_spc == 'Baixado')>Baixado</option>
-                                        <option value="Pendente" @selected($list->status_spc == 'Pendente')>Pendente</option>
+                                        <option value="Em Andamento" @selected($list->status_spc == 'Em Andamento')>Em Andamento</option>
                                     </select>
                                     <label for="floatingSPC">Situação SPC:</label>
                                 </div>
@@ -55,7 +55,7 @@
                                     <select name="status_boa_vista" class="form-select" id="floatingStatus">
                                         <option selected value="{{ $list->status_boa_vista }}">Opções:</option>
                                         <option value="Baixado" @selected($list->status_boa_vista == 'Baixado')>Baixado</option>
-                                        <option value="Pendente" @selected($list->status_boa_vista == 'Pendente')>Pendente</option>
+                                        <option value="Em Andamento" @selected($list->status_boa_vista == 'Em Andamento')>Em Andamento</option>
                                     </select>
                                     <label for="floatingStatus">Situação Boa Vista:</label>
                                 </div>
@@ -65,7 +65,7 @@
                                     <select name="status_quod" class="form-select" id="floatingStatus">
                                         <option selected value="{{ $list->status_quod }}">Opções:</option>
                                         <option value="Baixado" @selected($list->status_quod == 'Baixado')>Baixado</option>
-                                        <option value="Pendente" @selected($list->status_quod == 'Pendente')>Pendente</option>
+                                        <option value="Em Andamento" @selected($list->status_quod == 'Em Andamento')>Em Andamento</option>
                                     </select>
                                     <label for="floatingStatus">Situação QUOD:</label>
                                 </div>
@@ -75,7 +75,7 @@
                                     <select name="status_cenprot" class="form-select" id="floatingStatus">
                                         <option selected value="{{ $list->status_cenprot }}">Opções:</option>
                                         <option value="Baixado" @selected($list->status_cenprot == 'Baixado')>Baixado</option>
-                                        <option value="Pendente" @selected($list->status_cenprot == 'Pendente')>Pendente</option>
+                                        <option value="Em Andamento" @selected($list->status_cenprot == 'Em Andamento')>Em Andamento</option>
                                     </select>
                                     <label for="floatingStatus">Situação CENPROT:</label>
                                 </div>

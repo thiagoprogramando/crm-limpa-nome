@@ -125,20 +125,7 @@ class SaleController extends Controller {
                 $commissionFiliate = ($seller->fixed_cost - $seller->parent->fixed_cost);
             } else {
                 $commissionFiliate = 0;
-            }
-
-            if ($request->wallet_off) {
-
-                $userWallet = $request->id_seller ? User::find($request->id_seller) : Auth::user();
-            
-                $requiredAmount = $productCost + $product->value_rate;
-                if ($userWallet->wallet_off < $requiredAmount) {
-                    return redirect()->back()->with('error', 'Ops! Sua carteira não tem saldo suficiente!');
-                }
-            
-                $userWallet->wallet_off -= $requiredAmount;
-                $userWallet->save();
-            }            
+            }          
     
             $sale = new Sale();
             $sale->id_client    = $user->id;

@@ -70,7 +70,7 @@ class Registrer extends Controller {
                         . "Acesse: {$url}\r\n"
                         . "E-mail: {$user->email}\r\n"
                         . "Senha: *CPF/CNPJ (Sem caracteres, apenas letras)* \r\n"
-                        . "proveite a sua jornada com a gente e tenha um ótimo dia! \r\n\r\n";
+                        . "Aproveite a sua jornada com a gente e tenha um ótimo dia! \r\n\r\n";
             $this->sendWhatsapp(
                 $url,
                 $message,

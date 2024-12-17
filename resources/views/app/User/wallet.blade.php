@@ -15,7 +15,7 @@
 <section class="section dashboard">
     <div class="row">
 
-        <div class="col-xxl-3 col-md-6">
+        <div class="col-xxl-4 col-md-4">
             <div class="card info-card revenue-card p-2">
                 <div class="card-body">
                     <h5 class="card-title">DISPONÍVEL PARA SAQUE</h5>
@@ -32,7 +32,7 @@
             </div>
         </div>
 
-        <div class="col-xxl-3 col-md-6">
+        {{-- <div class="col-xxl-3 col-md-6">
             <div class="card info-card wallet-card p-2">
                 <div class="card-body">
                     <h5 class="card-title">CARTEIRA DE INVESTIDOR</h5>
@@ -46,9 +46,9 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
-        <div class="col-xxl-3 col-md-6">
+        <div class="col-xxl-4 col-md-4">
             <div class="card info-card sales-card p-2">
 
                 <div class="card-body">
@@ -67,7 +67,7 @@
             </div>
         </div>
 
-        <div class="col-xxl-3 col-md-6">
+        <div class="col-xxl-4 col-md-4">
             <div class="card info-card customers-card p-2">
                 <div class="card-body">
                     <h5 class="card-title">ACUMULADO</h5>
@@ -88,9 +88,9 @@
             <div class="card p-2">
 
                 <div class="btn-group mb-3 w-25" role="group">
-                    @if(Auth::user()->level == 7 || Auth::user()->level == 9)
+                    {{-- @if(Auth::user()->level == 7 || Auth::user()->level == 9)
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#depModal">Depositar investimento</button>
-                    @endif
+                    @endif --}}
                     <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
                 </div>
 

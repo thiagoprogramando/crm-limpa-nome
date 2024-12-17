@@ -429,6 +429,7 @@ class UserController extends Controller {
     }
 
     public function createWallet() {
+        
         if (!Auth::check()) {
             return redirect()->back()->with('info', 'Verifique seus dados e tente novamente!');
         }
