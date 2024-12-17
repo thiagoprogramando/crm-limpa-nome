@@ -209,27 +209,21 @@ class UserController extends Controller {
     public function deleteUser(Request $request) {
 
         $user = User::find($request->id);
-        if($user) {
-            if($user->delete()) {
-                return redirect()->back()->with('success', 'Usuário excluído com sucesso!');
-            }
-
-            return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
+        if ($user && $user->delete()) {
+            return redirect()->back()->with('success', 'Usuário excluído com sucesso!');
         }
 
-        return redirect()->back()->with('error', 'Não foram localizados dados do usuário!');
+        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
     }
 
     public function viewNotification($id) {
 
         $notification = Notification::find($id);
-        if($notification) {
-            
-            $notification->delete();
+        if ($notification && $notification->delete()) {
             return redirect()->back();
         }
 
-        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
+        return redirect()->back()->with('error', 'Ops! Notificação não encontrada.');
     }
 
     public function myArchive() {

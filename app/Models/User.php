@@ -44,6 +44,14 @@ class User extends Authenticatable {
         'fixed_cost'
     ];
 
+    public function salesClient() {
+        return $this->hasMany(Sale::class, 'id_client');
+    }
+
+    public function salesSeller() {
+        return $this->hasMany(Sale::class, 'id_seller');
+    }
+
     public function invoices() {
         return $this->hasMany(Invoice::class, 'id_user');
     }
@@ -209,5 +217,16 @@ class User extends Authenticatable {
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    protected static function boot() {
+
+        parent::boot();
+
+        static::deleting(function ($user) {
+            $user->salesClient()->delete();
+            $user->salesSeller()->delete();
+            $user->invoices()->delete();
+        });
     }
 }
