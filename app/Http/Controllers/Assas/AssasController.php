@@ -557,21 +557,28 @@ class AssasController extends Controller {
                 ];
     
                 try {
+
                     $response = $client->post(env('API_URL_ASSAS') . 'v3/accounts', $options);
                     if ($response->getStatusCode() === 200) {
-                        $body = (string)$response->getBody();
-                        $data = json_decode($body, true);
-                        $user->api_key = $data['apiKey'];
-                        $user->wallet  = $data['walletId'];
-                        $user->status  = 2;
+                        
+                        $body             = (string)$response->getBody();
+                        $data             = json_decode($body, true);
+                        $user->api_key    = $data['apiKey'];
+                        $user->wallet     = $data['walletId'];
+                        $user->wallet_id  = $data['id'];
+                        $user->status     = 2;
                         if ($user->save()) {
                             return ['status' => true];
                         }
                     }
+
                     return ['status' => false, 'error' => 'Erro desconhecido.'];
+
                 } catch (\GuzzleHttp\Exception\ClientException $e) {
+                    
                     $responseBody = (string)$e->getResponse()->getBody();
                     $errorData = json_decode($responseBody, true);
+
                     return [
                         'status' => false,
                         'error' => $errorData['errors'][0]['description'] ?? 'Erro desconhecido.',
@@ -580,7 +587,7 @@ class AssasController extends Controller {
             }
         }
     
-        return ['status' => false, 'error' => 'Dados do usuário ou invoice não encontrados.'];
+        return ['status' => false, 'error' => 'Dados do usuário ou Faturas não localizados'];
     }    
 
     public function webhook(Request $request) {
@@ -1122,7 +1129,7 @@ class AssasController extends Controller {
         $this->logRequest($request);
 
         $jsonData = $request->json()->all();
-        $user = User::where('wallet', $jsonData['accountStatus']['id'])->first();
+        $user = User::where('wallet_id', $jsonData['accountStatus']['id'])->first();
         if($user) {
             switch ($jsonData['event']) {
                 case 'ACCOUNT_STATUS_GENERAL_APPROVAL_APPROVED':

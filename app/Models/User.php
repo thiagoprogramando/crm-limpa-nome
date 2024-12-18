@@ -33,6 +33,7 @@ class User extends Authenticatable {
 
         'token_acess',
         'wallet',
+        'wallet_id',
         'api_key',
         'api_token_zapapi',
         'customer',
