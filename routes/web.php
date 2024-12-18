@@ -39,6 +39,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['verify'])->group(function () {
 
+        //App 
+        Route::get('/app', [AppController::class, 'handleApp'])->name('app');
+
         //Sale
         Route::get('/createsale/{id}', [SaleController::class, 'create'])->name('createsale');
         Route::post('create-sale', [SaleController::class, 'createSale'])->name('create-sale');
@@ -116,8 +119,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/my-product/{id}', [SaleController::class, 'myProduct'])->name('my-product');
     });
 
-    //App 
-    Route::get('/app', [AppController::class, 'handleApp'])->name('app');
+    //Apresentation
     Route::get('/apresentation', [UserController::class, 'apresentation'])->name('apresentation');
     Route::post('create-apresentation', [UserController::class, 'createApresentation'])->name('create-apresentation');
     Route::post('delete-apresentation', [UserController::class, 'deleteApresentation'])->name('delete-apresentation');

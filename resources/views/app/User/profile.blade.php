@@ -84,7 +84,7 @@
                                                         <td class="text-center">
                                                             @switch($myDocument['status'])
                                                                 @case('NOT_SENT')
-                                                                <a class="btn btn-primary" target="_blank" href="{{ $myDocument['onboardingUrl'] }}"><i class="bi bi-arrow-up-right-circle"></i></a>
+                                                                <a class="btn btn-primary" target="_blank" href="{{ $myDocument['onboardingUrl'] }}"><i class="bi bi-arrow-up-right-circle"></i> Enviar</a>
                                                                     @break
                                                                 @case('PENDING')
                                                                     Em Análise
@@ -93,7 +93,7 @@
                                                                     Aprovado
                                                                     @break
                                                                 @case('REJECTED')
-                                                                    <a class="btn btn-primary" target="_blank" href="{{ $myDocument['onboardingUrl'] }}"><i class="far fa-paper-plane"></i></a>
+                                                                    <a class="btn btn-primary" target="_blank" href="{{ $myDocument['onboardingUrl'] }}"><i class="far fa-paper-plane"> Reenviar (Documentação anterior Rejeitada)</i></a>
                                                                     @break
                                                                 @default
                                                             @endswitch
