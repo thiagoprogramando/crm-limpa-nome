@@ -40,34 +40,19 @@ class UploadController extends Controller {
             return redirect()->back()->with('info', 'Não há lista disponível para associar o CPF/CNPJ!');
         }
 
-        if ($request->wallet_off) {
-            $sellerId = $request->id_seller ?? Auth::id();
-            $seller = User::find($sellerId);
-    
-            if (!$seller || $seller->wallet_off < $product->value_cost) {
-                return redirect()->route('wallet')->with('error', 'Saldo insuficiente na carteira.');
-            }
-        }
-
         DB::beginTransaction();
         try {
 
-            $sale = new Sale();
-            $sale->id_client = $client->id;
-            $sale->id_product = $product->id;
-            $sale->id_list = $list->id;
-            $sale->id_seller = $request->id_seller ?? Auth::id();
-            $sale->payment = $request->wallet_off ? 'CARTEIRA VIP' : 'OUTRO MÉTODO';
+            $sale               = new Sale();
+            $sale->id_client    = $client->id;
+            $sale->id_product   = $product->id;
+            $sale->id_list      = $list->id;
+            $sale->id_seller    = $request->id_seller ?? Auth::id();
+            $sale->payment      = $request->wallet_off ? 'CARTEIRA VIP' : 'OUTRO MÉTODO';
             $sale->installments = 1;
-            $sale->status = $request->wallet_off ? 1 : 0;
-            $sale->wallet_off = $request->has('wallet_off') ? 1 : null;
-            $sale->value = $this->formatarValor($request->value);
+            $sale->status       = 0;
+            $sale->value        = $this->formatarValor($request->value);
             $sale->save();
-
-            if ($request->wallet_off) {
-                $seller->wallet_off -= $product->value_cost;
-                $seller->save();
-            }
 
             DB::commit();
             return redirect()->route('manager-sale')->with('success', 'Venda criada com sucesso!');
