@@ -419,7 +419,7 @@ class AssasController extends Controller {
         }
 
         if (env('APP_ENV') <> 'local') {
-            if ($commission > 0) {
+            if ($commission > 0 && $value > 50) {
                 if (!isset($options['json']['split'])) {
                     $options['json']['split'] = [];
                 }
