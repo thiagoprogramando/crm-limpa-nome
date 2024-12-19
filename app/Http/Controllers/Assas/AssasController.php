@@ -708,9 +708,7 @@ class AssasController extends Controller {
                                 . "Produto/Serviço: {$product->name}\r\n"
                                 . "Valor Total: R$ " . number_format($sale->value, 2, ',', '.') . "\r\n"
                                 . "Data da Venda: " . $sale->created_at->format('d/m/Y H:i') . "\r\n\r\n"
-                                . "Obrigado pelo excelente trabalho!🥇\r\n\r\n"
-                                . "Atenciosamente,\r\n"
-                                . "Equipe G7 Assessoria";
+                                . "Obrigado pelo excelente trabalho!🥇\r\n\r\n";
 
                     $this->sendWhatsapp("", $message, $seller->phone, $seller->api_token_zapapi);
                 }
@@ -723,9 +721,7 @@ class AssasController extends Controller {
                                 . "Fatura N° {$invoice->num}\r\n"
                                 . "Valor apróximado: R$ " . number_format($invoice->commission, 2, ',', '.') . "\r\n"
                                 . "Data da Venda: " . $sale->created_at->format('d/m/Y H:i') . "\r\n\r\n"
-                                . "Obrigado pelo excelente trabalho!🥇\r\n\r\n"
-                                . "Atenciosamente,\r\n"
-                                . "Equipe G7 Assessoria";
+                                . "Obrigado pelo excelente trabalho!🥇\r\n\r\n";
 
                     $this->sendWhatsapp("", $message, $seller->phone, $seller->api_token_zapapi);
                 }
@@ -773,8 +769,7 @@ class AssasController extends Controller {
                                 $dueDateFormatted = Carbon::parse($dueDate)->format('d/m/Y');
                                 $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
                                     . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 10% se o pagamento for feito até {$dueDateFormatted}.\r\n"
-                                    . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n"
-                                    . "Atenciosamente, Equipe G7 Assessoria \r\n";
+                                    . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n";
 
                                 $this->sendWhatsapp(
                                     $charge['invoiceUrl'],
@@ -804,8 +799,7 @@ class AssasController extends Controller {
                                 $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
                                 $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
                                     . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 20% se o pagamento for feito até {$dueDateFormatted}.\r\n"
-                                    . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n"
-                                    . "Atenciosamente, Equipe G7 Assessoria \r\n";
+                                    . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n";
 
                                 $this->sendWhatsapp(
                                     $charge['invoiceUrl'],
@@ -835,8 +829,7 @@ class AssasController extends Controller {
                                 $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
                                 $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
                                     . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 30% se o pagamento for feito até {$dueDateFormatted}.\r\n"
-                                    . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n"
-                                    . "Atenciosamente, Equipe G7 Assessoria \r\n";
+                                    . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n";
 
                                 $this->sendWhatsapp(
                                     $charge['invoiceUrl'],
@@ -867,8 +860,7 @@ class AssasController extends Controller {
                                 $message =  "Assunto: Urgente: Fatura Atrasada \r\n\r\n Olá, {$invoice->user->name}!\r\n\r\n"
                                     . "Sua fatura {$invoice->num} está gravemente atrasada. Oferecemos um desconto de 50% se o pagamento for feito até {$dueDateFormatted}.\r\n"
                                     . "*Após essa data, a multa será aplicada e a garantia do produto será cancelada, o que pode resultar em custos extras e prejuízos adicionais.*\r\n\r\n"
-                                    . "Além disso, seu nome voltará a ficar sujo e toda a boa reputação que trabalhamos para recuperar para você será perdida. Não deixe essa oportunidade passar e evite impactos negativos em sua situação financeira e reputacional. \r\n\r\n\r\n"
-                                    . "Atenciosamente, Equipe G7 Assessoria \r\n";
+                                    . "Além disso, seu nome voltará a ficar sujo e toda a boa reputação que trabalhamos para recuperar para você será perdida. Não deixe essa oportunidade passar e evite impactos negativos em sua situação financeira e reputacional. \r\n\r\n\r\n";
 
                                 $this->sendWhatsapp(
                                     $charge['invoiceUrl'],

@@ -62,9 +62,7 @@ class CouponController extends Controller {
                             . "Código do cupom: *{$couponName}* \r\n"
                             . "Validade: *{$expiryDate->format('d/m/Y')}*\r\n\r\n"
                             . "Não deixe essa oportunidade passar! Use o código na sua fatura e aproveite para economizar. \r\n"
-                            . "Agradecemos por fazer parte da nossa jornada! \r\n\r\n"
-                            . "Atenciosamente,\r\n"
-                            . "Equipe G7 Assessoria";
+                            . "Agradecemos por fazer parte da nossa jornada! \r\n\r\n";
 
                 $assas = new AssasController();
                 $assas->sendWhatsapp('', $message, $user->phone, $user->api_token_zapapi);
