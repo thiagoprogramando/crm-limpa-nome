@@ -27,8 +27,8 @@
         <div class="col-12">
 
             <div class="btn-group mb-3" role="group">
-                <button id="toggle-select" class="btn btn-primary">Selecionar</button>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
+                <button id="toggle-select" class="btn btn-outline-primary">Selecionar</button>
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
                 <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
                 @if(Auth::user()->type == 1)
                     <a href="#" class="btn btn-danger" onclick="confirmDelete()">
@@ -155,7 +155,7 @@
                                 @foreach ($sales as $sale)
                                     <tr>
                                         <th scope="row">
-                                            <input type="checkbox" class="row-checkbox" value="{{ $sale->id }}"> {{ $sale->id }} - <br> 
+                                            <input type="checkbox" class="row-checkbox" value="{{ $sale->id }}"> {{ $sale->id }}
                                         </th>
                                         <th>
                                             {{ $sale->list->name }} <br>

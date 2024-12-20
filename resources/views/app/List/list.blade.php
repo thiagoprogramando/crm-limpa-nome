@@ -15,6 +15,11 @@
 <section class="section dashboard">
     <div class="row">
         <div class="col-12">
+
+            <div class="btn-group mb-3" role="group">
+                <a href="{{ route('createlist') }}" class="btn btn-outline-primary">Nova Lista</a>
+            </div>
+
             <div class="card p-2">
                 <div class="card-body">
                     <h5 class="card-title">Listas</h5>

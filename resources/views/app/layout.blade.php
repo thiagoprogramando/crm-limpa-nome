@@ -132,13 +132,18 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('app') }}"> <i class="bi bi-grid"></i> <span>Dashboard</span> </a>
                 </li>
+                
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="{{ route('apresentation') }}"> <i class="bi bi-book"></i> <span>Material de apoio</span> </a>
                 </li>
 
                 <li class="nav-item">
+                    <a class="nav-link collapsed" href="https://servicos.ehmconsultas.com/index.php" target="_blank"> <i class="bi bi-search"></i> <span>Consultas</span> </a>
+                </li>
+
+                <li class="nav-item">
                     <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-briefcase"></i><span>Gerar Contrato</span><i class="bi bi-chevron-down ms-auto"></i>
+                        <i class="bi bi-briefcase"></i><span>Contrato Automático</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
                     <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                         @foreach($business as $busines)
@@ -147,7 +152,7 @@
                     </ul>
                 </li>
 
-                @if (Auth::user()->type != 7 && Auth::user()->type != 9)
+                {{-- @if (Auth::user()->type != 7 && Auth::user()->type != 9)
                     <li class="nav-item">
                         <a class="nav-link collapsed" data-bs-target="#forms-bussines" data-bs-toggle="collapse" href="#">
                             <i class="bi bi-briefcase"></i><span>Gerar Contrato (Links)</span><i class="bi bi-chevron-down ms-auto"></i>
@@ -158,11 +163,11 @@
                             @endforeach
                         </ul>
                     </li>
-                @endif
+                @endif --}}
 
                 <li class="nav-item">
                     <a class="nav-link collapsed" data-bs-target="#forms-upload" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-cloud-upload"></i><span>Upload de Contratos</span><i class="bi bi-chevron-down ms-auto"></i>
+                        <i class="bi bi-cloud-upload"></i><span>Contrato Manual</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
                     <ul id="forms-upload" class="nav-content collapse " data-bs-parent="#sidebar-upload">
                         @foreach($business as $busines)
@@ -172,10 +177,25 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ route('my-shop') }}"> <i class="bi bi-shop-window"></i> <span>Minhas compras</span> </a>
+                    <a class="nav-link collapsed" data-bs-target="#forms-sale" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-bag"></i><span>Vendas</span><i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <ul id="forms-sale" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                        <li> <a href="{{ route('manager-sale') }}"> <i class="bi bi-circle"></i><span>Vendas</span> </a> </li>
+                        <li> <a href="{{ route('invoice-default') }}"> <i class="bi bi-circle"></i><span>Inadimplência</span> </a> </li>
+                        @if (Auth::user()->type == 1)
+                            <li><a href="{{ route('coupons') }}"> <i class="bi bi-circle"></i><span>Cupons</span> </a></li>
+                        @endif
+                    </ul>
                 </li>
+                
+                <li class="nav-heading">Pessoas</li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="https://servicos.ehmconsultas.com/index.php" target="_blank"> <i class="bi bi-search"></i> <span>Consultas</span> </a>
+                    <a class="nav-link collapsed" href="{{ route('list-rede') }}"> <i class="bi bi-person-lines-fill"></i> <span>Minha Rede</span> </a>
+                </li>
+           
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="{{ route('list-client') }}"> <i class="bi bi-file-earmark-person"></i> <span>Clientes</span> </a>
                 </li>
 
                 @if (Auth::user()->type != 6 && !empty(Auth::user()->api_key) && !empty(Auth::user()->wallet))
@@ -190,48 +210,18 @@
                             <i class="bi bi-bank"></i><span>Operações</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
                         <ul id="forms-finan" class="nav-content collapse " data-bs-parent="#sidebar-nav">  
-                            <li><a href="{{ route('withdraw') }}"> <i class="bi bi-circle"></i><span>Saques</span> </a></li>
+                            {{-- <li><a href="{{ route('withdraw') }}"> <i class="bi bi-circle"></i><span>Saques</span> </a></li> --}}
                             <li><a href="{{ route('receivable') }}"> <i class="bi bi-circle"></i><span>Recebíveis</span> </a></li>
                             <li><a href="{{ route('payments') }}"> <i class="bi bi-circle"></i><span>Pagamentos</span> </a></li>
                         </ul>
                     </li>
                 @endif
 
-                <li class="nav-heading">Gestão</li>
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ route('list-rede') }}"> <i class="bi bi-person-lines-fill"></i> <span>Minha Rede</span> </a>
-                </li>
-           
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ route('list-client') }}"> <i class="bi bi-file-earmark-person"></i> <span>Clientes</span> </a>
-                </li>
                 
-                <li class="nav-item">
-                    <a class="nav-link collapsed" data-bs-target="#forms-sale" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-bag"></i><span>Vendas</span><i class="bi bi-chevron-down ms-auto"></i>
-                    </a>
-                    <ul id="forms-sale" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                        <li> <a href="{{ route('manager-sale') }}"> <i class="bi bi-circle"></i><span>Vendas</span> </a> </li>
-                        <li> <a href="{{ route('invoice-default') }}"> <i class="bi bi-circle"></i><span>Inadimplência</span> </a> </li>
-                        @if (Auth::user()->type == 1)
-                            <li><a href="{{ route('coupons') }}"> <i class="bi bi-circle"></i><span>Cupons</span> </a></li>
-                        @endif
-                    </ul>
-                </li>
-
                 @if (Auth::user()->type == 1)
+                <li class="nav-heading">Gestão</li>
                     <li class="nav-item">
-                        <a class="nav-link collapsed" data-bs-target="#forms-list" data-bs-toggle="collapse" href="#">
-                            <i class="bi bi-list-check"></i><span>Lista</span><i class="bi bi-chevron-down ms-auto"></i>
-                        </a>
-                        <ul id="forms-list" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                            <li>
-                                <a href="{{ route('lists') }}"> <i class="bi bi-circle"></i><span>Listas</span> </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('createlist') }}"> <i class="bi bi-circle"></i><span>Criar Lista</span> </a>
-                            </li>
-                        </ul>
+                        <a class="nav-link collapsed" href="{{ route('lists') }}"> <i class="bi bi-list-check"></i> <span>Listas</span> </a>
                     </li>
                     
                     <li class="nav-item">
@@ -324,57 +314,57 @@
                 })
             @endif
 
-            function abrirModal(businesId, valueMin, valueMax) {
-                Swal.fire({
-                    title: 'Atribuir valor e gerar link',
-                    html:
-                        '<input id="valor-venda" class="swal2-input" placeholder="Valor da venda">',
-                    focusConfirm: false,
-                    showCancelButton: true,
-                    confirmButtonText: 'Gerar Venda'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const valorVenda = document.getElementById('valor-venda').value;
-                        const url = window.location.origin + '/sale-link/' + businesId + '/' + {{ Auth::id() }} + '/' + valorVenda;
+            // function abrirModal(businesId, valueMin, valueMax) {
+            //     Swal.fire({
+            //         title: 'Atribuir valor e gerar link',
+            //         html:
+            //             '<input id="valor-venda" class="swal2-input" placeholder="Valor da venda">',
+            //         focusConfirm: false,
+            //         showCancelButton: true,
+            //         confirmButtonText: 'Gerar Venda'
+            //     }).then((result) => {
+            //         if (result.isConfirmed) {
+            //             const valorVenda = document.getElementById('valor-venda').value;
+            //             const url = window.location.origin + '/sale-link/' + businesId + '/' + {{ Auth::id() }} + '/' + valorVenda;
 
-                        if(valueMin > 1 && valueMax > 1) {
-                            if(parseInt(valorVenda) < parseInt(valueMin) || parseInt(valorVenda) > parseInt(valueMax)) {
-                                return Swal.fire('info', 'Não é possível ultrapassar os valores Máx e Mín', 'info');
-                            }
-                        }
+            //             if(valueMin > 1 && valueMax > 1) {
+            //                 if(parseInt(valorVenda) < parseInt(valueMin) || parseInt(valorVenda) > parseInt(valueMax)) {
+            //                     return Swal.fire('info', 'Não é possível ultrapassar os valores Máx e Mín', 'info');
+            //                 }
+            //             }
 
-                        Swal.fire({
-                            title: 'Link Gerado',
-                            input: 'text',
-                            inputValue: url,
-                            inputAttributes: {
-                                readonly: true
-                            },
-                            showCancelButton: true,
-                            confirmButtonText: 'Copiar Link'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                const input = document.createElement('textarea');
-                                input.value = url;
-                                document.body.appendChild(input);
-                                input.select();
-                                document.execCommand('copy');
-                                document.body.removeChild(input);
-                                Swal.fire('Link copiado com sucesso!', '', 'success');
-                            }
-                        });
-                    }
-                });
-            }
+            //             Swal.fire({
+            //                 title: 'Link Gerado',
+            //                 input: 'text',
+            //                 inputValue: url,
+            //                 inputAttributes: {
+            //                     readonly: true
+            //                 },
+            //                 showCancelButton: true,
+            //                 confirmButtonText: 'Copiar Link'
+            //             }).then((result) => {
+            //                 if (result.isConfirmed) {
+            //                     const input = document.createElement('textarea');
+            //                     input.value = url;
+            //                     document.body.appendChild(input);
+            //                     input.select();
+            //                     document.execCommand('copy');
+            //                     document.body.removeChild(input);
+            //                     Swal.fire('Link copiado com sucesso!', '', 'success');
+            //                 }
+            //             });
+            //         }
+            //     });
+            // }
 
-            document.querySelectorAll('.business-link').forEach(item => {
-                item.addEventListener('click', event => {
-                    const businesId = item.getAttribute('data-id');
-                    const valueMin = item.getAttribute('data-min');
-                    const valueMax = item.getAttribute('data-max');
-                    abrirModal(businesId, valueMin, valueMax);
-                });
-            });
+            // document.querySelectorAll('.business-link').forEach(item => {
+            //     item.addEventListener('click', event => {
+            //         const businesId = item.getAttribute('data-id');
+            //         const valueMin = item.getAttribute('data-min');
+            //         const valueMax = item.getAttribute('data-max');
+            //         abrirModal(businesId, valueMin, valueMax);
+            //     });
+            // });
 
             document.addEventListener('DOMContentLoaded', function () {
                 

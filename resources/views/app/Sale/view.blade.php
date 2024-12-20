@@ -18,8 +18,8 @@
 
             <div class="btn-group mb-3" role="group">
                 @if(Auth::user()->type == 1 && (!empty($sale->user->email) && !empty($sale->user->birth_date))) 
-                    <a href="{{ route('request-invoices', ['id' => $sale->id]) }}" class="btn btn-primary">Gerar Faturas</a>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#invoiceModal">Adicionar Fatura</button> 
+                    <a href="{{ route('request-invoices', ['id' => $sale->id]) }}" class="btn btn-outline-primary">Gerar Faturas</a>
+                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#invoiceModal">Adicionar Fatura</button> 
                 @endif
 
                 @if(Auth::user()->type == 1) 

@@ -432,7 +432,7 @@ class SaleController extends Controller {
     public function viewSale($id) {
 
         $sale       = Sale::find($id);
-        $invoices   = Invoice::where('id_sale', $sale->id)->get();
+        $invoices   = Invoice::where('id_sale', $sale->id)->orWhere('token_payment', $sale->token_payment)->get();
         $users      = User::whereIn('type', [1, 2, 5])->orderBy('name', 'asc')->get();
 
         return view('app.Sale.view', [

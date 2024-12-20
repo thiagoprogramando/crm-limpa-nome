@@ -18,28 +18,16 @@ class SalesExport implements FromCollection, WithHeadings, ShouldAutoSize {
     public function collection() {
         return $this->sales->map(function ($sale) {
             return [
-                'ID'            => $sale->id,
-                'Produto'       => $sale->product->name,
                 'Cliente'       => $sale->user->name,
                 'CPF/CNPJ'      => $sale->user->cpfcnpj,
-                'Vendedor'      => $sale->seller->name,
-                'Valor'         => $sale->value,
-                'Comissão'      => $sale->commission,
-                'Data da Venda' => $sale->created_at->format('d/m/Y H:i:s')
             ];
         });
     }
 
     public function headings(): array {
         return [
-            'ID',
-            'Produto',
             'Cliente',
             'CPF/CNPJ',
-            'Vendedor',
-            'Valor',
-            'Comissão',
-            'Data da Venda'
         ];
     }
 }

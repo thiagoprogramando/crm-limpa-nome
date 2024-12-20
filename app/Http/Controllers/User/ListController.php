@@ -139,10 +139,10 @@ class ListController extends Controller {
     public function excelList($id) {
 
         $list = Lists::find($id);
-        if($list) {
+        if ($list) {
 
             $sales = Sale::where('id_list', $list->id)->where('status', 1)->get();
-            return Excel::download(new SalesExport($sales), 'Vendas.xlsx');
+            return Excel::download(new SalesExport($sales), $list->name.$list->description.'.xlsx');
         }
         
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, dados da Lista não encontrados!');
