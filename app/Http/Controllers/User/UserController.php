@@ -226,53 +226,6 @@ class UserController extends Controller {
         return redirect()->back()->with('error', 'Ops! Notificação não encontrada.');
     }
 
-    public function myArchive() {
-
-        if(Auth::check() && Auth::user()->type != 1) {
-            $archives = Archive::where('id_user', Auth::id())->orderBy('id', 'asc')->get();
-        } else {
-            $archives = Archive::orderBy('id', 'asc')->get();
-        }
-        
-        $users = User::orderBy('name', 'asc')->get();
-        return view('app.User.archives', ['archives' => $archives, 'users' => $users]);
-    }
-
-    public function createArchive(Request $request) {
-
-        $archive = new Archive();
-        $archive->title   = $request->title;
-        $archive->id_user = $request->id_user;
-
-        if ($request->hasFile('file') && $request->file('file')->isValid()) {
-            $archive->file = $request->file->store('public/archive');
-        } else {
-            return redirect()->back()->with('error', 'Não foi possível processar o arquivo, tente novamente mais tarde!');
-        }
-
-        if($archive->save()) {
-            return redirect()->back()->with('success', 'Arquivo criado com sucesso!');
-        }
-
-        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
-    }
-
-    public function deleteArchive(Request $request) {
-
-        $archive = Archive::find($request->id);
-
-        $filePath = storage_path('app/public/' . $archive->file);
-        if (file_exists($filePath)) {
-            unlink($filePath);
-        }
-
-        if($archive && $archive->delete()) {
-            return redirect()->back()->with('success', 'Arquivo excluído com sucesso!');
-        }
-
-        return redirect()->back()->with('error', 'Não foram localizados dados do Arquivo!');
-    }
-
     public function apresentation() {
 
         if(Auth::check() && Auth::user()->type != 1) {

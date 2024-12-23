@@ -514,7 +514,7 @@ class AssasController extends Controller {
                     ],
                     'json' => [
                         'name'          => $user->name,
-                        'email'         => explode('@', $user->email)[0] . '@ampaysolucoes.com',
+                        'email'         => explode('@', $user->email)[0].rand(1, 999).'@ampaysolucoes.com',
                         'cpfCnpj'       => $user->cpfcnpj,
                         'birthDate'     => $user->birth_date,
                         'mobilePhone'   => $user->phone,

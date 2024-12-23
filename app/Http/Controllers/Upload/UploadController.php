@@ -19,8 +19,9 @@ class UploadController extends Controller {
     public function create($id) {
 
         $product = Product::find($id);
-
-        return view('app.Sale.upload', ['product' => $product]);
+        return view('app.Sale.upload', [
+            'product' => $product
+        ]);
     }
 
     public function createSale(Request $request) {
@@ -48,7 +49,7 @@ class UploadController extends Controller {
             $sale->id_product   = $product->id;
             $sale->id_list      = $list->id;
             $sale->id_seller    = $request->id_seller ?? Auth::id();
-            $sale->payment      = $request->wallet_off ? 'CARTEIRA VIP' : 'OUTRO MÉTODO';
+            $sale->payment      = 'ENVIO MANUAL';
             $sale->installments = 1;
             $sale->status       = 0;
             $sale->value        = $this->formatarValor($request->value);

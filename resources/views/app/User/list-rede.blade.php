@@ -132,12 +132,6 @@
                                                                 </div>
                                                                 <div class="col-12 col-md-12 col-lg-12 mb-1">
                                                                     <div class="form-floating">
-                                                                        <input type="text" name="api_token_zapapi" class="form-control" id="api_token_zapapi" placeholder="Api Token ZapSing:" value="{{ $user->api_token_zapapi }}">
-                                                                        <label for="api_token_zapapi">Api Token ZapSing:</label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-12 col-md-12 col-lg-12 mb-1">
-                                                                    <div class="form-floating">
                                                                         <input type="text" name="fixed_cost" class="form-control" id="fixed_cost" placeholder="Custo Fixo (R$):" oninput="mascaraReal(this)" value="{{ $user->fixed_cost }}">
                                                                         <label for="fixed_cost">Custo (Min R$ {{Auth::user()->fixed_cost}}):</label>
                                                                     </div>

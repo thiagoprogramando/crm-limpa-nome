@@ -20,7 +20,6 @@ class ListController extends Controller {
     }
 
     public function create() {
-
         return view('app.List.create');
     }
 

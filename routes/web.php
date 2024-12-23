@@ -73,7 +73,6 @@ Route::middleware(['auth'])->group(function () {
             
             //Wallet
             Route::get('/wallet', [WalletController::class, 'wallet'])->name('wallet');
-            Route::get('/withdraw', [WalletController::class, 'withdraw'])->name('withdraw');
             Route::post('withdraw-send', [WalletController::class, 'withdrawSend'])->name('withdraw-send');
 
             //Payments
@@ -92,11 +91,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('update-payment', [ProductController::class, 'updatePayment'])->name('update-payment');
         Route::post('create-item', [ProductController::class, 'createItem'])->name('create-item');
         Route::post('delete-item', [ProductController::class, 'deleteItem'])->name('delete-item');
-        
-        //Archive
-        Route::get('/my-archive', [UserController::class, 'myArchive'])->name('my-archive');
-        Route::post('/create-archive', [UserController::class, 'createArchive'])->name('create-archive');
-        Route::post('/delete-archive', [UserController::class, 'deleteArchive'])->name('delete-archive');
 
         //Active
         Route::get('/list-active/{status}', [UserController::class, 'listActive'])->name('list-active');

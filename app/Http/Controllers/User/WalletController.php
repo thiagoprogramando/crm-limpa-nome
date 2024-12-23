@@ -24,16 +24,6 @@ class WalletController extends Controller {
         return view('app.User.wallet', ['balance' => 'sem dados!', 'statistics' => 'sem dados!', 'accumulated' => 'sem dados!', 'extracts' => '']);
     }
 
-    public function withdraw() {
-
-        $assas = new AssasController();
-        $extracts = $assas->extract(); 
-
-        return view('app.Payment.withdraw', [
-            'extracts' => $extracts
-        ]);
-    }
-
     public function withdrawSend(Request $request) {
 
         $password = $request->password;    
