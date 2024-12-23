@@ -32,9 +32,6 @@ Route::get('/forgout/{code?}', [Forgout::class, 'forgout'])->name('forgout');
 Route::post('send-code-password', [Forgout::class, 'sendCodePassword'])->name('send-code-password');
 Route::post('update-password', [Forgout::class, 'updatePassword'])->name('update-password');
 
-Route::get('/sale-link/{product}/{user}/{value}', [SaleController::class, 'saleLink'])->name('sale-link');
-Route::post('create-sale-external', [SaleController::class, 'createSale'])->name('create-sale-external');
-
 Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['verify'])->group(function () {

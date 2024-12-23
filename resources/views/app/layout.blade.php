@@ -247,9 +247,6 @@
                             <li> <a href="{{ route('listuser', ['type' => 3]) }}"><i class="bi bi-circle"></i><span>Clientes</span></a> </li>
                             <li> <a href="{{ route('listuser', ['type' => 2]) }}"><i class="bi bi-circle"></i><span>Consultores</span></a>
                             <li> <a href="{{ route('listuser', ['type' => 4]) }}"><i class="bi bi-circle"></i><span>Vendedor Interno</span></a> </li>
-                            <li> <a href="{{ route('listuser', ['type' => 7]) }}"><i class="bi bi-circle"></i><span>Consultor Master</span></a> </li>
-                            <li> <a href="{{ route('listuser', ['type' => 9]) }}"><i class="bi bi-circle"></i><span>Consultor VIP</span></a> </li>
-                            <li> <a href="{{ route('listuser', ['type' => 8]) }}"><i class="bi bi-circle"></i><span>Vendedor Master</span></a> </li>
                         </ul>
                     </li>
 
@@ -313,58 +310,6 @@
                     timer: 2000
                 })
             @endif
-
-            // function abrirModal(businesId, valueMin, valueMax) {
-            //     Swal.fire({
-            //         title: 'Atribuir valor e gerar link',
-            //         html:
-            //             '<input id="valor-venda" class="swal2-input" placeholder="Valor da venda">',
-            //         focusConfirm: false,
-            //         showCancelButton: true,
-            //         confirmButtonText: 'Gerar Venda'
-            //     }).then((result) => {
-            //         if (result.isConfirmed) {
-            //             const valorVenda = document.getElementById('valor-venda').value;
-            //             const url = window.location.origin + '/sale-link/' + businesId + '/' + {{ Auth::id() }} + '/' + valorVenda;
-
-            //             if(valueMin > 1 && valueMax > 1) {
-            //                 if(parseInt(valorVenda) < parseInt(valueMin) || parseInt(valorVenda) > parseInt(valueMax)) {
-            //                     return Swal.fire('info', 'Não é possível ultrapassar os valores Máx e Mín', 'info');
-            //                 }
-            //             }
-
-            //             Swal.fire({
-            //                 title: 'Link Gerado',
-            //                 input: 'text',
-            //                 inputValue: url,
-            //                 inputAttributes: {
-            //                     readonly: true
-            //                 },
-            //                 showCancelButton: true,
-            //                 confirmButtonText: 'Copiar Link'
-            //             }).then((result) => {
-            //                 if (result.isConfirmed) {
-            //                     const input = document.createElement('textarea');
-            //                     input.value = url;
-            //                     document.body.appendChild(input);
-            //                     input.select();
-            //                     document.execCommand('copy');
-            //                     document.body.removeChild(input);
-            //                     Swal.fire('Link copiado com sucesso!', '', 'success');
-            //                 }
-            //             });
-            //         }
-            //     });
-            // }
-
-            // document.querySelectorAll('.business-link').forEach(item => {
-            //     item.addEventListener('click', event => {
-            //         const businesId = item.getAttribute('data-id');
-            //         const valueMin = item.getAttribute('data-min');
-            //         const valueMax = item.getAttribute('data-max');
-            //         abrirModal(businesId, valueMin, valueMax);
-            //     });
-            // });
 
             document.addEventListener('DOMContentLoaded', function () {
                 

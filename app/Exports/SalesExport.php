@@ -20,6 +20,7 @@ class SalesExport implements FromCollection, WithHeadings, ShouldAutoSize {
             return [
                 'Cliente'       => $sale->user->name,
                 'CPF/CNPJ'      => $sale->user->cpfcnpj,
+                'Reprotocolado' =>  $sale->label
             ];
         });
     }
@@ -28,6 +29,7 @@ class SalesExport implements FromCollection, WithHeadings, ShouldAutoSize {
         return [
             'Cliente',
             'CPF/CNPJ',
+            'Reprotocolado'
         ];
     }
 }

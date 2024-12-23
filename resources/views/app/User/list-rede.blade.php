@@ -63,9 +63,12 @@
                                 <thead>
                                     <tr>
                                         <th scope="col">N°</th>
-                                        <th scope="col">Nome</th>
-                                        <th class="text-center" scope="col">T. Vendas</th>
-                                        <th class="text-center" scope="col">T. Comissão</th>
+                                        <th scope="col">
+                                            Nome
+                                        </th>
+                                        <th class="text-center" scope="col">T. Vendas (Geral)</th>
+                                        <th class="text-center" scope="col">T. Comissão (Vendedor)</th>
+                                        <th class="text-center" scope="col">T. Comissão (Patrocinador)</th>
                                         <th class="text-center" scope="col">Opções</th>
                                     </tr>
                                 </thead>
@@ -73,9 +76,12 @@
                                     @foreach ($users as $user)
                                         <tr>
                                             <th scope="row">{{ $user->id }}</th>
-                                            <td>{{ $user->name }}</td>
+                                            <td>{{ $user->name }} <br>
+                                                <span class="badge bg-dark">{{ $user->statusLabel() }}</span>
+                                            </td>
                                             <td class="text-center">R$ {{ number_format($user->saleTotal(), 2, ',', '.') }}</td>
                                             <td class="text-center">R$ {{ number_format($user->commissionTotal(), 2, ',', '.') }}</td>
+                                            <td class="text-center">R$ {{ number_format($user->commissionTotalParent(), 2, ',', '.') }}</td>
                                             <td class="text-center">
                                                 <form action="{{ route('delete-user') }}" method="POST" class="delete btn-group">
                                                     @csrf

@@ -116,6 +116,12 @@ class User extends Authenticatable {
         return Sale::where('id_seller', $id)->where('status', 1)->sum('commission');
     }
 
+    public function commissionTotalParent() {
+
+        $id = $this->id;
+        return Sale::where('id_seller', $id)->where('status', 1)->sum('commission_filiate');
+    }
+
     public function statusLabel() {
 
         switch ($this->status) {

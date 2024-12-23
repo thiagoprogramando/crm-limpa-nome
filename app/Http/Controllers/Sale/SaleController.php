@@ -570,20 +570,6 @@ class SaleController extends Controller {
         }
     }
 
-    public function saleLink($product, $user, $value) {
-
-        $payments       = Payment::where('id_product', $product)->get();
-        $productSale    = Product::find($product);
-
-        return view('form.sale', [
-            'id_product'    => $product, 
-            'payments'      => $payments, 
-            'id_seller'     => $user, 
-            'value'         => $value,
-            'product'       => $productSale
-        ]);
-    }
-
     public function reprotocolSale($id) {
 
         $sale = Sale::find($id);
