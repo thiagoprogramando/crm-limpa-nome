@@ -43,7 +43,28 @@
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="profile-justified" role="tabpanel" aria-labelledby="profile-tab">
-                                <form action="{{ route('create-sale') }}" method="POST" class="row g-3">
+
+                                <form id="consultaHub" class="row g-3">
+                                    <div class="col-12 col-md-3 col-lg-3 mb-1">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control" id="cpfcnpj" placeholder="Informe o CPF ou CNPJ do Cliente:" oninput="mascaraCpfCnpj(this)" required>
+                                            <label for="cpfcnpj">CPF ou CNPJ:</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-md-3 col-lg-3 mb-1">
+                                        <div class="form-floating">
+                                            <input type="date" class="form-control" id="nascimento" placeholder="Data Nascimento:" required>
+                                            <label for="nascimento">Data Nascimento:</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-md-3 col-lg-3 mb-1">
+                                        <button type="button" onclick="consulta()" class="btn btn-lg btn-primary mt-1" type="button">Consultar</button>
+                                    </div>
+                                </form>
+
+                                <form action="{{ route('create-sale') }}" method="POST" id="formSale" class="row g-3 d-none">
                                     @csrf
                                     
                                     <input type="hidden" name="product" value="{{ $product->id }}">
@@ -139,8 +160,9 @@
                                         </div>
                                     @endif
         
-                                    <div class="col-12 col-md-4 col-lg-4 offset-md-8 offset-lg-8 mb-1 d-grid gap-2 mt-3">
-                                        <button type="submit" class="btn btn-outline-success rounded-pill" type="button">Gerar Venda</button>
+                                    <div class="col-12 offset-md-8 col-md-4 offset-lg-8 col-lg-4 mb-3 mt-3 btn-group">
+                                        <a href="{{ route('createsale', ['id' => $product->id]) }}" title="Recarregar" class="btn btn-outline-success"><i class="bi bi-arrow-counterclockwise"></i></a>
+                                        <button type="submit" class="btn btn-success" type="button">Enviar</button>
                                     </div>
                                 </form>
                             </div>
@@ -150,4 +172,6 @@
             </div>
         </div>
     </section>
+
+    <script src="{{ asset('assets/dashboard/js/hub.js') }}"></script>
 @endsection

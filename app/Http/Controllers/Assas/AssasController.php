@@ -418,24 +418,24 @@ class AssasController extends Controller {
             ];
         }
 
-        if (env('APP_ENV') <> 'local') {
-            if ($commission > 0 && $value > 50) {
-                if (!isset($options['json']['split'])) {
-                    $options['json']['split'] = [];
-                }
+        if ($commission > 0 && $value > 50) {
+            if (!isset($options['json']['split'])) {
+                $options['json']['split'] = [];
+            }
 
-                $g7Commission = $commission * 0.05;
-                $commission = $commission - $g7Commission;
+            $g7Commission = $commission * 0.05;
+            $commission = ($commission - $g7Commission) - 0.05;
 
-                if($wallet <> env('WALLET_HEFESTO')) {
-                    $options['json']['split'][] = [
-                        'walletId'          => env('WALLET_G7'),
-                        'totalFixedValue' => number_format($g7Commission, 2, '.', '')
-                    ];
-                }
+            if($wallet <> env('WALLET_HEFESTO')) {
+                $options['json']['split'][] = [
+                    'walletId'        => env('WALLET_G7'),
+                    'totalFixedValue' => number_format($g7Commission, 2, '.', ''),
+                    'walletId'        => '86476228-783a-45bb-bf08-3f647504dbbb',
+                    'totalFixedValue' => 0.5,
+                ];
             }
         }
-
+        
         if ($wallet != null && $commission > 0) {
             if (!isset($options['json']['split'])) {
                 $options['json']['split'] = [];
