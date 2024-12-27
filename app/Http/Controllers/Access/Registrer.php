@@ -38,6 +38,7 @@ class Registrer extends Controller {
         $user->email    = $request->email;
         $password       = preg_replace('/\D/', '', $request->cpfcnpj);
         $user->password = bcrypt($password);
+        $user->type     = 2;
         
         if(!empty($request->filiate)) {
             $user->filiate = $request->filiate;
