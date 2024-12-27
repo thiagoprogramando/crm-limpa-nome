@@ -57,6 +57,18 @@ class User extends Authenticatable {
         return $this->hasMany(Invoice::class, 'id_user');
     }
 
+    public function lastPendingInvoiceTypeOne() {
+
+        $lastPendingInvoice = $this->invoices()
+            ->where('type', 1)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        return $lastPendingInvoice 
+            ? $lastPendingInvoice->created_at->format('d/m/Y H:i:s') 
+            : '---';
+    }
+
     public function months() {
         return $this->hasMany(Invoice::class, 'id_user')
                 ->where('type', 1)

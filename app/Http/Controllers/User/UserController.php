@@ -285,7 +285,7 @@ class UserController extends Controller {
             ->whereHas('invoices', function($query) use ($dateLimit) {
                 $query->where('status', 1)
                       ->where('due_date', '>=', $dateLimit);
-            })->get();
+            })->orderBy('name', 'asc')->get();
         } elseif ($status == 2) {
             $users = User::whereNotIn('type', [1, 3])
                 ->where(function($query) use ($dateLimit) {
@@ -298,7 +298,7 @@ class UserController extends Controller {
                                  ->where('due_date', '>=', $dateLimit);
                     });
                 })
-                ->get();
+                ->orderBy('name', 'asc')->get();
         } else {
             return redirect()->back()->with('error', 'Dados não encontrados para a pesquisa!');
         }

@@ -76,7 +76,7 @@
                                             <label for="floatinglist">Listas</label>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
                                         <div class="form-floating">
                                             <select name="status" class="form-select" id="floatingStatus">
                                                 <option selected value="">Status:</option>
@@ -89,7 +89,7 @@
                                             <label for="floatingStatus">Status</label>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
                                         <div class="form-floating">
                                             <select name="label" class="form-select" id="floatingLabel">
                                                 <option selected value="">Label:</option>
@@ -98,22 +98,20 @@
                                             <label for="floatingLabel">Label</label>
                                         </div>
                                     </div>
-                                    @if (Auth::user()->type == 1)
-                                        <div class="col-12 col-md-12 col-lg-12 mb-1">
-                                            <div class="form-floating">
-                                                <select name="id_seller" class="form-select" id="floatingSeller">
-                                                    <option selected="" value="">Vendedor:</option>
-                                                    @foreach ($sellers as $seller)
-                                                        <option value="{{ $seller->id }}">{{ $seller->name }}</option>  
-                                                    @endforeach
-                                                </select>
-                                                <label for="floatingSeller">Vendedor</label>
-                                            </div>
+                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                        <div class="form-floating">
+                                            <select name="id_seller" class="form-select" id="floatingSeller">
+                                                <option selected="" value="">Vendedor:</option>
+                                                @foreach ($sellers as $seller)
+                                                    <option value="{{ $seller->id }}">{{ $seller->name }}</option>  
+                                                @endforeach
+                                            </select>
+                                            <label for="floatingSeller">Vendedor</label>
                                         </div>
-                                    @endif
+                                    </div>
                                 </div>
                             </div>
-                            <div class="modal-footer">
+                            <div class="modal-footer btn-group">
                                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                                 <button type="submit" class="btn btn-success">Consultar</button>
                             </div>
@@ -135,19 +133,15 @@
                     <h5 class="card-title">Vendas</h5>
                     
                     <div class="table-responsive">
-                        <table class="table table-hover" id="table">
+                        <table class="table table-sm table-hover" id="table">
                             <thead>
                                 <tr>
                                     <th scope="col"><input type="checkbox" id="select-all">N°</th>
                                     <th scope="col">Lista</th>
                                     <th scope="col">Produto</th>
                                     <th scope="col">Cliente</th>
-                                    <th class="d-none">Telefone</th>
-                                    <th>CPF/CNPJ</th>
                                     <th scope="col">Vendedor</th>
-                                    <th class="text-center" scope="col">V. Venda</th>
-                                    <th class="text-center" scope="col">V. Comissão</th>
-                                    <th class="text-center" scope="col">Status - Data</th>
+                                    <th class="text-center" scope="col">Situação</th>
                                     <th class="text-center" scope="col">Opções</th>
                                 </tr>
                             </thead>
@@ -168,27 +162,37 @@
                                             @endif
                                         </th>
                                         <td title="{{ $sale->product->name }}">
-                                            {{ substr($sale->product->name, 0, 15) }} <br>
+                                            {{ substr($sale->product->name, 0, 20) }} <br>
                                             <span class="badge bg-primary">Garantia: @if($sale->guarantee) {{ \Carbon\Carbon::parse($sale->guarantee)->format('d/m/Y') }} @else --- @endif</span>
+                                            <span class="badge bg-success">Valor Venda: R$ {{ number_format($sale->value, 2, ',', '.') }}</span>
                                         </td>
-                                        <td>{{ $sale->user->name }}</td>
-                                        <td class="d-none">{{ $sale->user->phone }}</td>
-                                        <td>
-                                            {{ $sale->user->cpfcnpjLabel() }} <br>
+                                        <td title="{{ $sale->user->name }}">
+                                            {{ substr($sale->user->name, 0, 20) }}... <br>
+                                            <span class="badge bg-dark">CPF/CNPJ: {{ $sale->user->cpfcnpjLabel() }}</span>
                                             @if($sale->label) <span class="badge bg-primary">{{ $sale->label }} - {{ \Carbon\Carbon::parse($sale->update_at)->format('d/m/Y') }}</span> @endif
                                         </td>
-                                        <td title="{{ $sale->seller->indicator() }}">{{ substr($sale->seller->name, 0, 15) }}..</td>
-                                        <td class="text-center">R$ {{ number_format($sale->value, 2, ',', '.') }}</td>
-                                        <td class="text-center">R$ {{ number_format($sale->commission, 2, ',', '.') }}</td>
-                                        <td class="text-center">{{ $sale->statusLabel() }} - {{ \Carbon\Carbon::parse($sale->created_at)->format('d/m/Y') }}</td>
+                                        <td title="{{ $sale->seller->name }}">
+                                            {{ substr($sale->seller->name, 0, 20) }}.. <br>
+                                            <span class="badge bg-success">Comissão: R$ {{ number_format($sale->commission, 2, ',', '.') }}</span>
+                                            @if($sale->seller->filiate == Auth::user()->id)
+                                                <span class="badge bg-success">Comissão Patrocinador: R$ {{ number_format($sale->commission_filiate, 2, ',', '.') }}</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-center">{{ $sale->statusLabel() }}</td>
                                         <td class="text-center">
                                             <form action="{{ route('delete-sale') }}" method="POST" class="delete">
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $sale->id }}"> 
                                                 <div class="btn-group" role="group" aria-label="Basic outlined example">
-                                                    <a title="Contrato" href="{{ $sale->url_contract }}" target="_blank" class="btn btn-outline-primary"><i class="bi bi-file-earmark-text"></i></a>
-                                                    <a title="Faturas" href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="bi bi-currency-dollar"></i></a>
-                                                    <a title="Reprotocolar" href="{{ route('reprotocol-sale', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="bx bx-check-shield"></i></a>
+                                                    @isset($sale->url_contract)
+                                                        <a title="Contrato" href="{{ $sale->url_contract }}" target="_blank" class="btn btn-outline-primary"><i class="bi bi-file-earmark-text"></i></a>
+                                                    @endisset
+                                                    @if (is_int($sale->id_payment))
+                                                        <a title="Faturas" href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="bi bi-currency-dollar"></i></a>
+                                                    @endif
+                                                    @if ($sale->status == 1)
+                                                        <a title="Reprotocolar" href="{{ route('reprotocol-sale', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="bx bx-check-shield"></i></a>
+                                                    @endif
                                                     <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
                                                 </div>
                                             </form>

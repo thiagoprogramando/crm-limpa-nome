@@ -25,27 +25,6 @@ use GuzzleHttp\Exception\RequestException;
 
 class SaleController extends Controller {
 
-    public function myShop() {
-        
-        $sales = Sale::where('id_client', Auth::id())->get();
-        return view('app.Shop.list', ['sales' => $sales]);
-    }
-
-    public function myProduct($id) {
-
-        $product = Product::find($id);
-        if($product) {
-
-            $itens = Item::where('id_product', $product->id)->get();
-            return view('app.Shop.product', [
-                'product' => $product,
-                'itens'   => $itens
-            ]);
-        }
-        
-        return redirect()->back()->with('error', 'Não foram encontrados dados do Produto!');
-    }
-
     public function create($id) {
 
         $product = Product::find($id);
@@ -57,7 +36,7 @@ class SaleController extends Controller {
     public function createSale(Request $request) {
 
         $user = $this->createUser($request->name, $request->email, $request->cpfcnpj, $request->birth_date, $request->phone, $request->postal_code, $request->address, $request->complement, $request->city, $request->state, $request->num, $request->id_seller);
-        if($user != false) {
+        if ($user != false) {
 
             $seller = User::find($request->id_seller);
             if (!$seller) {
@@ -69,7 +48,7 @@ class SaleController extends Controller {
             }
 
             $product = Product::where('id', $request->product)->first();
-            if(!$product) {
+            if (!$product) {
                 return redirect()->back()->with('error', 'Produto não disponível!');
             }
 
@@ -143,16 +122,16 @@ class SaleController extends Controller {
             $sale->commission           = max($commission, 0);
             $sale->commission_filiate   = $commissionFiliate;
 
-            if(!empty($product->contract)) {
+            if (!empty($product->contract)) {
 
                 $document = $this->sendContract($user->id, $product->contract, $request->value, $request->payment);
-                if($document['token']) {
+                if ($document['token']) {
 
                     $sale->token_contract = $document['token'];
                     $sale->url_contract   = $document['signers'][0]['sign_url'];
 
                     $seller = User::find(!empty($request->id_seller) ? $request->id_seller : Auth::id());
-                    if($seller->api_token_zapapi) {
+                    if ($seller->api_token_zapapi) {
                         $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado(a) ".$user->name.", segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ⚠ Se não estiver aparecendo o link, Salva o nosso contato que aparecerá! \r\n\r\n\r\n ASSINAR O CONTRATO TOCANDO NO LINK 👇🏼✍🏼 \r\n", $user->phone, $seller->api_token_zapapi);
                     } else {
                         $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado(a) ".$user->name.", segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ⚠ Se não estiver aparecendo o link, Salva o nosso contato que aparecerá! \r\n\r\n\r\n ASSINAR O CONTRATO TOCANDO NO LINK 👇🏼✍🏼 \r\n", $user->phone);
@@ -170,7 +149,7 @@ class SaleController extends Controller {
                 
                 $assas = new AssasController();
                 $invoice = $assas->createSalePayment($sale->id, true);
-                if($invoice) {
+                if ($invoice) {
                     return redirect()->back()->with('success', 'Sucesso! Os dados de pagamento foram enviados para o Cliente!');
                 }
             }
@@ -382,52 +361,65 @@ class SaleController extends Controller {
     }       
 
     public function manager(Request $request) {
-
+        
         $query = Sale::orderBy('created_at', 'desc');
+    
+        $currentUser = Auth::user();
+    
+        $affiliateIds = User::where('filiate', $currentUser->id)->pluck('id')->toArray();
+        $accessibleUserIds = array_merge([$currentUser->id], $affiliateIds);
+    
+        if (Auth::user()->type == 1) {
+            if (!empty($request->id_seller)) {
+                $query->where('id_seller', $request->id_seller);
+            }
+        } else {
+            if (!empty($request->id_seller)) {
+                $query->where('id_seller', $request->id_seller);
+            } else {
+                $query->whereIn('id_seller', $accessibleUserIds);
+            }
+        }
 
         if (!empty($request->name)) {
-            $users = User::where('name', 'LIKE', '%'.$request->name.'%')->pluck('id')->toArray();
+            $users = User::where('name', 'LIKE', '%' . $request->name . '%')->pluck('id')->toArray();
             if (!empty($users)) {
                 $query->whereIn('id_client', $users);
             }
         }
-
+    
         if (!empty($request->created_at)) {
             $query->whereDate('created_at', $request->created_at);
         }
-
+    
         if (!empty($request->value) && $this->formatarValor($request->value) > 0) {
             $query->where('value', $this->formatarValor($request->value));
         }
-
+    
         if (!empty($request->id_list)) {
             $query->where('id_list', $request->id_list);
         }
-
-        if (!empty($request->id_seller)) {
-            $query->where('id_seller', $request->id_seller);
-        }
-
+    
         if (!empty($request->status)) {
             $query->where('status', $request->status);
         }
-
+    
         if (!empty($request->label)) {
             $query->where('label', $request->label);
         }
+    
+        $sales      = $query->paginate(100);
+        $sellers    = $currentUser->type == 1 
+                        ? User::whereIn('type', [1, 2, 4, 5])->orderBy('name', 'asc')->get() 
+                        : User::where('type', [2])->where('filiate', $currentUser->id)->orderBy('name', 'asc')->get();
+        $lists      = Lists::orderBy('created_at', 'desc')->get();
 
-        if(Auth::user()->type != 1) {
-            $query->where('id_seller', Auth::user()->id);
-        }
-
-        $sales = $query->paginate(100);
-
-        return view('app.Sale.manager',  [
-            'sales'   => $sales,
-            'lists'   => Lists::orderBy('created_at', 'desc')->get(),
-            'sellers' => User::whereIn('type', [1, 2, 4, 5])->orderBy('name', 'asc')->get()
+        return view('app.Sale.manager', [
+            'sales'     => $sales,
+            'lists'     => $lists,
+            'sellers'   => $sellers
         ]);
-    }
+    }    
 
     public function viewSale($id) {
 
@@ -475,7 +467,7 @@ class SaleController extends Controller {
             $invoice->delete();
         }
 
-        if($sale->delete()) {
+        if ($sale->delete()) {
             return redirect()->back()->with('success', 'Venda e Faturas excluídas com sucesso!');
         }
         

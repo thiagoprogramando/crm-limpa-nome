@@ -104,10 +104,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/updatelist/{id}', [ListController::class, 'update'])->name('updatelist');
         Route::post('update-list', [ListController::class, 'updateList'])->name('update-list');
         Route::post('delete-list', [ListController::class, 'delete'])->name('delete-list');
-
-        //Client
-        Route::get('/my-shop', [SaleController::class, 'myShop'])->name('my-shop');
-        Route::get('/my-product/{id}', [SaleController::class, 'myProduct'])->name('my-product');
     });
 
     //Apresentation

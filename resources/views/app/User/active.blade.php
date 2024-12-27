@@ -17,7 +17,6 @@
         <div class="col-12">
 
             <div class="btn-group mb-3" role="group">
-                <a href="{{ route('registrer') }}" target="_blank" class="btn btn-outline-primary">Cadastrar</a>
                 <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
             </div>
 
@@ -33,9 +32,7 @@
                                     <th scope="col">Nome</th>
                                     <th scope="col">Graduação</th>
                                     <th scope="col">Situação</th>
-                                    <th class="text-center" scope="col">Mens. Abertas</th>
-                                    <th class="text-center" scope="col">T. Vendas</th>
-                                    <th class="text-center" scope="col">T. Comissão</th>
+                                    <th class="text-center" scope="col">Última Mens</th>
                                     <th class="text-center" scope="col">Opções</th>
                                 </tr>
                             </thead>
@@ -46,9 +43,7 @@
                                         <td>{{ $user->name }}</td>
                                         <td>{{ $user->levelLabel() }}</td>
                                         <td>{{ $user->statusLabel() }}</td>
-                                        <td class="text-center">{{ $user->invoicesPendent() }}</td>
-                                        <td class="text-center">R$ {{ number_format($user->saleTotal(), 2, ',', '.') }}</td>
-                                        <td class="text-center">R$ {{ number_format($user->commissionTotal(), 2, ',', '.') }}</td>
+                                        <td class="text-center">{{ $user->lastPendingInvoiceTypeOne() }}</td>
                                         <td class="text-center">
                                             <form action="{{ route('delete-user') }}" method="POST" class="delete btn-group">
                                                 @csrf
@@ -98,7 +93,7 @@
                                                                     <label for="floatingBirthDate">Data Nascimento:</label>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                            <div class="col-12 col-md-6 col-lg-6 mb-1">
                                                                 <div class="form-floating">
                                                                     <select name="type" class="form-select" id="floatingType">
                                                                         <option selected value="{{ $user->type }}">Tipo:</option>
@@ -109,14 +104,15 @@
                                                                         <option value="3">Cliente</option>
                                                                         <option value="4">Vendendor Interno</option>
                                                                         <option value="8">Vendendor Master</option>
+                                                                        <option value="9">Consultor VIP</option>
                                                                     </select>
                                                                     <label for="floatingType">Tipo</label>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                            <div class="col-12 col-md-6 col-lg-6 mb-1">
                                                                 <div class="form-floating">
                                                                     <select name="level" class="form-select" id="floatingLevel">
-                                                                        <option selected value="{{ $user->type }}">Graduação:</option>
+                                                                        <option selected value="{{ $user->level }}">Graduação:</option>
                                                                         <option value="1">INICIANTE</option>
                                                                         <option value="2">CONSULTOR</option>
                                                                         <option value="3">CONSULTOR LÍDER</option>
@@ -125,6 +121,7 @@
                                                                         <option value="5">GERENTE REGIONAL</option>
                                                                         <option value="6">VENDEDOR INTERNO</option>
                                                                         <option value="8">VENDEDOR MASTER</option>
+                                                                        <option value="9">CONSULTOR VIP</option>
                                                                     </select>
                                                                     <label for="floatingLevel">Graduação</label>
                                                                 </div>
@@ -133,6 +130,12 @@
                                                                 <div class="form-floating">
                                                                     <input type="text" name="api_token_zapapi" class="form-control" id="api_token_zapapi" placeholder="Api Token ZapSing:" value="{{ $user->api_token_zapapi }}">
                                                                     <label for="api_token_zapapi">Api Token ZapSing:</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                                <div class="form-floating">
+                                                                    <input type="text" name="fixed_cost" class="form-control" id="fixed_cost" placeholder="Custo Fixo (R$):" value="{{ $user->fixed_cost }}" oninput="mascaraReal(this)">
+                                                                    <label for="fixed_cost">Custo Fixo (R$):</label>
                                                                 </div>
                                                             </div>
                                                         </div>
