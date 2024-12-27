@@ -90,8 +90,8 @@ function consultarCNPJ(cnpj) {
                 $('#consultaHub').addClass('d-none');
                 $('#formSale').removeClass('d-none');
 
-                $('input[name=name]').val(data.result.numero_de_inscricao);
-                $('input[name=cpfcnpj]').val(data.result.nome);
+                $('input[name=name]').val(data.result.nome);
+                $('input[name=cpfcnpj]').val(data.result.numero_de_inscricao);
             } else {
                 Swal.fire({
                     title: 'Inválido',
