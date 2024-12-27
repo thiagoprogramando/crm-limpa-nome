@@ -30,14 +30,23 @@ class UploadController extends Controller {
         if (!$client) {
             return redirect()->back()->with('error', 'Erro ao cadastrar o cliente, verifique os dados e tente novamente');
         }
+        
+        $seller = User::find($request->id_seller);
+        if (!$seller) {
+            return redirect()->back()->with('error', 'Dados do CONSULTOR DE VENDAS não localizados no sistema!');
+        }
+
+        if (($seller && $seller->fixed_cost > 0) && ($this->formatarValor($request->value) < $seller->fixed_cost)) {
+            return redirect()->back()->with('error', 'O valor mín de venda é: R$ '.$seller->fixed_cost.'!');
+        }
 
         $product = Product::where('id', $request->product)->first();
-        if(!$product) {
+        if (!$product) {
             return redirect()->back()->with('error', 'Produto não disponível!');
         }
 
         $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
-        if(!$list) {
+        if (!$list) {
             return redirect()->back()->with('info', 'Não há lista disponível para associar o CPF/CNPJ!');
         }
 

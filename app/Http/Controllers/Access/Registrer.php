@@ -41,17 +41,19 @@ class Registrer extends Controller {
         $user->type     = 2;
         
         if(!empty($request->filiate)) {
-            $user->filiate = $request->filiate;
+            $filiate = User::find($request->filiate);
+            if ($filiate) {
+                $user->filiate      = $request->filiate;
+                $user->fixed_cost   = $filiate->fixed_cost;
+            }
         }
 
         if($user->save()) {
-
             $this->sendActive($user->id);
-
             if (Auth::attempt(['email' => $user->email, 'password' => $password])) {
                 return redirect()->route('app');
             } else {
-                return redirect()->route('login')->with('success', 'Bem-vindo(a)! Faça Login para acessar o sistema.');
+                return redirect()->route('login')->with('success', 'Bem-vindo(a)! Faça Login para acessar o sistema!');
             }
         }
 
@@ -64,7 +66,6 @@ class Registrer extends Controller {
         if($user) {
 
             $url = env('APP_URL');
-
             $message =  "Olá, {$user->name}! 😊\r\n\r\n"
                         . "Seja bem-vindo(a)! \r\n\r\n"
                         . "Estamos muito felizes em tê-lo(a) conosco. Seu acesso foi criado com sucesso. Aqui estão seus dados de login para que você possa começar a aproveitar todos os benefícios: \r\n\r\n"
@@ -81,7 +82,6 @@ class Registrer extends Controller {
 
             return true;
         }
-
     }
 
     private function sendWhatsapp($link, $message, $phone, $token = null) {

@@ -84,8 +84,8 @@
                                     </div>
                                     <div class="col-12 col-md-4 col-lg-4 mb-1">
                                         <div class="form-floating">
-                                            <input type="text" name="value" class="form-control" id="floatingValue" placeholder="Informe o valor da venda:" oninput="mascaraReal(this)" required>
-                                            <label for="floatingValue">Informe o valor da venda (Opcional):</label>
+                                            <input type="text" name="value" class="form-control" id="floatingValue" placeholder="Valor da venda (Mín R$ {{ Auth::user()->fixed_cost }}):" oninput="mascaraReal(this)" required>
+                                            <label for="floatingValue">Valor da venda (Mín R$ {{ Auth::user()->fixed_cost }}):</label>
                                         </div>
                                     </div>
         
