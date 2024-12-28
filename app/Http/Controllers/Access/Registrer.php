@@ -19,7 +19,7 @@ class Registrer extends Controller {
 
     public function registrerUser(Request $request) {
 
-        $validator = $request->validate([
+        $request->validate([
             'name'      => 'required',
             'email'     => 'required|unique:users,email',
             'cpfcnpj'   => 'required|unique:users,cpfcnpj',
@@ -36,20 +36,21 @@ class Registrer extends Controller {
         $user->cpfcnpj  = preg_replace('/\D/', '', $request->cpfcnpj);
         $user->phone    = preg_replace('/\D/', '', $request->phone);
         $user->email    = $request->email;
-        $password       = preg_replace('/\D/', '', $request->cpfcnpj);
+        $password = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 6));
         $user->password = bcrypt($password);
         $user->type     = 2;
         
-        if(!empty($request->filiate)) {
+        if (!empty($request->filiate)) {
             $filiate = User::find($request->filiate);
             if ($filiate) {
-                $user->filiate      = $request->filiate;
-                $user->fixed_cost   = $filiate->fixed_cost;
+                $user->filiate    = $request->filiate;
+                $user->fixed_cost = $filiate->fixed_cost;
             }
         }
 
         if($user->save()) {
-            $this->sendActive($user->id);
+            $this->sendActive($user->id, $password);
+
             if (Auth::attempt(['email' => $user->email, 'password' => $password])) {
                 return redirect()->route('app');
             } else {
@@ -60,7 +61,7 @@ class Registrer extends Controller {
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
     }
 
-    public function sendActive($id) {
+    public function sendActive($id, $password) {
 
         $user = User::find($id);
         if($user) {
@@ -71,7 +72,7 @@ class Registrer extends Controller {
                         . "Estamos muito felizes em tê-lo(a) conosco. Seu acesso foi criado com sucesso. Aqui estão seus dados de login para que você possa começar a aproveitar todos os benefícios: \r\n\r\n"
                         . "Acesse: {$url}\r\n"
                         . "E-mail: {$user->email}\r\n"
-                        . "Senha: *CPF/CNPJ (Sem caracteres, apenas letras)* \r\n"
+                        . "Senha: *{$password}* \r\n\r\n"
                         . "Aproveite a sua jornada com a gente e tenha um ótimo dia! \r\n\r\n";
             $this->sendWhatsapp(
                 $url,

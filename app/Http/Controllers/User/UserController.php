@@ -93,12 +93,16 @@ class UserController extends Controller {
             $user->level = $request->level;
         }
 
+        if(!empty($request->num)) {
+            $user->num = $request->num;
+        }
+
+        if (!empty($request->password)) {
+            $user->password = bcrypt($request->password);
+        }
+
         if(!empty($request->type)) {
             $user->type = $request->type;
-
-            if($request->type == 4) {
-                $user->level = 6;
-            }
         }
 
         if (
@@ -111,7 +115,8 @@ class UserController extends Controller {
             $request->filled('address') &&
             $request->filled('state') &&
             $request->filled('city') &&
-            $request->filled('num')
+            $request->filled('num') &&
+            $user->status !== 3
         ) {
             $user->status = 3;
         }

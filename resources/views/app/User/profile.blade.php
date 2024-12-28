@@ -118,7 +118,6 @@
 
                     <form action="{{ route('update-user') }}" method="POST" class="row g-3">
                         @csrf
-
                         <input type="hidden" name="id" value="{{ Auth::user()->id }}">
 
                         <div class="col-12 col-md-6 col-lg-6 mb-1">
@@ -142,24 +141,30 @@
 
                         <div class="col-12 col-md-3 col-lg-3 mb-1">
                             <div class="form-floating">
+                                <input type="text" name="email" value="{{ Auth::user()->email }}" class="form-control" id="floatingEmail" placeholder="Email:">
+                                <label for="floatingEmail">Email:</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-3 col-lg-3 mb-1">
+                            <div class="form-floating">
                                 <input type="text" name="phone" value="{{ Auth::user()->phone }}" class="form-control" id="floatingPhone" placeholder="Telefone:">
                                 <label for="floatingPhone">Telefone:</label>
                             </div>
                         </div>
                         <div class="col-12 col-md-3 col-lg-3 mb-1">
                             <div class="form-floating">
-                                <input type="text" name="email" value="{{ Auth::user()->email }}" class="form-control" id="floatingEmail" placeholder="Email:">
-                                <label for="floatingEmail">Email:</label>
+                                <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Senha:">
+                                <label for="floatingPassword">Senha:</label>
                             </div>
                         </div>
 
-                        <div class="col-12 col-md-3 col-lg-3 mb-1">
+                        <div class="col-12 col-md-3 col-lg-2 mb-1">
                             <div class="form-floating">
                                 <input type="number" name="postal_code" value="{{ Auth::user()->postal_code }}" onblur="consultaCEP()" class="form-control" id="floatingPostalCode" placeholder="CEP:">
                                 <label for="floatingPostalCode">CEP:</label>
                             </div>
                         </div>
-                        <div class="col-12 col-md-3 col-lg-3 mb-1">
+                        <div class="col-12 col-md-3 col-lg-1 mb-1">
                             <div class="form-floating">
                                 <input type="number" name="num" value="{{ Auth::user()->num }}" class="form-control" id="floatingNum" placeholder="N°:">
                                 <label for="floatingNum">N°:</label>
@@ -183,8 +188,6 @@
                                 <label for="floatingState">Estado:</label>
                             </div>
                         </div>
-                        
-                        <input type="hidden" name="id" value="{{ Auth::user()->id }}">
 
                         <div class="col-12 col-md-3 col-lg-3 offset-md-9 offset-lg-9 d-grid gap-2 mb-1">
                             <button type="submit" class="btn btn-outline-success rounded-pill" type="button">Atualizar</button>

@@ -30,7 +30,10 @@ class SaleController extends Controller {
         $product = Product::find($id);
         $payments = Payment::where('id_product', $product->id)->get();
 
-        return view('app.Sale.create', ['product' => $product, 'payments' => $payments]);
+        return view('app.Sale.create', [
+            'product' => $product, 
+            'payments' => $payments
+        ]);
     }
 
     public function createSale(Request $request) {
@@ -160,8 +163,8 @@ class SaleController extends Controller {
 
     private function createUser($name, $email, $cpfcnpj, $birth_date, $phone, $postal_code = null, $address = null, $complement = null, $city = null, $state = null, $num = null, $filiate = null) {
 
-        $user = User::where('cpfcnpj', str_replace(['.', '-'], '', $cpfcnpj))->orWhere('email', $email)->first();
-        if($user) {
+        $user = User::where('cpfcnpj', str_replace(['.', '-'], '', $cpfcnpj))->first();
+        if ($user) {
             return $user;
         }
         
@@ -180,7 +183,7 @@ class SaleController extends Controller {
         $user->num          = $num;
         $user->type         = 3;
         $user->filiate      = $filiate;
-        if($user->save()) {
+        if ($user->save()) {
             return $user;
         }
 
