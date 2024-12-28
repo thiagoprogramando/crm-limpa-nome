@@ -178,7 +178,10 @@
                                                 <span class="badge bg-success">Comissão Patrocinador: R$ {{ number_format($sale->commission_filiate, 2, ',', '.') }}</span>
                                             @endif
                                         </td>
-                                        <td class="text-center">{{ $sale->statusLabel() }}</td>
+                                        <td class="text-center">
+                                            {{ $sale->statusLabel() }} <br>
+                                            <span class="badge bg-primary">{{ \Carbon\Carbon::parse($sale->created_at)->format('d/m/Y') }}</span>
+                                        </td>
                                         <td class="text-center">
                                             <form action="{{ route('delete-sale') }}" method="POST" class="delete">
                                                 @csrf
