@@ -174,19 +174,22 @@ class UserController extends Controller {
 
     public function listRede(Request $request) {
 
-        $query = User::orderBy('name', 'desc')->where('filiate', Auth::id())->where('type', '!=', '3');
+        $query = User::query()
+            ->orderBy('name', 'asc')
+            ->where('filiate', Auth::id())
+            ->where('type', '!=', 3);
 
-        if (!empty($request->name)) {
+        if ($request->filled('name')) {
             $query->where('name', 'like', '%' . $request->name . '%');
         }
 
-        if (!empty($request->created_at)) {
-            $query->where('created_at', $request->created_at);
+        if ($request->filled('created_at')) {
+            $query->whereDate('created_at', $request->created_at);
         }
 
-        $users = $query->get();
-
-        return view('app.User.list-rede', ['users' => $users]);
+        return view('app.User.list-rede', [
+            'users' => $query->get()
+        ]);
     }
 
     public function listClient(Request $request) {
