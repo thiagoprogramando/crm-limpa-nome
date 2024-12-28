@@ -116,8 +116,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('update-user', [UserController::class, 'updateProfile'])->name('update-user');
     Route::post('delete-user', [UserController::class, 'deleteUser'])->name('delete-user');
     Route::get('/search', [UserController::class, 'search'])->name('search');
-    Route::get('/listuser/{type}', [UserController::class, 'listuser'])->name('listuser');
-    Route::get('/list-rede', [UserController::class, 'listRede'])->name('list-rede');
+    Route::get('/list-user/{type}', [UserController::class, 'listuser'])->name('list-user');
+    Route::get('/list-network', [UserController::class, 'listNetwork'])->name('list-network');
     Route::get('/list-client', [UserController::class, 'listClient'])->name('list-client');
     Route::get('view-notification/{id}', [UserController::class, 'viewNotification'])->name('view-notification');
     Route::get('/create-wallet', [UserController::class, 'createWallet'])->name('create-wallet');

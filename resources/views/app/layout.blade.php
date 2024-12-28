@@ -191,7 +191,7 @@
                 
                 <li class="nav-heading">Pessoas</li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ route('list-rede') }}"> <i class="bi bi-person-lines-fill"></i> <span>Minha Rede</span> </a>
+                    <a class="nav-link collapsed" href="{{ route('list-network') }}"> <i class="bi bi-person-lines-fill"></i> <span>Minha Rede</span> </a>
                 </li>
            
                 <li class="nav-item">
@@ -243,10 +243,10 @@
                             <i class="bi bi-file-earmark-person"></i><span>Pessoas</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
                         <ul id="forms-users" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                            <li> <a href="{{ route('listuser', ['type' => 1]) }}"><i class="bi bi-circle"></i><span>Administradores</span></a> </li>
-                            <li> <a href="{{ route('listuser', ['type' => 3]) }}"><i class="bi bi-circle"></i><span>Clientes</span></a> </li>
-                            <li> <a href="{{ route('listuser', ['type' => 2]) }}"><i class="bi bi-circle"></i><span>Consultores</span></a>
-                            <li> <a href="{{ route('listuser', ['type' => 4]) }}"><i class="bi bi-circle"></i><span>Vendedor Interno</span></a> </li>
+                            <li> <a href="{{ route('list-user', ['type' => 1]) }}"><i class="bi bi-circle"></i><span>Administradores</span></a> </li>
+                            <li> <a href="{{ route('list-user', ['type' => 3]) }}"><i class="bi bi-circle"></i><span>Clientes</span></a> </li>
+                            <li> <a href="{{ route('list-user', ['type' => 2]) }}"><i class="bi bi-circle"></i><span>Consultores</span></a>
+                            <li> <a href="{{ route('list-user', ['type' => 4]) }}"><i class="bi bi-circle"></i><span>Consultor Interno</span></a> </li>
                         </ul>
                     </li>
 

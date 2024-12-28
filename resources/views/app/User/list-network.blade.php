@@ -24,7 +24,7 @@
                 <div class="modal fade" id="filterModal" tabindex="-1">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <form action="{{ route('list-rede') }}" method="GET">
+                            <form action="{{ route('list-network') }}" method="GET">
                                 <div class="modal-header">
                                     <h5 class="modal-title">Filtrar dados da pesquisa</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

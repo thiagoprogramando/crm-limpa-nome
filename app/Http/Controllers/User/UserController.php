@@ -172,7 +172,7 @@ class UserController extends Controller {
         return view('app.User.list', ['users' => $users, 'type' => $type]);
     }
 
-    public function listRede(Request $request) {
+    public function listNetwork(Request $request) {
 
         $query = User::query()
             ->orderBy('name', 'asc')
@@ -187,7 +187,7 @@ class UserController extends Controller {
             $query->whereDate('created_at', $request->created_at);
         }
 
-        return view('app.User.list-rede', [
+        return view('app.User.list-network', [
             'users' => $query->get()
         ]);
     }
