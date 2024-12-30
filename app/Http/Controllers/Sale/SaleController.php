@@ -124,37 +124,12 @@ class SaleController extends Controller {
             $sale->value                = $discountedValue + $method->value_rate;
             $sale->commission           = max($commission, 0);
             $sale->commission_filiate   = $commissionFiliate;
-
-            if (!empty($product->contract)) {
-
-                $document = $this->sendContract($user->id, $product->contract, $request->value, $request->payment);
-                if ($document['token']) {
-
-                    $sale->token_contract = $document['token'];
-                    $sale->url_contract   = $document['signers'][0]['sign_url'];
-
-                    $seller = User::find(!empty($request->id_seller) ? $request->id_seller : Auth::id());
-                    if ($seller->api_token_zapapi) {
-                        $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado(a) ".$user->name.", segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ⚠ Se não estiver aparecendo o link, Salva o nosso contato que aparecerá! \r\n\r\n\r\n ASSINAR O CONTRATO TOCANDO NO LINK 👇🏼✍🏼 \r\n", $user->phone, $seller->api_token_zapapi);
-                    } else {
-                        $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado(a) ".$user->name.", segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ⚠ Se não estiver aparecendo o link, Salva o nosso contato que aparecerá! \r\n\r\n\r\n ASSINAR O CONTRATO TOCANDO NO LINK 👇🏼✍🏼 \r\n", $user->phone);
-                    }
-                        
-                    if($sale->save()) {
-                        return redirect()->back()->with('success', 'Sucesso! O contrato foi enviado para o cliente via WhatsApp.');
-                    }
-                } else {
-                    return redirect()->back()->with('error', 'Foram encontrados problemas ao gerar contrato do cliente, contate o suporte!');
-                }
-            } else {
-
-                $sale->save();
-                
-                $assas = new AssasController();
-                $invoice = $assas->createSalePayment($sale->id, true);
-                if ($invoice) {
-                    return redirect()->back()->with('success', 'Sucesso! Os dados de pagamento foram enviados para o Cliente!');
-                }
+            $sale->save();
+            
+            $assas = new AssasController();
+            $invoice = $assas->createSalePayment($sale->id, true);
+            if ($invoice) {
+                return redirect()->back()->with('success', 'Sucesso! Os dados de pagamento foram enviados para o Cliente!');
             }
 
             return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
@@ -530,39 +505,6 @@ class SaleController extends Controller {
             'lists'    => Lists::orderBy('created_at', 'desc')->get(),
             'sellers'  => User::whereIn('type', [1, 2, 4, 5])->orderBy('name', 'asc')->get()
         ]);
-    }
-    
-    public function sendContractWhatsapp($id) {
-
-        $sale = Sale::find($id);
-        if(!$sale) {
-            return redirect()->back()->with('error', 'Dados do contrato não encontrado!');
-        }
-
-        $client = new Client();
-        $url = 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
-        try {
-            $response = $client->post($url, [
-                'headers' => [
-                    'Content-Type'  => 'application/json',
-                    'Accept'        => 'application/json',
-                    'Client-Token'  => 'Fabe25dbd69e54f34931e1c5f0dda8c5bS',
-                ],
-                'json' => [
-                    'phone'           => '55' . $sale->user->phone,
-                    'message'         => "Prezado(a) ".$sale->user->name.", segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼 \r\n ⚠ Salva o contato se não tiver aparecendo o link.",
-                    'image'           => env('APP_URL_LOGO'),
-                    'linkUrl'         => $sale->url_contract,
-                    'title'           => 'Assinatura de Documento',
-                    'linkDescription' => 'Link para Assinatura Digital',
-                ],
-                'verify' => false
-            ]);
-
-            return redirect()->back()->with('success', 'Contrato enviado para o Cliente!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Erro ao enviar contrato, tente novamente mais tarde!');
-        }
     }
 
     public function reprotocolSale($id) {

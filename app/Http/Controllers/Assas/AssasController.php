@@ -1094,16 +1094,14 @@ class AssasController extends Controller {
                 $token = $data['token'];
 
                 $sale = Sale::where('token_contract', $token)->first();
-                if ($sale && $sale->status != 2) {
+                if ($sale) {
 
-                    $sale->status = 2;
-                    $sale->save();
-
-                    if($this->createSalePayment($sale->id, true)) {
-                        return response()->json(['message' => 'Contrato assinado e Faturas geradas!'], 200);
+                    $sale->status_contract = 1;
+                    if($sale->save()) {
+                        return response()->json(['message' => 'Contrato assinado!'], 200);
                     }
 
-                    return response()->json(['message' => 'Contrato assinado e mas não foi possível gerar Faturas!'], 200);
+                    return response()->json(['message' => 'Não foi possível atualizar a Venda!'], 200);
                 }
             }
 

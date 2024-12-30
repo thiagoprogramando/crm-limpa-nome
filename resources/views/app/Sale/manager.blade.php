@@ -141,7 +141,8 @@
                                     <th scope="col">Produto</th>
                                     <th scope="col">Cliente</th>
                                     <th scope="col">Vendedor</th>
-                                    <th class="text-center" scope="col">Situação</th>
+                                    <th class="text-center" scope="col">Contrato</th>
+                                    <th class="text-center" scope="col">Pagamento</th>
                                     <th class="text-center" scope="col">Opções</th>
                                 </tr>
                             </thead>
@@ -163,19 +164,48 @@
                                         </th>
                                         <td title="{{ $sale->product->name }}">
                                             {{ substr($sale->product->name, 0, 20) }} <br>
-                                            <span class="badge bg-primary">Garantia: @if($sale->guarantee) {{ \Carbon\Carbon::parse($sale->guarantee)->format('d/m/Y') }} @else --- @endif</span>
+                                            @isset($sale->guarantee)
+                                                <span class="badge bg-primary">
+                                                    Garantia: {{ \Carbon\Carbon::parse($sale->guarantee)->format('d/m/Y') }}
+                                                </span>
+                                            @endisset
                                             <span class="badge bg-success">Valor Venda: R$ {{ number_format($sale->value, 2, ',', '.') }}</span>
                                         </td>
                                         <td title="{{ $sale->user->name }}">
                                             {{ substr($sale->user->name, 0, 20) }}... <br>
                                             <span class="badge bg-dark">CPF/CNPJ: {{ $sale->user->cpfcnpjLabel() }}</span>
-                                            @if($sale->label) <span class="badge bg-primary">{{ $sale->label }} - {{ \Carbon\Carbon::parse($sale->update_at)->format('d/m/Y') }}</span> @endif
+                                            @isset($sale->label) 
+                                                <span class="badge bg-primary">
+                                                    {{ $sale->label }} - {{ \Carbon\Carbon::parse($sale->update_at)->format('d/m/Y') }}
+                                                </span> 
+                                            @endisset
                                         </td>
-                                        <td title="{{ $sale->seller->name }}">
-                                            {{ substr($sale->seller->name, 0, 20) }}.. <br>
+                                        <td title="{{ $sale->seller->parent->name }}">
+                                            {{ substr($sale->seller->name, 0, 20) }}... <br>
                                             <span class="badge bg-success">Comissão: R$ {{ number_format($sale->commission, 2, ',', '.') }}</span>
-                                            @if($sale->seller->filiate == Auth::user()->id)
+                                            @if ($sale->seller->filiate == Auth::user()->id)
                                                 <span class="badge bg-success">Comissão Patrocinador: R$ {{ number_format($sale->commission_filiate, 2, ',', '.') }}</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-center">
+                                            @if (is_int($sale->id_payment))
+                                                @if ($sale->status_contract == 3)
+                                                    <a title="Gerar Contrato" href="{{ route('send-contract', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="ri-file-edit-line"></i> Gerar Contrato</a>
+                                                @else
+                                                    {{ $sale->statusContractLabel() }} <br>
+                                                    @isset($sale->url_contract)
+                                                        <span class="badge bg-primary">
+                                                            <a title="Contrato" href="{{ $sale->url_contract }}" target="_blank" class="text-white">Acessar</a>
+                                                        </span>
+                                                        @if ($sale->status_contract == 2)
+                                                            <span class="badge bg-warning">
+                                                                <a title="Reenviar Contrato" href="{{ route('send-contract', ['id' => $sale->id]) }}" class="text-white"><i class="ri-file-edit-line"></i> Reenviar Contrato</a>
+                                                            </span>
+                                                        @endif
+                                                    @endisset
+                                                @endif
+                                            @else
+                                                <span class="badge bg-danger">Não disponível para vendas (manuais)</span>
                                             @endif
                                         </td>
                                         <td class="text-center">
@@ -187,9 +217,6 @@
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $sale->id }}"> 
                                                 <div class="btn-group" role="group" aria-label="Basic outlined example">
-                                                    @isset($sale->url_contract)
-                                                        <a title="Contrato" href="{{ $sale->url_contract }}" target="_blank" class="btn btn-outline-primary"><i class="bi bi-file-earmark-text"></i></a>
-                                                    @endisset
                                                     @if (is_int($sale->id_payment))
                                                         <a title="Faturas" href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="bi bi-currency-dollar"></i></a>
                                                     @endif

@@ -9,6 +9,7 @@ use App\Http\Controllers\Client\AppController as ClientAppController;
 use App\Http\Controllers\Client\LoginController;
 use App\Http\Controllers\Payment\Payment;
 use App\Http\Controllers\Product\ProductController;
+use App\Http\Controllers\Sale\ContractController;
 use App\Http\Controllers\Sale\CouponController;
 use App\Http\Controllers\Sale\DefaultController;
 use App\Http\Controllers\Sale\SaleController;
@@ -53,8 +54,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('delete-sales-pending', [SaleController::class, 'deleteSalesPending'])->name('delete-sales-pending');
         Route::get('reprotocol-sale/{id}', [SaleController::class, 'reprotocolSale'])->name('reprotocol-sale');
 
+        //Contract
+        Route::get('/send-contract/{id}', [ContractController::class, 'createContract'])->name('send-contract');
+
+        
         Route::get('/send-default-whatsapp/{id}', [DefaultController::class, 'sendWhatsapp'])->name('send-default-whatsapp');
-        Route::get('/send-contract/{id}', [SaleController::class, 'sendContractWhatsapp'])->name('send-contract');
 
         //Upload
         Route::get('/createupload/{id}', [UploadController::class, 'create'])->name('createupload');

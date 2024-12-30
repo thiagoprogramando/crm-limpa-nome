@@ -29,6 +29,7 @@ class Sale extends Model {
         'token_payment',
         'token_contract',
         'url_contract',
+        'status_contract',
 
         'status',
         'wallet_off',
@@ -59,19 +60,30 @@ class Sale extends Model {
     public function statusLabel() {
         switch ($this->status) {
             case 1:
-                return 'Pagamento confirmado';
-                break;
-            case 2:
-                return 'Contrato Assinado';
-                break;
-            case 3:
-                return 'Pendente de Assinatura';
+                return 'Confirmado';
                 break;
             case 4:
-                return 'Pendente de Pagamento';
+                return 'Pendente';
                 break;
             default:
                 return 'Pendente';
+                break;
+        }
+    }
+
+    public function statusContractLabel() {
+        switch ($this->status_contract) {
+            case 1:
+                return 'Assinado';
+                break;
+            case 2:
+                return 'Pendente';
+                break;
+            case 3:
+                return 'Contrato não gerado';
+                break;
+            default:
+                return 'Contrato não gerado';
                 break;
         }
     }
