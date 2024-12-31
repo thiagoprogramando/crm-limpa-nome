@@ -49,8 +49,8 @@
                                             {{ $list->name }} <br>
                                             <span class="badge bg-dark"> {{ $list->description }} </span>
                                         </td>
-                                        <td class="text-center">{{ \Carbon\Carbon::parse($list->start)->format('d/m/Y') }}</td>
-                                        <td class="text-center">{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</td>
+                                        <td class="text-center">{{ \Carbon\Carbon::parse($list->start)->format('d/m/Y H:i') }}</td>
+                                        <td class="text-center">{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y H:i') }}</td>
                                         <td class="text-center">{{ $list->statusLabel() }}</td>
                                         <td class="text-center">{{ $list->serasa_status }}</td>
                                         <td class="text-center">{{ $list->status_spc }}</td>

@@ -17,7 +17,7 @@ use App\Http\Controllers\Upload\UploadController;
 use App\Http\Controllers\User\ListController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\WalletController;
-
+use App\Http\Controllers\WhiteLabel\ContractController as WhiteLabelContractController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [Login::class, 'index'])->name('login');
@@ -59,7 +59,7 @@ Route::middleware(['auth'])->group(function () {
         //Contract
         Route::get('/send-contract/{id}', [ContractController::class, 'createContract'])->name('send-contract');
 
-        
+        //
         Route::get('/send-default-whatsapp/{id}', [DefaultController::class, 'sendWhatsapp'])->name('send-default-whatsapp');
 
         //Upload
@@ -110,6 +110,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/updatelist/{id}', [ListController::class, 'update'])->name('updatelist');
         Route::post('update-list', [ListController::class, 'updateList'])->name('update-list');
         Route::post('delete-list', [ListController::class, 'delete'])->name('delete-list');
+
+        //WhiteLabel
+        Route::get('/profile-white-label', [WhiteLabelContractController::class, 'profileContract'])->name('profile-white-label');
     });
 
     //Apresentation

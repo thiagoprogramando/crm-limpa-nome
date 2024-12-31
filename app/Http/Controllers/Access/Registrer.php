@@ -43,8 +43,8 @@ class Registrer extends Controller {
         if (!empty($request->filiate)) {
             $filiate = User::find($request->filiate);
             if ($filiate) {
-                $user->filiate    = $request->filiate;
-                $user->fixed_cost = $filiate->fixed_cost;
+                $user->filiate          = $request->filiate;
+                $user->fixed_cost       = $filiate->fixed_cost;
             }
         }
 

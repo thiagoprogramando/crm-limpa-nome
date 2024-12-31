@@ -154,7 +154,7 @@
 
                 <li class="nav-item">
                     <a class="nav-link collapsed" data-bs-target="#forms-upload" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-cloud-upload"></i><span>Enviar Nomes (Associação)</span><i class="bi bi-chevron-down ms-auto"></i>
+                        <i class="bi bi-cloud-upload"></i><span>Enviar Nome (Associação)</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
                     <ul id="forms-upload" class="nav-content collapse " data-bs-parent="#sidebar-upload">
                         @foreach($business as $busines)
@@ -183,6 +183,21 @@
            
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="{{ route('list-client') }}"> <i class="bi bi-file-earmark-person"></i> <span>Clientes</span> </a>
+                </li>
+
+                <li class="nav-heading">Customização</li>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" data-bs-target="#forms-integration" data-bs-toggle="collapse" href="#">
+                        <i class="ri-braces-line"></i><span>Integrações</span><i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <ul id="forms-integration" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                        @if (Auth::user()->white_label_contract == 1)
+                            <li> 
+                                <a href="{{ route('profile-white-label') }}"><i class="bi bi-circle"></i><span>Contrato</span></a>
+                            </li>
+                        @endif
+                        {{-- <li> <a href=""> <i class="bi bi-circle"></i><span>WhatsApp</span> </a> </li> --}}
+                    </ul>
                 </li>
 
                 @if (Auth::user()->type != 6 && !empty(Auth::user()->api_key) && !empty(Auth::user()->wallet))

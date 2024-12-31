@@ -22,28 +22,28 @@
                             @csrf
                             <div class="col-12 col-md-12 col-lg-12 mb-1">
                                 <div class="form-floating">
-                                    <input type="text" name="name" class="form-control" id="floatingName" placeholder="Indique um nome para a Lista:" required>
-                                    <label for="floatingName">Indique um nome para a Lista:</label>
+                                    <input type="text" name="name" class="form-control" id="floatingName" placeholder="Nome:" required>
+                                    <label for="floatingName">Nome:</label>
                                 </div>
                             </div>
 
                             <div class="col-12 col-md-12 col-lg-12 mb-1">
                                 <div class="form-floating">
                                     <textarea name="description" class="form-control" placeholder="Descrição" id="floatingTextarea" style="height: 100px;"></textarea>
-                                    <label for="floatingTextarea">Indique uma descrição para a Lista:</label>
+                                    <label for="floatingTextarea">Descrição:</label>
                                 </div>
                             </div>
 
                             <div class="col-12 col-md-4 col-lg-4 mb-1">
                                 <div class="form-floating">
-                                    <input type="date" name="date_start" class="form-control" id="floatingDateEnd" placeholder="Indique a data de início:" required>
-                                    <label for="floatingDateEnd">Indique a data de início:</label>
+                                    <input type="datetime-local" name="date_start" class="form-control" id="floatingDateEnd" placeholder="Data de início:" required>
+                                    <label for="floatingDateEnd">Data de início:</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4 col-lg-4 mb-1">
                                 <div class="form-floating">
-                                    <input type="date" name="date_end" class="form-control" id="floatingDateend" placeholder="Indique a data de encerramento:" required>
-                                    <label for="floatingDateend">Indique a data de encerramento:</label>
+                                    <input type="datetime-local" name="date_end" class="form-control" id="floatingDateend" placeholder="Data de encerramento:" required>
+                                    <label for="floatingDateend">Data de encerramento:</label>
                                 </div>
                             </div>
                             
@@ -51,16 +51,16 @@
                                 <div class="form-floating">
                                     <select name="status" class="form-select" id="floatingStatus">
                                         <option selected value="1">Indique qual status:</option>
-                                        <option value="1">Ativar (Quando estiver dentro do relógio)</option>
-                                        <option value="2">Inativar</option>
+                                        <option value="1">Ativa (Quando estiver dentro do relógio)</option>
+                                        <option value="2">Inativa</option>
                                     </select>
                                     <label for="floatingStatus">Status</label>
                                 </div>
                             </div>
 
                             <div class="col-12 col-md-4 col-lg-4 offset-md-8 offset-lg-8 mb-1 d-grid gap-2 mt-3">
-                                <button type="submit" class="btn btn-outline-success rounded-pill" type="button">Salvar</button>
-                              </div>
+                                <button type="submit" class="btn btn-outline-success" type="button">Cadastrar</button>
+                            </div>
                         </form>
                     </div>
                 </div>

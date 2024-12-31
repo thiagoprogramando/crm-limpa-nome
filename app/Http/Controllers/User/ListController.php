@@ -29,25 +29,27 @@ class ListController extends Controller {
 
         $startDate = Carbon::parse($request->date_start);
         $endDate = Carbon::parse($request->date_end);
-
+    
         $existingListInside = Lists::where('start', '>=', $startDate)->where('end', '<=', $endDate)->exists();
         $existingListContains = Lists::where('start', '<=', $startDate)->where('end', '>=', $endDate)->exists();
+    
         if ($existingListInside || $existingListContains) {
-            return redirect()->back()->with('error', 'Já existe uma Lista nesse período!');
+            return redirect()->back()->with('info', 'Já existe uma Lista nesse período e horário!');
         }
-
+    
         $list = new Lists();
         $list->name         = $request->name;
         $list->description  = $request->description;
         $list->start        = $startDate;
         $list->end          = $endDate;
         $list->status       = $request->status;
+    
         if($list->save()) {
-            return redirect()->route('lists')->with('success', 'Lista criada com sucesso!');
+            return redirect()->route('lists')->with('success', 'Lista cadastrada com sucesso!');
         }
-
+    
         return redirect()->route('lists')->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
-    }
+    }    
 
     public function update($id) {
 
@@ -56,10 +58,9 @@ class ListController extends Controller {
     }
     
     public function updateList(Request $request) {
-
+        
         $list = Lists::find($request->id);
         if ($list) {
-            
             $currentStartDate = Carbon::parse($list->start);
             $currentEndDate = Carbon::parse($list->end);
     
@@ -69,26 +70,18 @@ class ListController extends Controller {
             $isDateRangeDifferent = !($currentStartDate->eq($newStartDate) && $currentEndDate->eq($newEndDate));
     
             if ($isDateRangeDifferent && $newStartDate && $newEndDate) {
-                
-                $existingListOverlap = Lists::where('id', '!=', $list->id)
-                    ->where(function ($query) use ($newStartDate, $newEndDate) {
-                        $query->whereBetween('start', [$newStartDate, $newEndDate])
-                            ->orWhereBetween('end', [$newStartDate, $newEndDate])
-                            ->orWhere(function ($query) use ($newStartDate, $newEndDate) {
-                                $query->where('start', '<=', $newStartDate)
-                                      ->where('end', '>=', $newEndDate);
-                            });
-                    })
-                    ->exists();
-    
-                if ($existingListOverlap) {
-                    return redirect()->back()->with('error', 'Já existe uma Lista nesse período!');
-                }
 
+                $existingListInside = Lists::where('id', '!==', $list->id)->where('start', '>=', $newStartDate)->where('end', '<=', $newEndDate)->exists();
+                $existingListContains = Lists::where('id', '!==', $list->id)->where('start', '<=', $newStartDate)->where('end', '>=', $newEndDate)->exists();
+            
+                if ($existingListInside || $existingListContains) {
+                    return redirect()->back()->with('info', 'Já existe uma Lista nesse período e horário!');
+                }
+    
                 $list->start = $newStartDate;
                 $list->end = $newEndDate;
             }
-
+    
             if ($request->name) {
                 $list->name = $request->name;
             }
@@ -98,7 +91,6 @@ class ListController extends Controller {
             if ($request->status) {
                 $list->status = $request->status;
             }
-
             if ($request->has('serasa_status')) {
                 $list->serasa_status = $request->serasa_status;
             }
@@ -114,7 +106,6 @@ class ListController extends Controller {
             if ($request->has('status_cenprot')) {
                 $list->status_cenprot = $request->status_cenprot;
             }
-    
             if ($list->save()) {
                 return redirect()->back()->with('success', 'Lista atualizada com sucesso!');
             }
@@ -123,14 +114,12 @@ class ListController extends Controller {
         }
     
         return redirect()->route('lists')->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
-    }    
+    }      
 
     public function delete(Request $request) {
 
         $list = Lists::find($request->id);
-        if($list) {
-
-            $list->delete();
+        if($list && $list->delete()) {
             return redirect()->back()->with('success', 'Lista excluída com sucesso!');
         }
 

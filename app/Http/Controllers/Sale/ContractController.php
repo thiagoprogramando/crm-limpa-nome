@@ -129,23 +129,42 @@ class ContractController extends Controller {
         $year = $currentDate->format('Y');
     
         $parentData = [];
-        if ($user->parent) {
+        if ($user->white_label_contract == 1 || $user->parent->white_label_contract == 1) {
             $parentData = [
                 [
                     "de"    => "EMPRESA_NOME",
-                    "para"  => $user->parent->name
+                    "para"  =>  $user->company_name ?? $user->parent->name
                 ],
                 [
                     "de"    => "EMPRESA_CPFCNPJ",
-                    "para"  => $user->parent->cpfcnpj
+                    "para"  => $user->company_cpfcnpj ?? $user->parent->cpfcnpj
                 ],
                 [
                     "de"    => 'EMPRESA_ENDERECO',
-                    "para"  => $user->parent->address()
+                    "para"  => $user->company_address ?? $user->parent->address()
                 ],
                 [
                     "de"    => 'EMPRESA_EMAIL',
-                    "para"  => $user->parent->email
+                    "para"  => $user->company_email ?? $user->parent->email
+                ],
+            ];
+        } else {
+            $parentData = [
+                [
+                    "de"    => "EMPRESA_NOME",
+                    "para"  => "AMPAY SOLUÇÕES"
+                ],
+                [
+                    "de"    => "EMPRESA_CPFCNPJ",
+                    "para"  => "53.912.699/001-22"
+                ],
+                [
+                    "de"    => "EMPRESA_ENDERECO",
+                    "para"  => "Rua José Versolato, 101 - 12° Andar Centro São Bernado do Campo 09750-730"
+                ],
+                [
+                    "de"    => "EMPRESA_EMAIL",
+                    "para"  => "suporte@ampay.com.br"
                 ],
             ];
         }

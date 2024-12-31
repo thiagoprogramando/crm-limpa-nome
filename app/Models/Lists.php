@@ -11,6 +11,8 @@ class Lists extends Model {
 
     protected $table = 'list';
 
+    protected $dates = ['start', 'end'];
+
     protected $fillable = [
         'name',
         'description',

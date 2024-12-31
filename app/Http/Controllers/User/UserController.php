@@ -105,6 +105,26 @@ class UserController extends Controller {
             $user->type = $request->type;
         }
 
+        if(!empty($request->white_label_contract)) {
+            $user->white_label_contract = $request->white_label_contract;
+        }
+
+        if(!empty($request->company_name)) {
+            $user->company_name = $request->company_name;
+        }
+
+        if(!empty($request->company_cpfcnpj)) {
+            $user->company_cpfcnpj = $request->company_cpfcnpj;
+        }
+
+        if(!empty($request->company_address)) {
+            $user->company_address = $request->company_address;
+        }
+
+        if(!empty($request->company_email)) {
+            $user->company_email = $request->company_email;
+        }
+
         if (
             $request->filled('name') &&
             $request->filled('cpfcnpj') &&
@@ -116,7 +136,8 @@ class UserController extends Controller {
             $request->filled('state') &&
             $request->filled('city') &&
             $request->filled('num') &&
-            $user->status !== 3
+            $user->status !== 1 &&
+            $user->status !== 2
         ) {
             $user->status = 3;
         }

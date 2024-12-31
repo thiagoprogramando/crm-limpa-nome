@@ -174,21 +174,31 @@
                                                                     <label for="floatingLevel">Graduação</label>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                            <div class="col-12 col-md-6 col-lg-6 mb-1">
                                                                 <div class="form-floating">
                                                                     <input type="text" name="api_token_zapapi" class="form-control" id="api_token_zapapi" placeholder="Api Token ZapSing:" value="{{ $user->api_token_zapapi }}">
                                                                     <label for="api_token_zapapi">Api Token ZapSing:</label>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                            <div class="col-12 col-md-6 col-lg-6 mb-1">
                                                                 <div class="form-floating">
                                                                     <input type="text" name="fixed_cost" class="form-control" id="fixed_cost" placeholder="Custo Fixo (R$):" value="{{ $user->fixed_cost }}" oninput="mascaraReal(this)">
                                                                     <label for="fixed_cost">Custo Fixo (R$):</label>
                                                                 </div>
                                                             </div>
+                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                                <div class="form-floating">
+                                                                    <select name="white_label_contract" class="form-select" id="floatingWlContract">
+                                                                        <option selected value="{{ $user->white_label_contract }}">White Label Contrato:</option>
+                                                                        <option value="1" @selected($user->white_label_contract == 1)>Liberado</option>
+                                                                        <option value="2" @selected($user->white_label_contract == 2 || $user->white_label_contract == 0)>Bloqueado</option>
+                                                                    </select>
+                                                                    <label for="floatingWlContract">Opções</label>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div class="modal-footer">
+                                                    <div class="modal-footer btn-group">
                                                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                                                         <button type="submit" class="btn btn-success">Atualizar</button>
                                                     </div>
