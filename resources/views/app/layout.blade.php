@@ -143,7 +143,7 @@
 
                 <li class="nav-item">
                     <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-briefcase"></i><span>Contrato Automático</span><i class="bi bi-chevron-down ms-auto"></i>
+                        <i class="bi bi-briefcase"></i><span>Enviar Contrato (Cliente)</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
                     <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                         @foreach($business as $busines)
@@ -152,22 +152,9 @@
                     </ul>
                 </li>
 
-                {{-- @if (Auth::user()->type != 7 && Auth::user()->type != 9)
-                    <li class="nav-item">
-                        <a class="nav-link collapsed" data-bs-target="#forms-bussines" data-bs-toggle="collapse" href="#">
-                            <i class="bi bi-briefcase"></i><span>Gerar Contrato (Links)</span><i class="bi bi-chevron-down ms-auto"></i>
-                        </a>
-                        <ul id="forms-bussines" class="nav-content collapse " data-bs-parent="#sidebar-bussines">
-                            @foreach($businessLink as $busines)
-                                <li><a class="business-link" data-id="{{ $busines->id }}" data-max="{{ $busines->value_max }}" data-min="{{ $busines->value_min }}"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
-                            @endforeach
-                        </ul>
-                    </li>
-                @endif --}}
-
                 <li class="nav-item">
                     <a class="nav-link collapsed" data-bs-target="#forms-upload" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-cloud-upload"></i><span>Contrato Manual</span><i class="bi bi-chevron-down ms-auto"></i>
+                        <i class="bi bi-cloud-upload"></i><span>Enviar Nomes (Associação)</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
                     <ul id="forms-upload" class="nav-content collapse " data-bs-parent="#sidebar-upload">
                         @foreach($business as $busines)

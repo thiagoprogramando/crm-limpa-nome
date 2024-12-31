@@ -41,7 +41,7 @@ class Sale extends Model {
         return $this->belongsTo(Product::class, 'id_product');
     }
 
-    public function payment() {
+    public function paymentMethod() {
         return $this->belongsTo(Payment::class, 'id_payment');
     }
 

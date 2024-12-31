@@ -16,7 +16,9 @@ class ListController extends Controller {
     public function list() {
 
         $lists = Lists::orderBy('created_at', 'desc')->get();
-        return view('app.List.list', ['lists' => $lists]);
+        return view('app.List.list', [
+            'lists' => $lists
+        ]);
     }
 
     public function create() {

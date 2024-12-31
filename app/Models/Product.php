@@ -18,6 +18,7 @@ class Product extends Model {
 
         'level',
         'contract',
+        'contract_subject'.
         'address',
         'createuser',
 

@@ -218,7 +218,11 @@ class User extends Authenticatable {
         }
     
         return implode(' ', $maskedParts);
-    }    
+    }  
+    
+    public function address() {
+        $this->address.', '.$this->num.' '.$this->city.'/'.$this->state.' - '.$this->postal_code;
+    }
 
     protected $hidden = [
         'password',

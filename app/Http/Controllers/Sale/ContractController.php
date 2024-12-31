@@ -11,6 +11,7 @@ use App\Models\User;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 use Carbon\Carbon;
 
@@ -69,20 +70,20 @@ class ContractController extends Controller {
         if (!$payment) {
             return false;
         }
-
+    
         $user = User::find($user);
         if (!$user) {
             return false;
         }
-
+    
         $client = new Client();
-
+    
         $url = env('API_URL_ZAPSIGN') . 'api/v1/models/create-doc/';
-
+    
         $currentDate    = Carbon::now();
         $day            = $currentDate->format('d');
         $month          = $currentDate->format('m');
-
+    
         switch ($month) {
             case '01':
                 $monthName = 'Janeiro';
@@ -124,8 +125,31 @@ class ContractController extends Controller {
                 $monthName = 'Mês Desconhecido';
                 break;
         }
-        $year = $currentDate->format('Y');
 
+        $year = $currentDate->format('Y');
+    
+        $parentData = [];
+        if ($user->parent) {
+            $parentData = [
+                [
+                    "de"    => "EMPRESA_NOME",
+                    "para"  => $user->parent->name
+                ],
+                [
+                    "de"    => "EMPRESA_CPFCNPJ",
+                    "para"  => $user->parent->cpfcnpj
+                ],
+                [
+                    "de"    => 'EMPRESA_ENDERECO',
+                    "para"  => $user->parent->address()
+                ],
+                [
+                    "de"    => 'EMPRESA_EMAIL',
+                    "para"  => $user->parent->email
+                ],
+            ];
+        }
+    
         try {
             $response = $client->post($url, [
                 'headers' => [
@@ -137,65 +161,68 @@ class ContractController extends Controller {
                     "signer_name"       => $user->name,
                     "signer_email"      => $user->email,
                     "folder_path"       => 'Limpa Nome '.$day.'-'.$monthName,
-                    "data"  => [
+                    "data"  => array_merge(
                         [
-                            "de"    => "NOME",
-                            "para"  => $user->name
+                            [
+                                "de"    => "CLIENTE_NOME",
+                                "para"  => $user->name
+                            ],
+                            [
+                                "de"    => "CLIENTE_RG",
+                                "para"  => $user->rg
+                            ],
+                            [
+                                "de"    => "CLIENTE_EMAIL",
+                                "para"  => $user->email
+                            ],
+                            [
+                                "de"    => "CLIENTE_PHONE",
+                                "para"  => $user->phone
+                            ],
+                            [
+                                "de"    => "CLIENTE_CPFCNPJ",
+                                "para"  => $user->cpfcnpj
+                            ],
+                            [
+                                "de"    => "CLIENTE_DATANASCIMENTO",
+                                "para"  => Carbon::createFromFormat('Y-m-d', $user->birth_date)->format('d/m/Y')
+                            ],
+                            [
+                                "de"    => "CLIENTE_ENDERECO",
+                                "para"  => $user->address
+                            ],
+                            [
+                                "de"    => "VALOR",
+                                "para"  =>  $value
+                            ],
+                            [
+                                "de"    => "FORMADEPAGAMENTO",
+                                "para"  => $payment->methodLabel().' em '.$payment->installments.'x'
+                            ],
+                            [
+                                "de"    => "DIA",
+                                "para"  => $day
+                            ],
+                            [
+                                "de"    => "MES",
+                                "para"  => $monthName
+                            ],
+                            [
+                                "de"    => "ANO",
+                                "para"  => $year
+                            ],
                         ],
-                        [
-                            "de"    => "RG",
-                            "para"  => $user->rg
-                        ],
-                        [
-                            "de"    => "EMAIL",
-                            "para"  => $user->email
-                        ],
-                        [
-                            "de"    => "PHONE",
-                            "para"  => $user->phone
-                        ],
-                        [
-                            "de"    => "CPFCNPJ",
-                            "para"  => $user->cpfcnpj
-                        ],
-                        [
-                            "de"    => "DATANASCIMENTO",
-                            "para"  => Carbon::createFromFormat('Y-m-d', $user->birth_date)->format('d/m/Y')
-                        ],
-                        [
-                            "de"    => "ENDERECO",
-                            "para"  => $user->address
-                        ],
-                        [
-                            "de"    => "VALOR",
-                            "para"  =>  $value
-                        ],
-                        [
-                            "de"    => "FORMADEPAGAMENTO",
-                            "para"  => $payment->methodLabel().' em '.$payment->installments.'x'
-                        ],
-                        [
-                            "de"    => "DIA",
-                            "para"  => $day
-                        ],
-                        [
-                            "de"    => "MES",
-                            "para"  => $monthName
-                        ],
-                        [
-                            "de"    => "ANO",
-                            "para"  => $year
-                        ],
-                    ],
+                        $parentData
+                    ),
                 ],
                 'verify' => false      
             ]);
-
+    
             return json_decode($response->getBody(), true);
         } catch (RequestException $e) {
             return $e->getMessage();
         }
-    }
+    }    
 
     private function sendWhatsapp($link, $message, $phone, $token = null) {
 
@@ -225,5 +252,39 @@ class ContractController extends Controller {
         } catch (\Exception $e) {
             return false;
         }
+    }
+
+    public function previewContract($saleId)  {
+
+        $sale = Sale::with(['product', 'user', 'seller', 'paymentMethod'])->find($saleId);
+        if (!$sale) {
+            return redirect()->route('login.cliente')->with('info', 'Não foi possível localizar os dados da venda! Tente novamente mais tarde.');
+        }
+
+        if (empty($sale->product->contract_subject)) {
+            return redirect()->route('login.cliente')->with('info', 'Contrato indisponível para venda N° '.$sale->id);
+        }
+
+        $contractContent = Str::of($sale->product->contract_subject)
+            ->replace('{CLIENT_NAME}'       , $sale->user->name ?? 'N/A')
+            ->replace('{CLIENT_CPFCNPJ}'    , $sale->user->cpfcnpj ?? 'N/A')
+            ->replace('{CLIENT_BIRTH_DATE}' , $sale->user->birth_date 
+                    ? Carbon::parse($sale->user->birth_date)->format('d/m/Y') 
+                    : 'N/A')
+            ->replace('{SELLER_NAME}'    , $sale->seller->name ?? 'N/A')
+            ->replace('{SELLER_CPFCNPJ}' , $sale->seller->cpfcnpj ?? 'N/A')
+            ->replace('{SELLER_ADDRESS}' , $sale->seller->address() ?? 'N/A')
+            ->replace('{SELLER_EMAIL}'   , $sale->seller->email ?? 'N/A')
+            ->replace('{SALE_VALUE}'     , $sale->value 
+                    ? 'R$ ' . number_format($sale->value, 2, ',', '.') 
+                    : '---')
+            ->replace('{SALE_METHOD}'    , $sale->paymentMethod->methodLabel().' em '.$sale->paymentMethod->installments.'x')
+            ->replace('{SALE_DATE}', date('d').'/'.date('m').'/'.date('Y'));
+
+        return view('contract.contract', [
+            'title'             => 'Contrato de serviço - ' . $sale->product->name,
+            'contractContent'   => $contractContent,
+            'sale'              => $sale,
+        ]);
     }
 }

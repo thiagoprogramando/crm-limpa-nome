@@ -349,11 +349,11 @@
                 if (data.success) {
                     Swal.fire({
                         title: 'Sucesso!',
-                        text: 'Processo concluído! A página será recarregada para atualizar às informações.',
+                        text: 'Processo concluído! Você será redirecionado para página de Pagamento.',
                         icon: 'success',
                         showCancelButton: false,
                         confirmButtonColor: '#3085d6',
-                        confirmButtonText: 'OK',
+                        confirmButtonText: 'Pagamento',
                     }).then((result) => {
                         if (result.isConfirmed) {
                             if (data.invoiceUrl) {

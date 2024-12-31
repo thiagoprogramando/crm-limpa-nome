@@ -117,6 +117,15 @@ class AssasController extends Controller {
             $invoice->type                  = 3;
             $invoice->status                = 0;
             $invoice->save();
+
+            $invoice = Invoice::where('id_sale', $sale->id)->where('status', 0)->orderBy('created_at', 'asc')->first();
+            if ($invoice && $notification == true) {
+                $message = "Prezado(a) {$sale->user->name}, estamos enviando o link para pagamento da sua contratação aos serviços da nossa assessoria. \r\n\r\n\r\n".
+                           "Consulte os termos do seu contrato aqui👇🏼 \r\n".
+                           env('APP_URL')."preview-contract/".$sale->id."\r\n\r\n\r\n".
+                           "PARA FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳";
+                return $this->sendInvoice($invoice->url_payment, $sale->id_client, $message, $sale->seller->api_token_zapapi);
+            }
     
         } else {
 
@@ -152,7 +161,7 @@ class AssasController extends Controller {
     
         $invoice = Invoice::where('id_sale', $sale->id)->where('status', 0)->orderBy('created_at', 'asc')->first();
         if ($invoice && $notification == true) {
-            $this->sendInvoice($invoice->url_payment, $sale->id_client, $sale->seller->api_token_zapapi);
+            $this->sendInvoice($invoice->url_payment, $sale->id_client, null, $sale->seller->api_token_zapapi);
         }
         
         return true;
@@ -220,10 +229,10 @@ class AssasController extends Controller {
         return false;
     }
 
-    private function sendInvoice($url_payment, $id, $token = null) {
+    private function sendInvoice($url_payment, $id, $message = null, $token = null) {
 
         $user = User::find($id);
-        if($user) {
+        if ($user) {
 
             $client = new Client();
 
@@ -238,7 +247,7 @@ class AssasController extends Controller {
                     ],
                     'json' => [
                         'phone'           => '55' . $user->phone,
-                        'message'         => "Prezado(a) ".$user->name.", estamos enviando o link para pagamento da sua contratação aos serviços da nossa assessoria.  \r\n\r\n\r\n FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳 \r\n",
+                        'message'         => $message ?? "Prezado(a) ".$user->name.", estamos enviando o link para pagamento da sua contratação aos serviços da nossa assessoria.  \r\n\r\n\r\n FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳 \r\n",
                         'image'           => env('APP_URL_LOGO'),
                         'linkUrl'         => $url_payment,
                         'title'           => 'Pagamento de Fatura',
@@ -407,14 +416,14 @@ class AssasController extends Controller {
         ];
 
         
-        if (($filiate <> null) && ($commission > 0) && ($commission_filiate > 0)) {
+        if (($filiate <> null) && ($commission_filiate > 0)) {
             if (!isset($options['json']['split'])) {
                 $options['json']['split'] = [];
             }
         
             $options['json']['split'][] = [
                 'walletId'          => $filiate->wallet,
-                'totalFixedValue' => number_format($commission_filiate, 2, '.', '')
+                'totalFixedValue'   => number_format($commission_filiate, 2, '.', '')
             ];
         }
 
@@ -1378,18 +1387,18 @@ class AssasController extends Controller {
             $sales      = $this->getSales($request['ids']);
             $totalValue = $this->calculateTotalValue($sales, $user);
 
-            $commission = $user->filiate ? ($user->fixed_cost - ($filiate->cost ?? 0)) : 0;
+            $commission = $user->filiate ? ($user->fixed_cost - ($filiate->cost ?? 150)) : 0;
 
             $charge = $this->createCharge(
                 $user->customer,
                 'PIX',
                 $totalValue,
-                'Fatura referente às vendas',
-                now()->addDays(2)->toDateString(),
-                null,
+                'Fatura referente às vendas N° - '.implode(', ', $request['ids']),
+                now()->addDay(),
+                1,
                 null,
                 0,
-                $user->filiate,
+                $filiate,
                 $commission
             );
 
@@ -1397,7 +1406,7 @@ class AssasController extends Controller {
                 return $this->jsonError('Erro ao criar fatura!', 500);
             }
 
-            $this->createInvoice($charge, $user, $totalValue, 'Fatura referente às vendas');
+            $this->createInvoice($charge, $user, $totalValue, 'Fatura referente às vendas N° - '.implode(', ', $request['ids']));
 
             Sale::whereIn('id', $request['ids'])->update(['token_payment' => $charge['id']]);
 

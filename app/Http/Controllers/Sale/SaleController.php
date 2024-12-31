@@ -116,10 +116,11 @@ class SaleController extends Controller {
             $sale->id_payment   = $method->id;
             $sale->id_seller    = !empty($request->id_seller) ? $request->id_seller : Auth::id();
 
-            $sale->payment      = $method->method;
-            $sale->installments = $method->installments;
-            $sale->status       = 0;
-            $sale->wallet_off   = $request->has('wallet_off') ? 1 : null;
+            $sale->payment          = $method->method;
+            $sale->installments     = $method->installments;
+            $sale->status_contract  = 3;
+            $sale->status           = 0;
+            $sale->wallet_off       = $request->has('wallet_off') ? 1 : null;
 
             $sale->value                = $discountedValue + $method->value_rate;
             $sale->commission           = max($commission, 0);
@@ -140,6 +141,20 @@ class SaleController extends Controller {
 
         $user = User::where('cpfcnpj', str_replace(['.', '-'], '', $cpfcnpj))->first();
         if ($user) {
+
+            $user->name         = $name;
+            $user->email        = preg_replace('/[^\w\d\.\@\-\_]/', '', $email);
+            $user->cpfcnpj      = preg_replace('/\D/', '', $cpfcnpj);
+            $user->birth_date   = date('Y-m-d', strtotime($birth_date));
+            $user->phone        = $phone;
+            $user->postal_code  = $postal_code;
+            $user->address      = $address;
+            $user->complement   = $complement;
+            $user->city         = $city;
+            $user->state        = $state;
+            $user->num          = $num;
+            $user->save();
+
             return $user;
         }
         
@@ -163,140 +178,6 @@ class SaleController extends Controller {
         }
 
         return false;
-    }
-
-    private function sendContract($user, $contract, $value, $payment) {
-
-        $payment = Payment::find($payment);
-        if(!$payment) {
-            return false;
-        }
-
-        $user = User::find($user);
-        if(!$user) {
-            return false;
-        }
-
-        $client = new Client();
-
-        $url = env('API_URL_ZAPSIGN') . 'api/v1/models/create-doc/';
-
-        $currentDate    = Carbon::now();
-        $day            = $currentDate->format('d');
-        $month          = $currentDate->format('m');
-
-        switch ($month) {
-            case '01':
-                $monthName = 'Janeiro';
-                break;
-            case '02':
-                $monthName = 'Fevereiro';
-                break;
-            case '03':
-                $monthName = 'Março';
-                break;
-            case '04':
-                $monthName = 'Abril';
-                break;
-            case '05':
-                $monthName = 'Maio';
-                break;
-            case '06':
-                $monthName = 'Junho';
-                break;
-            case '07':
-                $monthName = 'Julho';
-                break;
-            case '08':
-                $monthName = 'Agosto';
-                break;
-            case '09':
-                $monthName = 'Setembro';
-                break;
-            case '10':
-                $monthName = 'Outubro';
-                break;
-            case '11':
-                $monthName = 'Novembro';
-                break;
-            case '12':
-                $monthName = 'Dezembro';
-                break;
-            default:
-                $monthName = 'Mês Desconhecido';
-                break;
-        }
-        $year = $currentDate->format('Y');
-
-        try {
-            $response = $client->post($url, [
-                'headers' => [
-                    'Content-Type'  => 'application/json',
-                    'Authorization' => 'Bearer '.env('API_TOKEN_ZAPSIGN'),
-                ],
-                'json' => [
-                    "template_id"       => $contract,
-                    "signer_name"       => $user->name,
-                    "signer_email"      => $user->email,
-                    "folder_path"       => 'Limpa Nome '.$day.'-'.$monthName,
-                    "data"  => [
-                        [
-                            "de"    => "NOME",
-                            "para"  => $user->name
-                        ],
-                        [
-                            "de"    => "RG",
-                            "para"  => $user->rg
-                        ],
-                        [
-                            "de"    => "EMAIL",
-                            "para"  => $user->email
-                        ],
-                        [
-                            "de"    => "PHONE",
-                            "para"  => $user->phone
-                        ],
-                        [
-                            "de"    => "CPFCNPJ",
-                            "para"  => $user->cpfcnpj
-                        ],
-                        [
-                            "de"    => "DATANASCIMENTO",
-                            "para"  => Carbon::createFromFormat('Y-m-d', $user->birth_date)->format('d/m/Y')
-                        ],
-                        [
-                            "de"    => "ENDERECO",
-                            "para"  => $user->address
-                        ],
-                        [
-                            "de"    => "VALOR",
-                            "para"  =>  $value
-                        ],
-                        [
-                            "de"    => "FORMADEPAGAMENTO",
-                            "para"  => $payment->methodLabel().' em '.$payment->installments.'x'
-                        ],
-                        [
-                            "de"    => "DIA",
-                            "para"  => $day
-                        ],
-                        [
-                            "de"    => "MES",
-                            "para"  => $monthName
-                        ],
-                        [
-                            "de"    => "ANO",
-                            "para"  => $year
-                        ],
-                    ],
-                ],
-                'verify' => false      
-            ]);
-
-            return json_decode($response->getBody(), true);
-        } catch (RequestException $e) {
-            return $e->getMessage();
-        }
     }
 
     private function sendWhatsapp($link, $message, $phone, $token = null) {
