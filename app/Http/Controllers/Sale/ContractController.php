@@ -284,7 +284,26 @@ class ContractController extends Controller {
             return redirect()->route('login.cliente')->with('info', 'Contrato indisponível para venda N° '.$sale->id);
         }
 
-        $contractContent = Str::of($sale->product->contract_subject)
+        if ($sale->seller->white_label_contract == 1 || $sale->seller->parent->white_label_contract == 1) {
+            
+            $contractContent = Str::of($sale->product->contract_subject)
+            ->replace('{CLIENT_NAME}'       , $sale->user->name ?? 'N/A')
+            ->replace('{CLIENT_CPFCNPJ}'    , $sale->user->cpfcnpj ?? 'N/A')
+            ->replace('{CLIENT_BIRTH_DATE}' , $sale->user->birth_date 
+                    ? Carbon::parse($sale->user->birth_date)->format('d/m/Y') 
+                    : 'N/A')
+            ->replace('{SELLER_NAME}'    , $sale->seller->company_name      ?? $sale->seller->parent->company_name)
+            ->replace('{SELLER_CPFCNPJ}' , $sale->seller->cpfcnpj           ?? $sale->seller->parent->company_cpfcnpj)
+            ->replace('{SELLER_ADDRESS}' , $sale->seller->company_address   ?? $sale->seller->parent->company_address)
+            ->replace('{SELLER_EMAIL}'   , $sale->seller->company_email     ?? $sale->seller->parent->company_email)
+            ->replace('{SALE_VALUE}'     , $sale->value 
+                    ? 'R$ ' . number_format($sale->value, 2, ',', '.') 
+                    : '---')
+            ->replace('{SALE_METHOD}'    , $sale->paymentMethod->methodLabel().' em '.$sale->paymentMethod->installments.'x')
+            ->replace('{SALE_DATE}', date('d').'/'.date('m').'/'.date('Y'));
+        } else {
+            
+            $contractContent = Str::of($sale->product->contract_subject)
             ->replace('{CLIENT_NAME}'       , $sale->user->name ?? 'N/A')
             ->replace('{CLIENT_CPFCNPJ}'    , $sale->user->cpfcnpj ?? 'N/A')
             ->replace('{CLIENT_BIRTH_DATE}' , $sale->user->birth_date 
@@ -299,6 +318,7 @@ class ContractController extends Controller {
                     : '---')
             ->replace('{SALE_METHOD}'    , $sale->paymentMethod->methodLabel().' em '.$sale->paymentMethod->installments.'x')
             ->replace('{SALE_DATE}', date('d').'/'.date('m').'/'.date('Y'));
+        }
 
         return view('contract.contract', [
             'title'             => 'Contrato de serviço - ' . $sale->product->name,
