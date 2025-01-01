@@ -180,7 +180,7 @@
                                                 </span> 
                                             @endisset
                                         </td>
-                                        <td title="{{ $sale->seller->parent->name }}">
+                                        <td title="{{ $sale->seller->parent->name ?? '---' }}">
                                             {{ substr($sale->seller->name, 0, 20) }}... <br>
                                             <span class="badge bg-success">Comissão: R$ {{ number_format($sale->commission, 2, ',', '.') }}</span>
                                             @if ($sale->seller->filiate == Auth::user()->id)
