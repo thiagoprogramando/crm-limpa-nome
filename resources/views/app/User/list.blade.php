@@ -75,8 +75,9 @@
                         <table class="table table-hover" id="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">N°</th>
+                                    <th scope="col">ID</th>
                                     <th scope="col">Nome</th>
+                                    <th scope="col" class="d-none">Telefone</th>
                                     <th scope="col">Graduação</th>
                                     <th scope="col">Situação</th>
                                     <th class="text-center" scope="col">T. Vendas</th>
@@ -88,12 +89,13 @@
                                 @foreach ($users as $user)
                                     <tr>
                                         <th scope="row">{{ $user->id }}</th>
-                                        <td>
-                                            {{ $user->name }} <br>
-                                            <span class="badge bg-dark">{{ $user->created_at->format('d/m/Y H:i') }}</span>
-                                        </td>
+                                        <td>{{ $user->name }}</td>
+                                        <td class="d-none">{{ $user->phone }}</td>
                                         <td>{{ $user->levelLabel() }}</td>
-                                        <td>{{ $user->statusLabel() }}</td>
+                                        <td>
+                                            {{ $user->statusLabel() }} <br>
+                                            <span class="badge bg-dark">Cadastro: {{ $user->created_at->format('d/m/Y H:i') }}</span>
+                                        </td>
                                         <td class="text-center">R$ {{ number_format($user->saleTotal(), 2, ',', '.') }}</td>
                                         <td class="text-center">R$ {{ number_format($user->commissionTotal(), 2, ',', '.') }}</td>
                                         <td class="text-center">
