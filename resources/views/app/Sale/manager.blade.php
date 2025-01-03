@@ -220,7 +220,7 @@
                                                     @if (is_int($sale->id_payment))
                                                         <a title="Faturas" href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="bi bi-currency-dollar"></i></a>
                                                     @endif
-                                                    @if ($sale->status == 1)
+                                                    @if ($sale->status == 1 && Auth::user()->type == 1)
                                                         <a title="Reprotocolar" href="{{ route('reprotocol-sale', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="bx bx-check-shield"></i></a>
                                                     @endif
                                                     <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>

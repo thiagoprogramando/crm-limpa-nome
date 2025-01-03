@@ -32,7 +32,7 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row">
-                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
                                         <div class="form-floating">
                                             <input type="text" name="name" class="form-control" id="floatingName" placeholder="Nome:">
                                             <label for="floatingName">Nome:</label>
@@ -46,19 +46,19 @@
                                     </div>
                                     <div class="col-12 col-md-6 col-lg-6 mb-1">
                                         <div class="form-floating">
-                                            <input type="date" name="created_at" class="form-control" id="floatingCreated_at" placeholder="Informe a data:">
-                                            <label for="floatingCreated_at">Data:</label>
+                                            <input type="date" name="created_at_start" class="form-control" id="floatingCreated_atStart" placeholder="Data inicial:">
+                                            <label for="floatingCreated_atStart">Data inicial:</label>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6 col-lg-6 mb-1">
                                         <div class="form-floating">
-                                            <input type="text" name="value" class="form-control" id="floatingValue" placeholder="Informe o valor:" oninput="mascaraReal(this)">
-                                            <label for="floatingValue">Valor:</label>
+                                            <input type="date" name="created_at_end" class="form-control" id="floatingCreated_atEnd" placeholder="Data final:">
+                                            <label for="floatingCreated_atEnd">Data final:</label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal-footer">
+                            <div class="modal-footer btn-group">
                                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                                 <button type="submit" class="btn btn-success">Consultar</button>
                             </div>
@@ -88,17 +88,21 @@
                                 @foreach ($users as $user)
                                     <tr>
                                         <th scope="row">{{ $user->id }}</th>
-                                        <td>{{ $user->name }}</td>
+                                        <td>
+                                            {{ $user->name }} <br>
+                                            <span class="badge bg-dark">{{ $user->created_at->format('d/m/Y H:i') }}</span>
+                                        </td>
                                         <td>{{ $user->levelLabel() }}</td>
                                         <td>{{ $user->statusLabel() }}</td>
                                         <td class="text-center">R$ {{ number_format($user->saleTotal(), 2, ',', '.') }}</td>
                                         <td class="text-center">R$ {{ number_format($user->commissionTotal(), 2, ',', '.') }}</td>
                                         <td class="text-center">
-                                            <form action="{{ route('delete-user') }}" method="POST" class="delete">
+                                            <form action="{{ route('delete-user') }}" method="POST" class="delete btn-group">
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $user->id }}">
-                                                <button type="button" class="btn btn-warning text-light" data-bs-toggle="modal" data-bs-target="#updateModal{{ $user->id }}"><i class="bi bi-arrow-up-right-circle"></i></button>
-                                                <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
+                                                <button type="button" class="btn btn-outline-dark text-warning" data-bs-toggle="modal" data-bs-target="#updateModal{{ $user->id }}"><i class="bi bi-arrow-up-right-circle"></i></button>
+                                                <button type="submit" class="btn btn-outline-dark text-danger"><i class="bi bi-trash"></i></button>
+                                                <a href="https://wa.me/{{ $user->phone }}" target="_blank" class="btn btn-outline-dark text-success"><i class="bi bi-whatsapp"></i></a>
                                             </form>
                                         </td>
                                     </tr>

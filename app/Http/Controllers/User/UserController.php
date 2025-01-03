@@ -183,6 +183,14 @@ class UserController extends Controller {
             $query->where('cpfcnpj', $request->cpfcnpj);
         }
 
+        if (!empty($request->created_at_start)) {
+            $query->where('created_at', '>=', $request->created_at_start);
+        }
+
+        if (!empty($request->created_at_end)) {
+            $query->where('created_at', '<=', $request->created_at_end);
+        }
+
         $query->where('type', $type);
 
         $users = $query->paginate(100);
