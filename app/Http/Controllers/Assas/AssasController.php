@@ -439,7 +439,7 @@ class AssasController extends Controller {
                 $options['json']['split'][] = [
                     'walletId'        => env('WALLET_G7'),
                     'totalFixedValue' => number_format($g7Commission, 2, '.', ''),
-                    'walletId'        => '86476228-783a-45bb-bf08-3f647504dbbb',
+                    'walletId'        => env('WALLET_HEFESTO'),
                     'totalFixedValue' => 0.5,
                 ];
             }
