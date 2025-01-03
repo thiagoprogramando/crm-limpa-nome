@@ -33,11 +33,12 @@
                                         <img src="{{ asset('assets/dashboard/img/document.png') }}" class="w-50 m-5">
                                     </div>
                                     <div class="col-12 col-sm-12 col-md-8 col-lg-8">
-                                        <p class="card-title">Como Gerar uma Venda no CRM?</p>
-                                        <p> No CRM, você pode gerar vendas utilizando uma das duas opções disponíveis: </p>
-                                        <p>
-                                            <a data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">Contrato Automática</a> No menu lateral, essa função Integra nosso Gateway de Pagamento e Contrato, disparando para o cliente os dados necessários, incluindo Boletos/Faturas e Contratos. <br><br>
-                                            <a data-bs-target="#forms-upload" data-bs-toggle="collapse" href="#">Contrato Manual</a> Nesse modelo, você envia os dados básicos do seu cliente e <b>posteriormente</b> poderá selecionar em <a href="{{ route('manager-sale') }}">Gestão Vendas</a> quais serão enviadas para <b>Lista</b>. <br><br>
+                                        <p class="card-title">Como Gerar uma Venda para seu Cliente Final através do seu Painel?</p>
+                                        <p> 
+                                            Ao preencher os dados, <b>o cliente receberá automaticamente o contrato, 
+                                            seguido do pagamento do valor da venda final.</b> Após o pagamento, 
+                                            você será comissionado, e o saque da comissão poderá ser solicitado 
+                                            imediatamente, sendo realizado de forma instantânea.
                                         </p>
                                     </div>
                                 </div>

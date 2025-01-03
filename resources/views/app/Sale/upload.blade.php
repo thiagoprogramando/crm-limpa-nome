@@ -33,11 +33,12 @@
                                         <img src="{{ asset('assets/dashboard/img/document.png') }}" class="w-50 m-5">
                                     </div>
                                     <div class="col-12 col-sm-12 col-md-8 col-lg-8">
-                                        <p class="card-title">Como Gerar uma Venda no CRM?</p>
-                                        <p> No CRM, você pode gerar vendas utilizando uma das duas opções disponíveis: </p>
+                                        <p class="card-title">Como Enviar nomes direto para associação sem precisar de planilha de Excel?</p>
                                         <p>
-                                            <a data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">Contrato Automática</a> No menu lateral, essa função Integra nosso Gateway de Pagamento e Contrato, disparando para o cliente os dados necessários, incluindo Boletos/Faturas e Contratos. <br><br>
-                                            <a data-bs-target="#forms-upload" data-bs-toggle="collapse" href="#">Contrato Manual</a> Nesse modelo, você envia os dados básicos do seu cliente e <b>posteriormente</b> poderá selecionar em <a href="{{ route('manager-sale') }}">Gestão Vendas</a> quais serão enviadas para <b>Lista</b>. <br><br>
+                                            Ao optar por enviar o nome diretamente para a associação, <b>o seu cliente não terá contrato, 
+                                            link de pagamento nem comissão, pois o nome será encaminhado diretamente para a associação.</b> 
+                                            Neste caso, você só precisará pagar o valor de custo e não será necessário enviar 
+                                            ficha associativa nem documentos.
                                         </p>
                                     </div>
                                 </div>
