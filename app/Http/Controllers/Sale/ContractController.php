@@ -129,7 +129,7 @@ class ContractController extends Controller {
         $year = $currentDate->format('Y');
     
         $parentData = [];
-        if ($user->white_label_contract == 1 || $user->parent->white_label_contract == 1) {
+        if ($user->white_label_contract == 1 || ($user->parent && $user->parent->white_label_contract == 1)) {
             $parentData = [
                 [
                     "de"    => "EMPRESA_NOME",
@@ -284,7 +284,7 @@ class ContractController extends Controller {
             return redirect()->route('login.cliente')->with('info', 'Contrato indisponível para venda N° '.$sale->id);
         }
 
-        if ($sale->seller->white_label_contract == 1 || $sale->seller->parent->white_label_contract == 1) {
+        if ($sale->seller->white_label_contract == 1 || ($sale->seller->parent->white_label_contract == 1)) {
             
             $contractContent = Str::of($sale->product->contract_subject)
             ->replace('{CLIENT_NAME}'       , $sale->user->name ?? 'N/A')
