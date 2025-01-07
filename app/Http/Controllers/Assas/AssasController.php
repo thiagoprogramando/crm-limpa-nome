@@ -433,7 +433,7 @@ class AssasController extends Controller {
             }
 
             $g7Commission = $commission * 0.05;
-            $commission = ($commission - $g7Commission) - 0.05;
+            $commission = ($commission - $g7Commission) - 1;
 
             if($wallet <> env('WALLET_HEFESTO')) {
                 $options['json']['split'][] = [
@@ -452,7 +452,7 @@ class AssasController extends Controller {
         
             $options['json']['split'][] = [
                 'walletId'          => $wallet,
-                'totalFixedValue' => number_format($commission, 2, '.', '')
+                'totalFixedValue' => number_format(($commission - 1.99), 2, '.', '')
             ];
         }
         
