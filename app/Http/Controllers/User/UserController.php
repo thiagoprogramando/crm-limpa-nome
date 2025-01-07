@@ -221,8 +221,17 @@ class UserController extends Controller {
             $query->whereDate('created_at', $request->created_at);
         }
 
+        $usersForRanking = User::where('filiate', Auth::user()->id)->whereIn('type', [2, 5, 6, 7])->get();
+    
+        $sortedUsers = $usersForRanking->sortByDesc(function($user) {
+            return $user->saleTotal();
+        });
+    
+        $usersForRanking = $sortedUsers->take(10);
+
         return view('app.User.list-network', [
-            'users' => $query->get()
+            'users'             => $query->paginate(30),
+            'usersForRanking'   => $usersForRanking
         ]);
     }
 
@@ -261,56 +270,6 @@ class UserController extends Controller {
         }
 
         return redirect()->back()->with('error', 'Ops! Notificação não encontrada.');
-    }
-
-    public function apresentation() {
-
-        if(Auth::check() && Auth::user()->type != 1) {
-            $archives = Apresentation::where('level', Auth::user()->level)->orWhereNull('level')->orderBy('id', 'asc')->get();
-        } else {
-            $archives = Apresentation::orderBy('id', 'asc')->get();
-        }
-        
-        $users = User::orderBy('name', 'asc')->get();
-        return view('app.User.apresentation', [
-                'archives' => $archives, 
-                'users' => $users
-            ]
-        );
-    }
-
-    public function createApresentation(Request $request) {
-
-        $apresentation         = new Apresentation();
-        $apresentation->title  = $request->title;
-        $apresentation->level  = $request->level;
-
-        if ($request->hasFile('file')) {
-            $apresentation->file = $request->file->store('public/apresentation');
-        } else {
-            return redirect()->back()->with('error', 'Não foi possível processar o arquivo, tente novamente mais tarde!');
-        }
-
-        if($apresentation->save()) {
-            return redirect()->back()->with('success', 'Material criado com sucesso!');
-        }
-
-        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
-    }
-
-    public function deleteApresentation(Request $request) {
-
-        $apresentation = Apresentation::find($request->id);
-        $filePath = storage_path('app/public/' . $apresentation->file);
-        if (file_exists($filePath)) {
-            unlink($filePath);
-        }
-
-        if($apresentation && $apresentation->delete()) {
-            return redirect()->back()->with('success', 'Material excluído com sucesso!');
-        }
-
-        return redirect()->back()->with('error', 'Não foram localizados dados do Material!');
     }
 
     public function listActive($status = null) {
@@ -401,15 +360,6 @@ class UserController extends Controller {
         }
     }
 
-    private function formatarValor($valor) {
-        
-        $valor = preg_replace('/[^0-9,]/', '', $valor);
-        $valor = str_replace(',', '.', $valor);
-        $valorFloat = floatval($valor);
-    
-        return number_format($valorFloat, 2, '.', '');
-    }
-
     public function createWallet() {
         
         if (!Auth::check()) {
@@ -433,5 +383,14 @@ class UserController extends Controller {
         }
     
         return redirect()->back()->with('info', $apikey['error']);
-    }    
+    }  
+    
+    private function formatarValor($valor) {
+        
+        $valor = preg_replace('/[^0-9,]/', '', $valor);
+        $valor = str_replace(',', '.', $valor);
+        $valorFloat = floatval($valor);
+    
+        return number_format($valorFloat, 2, '.', '');
+    }
 }

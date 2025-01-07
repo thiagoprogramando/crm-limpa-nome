@@ -29,7 +29,7 @@
                         @endif
 
                         <div class="col-sm-12 col-md-4 col-lg-3">
-                            <div class="card info-card sales-card">
+                            <div class="card info-card clock-card">
                                 <div class="card-body">
                                     <h5 class="card-title">T. Vendas (N°)</h5>
 
@@ -47,7 +47,7 @@
 
                         <div class="col-sm-12 col-md-4 col-lg-3">
                             <a href="{{ route('manager-sale') }}?created_at={{ now()->format('Y-m-d') }}&status=1">
-                                <div class="card info-card sales-card">
+                                <div class="card info-card clock-card">
                                     <div class="card-body">
                                         <h5 class="card-title">T. Vendas (Hoje)</h5>
 
@@ -65,7 +65,7 @@
                         </div>
 
                         <div class="col-sm-12 col-md-4 col-lg-3">
-                            <div class="card info-card revenue-card">
+                            <div class="card info-card clock-card">
                                 <div class="card-body">
                                     <h5 class="card-title">T. Faturamento (R$)</h5>
                                     <div class="d-flex align-items-center">
@@ -81,7 +81,7 @@
                         </div>
 
                         <div class="col-sm-12 col-md-4 col-lg-3">
-                            <div class="card info-card revenue-card">
+                            <div class="card info-card clock-card">
                                 <div class="card-body">
                                     <h5 class="card-title">T. Faturamento (R$ Hoje)</h5>
                                     <div class="d-flex align-items-center">
@@ -96,39 +96,65 @@
                             </div>
                         </div>
 
-                        <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-                            <div class="card info-card clock-card">
-                                <div class="card-body">
-                                    <h5 class="card-title">PROMOÇÃO CRUZEIRO</h5>
-                                    <div class="d-flex align-items-center justify-content-around">
-                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                            <i class="ri-ship-line"></i>
-                                        </div>
-                                        <div class="ps-3">
-                                            <small>100 Vendas - 1 Pessoa</small> <br>
-                                            <small>200 Vendas - 2 Pessoas</small> <br>
-                                            <small><b>Válido até 31 de Dezembro</b></small>
-                                        </div>
-                                        <div class="d-flex align-items-center justify-content-center">
-                                            <div class="circular-progress" data-sales="{{ Auth::user()->promoCruzeiro() }}">
-                                                <span class="percentage-text" id="percentage">0%</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                         <div class="col-12 col-sm-12 col-md-3 col-lg-3">
                             <div class="card info-card clock-card">
                                 <div class="card-body">
-                                    <h5 class="card-title">Próxima Lista @if($list) <span>{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</span> @else Não há lista disponível @endif</h5>
+                                    <h5 class="card-title">Próxima Lista @if($list) <span>{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</span> @else --- @endif</h5>
                                     <div class="d-flex align-items-center">
                                         <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                             <i class="bi bi-clock-history"></i>
                                         </div>
                                         <div class="ps-3">
                                             <h6>{{ $remainingTime }}</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-sm-12 col-md-4 col-lg-3">
+                            <div class="card info-card clock-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">T. de Consultores</h5>
+                                    <div class="d-flex align-items-center">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-sm table-striped text-center" style="font-size: 12px !important; margin: 0;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Consultor</th>
+                                                        <th>Líder</th>
+                                                        <th>Regional</th>
+                                                        <th>Gerente</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>{{ $consultant['CONSULTOR'] }}</td>
+                                                        <td>{{ $consultant['LIDER'] }}</td>
+                                                        <td>{{ $consultant['REGIONAL'] }}</td>
+                                                        <td>{{ $consultant['GERENTE'] }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="col-12 col-sm-12 col-md-4 col-lg-3">
+                            <div class="card info-card clock-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Ativos/Inativos</h5>
+                                    <div class="d-flex align-items-center">
+                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-person-lines-fill"></i>
+                                        </div>
+                                        <div class="ps-3">
+                                            <p>
+                                                Ativos : {{ $actives }} <br>
+                                                Inativo: {{ $inactives }} <br>
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -172,7 +198,7 @@
                         @endphp
 
                         <div class="col-sm-12 col-md-4 col-lg-3">
-                            <div class="card info-card customers-card">
+                            <div class="card info-card clock-card">
                                 <div class="card-body">
                                     <h5 class="card-title">Graduação</h5>
                                     <div class="d-flex align-items-center">
@@ -198,8 +224,8 @@
             <div class="col-lg-12">
                 <div class="row">
 
-                    <div class="col-sm-12 col-md-4 col-lg-3">
-                        <div class="card info-card sales-card">
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-3">
+                        <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">T. Vendas (N°)</h5>
 
@@ -215,9 +241,9 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-12 col-md-4 col-lg-3">
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-3">
                         <a href="{{ route('manager-sale') }}?created_at={{ now()->format('Y-m-d') }}&status=1">
-                            <div class="card info-card sales-card">
+                            <div class="card info-card clock-card">
                                 <div class="card-body">
                                     <h5 class="card-title">T. Vendas (Hoje)</h5>
 
@@ -234,8 +260,8 @@
                         </a>
                     </div>
 
-                    <div class="col-sm-12 col-md-4 col-lg-3">
-                        <div class="card info-card revenue-card">
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-3">
+                        <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">T. Faturamento (R$)</h5>
                                 <div class="d-flex align-items-center">
@@ -250,8 +276,8 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-12 col-md-4 col-lg-3">
-                        <div class="card info-card revenue-card">
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-3">
+                        <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">T. Faturamento (R$ Hoje)</h5>
                                 <div class="d-flex align-items-center">
@@ -266,10 +292,10 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-3">
                         <div class="card info-card clock-card">
                             <div class="card-body">
-                                <h5 class="card-title">Próxima Lista @if($list) <span>{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</span> @else Não há lista disponível @endif</h5>
+                                <h5 class="card-title">Próxima Lista @if($list) <span>{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</span> @else --- @endif</h5>
                                 <div class="d-flex align-items-center">
                                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                         <i class="bi bi-clock-history"></i>
@@ -282,13 +308,13 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                         <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">T. de Consultores</h5>
                                 <div class="d-flex align-items-center">
                                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-clock-history"></i>
+                                        <i class="bi bi-person-lines-fill"></i>
                                     </div>
                                     <div class="ps-3">
                                         <div class="table-responsive">
@@ -317,13 +343,13 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-3">
                         <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">Ativos/Inativos</h5>
                                 <div class="d-flex align-items-center">
                                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-clock-history"></i>
+                                        <i class="bi bi-person-lines-fill"></i>
                                     </div>
                                     <div class="ps-3">
                                         <p>
@@ -344,7 +370,7 @@
             <div class="col-12 col-sm-12 col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Rank <span>| Dados gerados pelo sistema.</span></h5>
+                        <h5 class="card-title">Ranking <span>| Dados gerados pelo sistema.</span></h5>
                         
                         <div class="table-responsive">
                             <table class="table table" id="table">
@@ -373,7 +399,7 @@
                                                         <i class="bi bi-award" style="color: #A62A2A;"></i>
                                                         @break
                                                     @default
-                                                        <i class="bi bi-award text-primary"></i>
+                                                        <i class="bi bi-award text-dark"></i>
                                                         @break  
                                                 @endswitch
                                             </td>

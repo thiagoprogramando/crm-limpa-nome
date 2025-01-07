@@ -200,24 +200,13 @@ class User extends Authenticatable {
     }
 
     public function maskedName() {
+        
         if (!$this->name) {
             return '';
         }
     
         $nameParts = explode(' ', $this->name);
-        $maskedParts = [];
-    
-        foreach ($nameParts as $index => $part) {
-            if ($index === 0) {
-                $maskedParts[] = $part;
-            } else {
-                $visible = ceil(strlen($part) / 2);
-                $masked = substr($part, 0, $visible) . str_repeat('*', strlen($part) - $visible);
-                $maskedParts[] = $masked;
-            }
-        }
-    
-        return implode(' ', $maskedParts);
+        return $nameParts[0];
     }  
     
     public function address() {

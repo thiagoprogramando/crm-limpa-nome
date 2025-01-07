@@ -1258,3 +1258,8 @@ h6 {
   text-align: left;
   color: #5A65A0;
 }
+
+table thead tr th {
+  background-color: #002396 !important;
+  color: #fff !important;
+}

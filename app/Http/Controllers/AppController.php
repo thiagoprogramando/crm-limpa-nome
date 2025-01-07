@@ -75,6 +75,21 @@ class AppController extends Controller {
         });
     
         $users = $sortedUsers->take(10);
+
+        $consultant = [
+            'CONSULTOR' => User::where('type', 2)->whereIn('level', [1, 2])->where('filiate', Auth::user()->id)->count(),
+            'LIDER'     => User::where('type', 2)->where('level', 3)->where('filiate', Auth::user()->id)->count(),
+            'REGIONAL'  => User::where('type', 2)->where('level', 4)->where('filiate', Auth::user()->id)->count(),
+            'GERENTE'   => User::where('type', 2)->where('level', 5)->where('filiate', Auth::user()->id)->count(),
+        ];
+
+        $actives = User::where('type', 2)->where('filiate', Auth::user()->id)->whereDoesntHave('invoices', function ($query) {
+            $query->where('type', 1)->where('status', 0);
+        })->count();
+
+        $inactives = User::where('type', 2)->where('filiate', Auth::user()->id)->whereHas('invoices', function ($query) {
+            $query->where('type', 1)->where('status', 0);
+        })->count();
     
         return view('app.app', [
             'sales'         => $sales,
@@ -85,7 +100,10 @@ class AppController extends Controller {
             'invoicing'     => $invoicing,
             'invoicingDay'  => $invoicingDay,
             'lists'         => Lists::orderBy('id', 'desc')->get(),
-            'users'         => $users
+            'users'         => $users,
+            'consultant'    => $consultant,
+            'actives'       => $actives,
+            'inactives'     => $inactives,
         ]);
     }    
 

@@ -114,11 +114,6 @@ Route::middleware(['auth'])->group(function () {
         //WhiteLabel
         Route::get('/profile-white-label', [WhiteLabelContractController::class, 'profileContract'])->name('profile-white-label');
     });
-
-    //Apresentation
-    Route::get('/apresentation', [UserController::class, 'apresentation'])->name('apresentation');
-    Route::post('create-apresentation', [UserController::class, 'createApresentation'])->name('create-apresentation');
-    Route::post('delete-apresentation', [UserController::class, 'deleteApresentation'])->name('delete-apresentation');
     
     //User
     Route::get('/profile', [UserController::class, 'profile'])->name('profile');

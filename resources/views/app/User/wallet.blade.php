@@ -135,43 +135,9 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="modal-footer">
+                                <div class="modal-footer btn-group">
                                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                                     <button type="button" class="btn btn-success" id="submitBtn">Solicitar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal fade" id="depModal" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <form action="{{ route('create-deposit') }}" method="POST">
-                                @csrf
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Preencha os dados</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row">
-                                        <div class="col-12 col-md-12 col-lg-12 mb-2">
-                                            <div class="form-floating">
-                                                <input type="text" name="value" class="form-control" id="floatingValue" placeholder="Informe o Valor:" oninput="mascaraReal(this)" required>
-                                                <label for="floatingValue">Valor:</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-md-12 col-lg-12 mb-2">
-                                            <div class="form-floating">
-                                                <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Confirme sua senha:" required>
-                                                <label for="floatingPassword">Confirme sua senha:</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                                    <button type="submit" class="btn btn-success">Gerar Depósito</button>
                                 </div>
                             </form>
                         </div>

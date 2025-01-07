@@ -140,7 +140,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="modal-footer">
+                                                    <div class="modal-footer btn-group">
                                                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                                                         <button type="submit" class="btn btn-success">Atualizar</button>
                                                     </div>

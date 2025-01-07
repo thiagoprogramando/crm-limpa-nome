@@ -53,8 +53,9 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link nav-icon" href="#" style="font-size: 14px !important;">
-                            <i class="bi bi-alarm"></i> <small>{{ Auth::user()->timeMonthly() }} dias restantes</small>
+                        <a class="nav-link nav-icon" href="#">
+                            <i class="bi bi-alarm"></i> 
+                            <span>{{ Auth::user()->timeMonthly() }}</span>
                         </a>
                     </li>
 
@@ -133,9 +134,9 @@
                     <a class="nav-link" href="{{ route('app') }}"> <i class="bi bi-grid"></i> <span>Dashboard</span> </a>
                 </li>
                 
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link collapsed" href="{{ route('apresentation') }}"> <i class="bi bi-book"></i> <span>Material de apoio</span> </a>
-                </li>
+                </li> --}}
 
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="https://servicos.ehmconsultas.com/index.php" target="_blank"> <i class="bi bi-search"></i> <span>Consultas</span> </a>

@@ -21,7 +21,7 @@
                         <div class="col-5">
                             <p class="lead mb-0"><b>Como funciona?</b></p>
                             <p>
-                                No formulário ao lado, você pode preencher os dados que deseja que apareçam como <b>CONTRATANTE</b> 
+                                No formulário ao lado, você pode preencher os dados que deseja que apareçam como <b>CONTRATADA</b> 
                                 nos contratos gerados para você e sua <a href="{{ route('list-network') }}"><b>REDE</b></a>.
                                 Esses dados serão utilizados automaticamente para preencher as informações de contrato, 
                                 garantindo que o processo de criação de contratos seja rápido e eficiente.
