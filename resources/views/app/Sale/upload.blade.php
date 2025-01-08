@@ -19,15 +19,15 @@
 
                         <ul class="nav nav-tabs d-flex" id="myTabjustified" role="tablist">
                             <li class="nav-item flex-fill" role="presentation">
-                                <button class="nav-link w-100 active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-justified" type="button" role="tab" aria-controls="home" aria-selected="true">Como funciona</button>
+                                <button class="nav-link w-100 active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-justified" type="button" role="tab" aria-controls="profile" aria-selected="false" tabindex="-1">Enviar Nome</button>
                             </li>
                             <li class="nav-item flex-fill" role="presentation">
-                                <button class="nav-link w-100" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-justified" type="button" role="tab" aria-controls="profile" aria-selected="false" tabindex="-1">Realizar Venda</button>
+                                <button class="nav-link w-100" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-justified" type="button" role="tab" aria-controls="home" aria-selected="true">Entenda como funciona</button>
                             </li>
                         </ul>
 
                         <div class="tab-content pt-2" id="myTabjustifiedContent">
-                            <div class="tab-pane fade active show" id="home-justified" role="tabpanel" aria-labelledby="home-tab">
+                            <div class="tab-pane fade" id="home-justified" role="tabpanel" aria-labelledby="home-tab">
                                 <div class="row p-3">
                                     <div class="col-12 col-sm-12 col-md-4 col-lg-4 text-center" style="background-color: #063986 !important;">
                                         <img src="{{ asset('assets/dashboard/img/document.png') }}" class="w-50 m-5">
@@ -43,90 +43,95 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="profile-justified" role="tabpanel" aria-labelledby="profile-tab">
-                                <form action="{{ route('create-upload') }}" method="POST" class="row g-3">
-                                    @csrf
-                                    
-                                    <input type="hidden" name="product" value="{{ $product->id }}">
-                                    <input type="hidden" name="id_seller" value="{{ Auth::user()->id }}">
-        
-                                    <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                        <div class="form-floating">
-                                            <input type="text" name="name" class="form-control" id="floatingName" placeholder="Informe o nome do Cliente:" required>
-                                            <label for="floatingName">Nome:</label>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                        <div class="form-floating">
-                                            <input type="text" name="cpfcnpj" class="form-control" id="floatingCpfCnpj" placeholder="Informe o CPF ou CNPJ do Cliente:" oninput="mascaraCpfCnpj(this)" required>
-                                            <label for="floatingCpfCnpj">CPF ou CNPJ:</label>
-                                        </div>
-                                    </div>
-        
-                                    <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                        <div class="form-floating">
-                                            <input type="text" name="birth_date" class="form-control" id="floatingBirth_date" placeholder="Data Nascimento:" oninput="mascaraData(this)">
-                                            <label for="floatingBirth_date">Data Nascimento (Opcional):</label>
-                                        </div>
-                                    </div>
-        
-                                    <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                        <div class="form-floating">
-                                            <input type="text" name="email" class="form-control" id="floatingEmail" placeholder="Informe o email do Cliente:">
-                                            <label for="floatingEmail">Email (Opcional):</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                        <div class="form-floating">
-                                            <input type="text" name="phone" class="form-control" id="floatingPhone" placeholder="Informe o whatsapp do Cliente:" oninput="mascaraTelefone(this)">
-                                            <label for="floatingPhone">WhatsApp (Opcional):</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                        <div class="form-floating">
-                                            <input type="text" name="value" class="form-control" id="floatingValue" placeholder="Valor da venda (Mín R$ {{ Auth::user()->fixed_cost }}):" oninput="mascaraReal(this)" required>
-                                            <label for="floatingValue">Valor da venda (Mín R$ {{ Auth::user()->fixed_cost }}):</label>
-                                        </div>
-                                    </div>
-        
-                                    @if ($product->address)
-                                        <div class="col-12 col-md-2 col-lg-2 mb-1">
-                                            <div class="form-floating">
-                                                <input type="number" name="postal_code" onblur="consultaCEP()" class="form-control" id="floatingPostal" placeholder="CEP:">
-                                                <label for="floatingPostal">CEP:</label>
+
+                            <div class="tab-pane fade active show" id="profile-justified" role="tabpanel" aria-labelledby="profile-tab">
+
+                                <div class="btn-group mt-2 mb-3" role="group">
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nameModal">Adicionar Nome</button>
+                                    <button type="button" class="btn btn-outline-primary">Nomes: {{ $sales->count() }}</button>
+                                    <button type="button" class="btn btn-outline-primary">Valor Total: R$ {{ $sales->count() * Auth::user()->fixed_cost }}</button>
+                                </div>
+
+                                <form action="{{ route('create-upload') }}" method="POST" class="row">
+                                    <div class="modal fade" id="nameModal" tabindex="-1" style="display: none;" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Enviar Nome (Associação)</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body row">
+                                                    @csrf
+                                                    <input type="hidden" name="product" value="{{ $product->id }}">
+                                                    <input type="hidden" name="id_seller" value="{{ Auth::user()->id }}">
+                                                    <input type="hidden" name="value" value="{{ Auth::user()->fixed_cost }}">
+                                                    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                                                        <div class="form-floating mb-2">
+                                                            <input type="text" name="name" class="form-control" id="floatingName" placeholder="Informe o nome do Cliente:" required>
+                                                            <label for="floatingName">Nome:</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                                                        <div class="form-floating mb-2">
+                                                            <input type="text" name="cpfcnpj" class="form-control" id="floatingCpfCnpj" placeholder="Informe o CPF ou CNPJ do Cliente:" oninput="mascaraCpfCnpj(this)" required>
+                                                            <label for="floatingCpfCnpj">CPF ou CNPJ:</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                                                        <div class="form-floating mb-2">
+                                                            <input type="text" name="birth_date" class="form-control" id="floatingBirth_date" placeholder="Data Nascimento:" oninput="mascaraData(this)">
+                                                            <label for="floatingBirth_date">Data Nascimento:</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer btn-group">
+                                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+                                                    <button type="submit" class="btn btn-success">Enviar</button>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-1 col-lg-1 mb-1">
-                                            <div class="form-floating">
-                                                <input type="number" name="num" class="form-control" id="floatingNumber" placeholder="N°:">
-                                                <label for="floatingNumber">N°:</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-md-3 col-lg-3 mb-1">
-                                            <div class="form-floating">
-                                                <input type="text" name="address" class="form-control" id="floatingAddress" placeholder="Endereço:">
-                                                <label for="floatingAddress">Endereço:</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-md-3 col-lg-3 mb-1">
-                                            <div class="form-floating">
-                                                <input type="text" name="city" class="form-control" id="floatingCity" placeholder="Cidade:">
-                                                <label for="floatingCity">Cidade:</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-md-3 col-lg-3 mb-1">
-                                            <div class="form-floating">
-                                                <input type="text" name="state" class="form-control" id="floatingState" placeholder="Estado:">
-                                                <label for="floatingState">Estado:</label>
-                                            </div>
-                                        </div>
-                                    @endif
-                                    
-                                    <div class="col-12 col-md-4 col-lg-4 offset-md-8 offset-lg-8 mb-1 d-grid gap-2 mt-3">
-                                        <button type="submit" class="btn btn-outline-success rounded-pill" type="button">Gerar Venda</button>
                                     </div>
                                 </form>
+
+                                <table class="table table-sm" id="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Lista</th>
+                                            <th scope="col">Nome</th>
+                                            <th scope="col">CPF/CNPJ</th>
+                                            <th scope="col" class="text-center">Status Pagamento</th>
+                                            <th scope="col" class="text-center">Opções</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($sales as $sale)
+                                            <tr>
+                                                <th scope="row">{{ $sale->id }}</th>
+                                                <td>{{ $sale->list->name }}</td>
+                                                <td>{{ $sale->user->name }}</td>
+                                                <td>{{ $sale->user->cpfcnpj }}</td>
+                                                <td class="text-center">
+                                                    {{ $sale->statusLabel() }} <br>
+                                                </td>
+                                                <td class="text-center">
+                                                    <form action="{{ route('delete-sale') }}" method="POST" class="delete">
+                                                        @csrf
+                                                        <input type="hidden" name="id" value="{{ $sale->id }}"> 
+                                                        <div class="btn-group" role="group">
+                                                            <button type="submit" class="btn btn-danger text-light" title="Excluir"><i class="bi bi-trash"></i></button>
+                                                            @if ($sale->token_payment)
+                                                                <a href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-success text-light" title="Pagar Nome"><i class="bi bi-upc"></i> Acessar Fatura</a>
+                                                            @else
+                                                                <a href="{{ route('create-payment-upload', ['id' => $sale->id]) }}" class="btn btn-success text-light" title="Pagar Nome"><i class="bi bi-upc"></i> Pagar</a>
+                                                            @endif
+                                                        </div>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>

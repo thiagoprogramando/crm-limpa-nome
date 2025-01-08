@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Upload;
 
+use App\Http\Controllers\Assas\AssasController;
 use App\Http\Controllers\Controller;
+use App\Models\Invoice;
 use App\Models\Lists;
 use App\Models\Product;
 use App\Models\Sale;
@@ -19,8 +21,11 @@ class UploadController extends Controller {
     public function create($id) {
 
         $product = Product::find($id);
+        $sales = Sale::where('id_seller', Auth::user()->id)->where('status', '!==', 1)->get();
+
         return view('app.Sale.upload', [
-            'product' => $product
+            'product' => $product,
+            'sales'   => $sales
         ]);
     }
 
@@ -65,16 +70,56 @@ class UploadController extends Controller {
             $sale->save();
 
             DB::commit();
-            return redirect()->route('manager-sale')->with('success', 'Venda criada com sucesso!');
+            return redirect()->back()->with('success', 'Nome enviado para a Lista!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('manager-sale')->with('error', 'Erro ao criar a venda. Tente novamente.');
+            return redirect()->back()->with('error', 'Erro ao enviar o nome, tente novamente!');
         }
+    }
+
+    public function createInvoice($id) {
+
+        $sale = Sale::find($id);
+        if (!$sale) {
+            return redirect()->back()->with('info', 'Nome não localizado na base de dados!');
+        }
+
+        $assas = new AssasController();
+        $charge = $assas->createCharge(Auth::user()->customer, 'PIX', Auth::user()->fixed_cost, 'Fatura da venda N°'.$sale->id, now()->addDay(), null, null, null, Auth::user()->parent, max(0, max(0, Auth::user()->fixed_cost - Auth::user()->parent->fixed_cost)));  
+        if ($charge == false) {
+            return redirect()->back()->with('info', 'Verifique seus dados e tente novamente!');
+        }
+
+        $invoice = new Invoice();
+        $invoice->id_user               = Auth::user()->id;
+        $invoice->id_sale               = $sale->id;
+        $invoice->id_product            = $sale->id_product;
+        $invoice->name                  = env('APP_NAME').' - Fatura';
+        $invoice->description           = 'Fatura da venda N° '.$sale->id;
+        $invoice->url_payment           = $charge['invoiceUrl'];
+        $invoice->token_payment         = $charge['id'];
+        $invoice->value                 = Auth::user()->fixed_cost;
+        $invoice->commission            = 0;
+        $invoice->commission_filiate    = max(0, Auth::user()->fixed_cost - Auth::user()->parent->fixed_cost);
+        $invoice->due_date              = now()->addDay();
+        $invoice->num                   = 1;
+        $invoice->type                  = 3;
+        $invoice->status                = 0;
+        $invoice->save();
+
+        $sale->token_payment        = $charge['id'];
+        $sale->commission           = 0;
+        $sale->commission_filiate   = max(0, Auth::user()->fixed_cost - Auth::user()->parent->fixed_cost);
+        if ($sale->save()) {
+            return redirect($charge['invoiceUrl']);
+        }
+
+        return redirect()->back()->with('info', 'Verifique seus dados e tente novamente!');
     }
 
     private function createUser($name, $email, $cpfcnpj, $birth_date = null, $phone = null, $postal_code = null, $address = null, $complement = null, $city = null, $state = null, $num = null) {
 
-        $user = User::where('cpfcnpj', str_replace(['.', '-'], '', $cpfcnpj))->orWhere('email', $email)->first();
+        $user = User::where('cpfcnpj', str_replace(['.', '-'], '', $cpfcnpj))->first();
         if($user) {
             return $user;
         }

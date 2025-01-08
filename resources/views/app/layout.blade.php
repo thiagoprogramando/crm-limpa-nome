@@ -55,7 +55,7 @@
                     <li class="nav-item">
                         <a class="nav-link nav-icon" href="#">
                             <i class="bi bi-alarm"></i> 
-                            <span>{{ Auth::user()->timeMonthly() }}</span>
+                            <span class="badge bg-primary badge-number">{{ Auth::user()->timeMonthly() }}</span>
                         </a>
                     </li>
 

@@ -64,6 +64,7 @@ Route::middleware(['auth'])->group(function () {
 
         //Upload
         Route::get('/createupload/{id}', [UploadController::class, 'create'])->name('createupload');
+        Route::get('/create-payment-upload/{id}', [UploadController::class, 'createInvoice'])->name('create-payment-upload');
         Route::post('create-upload', [UploadController::class, 'createSale'])->name('create-upload');
 
         //Gatway Assas
