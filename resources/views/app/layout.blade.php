@@ -271,6 +271,22 @@
             @yield('conteudo')
         </main>
 
+        <script type="text/javascript">
+            //<![CDATA[
+            var ttChatLoaderS = document.createElement('script');
+            document.tomticketChatLoaderScriptVersion = 2;
+            ttChatLoaderS.src = 'https://express.tomticket.com/scripts-chat/chat.min.js'
+            + '?id=EP67740'
+            + '&account=4335360P03012025011956'
+            + '&autoOpen=0'
+            + '&hideWhenOffline=0'
+            + '&d=express'
+            + '&ts=' + new Date().getTime()
+            + '&ref=' + encodeURIComponent(document.URL);
+            document.body.appendChild(ttChatLoaderS);
+            //]]>
+        </script>
+
         <footer id="footer" class="footer">
             <div class="copyright">
                  &copy; Copyright <strong><span>{{ env('APP_NAME') }}</span></strong>. Todos os direitos reservados 
