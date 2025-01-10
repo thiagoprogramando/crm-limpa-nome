@@ -62,7 +62,7 @@ class UploadController extends Controller {
             $sale->payment      = 'ENVIO MANUAL';
             $sale->installments = 1;
             $sale->status       = 0;
-            $sale->value        = $this->formatarValor($request->value);
+            $sale->value        = $seller->fixed_cost;
             $sale->save();
 
             DB::commit();
