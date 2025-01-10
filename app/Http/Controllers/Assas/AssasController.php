@@ -576,6 +576,7 @@ class AssasController extends Controller {
                         $user->wallet     = $data['walletId'];
                         $user->wallet_id  = $data['id'];
                         $user->status     = 2;
+                        $user->type       = 2;
                         if ($user->save()) {
                             return ['status' => true];
                         }
@@ -623,27 +624,14 @@ class AssasController extends Controller {
                     return response()->json(['status' => 'success', 'message' => 'Operação Finalizada, mas houve um erro na criação da ApiKey!']);
                 }
 
-                if ($invoice->type == 4) {
-
-                    $user = User::find($invoice->id_user);
-                    $user->wallet_off += $invoice->value;
-                    if ($user->save()) {
-                        return response()->json(['status' => 'success', 'message' => 'Operação Finalizada & Saldo depositado!']);
-                    }
-
-                    return response()->json(['status' => 'success', 'message' => 'Operação Finalizada, mas houve um erro no deposito!']);
-                }
-
                 $sale = Sale::where('id', $invoice->id_sale)->first();
-                if ($sale) {
-
+                $sale->guarantee = $sale->installments == 1 ? Carbon::parse($sale->guarantee)->addMonths(12) : Carbon::parse($sale->guarantee)->addMonths(3);
+                
+                if ($sale && ($sale->id_payment <> null)) {
                     $invoices = $this->createSalePayment($sale->id);
                     if($invoices == false) {
                         return response()->json(['status' => 'error', 'message' => 'Não foi possível Gerar Faturas para essa venda!']);
                     }
-
-                    $sale->guarantee = $sale->installments == 1 ? Carbon::parse($sale->guarantee)->addMonths(12) : Carbon::parse($sale->guarantee)->addMonths(3);
-                    $sale->save();
                 }
                 
                 $product = $invoice->id_product <> null ? Product::where('id', $invoice->id_product)->first() : false;
@@ -654,8 +642,6 @@ class AssasController extends Controller {
                     if ($list) {
                         $sale->id_list = $list->id;
                     }
-
-                    $sale->save();
                 }
 
                 if ($sale) {
@@ -668,7 +654,7 @@ class AssasController extends Controller {
                     $notification->save();
 
                     $seller = User::find($sale->id_seller);
-                    if($seller->type <> 4) {
+                    if ($seller && $seller->type <> 4) {
 
                         $totalSales = Sale::where('id_seller', $seller->id)->where('status', 1)->count();
                         switch($totalSales) {
@@ -701,6 +687,8 @@ class AssasController extends Controller {
                             $notification->save();
                         }
                     }
+
+                    $sale->save();
                 }
 
                 $client = User::find($invoice->id_user);
@@ -710,7 +698,7 @@ class AssasController extends Controller {
                     $this->sendWhatsapp(env('APP_URL').'login-cliente', $client->name."!\r\n\r\nAgradecemos por manter o compromisso e realizar o pagamento do boleto, o que garante a continuidade e a validade da garantia do serviço. \r\n\r\n Acesse o Painel do cliente👇", $client->phone, $seller->api_token_zapapi);
                 }
 
-                if ($invoice->num == 1 && $invoice->type == 3) {
+                if ($seller && $invoice->num == 1 && $invoice->type == 3) {
                     $message =  "Olá, {$seller->name}, Espero que esteja bem! 😊\r\n\r\n"
                                 . "Gostaria de informar que uma nova venda foi realizada com sucesso.🤑💸\r\n\r\n"
                                 . "Cliente: {$client->name}\r\n"
@@ -722,7 +710,7 @@ class AssasController extends Controller {
                     $this->sendWhatsapp("", $message, $seller->phone, $seller->api_token_zapapi);
                 }
 
-                if ($invoice->num != 1 && $invoice->type == 3 && $invoice->commission > 0) {
+                if ($seller && $invoice->num != 1 && $invoice->type == 3 && $invoice->commission > 0) {
                     $message =  "Olá, {$seller->name}, Espero que esteja bem! 😊\r\n\r\n"
                                 . "Gostaria de informar que uma nova COMISSÃO FOI RECEBIDA com sucesso.🤑💸\r\n\r\n"
                                 . "Cliente: {$client->name}\r\n"
