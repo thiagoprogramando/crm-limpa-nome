@@ -41,10 +41,6 @@ class UploadController extends Controller {
             return redirect()->back()->with('error', 'Dados do CONSULTOR DE VENDAS não localizados no sistema!');
         }
 
-        if (($seller && $seller->fixed_cost > 0) && ($this->formatarValor($request->value) < $seller->fixed_cost)) {
-            return redirect()->back()->with('error', 'O valor mín de venda é: R$ '.$seller->fixed_cost.'!');
-        }
-
         $product = Product::where('id', $request->product)->first();
         if (!$product) {
             return redirect()->back()->with('error', 'Produto não disponível!');
