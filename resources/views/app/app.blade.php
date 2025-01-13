@@ -265,7 +265,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">T. Faturamento (R$)</h5>
                                 <div class="d-flex align-items-center">
-                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #559eff; color:#fff;">
                                     <i class="bi bi-currency-dollar"></i>
                                     </div>
                                     <div class="ps-3">
@@ -281,8 +281,8 @@
                             <div class="card-body">
                                 <h5 class="card-title">T. Faturamento (R$ Hoje)</h5>
                                 <div class="d-flex align-items-center">
-                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                    <i class="ri-money-dollar-circle-line"></i>
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #00FF9C; color:#fff;">
+                                        <i class="ri-money-dollar-circle-line"></i>
                                     </div>
                                     <div class="ps-3">
                                         <h6>{{ number_format($invoicingDay, 2, ',', '.') }}</h6>
@@ -376,8 +376,7 @@
                             <table class="table table" id="table">
                                 <thead>
                                     <tr class="table-primary">
-                                        <th scope="col">--</th>
-                                        <th scope="col">N°</th>
+                                        <th scope="col" class="text-center">°</th>
                                         <th scope="col">Vendedor</th>
                                         <th scope="col" class="text-center">Estado</th>
                                         <th scope="col">Faturamento</th>
@@ -387,23 +386,27 @@
                                 <tbody>
                                     @foreach ($users as $key => $user)
                                         <tr>
-                                            <td scope="row">
+                                            <td scope="row" class="text-center">
                                                 @switch($loop->iteration)
                                                     @case(1)
-                                                        <i class="bi bi-award" style="color: #FFD700;"></i>
+                                                        <i class="bi bi-award" style="color: #fcef87;"></i>
                                                         @break
                                                     @case(2)
-                                                        <i class="bi bi-award" style="color: #C0C0C0;"></i>
+                                                        <i class="bi bi-award" style="color: #4f4f4f;"></i>
                                                         @break
                                                     @case(3)
-                                                        <i class="bi bi-award" style="color: #A62A2A;"></i>
+                                                        <i class="bi bi-award" style="color: #ea7e12;"></i>
                                                         @break
                                                     @default
-                                                        <i class="bi bi-award text-dark"></i>
+                                                        <i class="bi bi-award" style="color: #C0C0C0;"></i>
                                                         @break  
                                                 @endswitch
+                                                @if(Auth::user()->photo)
+                                                    <img src="{{ asset('storage/' . Auth::user()->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30">
+                                                @else
+                                                    <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30">
+                                                @endif
                                             </td>
-                                            <th scope="row">{{ $loop->iteration }}</th>
                                             @if ($user->name == Auth::user()->name)
                                                 <td>{{ $user->name }}</td>
                                             @else
