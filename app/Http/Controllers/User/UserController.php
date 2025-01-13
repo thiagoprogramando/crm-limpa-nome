@@ -17,70 +17,76 @@ use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller {
     
     public function profile() {
 
+        if (Auth::user()->status == 1 ) {
+            return view('app.User.profile');
+        }
+
         $documents = new AssasController();
         $mydocuments = $documents->myDocuments();
-
-        return view('app.User.profile', ['mydocuments' => $mydocuments]);
+        return view('app.User.profile', [
+            'mydocuments' => $mydocuments
+        ]);
     }
 
     public function updateProfile(Request $request) {
 
         $user = User::where('id', $request->id)->first();
 
-        if(!empty($request->name)) {
+        if (!empty($request->name)) {
             $user->name = $request->name;
         }
 
-        if(!empty($request->cpfcnpj && $request->cpfcnpj !== $user->cpfcnpj)) {
+        if (!empty($request->cpfcnpj && $request->cpfcnpj !== $user->cpfcnpj)) {
             $user->cpfcnpj = preg_replace('/\D/', '', $request->cpfcnpj);
         }
 
-        if(!empty($request->phone)) {
+        if (!empty($request->phone)) {
             $user->phone = $request->phone;
         }
 
-        if($request->email && $request->email != $user->email) {
+        if ($request->email && $request->email != $user->email) {
             $user->email = preg_replace('/[^\w\d\.\@\-\_]/', '', $request->email);
         }
 
-        if(!empty($request->birth_date)) {
+        if (!empty($request->birth_date)) {
             $user->birth_date = $request->birth_date;
         }
 
-        if(!empty($request->postal_code)) {
+        if (!empty($request->postal_code)) {
             $user->postal_code = $request->postal_code;
         }
 
-        if(!empty($request->address)) {
+        if (!empty($request->address)) {
             $user->address = $request->address;
         }
 
-        if(!empty($request->state)) {
+        if (!empty($request->state)) {
             $user->state = $request->state;
         }
 
-        if(!empty($request->city)) {
+        if (!empty($request->city)) {
             $user->city = $request->city;
         }
 
-        if(!empty($request->complement)) {
+        if (!empty($request->complement)) {
             $user->complement = $request->complement;
         }
 
-        if(!empty($request->num)) {
+        if (!empty($request->num)) {
             $user->num = $request->num;
         }
 
-        if(!empty($request->api_token_zapapi)) {
+        if (!empty($request->api_token_zapapi)) {
             $user->api_token_zapapi = $request->api_token_zapapi;
         }
 
-        if(!empty($request->fixed_cost)) {
+        if (!empty($request->fixed_cost)) {
 
             if ($this->formatarValor($request->fixed_cost) < Auth::user()->fixed_cost) {
                 return redirect()->back()->with('info', 'O valor mín para custo é R$ '.Auth::user()->fixed_cost);
@@ -89,11 +95,11 @@ class UserController extends Controller {
             $user->fixed_cost = $this->formatarValor($request->fixed_cost);
         }
         
-        if(!empty($request->level)) {
+        if (!empty($request->level)) {
             $user->level = $request->level;
         }
 
-        if(!empty($request->num)) {
+        if (!empty($request->num)) {
             $user->num = $request->num;
         }
 
@@ -101,28 +107,38 @@ class UserController extends Controller {
             $user->password = bcrypt($request->password);
         }
 
-        if(!empty($request->type)) {
+        if (!empty($request->type)) {
             $user->type = $request->type;
         }
 
-        if(!empty($request->white_label_contract)) {
+        if (!empty($request->white_label_contract)) {
             $user->white_label_contract = $request->white_label_contract;
         }
 
-        if(!empty($request->company_name)) {
+        if (!empty($request->company_name)) {
             $user->company_name = $request->company_name;
         }
 
-        if(!empty($request->company_cpfcnpj)) {
+        if (!empty($request->company_cpfcnpj)) {
             $user->company_cpfcnpj = $request->company_cpfcnpj;
         }
 
-        if(!empty($request->company_address)) {
+        if (!empty($request->company_address)) {
             $user->company_address = $request->company_address;
         }
 
-        if(!empty($request->company_email)) {
+        if (!empty($request->company_email)) {
             $user->company_email = $request->company_email;
+        }
+
+        if (!empty($request->photo)) {
+
+            if ($user->photo) {
+                Storage::delete('public/' . $user->photo);
+            }
+
+            $path = $request->file('photo')->store('profile-photos', 'public');
+            $user->photo = $path;
         }
 
         if (

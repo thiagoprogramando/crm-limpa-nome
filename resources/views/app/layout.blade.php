@@ -35,7 +35,7 @@
                     <img src="{{ asset('assets/dashboard/img/logo.png') }}">
                     {{-- <span class="d-none d-lg-block">{{ env('APP_NAME') }}</span> --}}
                 </a>
-                <i class="bi bi-list toggle-sidebar-btn"></i>
+                <i class="bi bi-list toggle-sidebar-btn text-white"></i>
             </div>
 
             <div class="search-bar">
@@ -49,19 +49,19 @@
                 <ul class="d-flex align-items-center">
 
                     <li class="nav-item d-block d-lg-none">
-                        <a class="nav-link nav-icon search-bar-toggle " href="#"><i class="bi bi-search"></i></a>
+                        <a class="nav-link nav-icon search-bar-toggle " href="#"><i class="bi bi-search text-white"></i></a>
                     </li>
 
                     <li class="nav-item">
                         <a class="nav-link nav-icon" href="#">
-                            <i class="bi bi-alarm"></i> 
+                            <i class="bi bi-alarm text-white"></i> 
                             <span class="badge bg-primary badge-number">{{ Auth::user()->timeMonthly() }}</span>
                         </a>
                     </li>
 
                     <li class="nav-item dropdown">
                         <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-                            <i class="bi bi-bell"></i>
+                            <i class="bi bi-bell text-white"></i>
                             <span class="badge bg-primary badge-number">{{ $totalNotification }}</span>
                         </a>
 
@@ -98,7 +98,13 @@
                     @endphp
                     <li class="nav-item dropdown pe-3">
                         <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                            <span class="dropdown-toggle ps-2">{{ $firstName }}</span>
+                            @if(Auth::user()->photo)
+                                <img src="{{ asset('storage/' . Auth::user()->photo) }}" alt="Foto de Perfil" class="rounded-circle">
+                            @else
+                                <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle">
+                            @endif
+                            
+                            <span class="dropdown-toggle text-white ps-2 d-none d-sm-block">{{ $firstName }}</span>
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">

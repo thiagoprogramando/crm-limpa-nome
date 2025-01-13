@@ -115,84 +115,103 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Mantenha seus dados atualizados.</h5>
-
-                    <form action="{{ route('update-user') }}" method="POST" class="row g-3">
-                        @csrf
-                        <input type="hidden" name="id" value="{{ Auth::user()->id }}">
-
-                        <div class="col-12 col-md-6 col-lg-6 mb-1">
-                            <div class="form-floating">
-                                <input type="text" name="name" value="{{ Auth::user()->name }}" class="form-control" id="floatingName" placeholder="Nome:">
-                                <label for="floatingName">Nome:</label>
+                    <div class="row">
+                        <div class="col-12 col-sm-12 col-md-4 col-lg-4 text-center">
+                            <div class="profile-photo">
+                                @if(Auth::user()->photo)
+                                    <img src="{{ asset('storage/' . Auth::user()->photo) }}" alt="User Photo" class="img-thumbnail w-50">
+                                @else
+                                    <img src="{{ asset('assets/dashboard/img/profile_black.png') }}" alt="Default Photo" class="img-thumbnail w-50">
+                                @endif
                             </div>
-                        </div>
-                        <div class="col-12 col-md-3 col-lg-3 mb-1">
-                            <div class="form-floating">
-                                <input type="text" name="cpfcnpj" value="{{ Auth::user()->cpfcnpj }}" class="form-control" id="floatingCpfcnpj" placeholder="CPF ou CNPJ:">
-                                <label for="floatingCpfcnpj">CPF ou CNPJ:</label>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-3 col-lg-3 mb-1">
-                            <div class="form-floating">
-                                <input type="date" name="birth_date" value="{{ Auth::user()->birth_date }}" class="form-control" id="floatingDate" placeholder="Data de Aniversário:">
-                                <label for="floatingDate">Data de Aniversário:</label>
-                            </div>
+            
+                            <button class="btn btn-dark mt-3" id="change-photo-button">Trocar foto de perfil</button>
+            
+                            <form action="{{ route('update-user') }}" method="POST" enctype="multipart/form-data" id="photo-upload-form" class="d-none">
+                                @csrf
+                                <input type="hidden" name="id" value="{{ Auth::user()->id }}">
+                                <input type="file" name="photo" id="photo-input" accept="image/*" onchange="document.getElementById('photo-upload-form').submit();">
+                            </form>
                         </div>
 
-                        <div class="col-12 col-md-3 col-lg-3 mb-1">
-                            <div class="form-floating">
-                                <input type="text" name="email" value="{{ Auth::user()->email }}" class="form-control" id="floatingEmail" placeholder="Email:">
-                                <label for="floatingEmail">Email:</label>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-3 col-lg-3 mb-1">
-                            <div class="form-floating">
-                                <input type="text" name="phone" value="{{ Auth::user()->phone }}" class="form-control" id="floatingPhone" placeholder="Telefone:">
-                                <label for="floatingPhone">Telefone:</label>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-3 col-lg-3 mb-1">
-                            <div class="form-floating">
-                                <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Senha:">
-                                <label for="floatingPassword">Senha:</label>
-                            </div>
-                        </div>
+                        <form action="{{ route('update-user') }}" method="POST" class="col-12 col-sm-12 col-md-8 col-lg-8 row g-3">
+                            @csrf
+                            <input type="hidden" name="id" value="{{ Auth::user()->id }}">
 
-                        <div class="col-12 col-md-3 col-lg-2 mb-1">
-                            <div class="form-floating">
-                                <input type="number" name="postal_code" value="{{ Auth::user()->postal_code }}" onblur="consultaCEP()" class="form-control" id="floatingPostalCode" placeholder="CEP:">
-                                <label for="floatingPostalCode">CEP:</label>
+                            <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                <div class="form-floating">
+                                    <input type="text" name="name" value="{{ Auth::user()->name }}" class="form-control" id="floatingName" placeholder="Nome:">
+                                    <label for="floatingName">Nome:</label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-12 col-md-3 col-lg-1 mb-1">
-                            <div class="form-floating">
-                                <input type="number" name="num" value="{{ Auth::user()->num }}" class="form-control" id="floatingNum" placeholder="N°:">
-                                <label for="floatingNum">N°:</label>
+                            <div class="col-12 col-md-3 col-lg-3 mb-1">
+                                <div class="form-floating">
+                                    <input type="text" name="cpfcnpj" value="{{ Auth::user()->cpfcnpj }}" class="form-control" id="floatingCpfcnpj" placeholder="CPF ou CNPJ:">
+                                    <label for="floatingCpfcnpj">CPF ou CNPJ:</label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-6 mb-1">
-                            <div class="form-floating">
-                                <input type="text" name="address" value="{{ Auth::user()->address }}" class="form-control" id="floatingAddress" placeholder="Endereço:">
-                                <label for="floatingAddress">Endereço:</label>
+                            <div class="col-12 col-md-3 col-lg-3 mb-1">
+                                <div class="form-floating">
+                                    <input type="date" name="birth_date" value="{{ Auth::user()->birth_date }}" class="form-control" id="floatingDate" placeholder="Data de Aniversário:">
+                                    <label for="floatingDate">Data de Aniversário:</label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-12 col-md-3 col-lg-3 mb-1">
-                            <div class="form-floating">
-                                <input type="text" name="city" value="{{ Auth::user()->city }}" class="form-control" id="floatingCity" placeholder="Cidade:">
-                                <label for="floatingCity">Endereço:</label>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-3 col-lg-3 mb-1">
-                            <div class="form-floating">
-                                <input type="text" name="state" value="{{ Auth::user()->state }}" class="form-control" id="floatingState" placeholder="Estado:">
-                                <label for="floatingState">Estado:</label>
-                            </div>
-                        </div>
 
-                        <div class="col-12 col-md-3 col-lg-3 offset-md-9 offset-lg-9 d-grid gap-2 mb-1">
-                            <button type="submit" class="btn btn-outline-success rounded-pill" type="button">Atualizar</button>
-                        </div>
-                    </form>
+                            <div class="col-12 col-md-3 col-lg-3 mb-1">
+                                <div class="form-floating">
+                                    <input type="text" name="email" value="{{ Auth::user()->email }}" class="form-control" id="floatingEmail" placeholder="Email:">
+                                    <label for="floatingEmail">Email:</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-3 col-lg-3 mb-1">
+                                <div class="form-floating">
+                                    <input type="text" name="phone" value="{{ Auth::user()->phone }}" class="form-control" id="floatingPhone" placeholder="Telefone:">
+                                    <label for="floatingPhone">Telefone:</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-3 col-lg-3 mb-1">
+                                <div class="form-floating">
+                                    <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Senha:">
+                                    <label for="floatingPassword">Senha:</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-3 col-lg-2 mb-1">
+                                <div class="form-floating">
+                                    <input type="number" name="postal_code" value="{{ Auth::user()->postal_code }}" onblur="consultaCEP()" class="form-control" id="floatingPostalCode" placeholder="CEP:">
+                                    <label for="floatingPostalCode">CEP:</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-3 col-lg-1 mb-1">
+                                <div class="form-floating">
+                                    <input type="number" name="num" value="{{ Auth::user()->num }}" class="form-control" id="floatingNum" placeholder="N°:">
+                                    <label for="floatingNum">N°:</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                <div class="form-floating">
+                                    <input type="text" name="address" value="{{ Auth::user()->address }}" class="form-control" id="floatingAddress" placeholder="Endereço:">
+                                    <label for="floatingAddress">Endereço:</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-3 col-lg-3 mb-1">
+                                <div class="form-floating">
+                                    <input type="text" name="city" value="{{ Auth::user()->city }}" class="form-control" id="floatingCity" placeholder="Cidade:">
+                                    <label for="floatingCity">Endereço:</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-3 col-lg-3 mb-1">
+                                <div class="form-floating">
+                                    <input type="text" name="state" value="{{ Auth::user()->state }}" class="form-control" id="floatingState" placeholder="Estado:">
+                                    <label for="floatingState">Estado:</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-3 col-lg-3 offset-md-9 offset-lg-9 d-grid gap-2 mb-1">
+                                <button type="submit" class="btn btn-outline-success rounded-pill" type="button">Atualizar</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -200,4 +219,9 @@
     </div>
 </section>
 
+<script>
+    document.getElementById('change-photo-button').addEventListener('click', function() {
+        document.getElementById('photo-input').click();
+    });
+</script>
 @endsection
