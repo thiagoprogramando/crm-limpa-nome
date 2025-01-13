@@ -69,7 +69,7 @@
                                 <div class="card-body">
                                     <h5 class="card-title">T. Faturamento (R$)</h5>
                                     <div class="d-flex align-items-center">
-                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #559eff; color:#fff;">
                                         <i class="bi bi-currency-dollar"></i>
                                         </div>
                                         <div class="ps-3">
@@ -85,7 +85,7 @@
                                 <div class="card-body">
                                     <h5 class="card-title">T. Faturamento (R$ Hoje)</h5>
                                     <div class="d-flex align-items-center">
-                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #00FF9C; color:#fff;">
                                         <i class="ri-money-dollar-circle-line"></i>
                                         </div>
                                         <div class="ps-3">
