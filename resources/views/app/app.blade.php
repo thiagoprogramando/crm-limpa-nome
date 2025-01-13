@@ -52,7 +52,7 @@
                                         <h5 class="card-title">T. Vendas (Hoje)</h5>
 
                                         <div class="d-flex align-items-center">
-                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #ff8400; color:#fff;">
                                                 <i class="bi bi-cart-check-fill"></i>
                                             </div>
                                             <div class="ps-3">
@@ -248,7 +248,7 @@
                                     <h5 class="card-title">T. Vendas (Hoje)</h5>
 
                                     <div class="d-flex align-items-center">
-                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #ff8400; color:#fff;">
                                             <i class="bi bi-cart-check-fill"></i>
                                         </div>
                                         <div class="ps-3">
