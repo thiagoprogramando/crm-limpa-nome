@@ -401,8 +401,8 @@
                                                         <i class="bi bi-award" style="color: #C0C0C0;"></i>
                                                         @break  
                                                 @endswitch
-                                                @if(Auth::user()->photo)
-                                                    <img src="{{ asset('storage/' . Auth::user()->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30">
+                                                @if($user->photo)
+                                                    <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30">
                                                 @else
                                                     <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30">
                                                 @endif
