@@ -81,7 +81,9 @@
                                                     @csrf
                                                     <input type="hidden" name="id" value="{{ $user->id }}">
                                                     <button type="button" class="btn btn-warning text-light" data-bs-toggle="modal" data-bs-target="#updateModal{{ $user->id }}"><i class="bi bi-arrow-up-right-circle"></i></button>
-                                                    <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
+                                                    @if (Auth::user()->type == 1)
+                                                        <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
+                                                    @endif 
                                                 </form>
                                             </td>
                                         </tr>
