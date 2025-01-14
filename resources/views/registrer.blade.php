@@ -52,7 +52,7 @@
                                         <input type="number" name="cpfcnpj" id="cpfcnpj" class="form-control" placeholder="CPF:" required>
                                     </div>
                                     <div class="form-group d-flex mb-3">
-                                        <input type="date" name="birth_date" id="nascimento" class="form-control" placeholder="Data de Nascimento:" required>
+                                        <input type="text" name="birth_date" id="nascimento" class="form-control" placeholder="Data de Nascimento:" oninput="mascaraData(this)" required>
                                         <button type="button" class="btn btn-primary" onclick="consulta()"><i class="bi bi-search text-white"></i></button>
                                     </div>
 
@@ -90,6 +90,7 @@
         <script src="{{ asset('assets/login-form/js/bootstrap.min.js') }}"></script>
         <script src="{{ asset('assets/login-form/js/main.js') }}"></script>
         <script src="{{ asset('assets/dashboard/js/hub.js') }}"></script>
+        <script src="{{ asset('assets/dashboard/js/mask.js') }}"></script>
         <script>
             @if(session('error'))
                 Swal.fire({
