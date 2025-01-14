@@ -61,7 +61,7 @@
                                     </div>
 
                                     <div class="col-12 col-md-3 col-lg-3 mb-1">
-                                        <button type="button" onclick="consulta()" class="btn btn-lg btn-primary mt-1" type="button">Consultar</button>
+                                        <button type="button" onclick="consulta()" class="btn btn-lg btn-primary mt-1">Consultar</button>
                                     </div>
                                 </form>
 

@@ -7,6 +7,9 @@
 
         <link href="{{ asset('assets/dashboard/img/favicon.png') }}" rel="icon">
 
+        <link href="https://fonts.gstatic.com" rel="preconnect">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+        <link href="{{ asset('assets/dashboard/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="{{ asset('assets/login-form/css/style.css') }}">
@@ -27,14 +30,7 @@
                             <div class="login-wrap p-4 p-md-5">
                                 <div class="d-flex">
                                     <div class="w-100">
-                                        <h3 class="mb-4">Cadastre-se</h3>
-                                        
-                                    </div>
-                                    <div class="w-100">
-                                        {{-- <p class="social-media d-flex justify-content-end">
-                                            <a href="https://www.facebook.com/diegoduarteg7/" target="_blank" class="social-icon d-flex align-items-center justify-content-center"><span class="fa fa-facebook"></span></a>
-                                            <a href="https://www.instagram.com/g7assessoria/" target="_blank" class="social-icon d-flex align-items-center justify-content-center"><span class="fa fa-instagram"></span></a>
-                                        </p> --}}
+                                        <h3 class="mb-4">Faça parte</h3>
                                     </div>
                                 </div>
 
@@ -53,24 +49,31 @@
                                     <input type="hidden" name="type" value="{{ isset($type) ? $type : '' }}">
 
                                     <div class="form-group mb-3">
-                                        <input type="text" name="name" class="form-control" placeholder="Nome:" required>
+                                        <input type="number" name="cpfcnpj" id="cpfcnpj" class="form-control" placeholder="CPF:" required>
                                     </div>
-                                    <div class="form-group mb-3">
-                                        <input type="number" name="cpfcnpj" class="form-control" placeholder="CPF ou CNPJ:" required>
+                                    <div class="form-group d-flex mb-3">
+                                        <input type="date" name="birth_date" id="nascimento" class="form-control" placeholder="Data de Nascimento:" required>
+                                        <button type="button" class="btn btn-primary" onclick="consulta()"><i class="bi bi-search text-white"></i></button>
                                     </div>
-                                    <div class="form-group mb-3">
-                                        <input type="number" name="phone" class="form-control" placeholder="Telefone:" required>
-                                    </div>
-                                    <div class="form-group mb-3">
-                                        <input type="email" name="email" class="form-control" placeholder="Email:" required>
-                                    </div>
-                                    <div class="form-group d-md-flex">
-                                        <div class="w-100 text-left">
-                                            <label class="checkbox-wrap checkbox-primary mb-0">Concordo com os termos de uso <input type="checkbox" name="terms" checked> <span class="checkmark"></span> </label>
+
+                                    <div id="formRegistrer" class="d-none">
+                                        <div class="form-group mb-3">
+                                            <input type="text" name="name" class="form-control" placeholder="Nome:" required>
                                         </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <button type="submit" class="form-control btn btn-primary rounded submit px-3">Cadastrar-me</button>
+                                        <div class="form-group mb-3">
+                                            <input type="number" name="phone" class="form-control" placeholder="Telefone:" required>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <input type="email" name="email" class="form-control" placeholder="Email:" required>
+                                        </div>
+                                        <div class="form-group d-md-flex">
+                                            <div class="w-100 text-left">
+                                                <label class="checkbox-wrap checkbox-primary mb-0">Concordo com os termos de uso <input type="checkbox" name="terms" checked> <span class="checkmark"></span> </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="submit" class="form-control btn btn-primary rounded submit px-3">Cadastrar-me</button>
+                                        </div>
                                     </div>
                                 </form>
                                 <p class="text-center">Já é um membro? <a href="{{ route('login') }}">Acessar</a></p>
@@ -86,6 +89,7 @@
         <script src="{{ asset('assets/login-form/js/popper.js') }}"></script>
         <script src="{{ asset('assets/login-form/js/bootstrap.min.js') }}"></script>
         <script src="{{ asset('assets/login-form/js/main.js') }}"></script>
+        <script src="{{ asset('assets/dashboard/js/hub.js') }}"></script>
         <script>
             @if(session('error'))
                 Swal.fire({
