@@ -133,19 +133,19 @@ class ContractController extends Controller {
             $parentData = [
                 [
                     "de"    => "EMPRESA_NOME",
-                    "para"  =>  $user->company_name ?? $user->parent->name
+                    "para"  => $user->company_name ?? $user->parent?->company_name ?? 'AMPAY SOLUÇÕES'
                 ],
                 [
                     "de"    => "EMPRESA_CPFCNPJ",
-                    "para"  => $user->company_cpfcnpj ?? $user->parent->cpfcnpj
+                    "para"  => $user->company_cpfcnpj ?? $user->parent?->company_cpfcnpj ?? '53.912.699/001-22'
                 ],
                 [
                     "de"    => 'EMPRESA_ENDERECO',
-                    "para"  => $user->company_address ?? $user->parent->address()
+                    "para"  => $user->company_address ?? $user->parent?->company_address ?? 'Rua José Versolato, 101 - 12° Andar Centro São Bernado do Campo 09750-730'
                 ],
                 [
                     "de"    => 'EMPRESA_EMAIL',
-                    "para"  => $user->company_email ?? $user->parent->email
+                    "para"  => $user->company_email ?? $user->parent?->company_email ?? 'suporte@ampay.com.br'
                 ],
             ];
         } else {
@@ -287,20 +287,30 @@ class ContractController extends Controller {
         if ($sale->seller->white_label_contract == 1 || ($sale->seller->parent->white_label_contract == 1)) {
             
             $contractContent = Str::of($sale->product->contract_subject)
-            ->replace('{CLIENT_NAME}'       , $sale->user->name ?? 'N/A')
-            ->replace('{CLIENT_CPFCNPJ}'    , $sale->user->cpfcnpj ?? 'N/A')
-            ->replace('{CLIENT_BIRTH_DATE}' , $sale->user->birth_date 
-                    ? Carbon::parse($sale->user->birth_date)->format('d/m/Y') 
-                    : 'N/A')
-            ->replace('{SELLER_NAME}'    , $sale->seller->company_name      ?? $sale->seller->parent->company_name)
-            ->replace('{SELLER_CPFCNPJ}' , $sale->seller->cpfcnpj           ?? $sale->seller->parent->company_cpfcnpj)
-            ->replace('{SELLER_ADDRESS}' , $sale->seller->company_address   ?? $sale->seller->parent->company_address)
-            ->replace('{SELLER_EMAIL}'   , $sale->seller->company_email     ?? $sale->seller->parent->company_email)
-            ->replace('{SALE_VALUE}'     , $sale->value 
-                    ? 'R$ ' . number_format($sale->value, 2, ',', '.') 
-                    : '---')
-            ->replace('{SALE_METHOD}'    , $sale->paymentMethod->methodLabel().' em '.$sale->paymentMethod->installments.'x')
-            ->replace('{SALE_DATE}', date('d').'/'.date('m').'/'.date('Y'));
+            ->replace('{CLIENT_NAME}', $sale->user->name ?? 'N/A')
+            ->replace('{CLIENT_CPFCNPJ}', $sale->user->cpfcnpj ?? 'N/A')
+            ->replace('{CLIENT_BIRTH_DATE}', $sale->user->birth_date 
+                ? Carbon::parse($sale->user->birth_date)->format('d/m/Y') 
+                : 'N/A')
+            ->replace('{SELLER_NAME}', 
+                $sale->seller?->company_name ?? $sale->seller?->parent?->company_name ?? 'AMPAY SOLUÇÕES'
+            )
+            ->replace('{SELLER_CPFCNPJ}', 
+                $sale->seller?->company_cpfcnpj ?? $sale->seller?->parent?->company_cpfcnpj ?? '53.912.699/001-22'
+            )
+            ->replace('{SELLER_ADDRESS}', 
+                $sale->seller?->company_address ?? $sale->seller?->parent?->company_address ?? 'Rua José Versolato, 101 - 12° Andar Centro São Bernado do Campo 09750-730'
+            )
+            ->replace('{SELLER_EMAIL}', 
+                $sale->seller?->company_email ?? $sale->seller?->parent?->company_email ?? 'suporte@ampay.com.br'
+            )
+            ->replace('{SALE_VALUE}', 
+                $sale->value ? 'R$ ' . number_format($sale->value, 2, ',', '.') : '---'
+            )
+            ->replace('{SALE_METHOD}', 
+                $sale->paymentMethod->methodLabel() . ' em ' . $sale->paymentMethod->installments . 'x'
+            )
+            ->replace('{SALE_DATE}', date('d') . '/' . date('m') . '/' . date('Y'));
         } else {
             
             $contractContent = Str::of($sale->product->contract_subject)
@@ -309,10 +319,10 @@ class ContractController extends Controller {
             ->replace('{CLIENT_BIRTH_DATE}' , $sale->user->birth_date 
                     ? Carbon::parse($sale->user->birth_date)->format('d/m/Y') 
                     : 'N/A')
-            ->replace('{SELLER_NAME}'    , $sale->seller->name ?? 'N/A')
-            ->replace('{SELLER_CPFCNPJ}' , $sale->seller->cpfcnpj ?? 'N/A')
-            ->replace('{SELLER_ADDRESS}' , $sale->seller->address() ?? 'N/A')
-            ->replace('{SELLER_EMAIL}'   , $sale->seller->email ?? 'N/A')
+            ->replace('{SELLER_NAME}'    , 'AMPAY SOLUÇÕES')
+            ->replace('{SELLER_CPFCNPJ}' , '53.912.699/001-22')
+            ->replace('{SELLER_ADDRESS}' , 'Rua José Versolato, 101 - 12° Andar Centro São Bernado do Campo 09750-730')
+            ->replace('{SELLER_EMAIL}'   , 'suporte@ampay.com.br')
             ->replace('{SALE_VALUE}'     , $sale->value 
                     ? 'R$ ' . number_format($sale->value, 2, ',', '.') 
                     : '---')
