@@ -428,9 +428,9 @@ class AssasController extends Controller {
             $g7Commission = ($value == 49.99) ? 0 : $commission * 0.05;
             $commission   = ($commission - $g7Commission) - 1;
 
-            // if ($wallet == env('WALLET_HEFESTO')) {
-            //     $g7Commission = 0;
-            // }
+            if ($wallet == env('WALLET_HEFESTO')) {
+                $g7Commission = 0;
+            }
 
             if ($g7Commission > 0 && $commission > 0) {
                 $options['json']['split'][] = [
