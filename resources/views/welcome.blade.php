@@ -47,10 +47,7 @@
                                         <button type="submit" class="form-control btn btn-primary rounded submit px-3">Acessar</button>
                                     </div>
                                     <div class="form-group d-md-flex">
-                                        <div class="w-50 text-left">
-                                            <label class="checkbox-wrap checkbox-primary mb-0">Salvar dados <input type="checkbox" checked> <span class="checkmark"></span> </label>
-                                        </div>
-                                        <div class="w-50 text-md-right">
+                                        <div class="text-md-right">
                                             <a href="{{ route('forgout') }}">Esqueci minha senha</a>
                                         </div>
                                     </div>

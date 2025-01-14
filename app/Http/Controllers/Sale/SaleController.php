@@ -98,7 +98,7 @@ class SaleController extends Controller {
                 return redirect()->back()->with('error', 'Não há uma lista disponível para vendas!');
             }
 
-            $productCost = $seller->fixed_cost > 0 ? $seller->fixed_cost : $product->value_cost;
+            $productCost = ($seller->fixed_cost > 0 ? $seller->fixed_cost : $product->value_cost) + $method->value_rate;
             $discountedValue = $baseValue * (1 - $discountPercentage / 100);
 
             $commission = (($discountedValue - $productCost) - $product->value_rate);

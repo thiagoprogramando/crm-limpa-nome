@@ -24,12 +24,13 @@ class AssasController extends Controller {
     public function createSalePayment($id, $notification = null) {
 
         $sale      = Sale::find($id);
+        $method    = Payment::where('id', $sale->id_payment)->first();
         $product   = Product::find($sale->id_product);
         $client    = User::find($sale->id_client);
         $seller    = User::find($sale->id_seller);
         $filiate   = User::where('id', $seller->filiate)->first() ?? null;
         
-        $productCost = $seller->fixed_cost > 0 ? $seller->fixed_cost : $product->value_cost;
+        $productCost = ($seller->fixed_cost > 0 ? $seller->fixed_cost : $product->value_cost) + $method->value_rate;
         $commission = $sale->commission;
 
         if ($seller->type == 4) {
@@ -56,7 +57,7 @@ class AssasController extends Controller {
 
     private function invoiceBoleto($value, $value_cost, $commission, $sale, $wallet, $client, $filiate = null, $notification = null) {
     
-        $valueInstallment = $value / $sale->installments;
+        $valueInstallment = $sale->installments > 0 ? $value / $sale->installments : 0;
     
         if (Invoice::where('id_sale', $sale->id)->count() >= 2) {
             return true;
@@ -288,7 +289,7 @@ class AssasController extends Controller {
             }
         }
 
-        $charge = $this->createCharge($user->customer, 'PIX', '49.90', 'Assinatura -'.env('APP_NAME'), now()->addDay(), null, env('WALLET_HEFESTO'), 20);
+        $charge = $this->createCharge($user->customer, 'PIX', '49.99', 'Assinatura -'.env('APP_NAME'), now()->addDay(), null, env('WALLET_HEFESTO'), 20);
         if($charge <> false) {
 
             $invoice = new Invoice();
@@ -417,43 +418,38 @@ class AssasController extends Controller {
 
         
         if (($filiate <> null) && ($commission_filiate > 0)) {
-            if (!isset($options['json']['split'])) {
-                $options['json']['split'] = [];
-            }
-        
             $options['json']['split'][] = [
-                'walletId'          => $filiate->wallet,
-                'totalFixedValue'   => number_format($commission_filiate, 2, '.', '')
+                'walletId'        => $filiate->wallet,
+                'totalFixedValue' => number_format($commission_filiate, 2, '.', '')
             ];
         }
 
-        if ($commission > 0 && $value > 50) {
-            if (!isset($options['json']['split'])) {
-                $options['json']['split'] = [];
-            }
+        if ($value > 0) {
+            $g7Commission = ($value == 49.99) ? 0 : $commission * 0.05;
+            $commission   = ($commission - $g7Commission) - 1;
 
-            $g7Commission = $commission * 0.05;
-            $commission = ($commission - $g7Commission) - 1;
+            // if ($wallet == env('WALLET_HEFESTO')) {
+            //     $g7Commission = 0;
+            // }
 
-            if($wallet <> env('WALLET_HEFESTO')) {
+            if ($g7Commission > 0 && $commission > 0) {
                 $options['json']['split'][] = [
                     'walletId'        => env('WALLET_G7'),
-                    'totalFixedValue' => number_format($g7Commission, 2, '.', ''),
+                    'totalFixedValue' => number_format($g7Commission, 2, '.', '')
+                ];
+
+                $options['json']['split'][] = [
                     'walletId'        => env('WALLET_HEFESTO'),
-                    'totalFixedValue' => 0.5,
+                    'totalFixedValue' => 1
                 ];
             }
-        }
-        
-        if ($wallet != null && $commission > 0) {
-            if (!isset($options['json']['split'])) {
-                $options['json']['split'] = [];
+
+            if (!empty($wallet) && $commission > 0) {
+                $options['json']['split'][] = [
+                    'walletId'        => $wallet,
+                    'totalFixedValue' => number_format($commission, 2, '.', '')
+                ];
             }
-        
-            $options['json']['split'][] = [
-                'walletId'          => $wallet,
-                'totalFixedValue' => number_format(($commission - 1.99), 2, '.', '')
-            ];
         }
         
         $response = $client->post(env('API_URL_ASSAS') . 'v3/payments', $options);
