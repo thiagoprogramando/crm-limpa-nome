@@ -174,6 +174,10 @@ class User extends Authenticatable {
         return $this->belongsTo(User::class, 'filiate');
     }
 
+    public function afiliates() {
+        return $this->hasMany(User::class, 'filiate', 'id');
+    }
+
     public function timeMonthly() {
        
         $lastInvoice = $this->invoices()->where('type', 1)->orderBy('due_date', 'desc')->first();

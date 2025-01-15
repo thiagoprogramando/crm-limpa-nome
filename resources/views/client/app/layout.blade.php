@@ -33,7 +33,7 @@
             <div class="d-flex align-items-center justify-content-between">
                 <a href="{{ route('app.cliente') }}" class="logo d-flex align-items-center">
                     <img src="{{ asset('assets/dashboard/img/favicon.png') }}">
-                    <span class="d-none d-lg-block">{{ env('APP_NAME') }}</span>
+                    <span class="d-none d-lg-block text-white">{{ env('APP_NAME') }}</span>
                 </a>
                 <i class="bi bi-list toggle-sidebar-btn"></i>
             </div>
@@ -51,7 +51,7 @@
                     @endphp
                     <li class="nav-item dropdown pe-3">
                         <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                            <span class="dropdown-toggle ps-2">{{ $firstName }}</span>
+                            <span class="dropdown-toggle ps-2 text-white">{{ $firstName }}</span>
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">

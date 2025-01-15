@@ -5,7 +5,7 @@
         <h1>Faturas</h1>
         <nav>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('app.cliente') }}">Escritório</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('app.cliente') }}">Início</a></li>
                 <li class="breadcrumb-item active">Faturas</li>
             </ol>
         </nav>
@@ -14,17 +14,9 @@
     
     <section class="section dashboard">
         <div class="row">
-
             <div class="col-12">
-
-                <div class="btn-group mb-3" role="group">
-                    <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
-                </div>
-    
-                <div class="card p-5">
+                <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Faturas</h5>
-                        
                         <div class="table-responsive">
                             <table class="table table-hover" id="table">
                                 <thead>
@@ -94,7 +86,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </section>
 @endsection

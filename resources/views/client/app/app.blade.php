@@ -5,7 +5,7 @@
         <h1>Minhas Compras</h1>
         <nav>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('app.cliente') }}">Escritório</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('app.cliente') }}">Início</a></li>
                 <li class="breadcrumb-item active">Minhas Compras</li>
             </ol>
         </nav>
@@ -14,15 +14,8 @@
     <section class="section dashboard">
         <div class="row">
             <div class="col-12 co-sm-12 col-md-12 col-lg-12">
-                <div class="btn-group mb-3" role="group">
-                    <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
-                </div>
-    
-                <div class="card p-3">
+                <div class="card">
                     <div class="card-body">
-                        <h2>Compras</h2>
-                        <hr>
-
                         <div class="row">
                             @foreach ($sales as $sale)
                                 <div class="col-sm-12 col-md-6 col-lg-6">

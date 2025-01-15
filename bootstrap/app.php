@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\Cache;
 use App\Http\Middleware\CheckAccount;
+use App\Http\Middleware\CheckCache;
 use App\Http\Middleware\Monthly;
 use App\Http\Middleware\ShareProducts;
 use Illuminate\Foundation\Application;
@@ -16,7 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->web([ShareProducts::class]);
+        $middleware->web( [
+            ShareProducts::class,
+            CheckCache::class
+        ]);
 
         $middleware->appendToGroup('monthly', [
             Monthly::class,
