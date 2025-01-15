@@ -520,7 +520,7 @@ class AssasController extends Controller {
                 $options = [
                     'headers' => [
                         'Content-Type' => 'application/json',
-                        'access_token' => env('API_TOKEN_ASSAS'),
+                        'access_token' => env('API_TOKEN_ASSAS_OPTIONAL'),
                         'User-Agent'   => env('APP_NAME'),
                     ],
                     'json' => [
