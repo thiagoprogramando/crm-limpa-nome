@@ -11,6 +11,7 @@ use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\User;
+use App\Models\Coupon;
 
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -506,8 +507,13 @@ class AssasController extends Controller {
             
             $user = User::find($invoice->id_user);
             if ($user) {
+                
                 if ($user->api_key != null) {
                     return ['status' => true];
+                }
+
+                if ($user->parent->afiliates()->count() % 2 === 0) {
+                    $this->createCoupon($user->parent);
                 }
     
                 $client = new Client();
@@ -594,7 +600,38 @@ class AssasController extends Controller {
         }
     
         return ['status' => false, 'error' => 'Dados do usuário ou Faturas não localizados'];
-    }    
+    }
+    
+    public function createCoupon($parent) {
+
+        $couponName = $this->generateCouponName($parent->name);
+
+        $coupon                 = new Coupon();
+        $coupon->name           = $couponName;
+        $coupon->description    = 'Promoção 2 Afiliados 1 Mensalidade';
+        $coupon->id_user        = $parent->id;
+        $coupon->percentage     = 100;
+        $coupon->qtd            = 1;
+        if($coupon->save()) {
+            $message =  "*Surpresa Especial para Você! 🎁* \r\n\r\n"
+                        . "Como forma de agradecimento por ser um parceiro incrível, preparamos um *cupom de {$coupon->percentage}% de desconto* para você aproveitar na sua próxima mensalidade! \r\n\r\n"
+                        . "Código do cupom: *{$couponName}* \r\n"
+                        . "Não deixe essa oportunidade passar! Use o código na sua fatura e aproveite para economizar. \r\n"
+                        . "Agradecemos por fazer parte da nossa jornada! \r\n\r\n";
+
+            $assas = new AssasController();
+            $assas->sendWhatsapp('', $message, $parent->phone, $parent->api_token_zapapi);
+        }
+
+        return true;
+    }
+
+    private function generateCouponName(string $name): string {
+
+        $baseName = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $name));
+        $existingCouponsCount = Coupon::where('name', 'like', "{$baseName}%")->count();
+        return $existingCouponsCount > 0 ? "{$baseName}".($existingCouponsCount + 1) : $baseName;
+    }
 
     public function webhook(Request $request) {
 
@@ -1109,39 +1146,27 @@ class AssasController extends Controller {
 
     public function webhookAccount(Request $request) {
 
-        $this->logRequest($request);
-
         $jsonData = $request->json()->all();
-        $user = User::where('wallet_id', $jsonData['accountStatus']['id'])->first();
-        if($user) {
-            switch ($jsonData['event']) {
-                case 'ACCOUNT_STATUS_GENERAL_APPROVAL_APPROVED':
-                    $user->status = 1;
-                    $user->save();
-                    break;
-                case 'ACCOUNT_STATUS_GENERAL_APPROVAL_PENDING':
-                    $user->status = 2;
-                    $user->save();
-                    break;
-            }        
-            return response()->json(['status' => 'success', 'message' => 'Tratamento realizado para status da Conta!']);
+        if (isset($jsonData['accountStatus']) && isset($jsonData['accountStatus']['id'])) {
+            $user = User::where('wallet_id', $jsonData['accountStatus']['id'])->first();
+
+            if ($user) {
+                switch ($jsonData['event'] ?? '') {
+                    case 'ACCOUNT_STATUS_GENERAL_APPROVAL_APPROVED':
+                        $user->status = 1;
+                        $user->save();
+                        break;
+                    case 'ACCOUNT_STATUS_GENERAL_APPROVAL_PENDING':
+                        $user->status = 2;
+                        $user->save();
+                        break;
+                }
+
+                return response()->json(['status' => 'success', 'message' => 'Tratamento realizado para status da Conta!']);
+            }
         }
 
         return response()->json(['status' => 'success', 'message' => 'Não há nenhuma conta associada ao conteúdo da requisição!']);
-    }
-
-    private function logRequest(Request $request) {
-
-        $logPath = public_path('request_log.txt');
-    
-        $requestData = [
-            'headers' => $request->header(),
-            'body' => $request->json()->all(),
-        ];
-    
-        $logMessage = "Request Log:\n" . json_encode($requestData, JSON_PRETTY_PRINT) . "\n\n";
-
-        file_put_contents($logPath, $logMessage, FILE_APPEND);
     }
 
     public function withdrawSend($key, $value, $type) {
