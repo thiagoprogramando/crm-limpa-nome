@@ -117,14 +117,28 @@ class CouponController extends Controller {
         $wallet     = $invoice->sale->seller->wallet;
 
         $assas = new AssasController();
+        if ($coupon->percentage == 100) {
+            if ($assas->cancelInvoice($invoice->token_payment)) {
+                
+                $invoice->status = 1;
+                if($invoice->save()) {
+
+                    $coupon->qtd -= 1;
+                    $coupon->save();
+
+                    return redirect()->back()->with('success', 'CUPOM aplicado com sucesso!');
+                }
+            }
+        }
+       
         $charge = $assas->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
-        if($charge) {
+        if ($charge) {
 
             $invoice->url_payment   = $charge['invoiceUrl'];
             $invoice->token_payment = $charge['id'];
             $invoice->value         = $value;
             $invoice->commission    = $commission;
-            if($invoice->save()) {
+            if ($invoice->save()) {
 
                 $coupon->qtd -= 1;
                 $coupon->save();
