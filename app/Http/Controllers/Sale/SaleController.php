@@ -302,8 +302,14 @@ class SaleController extends Controller {
             return redirect()->back()->with('error', 'Não encontramos dados da venda!');
         }
 
-        $sale->status  = $request->status;
-        $sale->id_list = $request->id_list;
+        if (!empty($request->status)) {
+            $sale->status = $request->status;
+        }
+        
+        if (!empty($request->id_list)) {
+            $sale->id_list = $request->id_list;
+        }
+        
         if($sale->save()) {
             return redirect()->back()->with('success', 'Dados alterados com sucesso!');
         }
