@@ -17,15 +17,11 @@
         <div class="col-12">
 
             <div class="btn-group mb-3" role="group">
-                @if(Auth::user()->type == 1 && (!empty($sale->user->email) && !empty($sale->user->birth_date))) 
+                @if(Auth::user()->type == 1) 
                     <a href="{{ route('request-invoices', ['id' => $sale->id]) }}" class="btn btn-outline-primary">Gerar Faturas</a>
                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#invoiceModal">Adicionar Fatura</button> 
-                @endif
-
-                @if(Auth::user()->type == 1) 
                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#updatedModal">Alterar dados</button>
                 @endif
-                <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
             </div>
 
             <div class="modal fade" id="updatedModal" tabindex="-1">
@@ -49,6 +45,17 @@
                                                 <option @selected($sale->status == 3) value="3">Pendente</option>
                                             </select>
                                             <label for="floatingSeller">Status</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                        <div class="form-floating">
+                                            <select name="id_list" class="form-select" id="floatinglist">
+                                                <option selected="" value="">Lista:</option>
+                                                @foreach ($lists as $list)
+                                                    <option value="{{ $list->id }}">{{ $list->name }}</option>  
+                                                @endforeach
+                                            </select>
+                                            <label for="floatinglist">Listas</label>
                                         </div>
                                     </div>
                                 </div>

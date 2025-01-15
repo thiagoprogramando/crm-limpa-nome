@@ -285,11 +285,13 @@ class SaleController extends Controller {
         $sale       = Sale::find($id);
         $invoices   = Invoice::where('id_sale', $sale->id)->orWhere('token_payment', $sale->token_payment)->get();
         $users      = User::whereIn('type', [1, 2, 5])->orderBy('name', 'asc')->get();
+        $lists = Lists::orderBy('created_at', 'desc')->get();
 
         return view('app.Sale.view', [
             'sale'      => $sale, 
             'invoices'  => $invoices,
-            'users'     => $users
+            'users'     => $users,
+            'lists'     => $lists,
         ]);
     }
 
@@ -300,7 +302,8 @@ class SaleController extends Controller {
             return redirect()->back()->with('error', 'Não encontramos dados da venda!');
         }
 
-        $sale->status = $request->status;
+        $sale->status  = $request->status;
+        $sale->id_list = $request->id_list;
         if($sale->save()) {
             return redirect()->back()->with('success', 'Dados alterados com sucesso!');
         }
@@ -396,7 +399,7 @@ class SaleController extends Controller {
         }
 
         if ($sale->status <> 1) {
-            return redirect()->back()->with('info', 'Função limitada a vendas confirmadas!');   
+            return redirect()->back()->with('info', 'Venda não foi confirmada!');   
         }
 
         $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
@@ -411,8 +414,14 @@ class SaleController extends Controller {
                 return redirect()->back()->with('error', 'Existem faturas vencidas associadas a Venda!');
             }
         }
-        $sale->id_list = $sale->label === 'REPROTOCOLADO' ? $sale->id_list : $list->id;
-        $sale->label   = $sale->label === 'REPROTOCOLADO' ? null : 'REPROTOCOLADO';
+        
+        $sale->id_list = $sale->label === 'REPROTOCOLADO' 
+            ? $sale->id_list 
+            : $list->id;
+        $sale->label   = $sale->label === 'REPROTOCOLADO - ' . now()->format('d/m/Y') 
+            ? null 
+            : 'REPROTOCOLADO - ' . now()->format('d/m/Y');
+
         if ($sale->save()) {
 
             if ($sale->label === 'REPROTOCOLADO') {

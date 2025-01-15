@@ -49,7 +49,7 @@
                                     <input type="hidden" name="type" value="{{ isset($type) ? $type : '' }}">
 
                                     <div class="form-group mb-3">
-                                        <input type="number" name="cpfcnpj" id="cpfcnpj" class="form-control" placeholder="CPF:" required>
+                                        <input type="number" name="cpfcnpj" id="cpfcnpj" class="form-control" placeholder="CPF/CNPJ:" required>
                                     </div>
                                     <div class="form-group d-flex mb-3">
                                         <input type="text" name="birth_date" id="nascimento" class="form-control" placeholder="Data de Nascimento:" oninput="mascaraData(this)" required>

@@ -57,6 +57,7 @@ function consultarCPF(cpf, nascimento) {
 
                 $('#consultaHub').addClass('d-none');
                 $('#formSale').removeClass('d-none');
+                $('#formRegistrer').removeClass('d-none');
             }
         })
         .catch(error => {
@@ -69,6 +70,7 @@ function consultarCPF(cpf, nascimento) {
 
             $('#consultaHub').addClass('d-none');
             $('#formSale').removeClass('d-none');
+            $('#formRegistrer').removeClass('d-none');
         });
 }
 
@@ -90,6 +92,7 @@ function consultarCNPJ(cnpj) {
 
                 $('#consultaHub').addClass('d-none');
                 $('#formSale').removeClass('d-none');
+                $('#formRegistrer').removeClass('d-none');
 
                 $('input[name=name]').val(data.result.nome);
                 $('input[name=cpfcnpj]').val(data.result.numero_de_inscricao);
@@ -103,6 +106,7 @@ function consultarCNPJ(cnpj) {
 
                 $('#consultaHub').addClass('d-none');
                 $('#formSale').removeClass('d-none');
+                $('#formRegistrer').removeClass('d-none');
             }
         })
         .catch(error => {
@@ -115,5 +119,6 @@ function consultarCNPJ(cnpj) {
 
             $('#consultaHub').addClasse('d-none');
             $('#formSale').removeClasse('d-none');
+            $('#formRegistrer').removeClass('d-none');
         });
 }

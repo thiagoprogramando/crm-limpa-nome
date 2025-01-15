@@ -176,7 +176,7 @@
                                             <span class="badge bg-dark">CPF/CNPJ: {{ $sale->user->cpfcnpjLabel() }}</span>
                                             @isset($sale->label) 
                                                 <span class="badge bg-primary">
-                                                    {{ $sale->label }} - {{ \Carbon\Carbon::parse($sale->update_at)->format('d/m/Y') }}
+                                                    {{ $sale->label }}
                                                 </span> 
                                             @endisset
                                         </td>
@@ -217,9 +217,7 @@
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $sale->id }}"> 
                                                 <div class="btn-group" role="group" aria-label="Basic outlined example">
-                                                    @if (is_int($sale->id_payment))
-                                                        <a title="Faturas" href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="bi bi-currency-dollar"></i></a>
-                                                    @endif
+                                                    <a title="Faturas" href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="bi bi-currency-dollar"></i></a>
                                                     @if ($sale->status == 1 && Auth::user()->type == 1)
                                                         <a title="Reprotocolar" href="{{ route('reprotocol-sale', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="bx bx-check-shield"></i></a>
                                                     @endif
