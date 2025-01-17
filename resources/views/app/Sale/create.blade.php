@@ -72,35 +72,35 @@
                                     <input type="hidden" name="id_seller" value="{{ Auth::user()->id }}">
 
                                     <div class="row">
-                                        <div class="col-7 row">
-                                            <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                        <div class="col-12 col-sm-12 col-md-7 col-lg-7 row">
+                                            <div class="col-12 col-sm-12 col-md-12 col-lg-12 mb-2">
                                                 <div class="form-floating">
                                                     <input type="text" name="name" class="form-control" id="floatingName" placeholder="Informe o nome do Cliente:" required>
                                                     <label for="floatingName">Nome:</label>
                                                 </div>
                                             </div>
         
-                                            <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                            <div class="col-12 col-sm-12 col-md-6 col-lg-6 mb-2">
                                                 <div class="form-floating">
                                                     <input type="text" name="email" class="form-control" id="floatingEmail" placeholder="Informe o email do Cliente:" required>
                                                     <label for="floatingEmail">Email:</label>
                                                 </div>
                                             </div>
-                                            <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                            <div class="col-12 col-sm-12 col-md-6 col-lg-6 mb-2">
                                                 <div class="form-floating">
                                                     <input type="text" name="phone" class="form-control" id="floatingPhone" placeholder="Informe o whatsapp do Cliente:" oninput="mascaraTelefone(this)" required>
                                                     <label for="floatingPhone">WhatsApp:</label>
                                                 </div>
                                             </div>
                                             
-                                            <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                            <div class="col-12 col-sm-12 col-md-6 col-lg-6 mb-2">
                                                 <div class="form-floating">
                                                     <input type="text" name="cpfcnpj" class="form-control" id="floatingCpfCnpj" placeholder="Informe o CPF ou CNPJ do Cliente:" oninput="mascaraCpfCnpj(this)" required>
                                                     <label for="floatingCpfCnpj">CPF ou CNPJ:</label>
                                                 </div>
                                             </div>
                 
-                                            <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                            <div class="col-12 col-sm-12 col-md-6 col-lg-6 mb-2">
                                                 <div class="form-floating">
                                                     <input type="text" name="birth_date" class="form-control" id="floatingBirth_date" placeholder="Data Nascimento:" oninput="mascaraData(this)" required>
                                                     <label for="floatingBirth_date">Data Nascimento:</label>
@@ -108,8 +108,8 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-5 row">
-                                            <div class="col-12 col-md-7 col-lg-7 mb-1">
+                                        <div class="col-12 col-sm-12 col-md-5 col-lg-5 row">
+                                            <div class="col-12 col-sm-12 col-md-7 col-lg-7 mb-1">
                                                 <div class="form-floating">
                                                     <select name="payment" class="form-select" id="floatingSelect" required>
                                                         <option selected="">Opções:</option>
@@ -119,20 +119,20 @@
                                                     <label for="floatingSelect">Forma de Pagamento</label>
                                                 </div>
                                             </div>
-                                            <div class="col-12 col-md-5 col-lg-5 mb-1">
+                                            <div class="col-12 col-sm-12 col-md-5 col-lg-5 mb-1">
                                                 <div class="form-floating">
                                                     <input type="number" name="installments" class="form-control" id="floatingInstallments" placeholder="Parcelas:">
                                                     <label for="floatingInstallments">Parcelas:</label>
                                                 </div>
                                             </div>
 
-                                            <div class="col-12 col-md-7 col-lg-7 mb-2">
+                                            <div class="col-12 col-sm-12 col-md-7 col-lg-7 mb-2">
                                                 <div class="form-floating">
                                                     <input type="text" name="value" class="form-control" id="floatingValue" placeholder="Valor da venda (Mín R$ {{ Auth::user()->fixed_cost }}):" oninput="mascaraReal(this)" required>
                                                     <label for="floatingValue">Entrada (Mín R$ {{ Auth::user()->fixed_cost }}):</label>
                                                 </div>
                                             </div>
-                                            <div class="col-12 col-md-5 col-lg-5 mb-2">
+                                            <div class="col-12 col-sm-12 col-md-5 col-lg-5 mb-2">
                                                 <div class="form-floating">
                                                     <input type="text" name="dueDate" class="form-control" id="floatingdueDate" placeholder="Vencimento:" oninput="mascaraData(this)">
                                                     <label for="floatingdueDate">Vencimento:</label>

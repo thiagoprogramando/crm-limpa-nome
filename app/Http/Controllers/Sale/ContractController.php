@@ -27,8 +27,8 @@ class ContractController extends Controller {
             return redirect()->back()->with('info', 'Não foi possível localizar os dados da venda! Tente novamente mais tarde.');
         }
 
-        if (is_null($sale->id_payment)) {
-            return redirect()->back()->with('info', 'Vendas (Manuais) não são integradas aos contratos digitais!');
+        if (empty($sale->user->name) || empty($sale->user->cpfcnpj) || empty($sale->user->birth_date)) {
+            return redirect()->back()->with('info', 'Cliente não está com os dados completos/ou é uma Venda Direta Associação!');
         }
 
         if (!empty($sale->url_contract)) {
