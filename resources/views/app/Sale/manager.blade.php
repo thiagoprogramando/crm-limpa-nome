@@ -148,7 +148,7 @@
                                 @foreach ($sales as $sale)
                                     <tr>
                                         <th scope="row">
-                                            <input type="checkbox" class="row-checkbox" value="{{ $sale->id }}"> {{ $sale->id }}
+                                            {{--  <input type="checkbox" class="row-checkbox" value="{{ $sale->id }}"> --}} {{ $sale->id }}
                                         </th>
                                         <th>
                                             {{ $sale->list->name }} <br>
@@ -186,7 +186,7 @@
                                             @endif
                                         </td>
                                         <td class="text-center">
-                                            @if (is_int($sale->id_payment))
+                                            @if (!empty($sale->user->phone))
                                                 @if ($sale->status_contract == 3)
                                                     <a title="Gerar Contrato" href="{{ route('send-contract', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="ri-file-edit-line"></i> Gerar Contrato</a>
                                                 @else

@@ -47,33 +47,25 @@
                                     @endif
                                     <input type="hidden" name="filiate" value="{{ isset($id) ? $id : '' }}">
                                     <input type="hidden" name="type" value="{{ isset($type) ? $type : '' }}">
-
+                                    <div class="form-group mb-3">
+                                        <input type="text" name="name" class="form-control" placeholder="Nome:" required>
+                                    </div>
                                     <div class="form-group mb-3">
                                         <input type="number" name="cpfcnpj" id="cpfcnpj" class="form-control" placeholder="CPF/CNPJ:" required>
                                     </div>
-                                    <div class="form-group d-flex mb-3">
-                                        <input type="text" name="birth_date" id="nascimento" class="form-control" placeholder="Data de Nascimento:" oninput="mascaraData(this)" required>
-                                        <button type="button" class="btn btn-primary" onclick="consulta()"><i class="bi bi-search text-white"></i></button>
+                                    <div class="form-group mb-3">
+                                        <input type="email" name="email" class="form-control" placeholder="Email:" required>
                                     </div>
-
-                                    <div id="formRegistrer" class="d-none">
-                                        <div class="form-group mb-3">
-                                            <input type="text" name="name" class="form-control" placeholder="Nome:" required>
+                                    <div class="form-group mb-3">
+                                        <input type="number" name="phone" class="form-control" placeholder="Telefone:" required>
+                                    </div>
+                                    <div class="form-group d-md-flex">
+                                        <div class="w-100 text-left">
+                                            <label class="checkbox-wrap checkbox-primary mb-0">Concordo com os termos de uso <input type="checkbox" name="terms" checked> <span class="checkmark"></span> </label>
                                         </div>
-                                        <div class="form-group mb-3">
-                                            <input type="number" name="phone" class="form-control" placeholder="Telefone:" required>
-                                        </div>
-                                        <div class="form-group mb-3">
-                                            <input type="email" name="email" class="form-control" placeholder="Email:" required>
-                                        </div>
-                                        <div class="form-group d-md-flex">
-                                            <div class="w-100 text-left">
-                                                <label class="checkbox-wrap checkbox-primary mb-0">Concordo com os termos de uso <input type="checkbox" name="terms" checked> <span class="checkmark"></span> </label>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <button type="submit" class="form-control btn btn-primary rounded submit px-3">Cadastrar-me</button>
-                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="form-control btn btn-primary rounded submit px-3">Cadastrar-me</button>
                                     </div>
                                 </form>
                                 <p class="text-center">Já é um membro? <a href="{{ route('login') }}">Acessar</a></p>
@@ -89,7 +81,6 @@
         <script src="{{ asset('assets/login-form/js/popper.js') }}"></script>
         <script src="{{ asset('assets/login-form/js/bootstrap.min.js') }}"></script>
         <script src="{{ asset('assets/login-form/js/main.js') }}"></script>
-        <script src="{{ asset('assets/dashboard/js/hub.js') }}"></script>
         <script src="{{ asset('assets/dashboard/js/mask.js') }}"></script>
         <script>
             @if(session('error'))

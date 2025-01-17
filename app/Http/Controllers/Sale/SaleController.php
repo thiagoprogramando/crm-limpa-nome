@@ -11,17 +11,13 @@ use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\User;
-use App\Models\Item;
 use App\Models\Coupon;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 use Carbon\Carbon;
-
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
-
 
 class SaleController extends Controller {
 
@@ -41,18 +37,18 @@ class SaleController extends Controller {
         $user = $this->createUser($request->name, $request->email, $request->cpfcnpj, $request->birth_date, $request->phone, $request->postal_code, $request->address, $request->complement, $request->city, $request->state, $request->num, $request->id_seller);
         if ($user != false) {
 
-            $seller = User::find($request->id_seller);
-            if (!$seller) {
-                return redirect()->back()->with('error', 'Dados do CONSULTOR DE VENDAS não localizados no sistema!');
-            }
-
-            if (($seller && $seller->fixed_cost > 0) && ($this->formatarValor($request->value) < $seller->fixed_cost)) {
-                return redirect()->back()->with('error', 'O valor mín de venda é: R$ '.$seller->fixed_cost.'!');
-            }
-
             $product = Product::where('id', $request->product)->first();
             if (!$product) {
                 return redirect()->back()->with('error', 'Produto não disponível!');
+            }
+
+            $seller = User::find($request->id_seller);
+            if (!$seller) {
+                return redirect()->back()->with('error', 'Consultor de Vendas não localizado no sistema!');
+            }
+
+            if (($seller && $seller->fixed_cost > 0) && ($this->formatarValor($request->value) < $seller->fixed_cost)) {
+                return redirect()->back()->with('error', 'O valor mín de entrada é: R$ '.$seller->fixed_cost.'!');
             }
 
             $baseValue = $this->formatarValor($request->value);
@@ -88,23 +84,18 @@ class SaleController extends Controller {
                 return redirect()->back()->with('error', 'O valor max de venda é: R$ '.$product->value_max.'!');
             }
 
-            $method = Payment::where('id', $request->payment)->first();
-            if (!$method) {
-                return redirect()->back()->with('error', 'Forma de pagamento não disponível!');
-            }
-
             $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
             if (!$list) {
                 return redirect()->back()->with('error', 'Não há uma lista disponível para vendas!');
             }
 
-            $productCost = ($seller->fixed_cost > 0 ? $seller->fixed_cost : $product->value_cost) + $method->value_rate;
+            $productCost = ($seller->fixed_cost > 0 ? $seller->fixed_cost : $product->value_cost);
             $discountedValue = $baseValue * (1 - $discountPercentage / 100);
 
             $commission = (($discountedValue - $productCost) - $product->value_rate);
 
             if ($seller->filiate <> null) {
-                $commissionFiliate = ($seller->fixed_cost - $seller->parent->fixed_cost);
+                $commissionFiliate = max(($seller->fixed_cost - $seller->parent->fixed_cost), 0);
             } else {
                 $commissionFiliate = 0;
             }          
@@ -113,24 +104,26 @@ class SaleController extends Controller {
             $sale->id_client    = $user->id;
             $sale->id_product   = $request->product;
             $sale->id_list      = $list->id;
-            $sale->id_payment   = $method->id;
             $sale->id_seller    = !empty($request->id_seller) ? $request->id_seller : Auth::id();
 
-            $sale->payment          = $method->method;
-            $sale->installments     = $method->installments;
+            $sale->payment          = $request->payment;
+            $sale->installments     = $request->installments;
             $sale->status_contract  = 3;
             $sale->status           = 0;
-            $sale->wallet_off       = $request->has('wallet_off') ? 1 : null;
 
-            $sale->value                = $discountedValue + $method->value_rate;
+            $sale->value                = $discountedValue;
             $sale->commission           = max($commission, 0);
             $sale->commission_filiate   = $commissionFiliate;
-            $sale->save();
-            
-            $assas = new AssasController();
-            $invoice = $assas->createSalePayment($sale->id, true);
-            if ($invoice) {
-                return redirect()->back()->with('success', 'Sucesso! Os dados de pagamento foram enviados para o Cliente!');
+            if ($sale->save()) {
+
+                $assas = new AssasController();
+                $invoice = $assas->createSalePayment($sale->id, true, $request->dueDate);
+                if ($invoice) {
+                    return redirect()->route('update-sale', ['id' => $sale->id])->with('success', 'Sucesso! Os dados de pagamento foram enviados para o cliente!');
+                }
+
+                $sale->delete();
+                return redirect()->back()->with('info', 'Verifique os dados e tente novamente!');
             }
 
             return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
@@ -138,14 +131,22 @@ class SaleController extends Controller {
     }
 
     private function createUser($name, $email, $cpfcnpj, $birth_date, $phone, $postal_code = null, $address = null, $complement = null, $city = null, $state = null, $num = null, $filiate = null) {
-
-        $user = User::where('cpfcnpj', str_replace(['.', '-'], '', $cpfcnpj))->first();
+        
+        $cpfcnpj = preg_replace('/\D/', '', $cpfcnpj);
+        $email = preg_replace('/[^\w\d\.\@\-\_]/', '', $email);
+    
+        try {
+            $birth_date = Carbon::createFromFormat('d/m/Y', $birth_date)->format('Y-m-d');
+        } catch (\Exception $e) {
+            $birth_date = null;
+        }
+    
+        $user = User::where('cpfcnpj', $cpfcnpj)->first();
         if ($user) {
-
             $user->name         = $name;
-            $user->email        = preg_replace('/[^\w\d\.\@\-\_]/', '', $email);
-            $user->cpfcnpj      = preg_replace('/\D/', '', $cpfcnpj);
-            $user->birth_date   = date('Y-m-d', strtotime($birth_date));
+            $user->email        = $email;
+            $user->cpfcnpj      = $cpfcnpj;
+            $user->birth_date   = $birth_date;
             $user->phone        = $phone;
             $user->postal_code  = $postal_code;
             $user->address      = $address;
@@ -154,16 +155,16 @@ class SaleController extends Controller {
             $user->state        = $state;
             $user->num          = $num;
             $user->save();
-
+    
             return $user;
         }
         
         $user               = new User();
         $user->name         = $name;
-        $user->email        = preg_replace('/[^\w\d\.\@\-\_]/', '', $email);
-        $user->cpfcnpj      = preg_replace('/\D/', '', $cpfcnpj);
-        $user->birth_date   = date('Y-m-d', strtotime($birth_date));
-        $user->password     = bcrypt(str_replace(['.', '-'], '', $cpfcnpj));
+        $user->email        = $email;
+        $user->cpfcnpj      = $cpfcnpj;
+        $user->birth_date   = $birth_date;
+        $user->password     = bcrypt($cpfcnpj);
         $user->phone        = $phone;
         $user->postal_code  = $postal_code;
         $user->address      = $address;
@@ -173,12 +174,13 @@ class SaleController extends Controller {
         $user->num          = $num;
         $user->type         = 3;
         $user->filiate      = $filiate;
+    
         if ($user->save()) {
             return $user;
         }
-
+    
         return false;
-    }
+    }    
 
     private function sendWhatsapp($link, $message, $phone, $token = null) {
 
@@ -486,7 +488,7 @@ class SaleController extends Controller {
 
         $product = Product::find($request->product_id);
         if (!$product) {
-            return redirect()->back()->with('info', 'Não foi possível localizar os dados do Produto!');
+            return redirect()->back()->with('info', 'Produto indisponível!');
         }
 
         $sale = Sale::find($request->sale_id);
@@ -494,20 +496,35 @@ class SaleController extends Controller {
             return redirect()->back()->with('info', 'Não foi possível localizar os dados da Venda!');
         }
 
+        if (Auth::user()->type <> 1) {
+            $wallet     = $sale->seller->wallet;
+            $commission = $request->value;
+        } else {
+            $wallet     = $request->wallet;
+            $commission = $request->commission;
+        }
+
         if (!empty($request->wallet) && $this->formatarValor($request->commission) <= 0) {
             return redirect()->back()->with('info', 'Informe um valor de comissão!');
         }
 
         $assasController = new AssasController();
-        $assasInvoice = $assasController->createCharge($sale->user->customer, $request->billingType, $this->formatarValor($request->value), 'Fatura única para venda N°'.$sale->id, $request->due_date, 1, $sale->seller->wallet, $this->formatarValor($request->commission));
+
+        if (empty($sale->user->customer)) {
+            $customer = $assasController->createCustomer($sale->user->name, $sale->user->cpfcnpj, $sale->user->phone, $sale->user->email);
+        } else {
+            $customer = $sale->user->customer;
+        }
+        
+        $assasInvoice = $assasController->createCharge($customer, $request->billingType, $this->formatarValor($request->value), 'Fatura para venda N° '.$sale->id, $request->due_date, 1, $wallet, $this->formatarValor($commission));
         if ($assasInvoice <> false) {
 
             $invoice                = new Invoice();
             $invoice->id_user       = $sale->id_client;
             $invoice->id_product    = $product->id;
             $invoice->id_sale       = $sale->id;
-            $invoice->name          = 'Fatura única para venda N°'.$sale->id;
-            $invoice->description   = 'Fatura única para venda N°'.$sale->id;
+            $invoice->name          = 'Fatura para venda N° '.$sale->id;
+            $invoice->description   = 'Fatura para venda N° '.$sale->id;
             $invoice->token_payment = $assasInvoice['id'];
             $invoice->url_payment   = $assasInvoice['invoiceUrl'];
             $invoice->due_date      = $request->due_date;

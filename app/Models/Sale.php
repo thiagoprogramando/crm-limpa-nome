@@ -42,7 +42,17 @@ class Sale extends Model {
     }
 
     public function paymentMethod() {
-        return $this->belongsTo(Payment::class, 'id_payment');
+        switch ($this->payment) {
+            case 'PIX':
+                return 'Pix';
+                break;
+            case 'BOLETO':
+                return 'Boleto';
+                break;
+            default:
+                return 'Cartão de Crédito';
+                break;
+        }
     }
 
     public function user() {

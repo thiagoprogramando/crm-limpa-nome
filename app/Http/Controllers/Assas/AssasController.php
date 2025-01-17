@@ -22,17 +22,14 @@ use Illuminate\Support\Facades\DB;
 
 class AssasController extends Controller {
 
-    public function createSalePayment($id, $notification = null) {
+    public function createSalePayment($id, $notification = null, $dueDate = null) {
 
         $sale      = Sale::find($id);
-        $method    = Payment::where('id', $sale->id_payment)->first();
-        $product   = Product::find($sale->id_product);
         $client    = User::find($sale->id_client);
         $seller    = User::find($sale->id_seller);
         $filiate   = User::where('id', $seller->filiate)->first() ?? null;
         
-        $productCost = ($seller->fixed_cost > 0 ? $seller->fixed_cost : $product->value_cost) + $method->value_rate;
-        $commission = $sale->commission;
+        $commission  = $sale->commission;
 
         if ($seller->type == 4) {
             $commission = 0;
@@ -40,13 +37,13 @@ class AssasController extends Controller {
 
         switch ($sale->payment) {
             case 'BOLETO':
-                return $this->invoiceBoleto($sale->value, $productCost, $commission, $sale, $seller->wallet, $client, $filiate, $notification);
+                return $this->invoiceBoleto($sale->value, $commission, $sale, $seller->wallet, $client, $filiate, $notification, $dueDate);
                 break;
             case 'CREDIT_CARD':
                 return $this->invoiceCard($sale->value, $commission, $sale, $seller->wallet, $client, $filiate);
                 break;
             case 'PIX':
-                return $this->invoiceBoleto($sale->value, $productCost, $commission, $sale, $seller->wallet, $client, $filiate, $notification);
+                return $this->invoiceBoleto($sale->value, $commission, $sale, $seller->wallet, $client, $filiate, $notification, $dueDate);
                 break;
             default:
                 return false;
@@ -56,117 +53,61 @@ class AssasController extends Controller {
         return false;
     }
 
-    private function invoiceBoleto($value, $value_cost, $commission, $sale, $wallet, $client, $filiate = null, $notification = null) {
-    
-        $valueInstallment = $sale->installments > 0 ? $value / $sale->installments : 0;
-    
-        if (Invoice::where('id_sale', $sale->id)->count() >= 2) {
+    private function invoiceBoleto($value, $commission, $sale, $wallet, $client, $filiate = null, $notification = null, $dueDate = null) {
+
+        //Válida se já existem faturas (Entrada já emitida)
+        if (Invoice::where('id_sale', $sale->id)->count() >= 1) {
             return true;
         }
 
+        //Cria o cliente no Gateway Assas
         $customer = $this->createCustomer($client->name, $client->cpfcnpj, $client->phone, $client->email);
         if ($customer == false) {
             return false;
         }
 
+        //Define Comissão Patrocinador
         if ($filiate) {
-            $commission_filiate = $sale->seller->fixed_cost - $filiate->fixed_cost;
+            $commission_filiate = max($sale->seller->fixed_cost - $filiate->fixed_cost, 0);
         } else {
             $commission_filiate = 0;
         }
 
-        if ($valueInstallment < $value_cost) {
-            
-            $firstInstallmentValue          = $value_cost;
-            $installmentValue               = ($value - $firstInstallmentValue) / ($sale->installments - 1); 
-            
-            $firstInstallmentCommission     = 0;
-            $installmentCommission          = 0;
-            $firstInstallmentFiliate        = $commission_filiate;
-            $installmentCommissionFiliate   = 0;
-        } else {
-            
-            $firstInstallmentValue         = $valueInstallment;
-            $installmentValue              = $valueInstallment;
-            
-            $firstInstallmentFiliate       = ($commission_filiate / max(1, ($sale->installments - 1)));
-            $installmentCommissionFiliate  = (($commission_filiate - $firstInstallmentFiliate) / max(1, ($sale->installments - 1)));
-            $firstInstallmentCommission    = max(0, ($valueInstallment - $value_cost));
-            $installmentCommission         = min($installmentValue, (($commission - $firstInstallmentCommission) / max(1, ($sale->installments - 1))));
+        $dueDate = $dueDate 
+            ? Carbon::parse($dueDate)->toIso8601String() 
+            : now()->addDay();
+
+        $charge = $this->createCharge($customer, $sale->payment, $value, 'Fatura N° 1 da venda N° '.$sale->id, $dueDate, null, $wallet, $commission, $filiate, $commission_filiate);  
+        if ($charge == false) {
+            return false;
         }
         
-        $existingInvoice = Invoice::where('id_sale', $sale->id)->first();
-        if (!$existingInvoice) {
+        $invoice = new Invoice();
+        $invoice->id_user               = $sale->id_client;
+        $invoice->id_sale               = $sale->id;
+        $invoice->id_product            = $sale->id_product;
+        $invoice->name                  = env('APP_NAME').' - Fatura';
+        $invoice->description           = 'Fatura N° 1 da venda N° '.$sale->id;
+        $invoice->url_payment           = $charge['invoiceUrl'];
+        $invoice->token_payment         = $charge['id'];
+        $invoice->value                 = $value;
+        $invoice->commission            = $commission;
+        $invoice->commission_filiate    = $commission_filiate;
+        $invoice->due_date              = $dueDate;
+        $invoice->num                   = 1;
+        $invoice->type                  = 3;
+        $invoice->status                = 0;
+        if ($invoice->save()) {
 
-            $charge = $this->createCharge($customer, $sale->payment, $firstInstallmentValue, 'Fatura N° 1 da venda N°'.$sale->id, now()->addDay(), null, $wallet, max(0, $firstInstallmentCommission - 2), $filiate, max(0, $firstInstallmentFiliate));  
-            if ($charge == false) {
-                return false;
-            }
-
-            $invoice = new Invoice();
-            $invoice->id_user               = $sale->id_client;
-            $invoice->id_sale               = $sale->id;
-            $invoice->id_product            = $sale->id_product;
-            $invoice->name                  = env('APP_NAME').' - Fatura';
-            $invoice->description           = 'Fatura N° 1 da venda N° '.$sale->id;
-            $invoice->url_payment           = $charge['invoiceUrl'];
-            $invoice->token_payment         = $charge['id'];
-            $invoice->value                 = $firstInstallmentValue;
-            $invoice->commission            = max(0, $firstInstallmentCommission - 2);
-            $invoice->commission_filiate    = max(0, $firstInstallmentFiliate);
-            $invoice->due_date              = now()->addDay();
-            $invoice->num                   = 1;
-            $invoice->type                  = 3;
-            $invoice->status                = 0;
-            $invoice->save();
-
-            $invoice = Invoice::where('id_sale', $sale->id)->where('status', 0)->orderBy('created_at', 'asc')->first();
-            if ($invoice && $notification == true) {
-                $message = "Prezado(a) {$sale->user->name}, estamos enviando o link para pagamento da sua contratação aos serviços da nossa assessoria. \r\n\r\n\r\n".
-                           "Consulte os termos do seu contrato aqui👇🏼 \r\n".
-                           env('APP_URL')."preview-contract/".$sale->id."\r\n\r\n\r\n".
-                           "PARA FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳";
+            if ($notification == true) {
+                $message = "Prezado(a) {$sale->user->name}, estamos enviando o link para pagamento da sua contratação aos serviços da nossa assessoria. \r\n\r\n\r\n"."Consulte os termos do seu contrato aqui👇🏼 \r\n".env('APP_URL')."preview-contract/".$sale->id."\r\n\r\n\r\n"."PARA FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳";
                 return $this->sendInvoice($invoice->url_payment, $sale->id_client, $message, $sale->seller->api_token_zapapi);
             }
-    
-        } else {
-
-            for ($i = 2; $i <= $sale->installments; $i++) {
-
-                $charge = $this->createCharge($customer, $sale->payment, ($i == 1) ? $firstInstallmentValue : $installmentValue, 'Fatura N°'.$i.' da venda N°'.$sale->id, ($i == 1) ? now()->addDay() : now()->addMonths($i - 1), null, $wallet, ($i == 1) ? max(0, $firstInstallmentValue - 2) : max(0, $installmentValue - 2), $filiate, ($i == 1) ? $firstInstallmentFiliate : $installmentCommissionFiliate);
-                if ($charge == false) {
-                    return false;
-                }
-
-                $invoice = new Invoice();
-                $invoice->id_user       = $sale->id_client;
-                $invoice->id_sale       = $sale->id;
-                $invoice->id_product    = $sale->id_product;
-                $invoice->name          = env('APP_NAME').' - Fatura';
-                $invoice->description   = 'Fatura N° '.$i.' da venda N° '.$sale->id;
-                $invoice->url_payment   = $charge['invoiceUrl'];
-                $invoice->token_payment = $charge['id'];
-                $invoice->value         = ($i == 1) ? $firstInstallmentValue : $installmentValue;
-                $invoice->commission    = ($i == 1) 
-                    ? max(0, $firstInstallmentValue - 2)
-                    : max(0, $installmentValue - 2);
-                $invoice->commission_filiate    = ($i == 1) 
-                    ? $firstInstallmentFiliate 
-                    : $installmentCommissionFiliate;
-                $invoice->due_date              = ($i == 1) ? now()->addDay() : now()->addMonths($i - 1);
-                $invoice->num                   =  $i;
-                $invoice->type                  =  3;
-                $invoice->status                =  0;
-                $invoice->save();
-            }
-        }
-    
-        $invoice = Invoice::where('id_sale', $sale->id)->where('status', 0)->orderBy('created_at', 'asc')->first();
-        if ($invoice && $notification == true) {
-            $this->sendInvoice($invoice->url_payment, $sale->id_client, null, $sale->seller->api_token_zapapi);
+            
+            return true;
         }
         
-        return true;
+        return false;
     }        
     
     private function invoiceCard($value, $commission, $sale, $wallet, $client, $filiate = null) {
@@ -317,53 +258,7 @@ class AssasController extends Controller {
         return redirect()->back()->with('error', 'Tivemos um pequeno problema, contate o suporte!');
     }
 
-    public function createDeposit(Request $request) {
-
-        $user = User::find(Auth::user()->id);
-        if(!$user) {
-            return redirect()->route('logout')->with('error', 'Você precisa fazer login para acessar sua conta!');
-        }
-
-        if(empty($user->customer)) {
-            $customer = $this->createCustomer($user->name, $user->cpfcnpj, $user->phone, $user->email);
-            $user->customer = $customer;
-            $user->save();
-        } else {
-            $customer = $user->customer;
-        }
-
-        try {
-
-            $charge = $this->createCharge($customer, 'PIX', $this->formatarValor($request->value), 'Depósito - ' . env('APP_NAME'), now()->addDay(), 0);
-            if ($charge) {
-                $invoice = new Invoice();
-                $invoice->name          = 'Depósito para Carteira de Investimentos';
-                $invoice->description   = 'Depósito ' . $user->name;
-                $invoice->id_user       = $user->id;
-                $invoice->id_product    = 0;
-                $invoice->value         = $this->formatarValor($request->value);
-                $invoice->commission    = 0;
-                $invoice->status        = 0;
-                $invoice->type          = 4;
-                $invoice->num           = 1;
-                $invoice->due_date      = now()->addDay();
-                $invoice->url_payment   = $charge['invoiceUrl'];
-                $invoice->token_payment = $charge['id'];
-    
-                if ($invoice->save()) {
-                    return redirect($charge['invoiceUrl'])->with('success', 'Agora, será necessário efetuar o pagamento!');
-                } else {
-                    return redirect()->back()->with('error', 'Tivemos um problema ao gerar sua fatura, contate o suporte!');
-                }
-            } else {
-                return redirect()->back()->with('error', 'Verifique seus dados!');
-            }
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Tivemos um pequeno problema, contate o suporte! ' . $e->getMessage());
-        }
-    }
-
-    private function createCustomer($name, $cpfcnpj, $mobilePhone, $email) {
+    public function createCustomer($name, $cpfcnpj, $mobilePhone, $email) {
         
         $client = new Client();
 
@@ -394,78 +289,80 @@ class AssasController extends Controller {
         }
     }
 
-    public function createCharge($customer, $billingType, $value, $description, $dueDate, $installments = null, $wallet= null, $commission = null, $filiate = null, $commission_filiate = null) {
-        
-        $client = new Client();
-
-        $options = [
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'access_token' => env('API_TOKEN_ASSAS'),
-                'User-Agent'   => env('APP_NAME')
-            ],
-            'json' => [
-                'customer'          => $customer,
-                'billingType'       => $billingType,
-                'value'             => number_format($value, 2, '.', ''),
-                'dueDate'           => $dueDate,
-                'description'       => $description,
-                'installmentCount'  => $installments != null ? $installments : 1,
-                'installmentValue'  => $installments != null ? number_format(($value / intval($installments)), 2, '.', '') : $value,
-                'isAddressRequired' => false
-            ],
-            'verify' => false
-        ];
-
-        
-        if (($filiate <> null) && ($commission_filiate > 0)) {
-            $options['json']['split'][] = [
-                'walletId'        => $filiate->wallet,
-                'totalFixedValue' => number_format($commission_filiate, 2, '.', '')
+    public function createCharge($customer, $billingType, $value, $description, $dueDate, $installments = null, $wallet = null, $commission = null, $filiate = null, $commission_filiate = null) {
+        try {
+            $client = new Client();
+    
+            $options = [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'access_token' => env('API_TOKEN_ASSAS'),
+                    'User-Agent'   => env('APP_NAME')
+                ],
+                'json' => [
+                    'customer'          => $customer,
+                    'billingType'       => $billingType,
+                    'value'             => number_format($value, 2, '.', ''),
+                    'dueDate'           => $dueDate,
+                    'description'       => $description,
+                    'installmentCount'  => $installments != null ? $installments : 1,
+                    'installmentValue'  => $installments != null ? number_format(($value / intval($installments)), 2, '.', '') : $value,
+                    'isAddressRequired' => false
+                ],
+                'verify' => false
             ];
-        }
-
-        if ($value > 0) {
-            $g7Commission = ($value == 49.99) ? 0 : $commission * 0.05;
-            $commission   = ($commission - $g7Commission) - 1;
-
-            if ($wallet == env('WALLET_HEFESTO')) {
-                $g7Commission = 0;
-            }
-
-            if ($g7Commission > 0 && $commission > 0) {
+    
+            if (($filiate <> null) && ($commission_filiate > 0)) {
                 $options['json']['split'][] = [
-                    'walletId'        => env('WALLET_G7'),
-                    'totalFixedValue' => number_format($g7Commission, 2, '.', '')
-                ];
-
-                $options['json']['split'][] = [
-                    'walletId'        => env('WALLET_HEFESTO'),
-                    'totalFixedValue' => 1
+                    'walletId'        => $filiate->wallet,
+                    'totalFixedValue' => number_format($commission_filiate, 2, '.', '')
                 ];
             }
-
-            if (!empty($wallet) && $commission > 0) {
-                $options['json']['split'][] = [
-                    'walletId'        => $wallet,
-                    'totalFixedValue' => number_format($commission, 2, '.', '')
-                ];
+    
+            if ($value > 0) {
+                $g7Commission = ($value == 49.99) ? 0 : $commission * 0.05;
+                $commission   = ($commission - $g7Commission) - 1;
+    
+                if ($wallet == env('WALLET_HEFESTO')) {
+                    $g7Commission = 0;
+                }
+    
+                if ($g7Commission > 0 && $commission > 0) {
+                    $options['json']['split'][] = [
+                        'walletId'        => env('WALLET_G7'),
+                        'totalFixedValue' => number_format($g7Commission, 2, '.', '')
+                    ];
+    
+                    $options['json']['split'][] = [
+                        'walletId'        => env('WALLET_HEFESTO'),
+                        'totalFixedValue' => 1
+                    ];
+                }
+    
+                if (!empty($wallet) && $commission > 0) {
+                    $options['json']['split'][] = [
+                        'walletId'        => $wallet,
+                        'totalFixedValue' => number_format($commission, 2, '.', '')
+                    ];
+                }
             }
-        }
-        
-        $response = $client->post(env('API_URL_ASSAS') . 'v3/payments', $options);
-        $body = (string) $response->getBody();
-
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($body, true);
-            return $dados['json'] = [
-                'id'            => $data['id'],
-                'invoiceUrl'    => $data['invoiceUrl'],
-            ];
-        } else {
+    
+            $response = $client->post(env('API_URL_ASSAS') . 'v3/payments', $options);
+            $body = (string) $response->getBody();
+    
+            if ($response->getStatusCode() === 200) {
+                $data = json_decode($body, true);
+                return [
+                    'id'            => $data['id'],
+                    'invoiceUrl'    => $data['invoiceUrl'],
+                ];
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) {
             return false;
         }
-    }
+    }    
 
     public function sendWhatsapp($link, $message, $phone, $token = null) {
 
@@ -508,94 +405,99 @@ class AssasController extends Controller {
             $user = User::find($invoice->id_user);
             if ($user) {
                 
-                if ($user->api_key != null) {
-                    return ['status' => true];
-                }
+                // if ($user->api_key != null) {
+                //     return ['status' => true];
+                // }
 
                 if ($user->parent->afiliates()->count() % 2 === 0) {
                     $this->createCoupon($user->parent);
                 }
-    
-                $client = new Client();
-                $options = [
-                    'headers' => [
-                        'Content-Type' => 'application/json',
-                        'access_token' => env('API_TOKEN_ASSAS_OPTIONAL'),
-                        'User-Agent'   => env('APP_NAME'),
-                    ],
-                    'json' => [
-                        'name'          => $user->name,
-                        'email'         => explode('@', $user->email)[0].rand(1, 999).'@ampaysolucoes.com',
-                        'cpfCnpj'       => $user->cpfcnpj,
-                        'birthDate'     => $user->birth_date,
-                        'mobilePhone'   => $user->phone,
-                        'address'       => '09750-730 Rua José Versolato, 101 - Vila da Saúde, São Bernardo do Campo',
-                        'addressNumber' => '101',
-                        'province'      => 'São Paulo',
-                        'postalCode'    => '09750730',
-                        'companyType'   => strlen($user->cpfcnpj) === 11 ? '' : 'MEI',
-                        'incomeValue'   => 1000,
-                        "accountStatusWebhook" => [
-                            "url"           => env('APP_URL')."api/webhook-account",
-                            "email"         => env('APP_EMAIL_SUPORT'),
-                            "interrupted"   => false,
-                            "enabled"       => true,
-                            "apiVersion"    => 3,
-                        ],
-                        "transferWebhook"      => [
-                            "url"           => env('APP_URL')."api/webhook-account",
-                            "email"         => env('APP_EMAIL_SUPORT'),
-                            "interrupted"   => false,
-                            "enabled"       => true,
-                            "apiVersion"    => 3,
-                        ],
-                        "paymentWebhook"       => [
-                            "url"           => env('APP_URL')."api/webhook-account",
-                            "email"         => env('APP_EMAIL_SUPORT'),
-                            "interrupted"   => false,
-                            "enabled"       => true,
-                            "apiVersion"    => 3,
-                        ],
-                        "invoiceWebhook"        => [
-                            "url"           => env('APP_URL')."api/webhook-account",
-                            "email"         => env('APP_EMAIL_SUPORT'),
-                            "interrupted"   => false,
-                            "enabled"       => true,
-                            "apiVersion"    => 3,
-                        ],
-                    ],
-                    'verify' => false,
-                ];
-    
-                try {
 
-                    $response = $client->post(env('API_URL_ASSAS') . 'v3/accounts', $options);
-                    if ($response->getStatusCode() === 200) {
-                        
-                        $body             = (string)$response->getBody();
-                        $data             = json_decode($body, true);
-                        $user->api_key    = $data['apiKey'];
-                        $user->wallet     = $data['walletId'];
-                        $user->wallet_id  = $data['id'];
-                        $user->status     = 2;
-                        $user->type       = 2;
-                        if ($user->save()) {
-                            return ['status' => true];
-                        }
-                    }
-
-                    return ['status' => false, 'error' => 'Erro desconhecido.'];
-
-                } catch (\GuzzleHttp\Exception\ClientException $e) {
-                    
-                    $responseBody = (string)$e->getResponse()->getBody();
-                    $errorData = json_decode($responseBody, true);
-
-                    return [
-                        'status' => false,
-                        'error' => $errorData['errors'][0]['description'] ?? 'Erro desconhecido.',
-                    ];
+                $user->status = 1;
+                if ($user->save()) {
+                    return ['status' => true];
                 }
+    
+                // $client = new Client();
+                // $options = [
+                //     'headers' => [
+                //         'Content-Type' => 'application/json',
+                //         'access_token' => env('API_TOKEN_ASSAS'),
+                //         'User-Agent'   => env('APP_NAME'),
+                //     ],
+                //     'json' => [
+                //         'name'          => $user->name,
+                //         'email'         => explode('@', $user->email)[0].rand(1, 999).'@ampaysolucoes.com',
+                //         'cpfCnpj'       => $user->cpfcnpj,
+                //         'birthDate'     => $user->birth_date,
+                //         'mobilePhone'   => $user->phone,
+                //         'address'       => '09750-730 Rua José Versolato, 101 - Vila da Saúde, São Bernardo do Campo',
+                //         'addressNumber' => '101',
+                //         'province'      => 'São Paulo',
+                //         'postalCode'    => '09750730',
+                //         'companyType'   => strlen($user->cpfcnpj) === 11 ? '' : 'MEI',
+                //         'incomeValue'   => 1000,
+                //         "accountStatusWebhook" => [
+                //             "url"           => env('APP_URL')."api/webhook-account",
+                //             "email"         => env('APP_EMAIL_SUPORT'),
+                //             "interrupted"   => false,
+                //             "enabled"       => true,
+                //             "apiVersion"    => 3,
+                //         ],
+                //         "transferWebhook"      => [
+                //             "url"           => env('APP_URL')."api/webhook-account",
+                //             "email"         => env('APP_EMAIL_SUPORT'),
+                //             "interrupted"   => false,
+                //             "enabled"       => true,
+                //             "apiVersion"    => 3,
+                //         ],
+                //         "paymentWebhook"       => [
+                //             "url"           => env('APP_URL')."api/webhook-account",
+                //             "email"         => env('APP_EMAIL_SUPORT'),
+                //             "interrupted"   => false,
+                //             "enabled"       => true,
+                //             "apiVersion"    => 3,
+                //         ],
+                //         "invoiceWebhook"        => [
+                //             "url"           => env('APP_URL')."api/webhook-account",
+                //             "email"         => env('APP_EMAIL_SUPORT'),
+                //             "interrupted"   => false,
+                //             "enabled"       => true,
+                //             "apiVersion"    => 3,
+                //         ],
+                //     ],
+                //     'verify' => false,
+                // ];
+    
+                // try {
+
+                //     $response = $client->post(env('API_URL_ASSAS') . 'v3/accounts', $options);
+                //     if ($response->getStatusCode() === 200) {
+                        
+                //         $body             = (string)$response->getBody();
+                //         $data             = json_decode($body, true);
+                //         $user->api_key    = $data['apiKey'];
+                //         $user->wallet     = $data['walletId'];
+                //         $user->wallet_id  = $data['id'];
+                //         $user->status     = 2;
+                //         $user->type       = 2;
+                //         if ($user->save()) {
+                //             return ['status' => true];
+                //         }
+                //     }
+
+                //     return ['status' => false, 'error' => 'Erro desconhecido.'];
+
+                // } catch (\GuzzleHttp\Exception\ClientException $e) {
+                    
+                //     $responseBody = (string)$e->getResponse()->getBody();
+                //     $errorData = json_decode($responseBody, true);
+
+                //     return [
+                //         'status' => false,
+                //         'error' => $errorData['errors'][0]['description'] ?? 'Erro desconhecido.',
+                //     ];
+                // }
             }
         }
     
@@ -658,14 +560,14 @@ class AssasController extends Controller {
                 }
 
                 $sale = Sale::where('id', $invoice->id_sale)->first();
-                $sale->guarantee = $sale->installments == 1 ? Carbon::parse($sale->guarantee)->addMonths(12) : Carbon::parse($sale->guarantee)->addMonths(3);
+                $sale->guarantee = Carbon::parse($sale->guarantee)->addMonths(12);
                 
-                if ($sale && ($sale->id_payment <> null)) {
-                    $invoices = $this->createSalePayment($sale->id);
-                    if($invoices == false) {
-                        return response()->json(['status' => 'error', 'message' => 'Não foi possível Gerar Faturas para essa venda!']);
-                    }
-                }
+                // if ($sale && ($sale->id_payment <> null)) {
+                //     $invoices = $this->createSalePayment($sale->id);
+                //     if($invoices == false) {
+                //         return response()->json(['status' => 'error', 'message' => 'Não foi possível Gerar Faturas para essa venda!']);
+                //     }
+                // }
                 
                 $product = $invoice->id_product <> null ? Product::where('id', $invoice->id_product)->first() : false;
                 if ($product && $invoice->num == 1 && $sale) {
@@ -972,37 +874,39 @@ class AssasController extends Controller {
     }    
 
     public function myDocuments() {
+
+        return [];
         
-        $user = auth()->user();
+        // $user = auth()->user();
 
-        if(empty($user->api_key)) {
-            return [];
-        }
+        // if(empty($user->api_key)) {
+        //     return [];
+        // }
 
-        $client = new Client();
-        $options = [
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'access_token' => $user->api_key,
-                'User-Agent'   => env('APP_NAME')
-            ],
-            'verify' => false
-        ];
+        // $client = new Client();
+        // $options = [
+        //     'headers' => [
+        //         'Content-Type' => 'application/json',
+        //         'access_token' => $user->api_key,
+        //         'User-Agent'   => env('APP_NAME')
+        //     ],
+        //     'verify' => false
+        // ];
 
-        $response = $client->get(env('API_URL_ASSAS') . 'v3/myAccount/documents', $options);
-        $body = (string) $response->getBody();
+        // $response = $client->get(env('API_URL_ASSAS') . 'v3/myAccount/documents', $options);
+        // $body = (string) $response->getBody();
         
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($body, true);
+        // if ($response->getStatusCode() === 200) {
+        //     $data = json_decode($body, true);
     
-            if (isset($data['data'])) {
-                return $data['data'];
-            } else {
-                return [];
-            }
-        } else {
-            return false;
-        }
+        //     if (isset($data['data'])) {
+        //         return $data['data'];
+        //     } else {
+        //         return [];
+        //     }
+        // } else {
+        //     return false;
+        // }
     }
 
     public function receivable() {
@@ -1235,24 +1139,15 @@ class AssasController extends Controller {
         }
     }
 
-    private function formatarValor($valor) {
-        
-        $valor = preg_replace('/[^0-9,]/', '', $valor);
-        $valor = str_replace(',', '.', $valor);
-        $valorFloat = floatval($valor);
+    // public function requestInvoice($id) {
 
-        return number_format($valorFloat, 2, '.', '');
-    }
+    //     $invoices = $this->createSalePayment($id, true);
+    //     if ($invoices <> false) {
+    //         return redirect()->back()->with('success', 'Faturas geradas com sucesso!');
+    //     }
 
-    public function requestInvoice($id) {
-
-        $invoices = $this->createSalePayment($id, true);
-        if ($invoices <> false) {
-            return redirect()->back()->with('success', 'Faturas geradas com sucesso!');
-        }
-
-        return redirect()->back()->with('error', 'Não foi possível Gerar Faturas!');
-    } 
+    //     return redirect()->back()->with('error', 'Não foi possível Gerar Faturas!');
+    // } 
 
     public function cancelInvoice($token) {
 

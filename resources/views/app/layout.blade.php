@@ -33,7 +33,6 @@
             <div class="d-flex align-items-center justify-content-between">
                 <a href="{{ route('app') }}" class="logo d-flex align-items-center">
                     <img src="{{ asset('assets/dashboard/img/logo.png') }}">
-                    {{-- <span class="d-none d-lg-block">{{ env('APP_NAME') }}</span> --}}
                 </a>
                 <i class="bi bi-list toggle-sidebar-btn text-white"></i>
             </div>
@@ -134,30 +133,32 @@
         </header>
 
         <aside id="sidebar" class="sidebar">
-
             <ul class="sidebar-nav" id="sidebar-nav">
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('app') }}"> <i class="bi bi-grid"></i> <span>Dashboard</span> </a>
                 </li>
-                
-                {{-- <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ route('apresentation') }}"> <i class="bi bi-book"></i> <span>Material de apoio</span> </a>
-                </li> --}}
+
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="{{ route('faq') }}"> <i class="bi bi-book"></i> <span>Material de Apoio</span> </a>
+                </li>
 
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="https://servicos.ehmconsultas.com/index.php" target="_blank"> <i class="bi bi-search"></i> <span>Consultas</span> </a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-briefcase"></i><span>Enviar Contrato (Cliente)</span><i class="bi bi-chevron-down ms-auto"></i>
-                    </a>
-                    <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                        @foreach($business as $busines)
-                            <li><a href="@if(Auth::user()->type == 7 || Auth::user()->type == 9) {{ route('createupload', ['id' => $busines->id]) }} @else {{ route('createsale', ['id' => $busines->id]) }} @endif"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
-                        @endforeach
-                    </ul>
-                </li>
+                <li class="nav-heading">Vendas</li>
+                @if (!empty(Auth::user()->api_key) && !empty(Auth::user()->wallet))
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+                            <i class="bi bi-briefcase"></i><span>Enviar Contrato (Cliente)</span><i class="bi bi-chevron-down ms-auto"></i>
+                        </a>
+                        <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                            @foreach($business as $busines)
+                                <li><a href="@if(Auth::user()->type == 7 || Auth::user()->type == 9) {{ route('createupload', ['id' => $busines->id]) }} @else {{ route('createsale', ['id' => $busines->id]) }} @endif"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
+                            @endforeach
+                        </ul>
+                    </li>
+                @endif
 
                 <li class="nav-item">
                     <a class="nav-link collapsed" data-bs-target="#forms-upload" data-bs-toggle="collapse" href="#">
@@ -184,28 +185,31 @@
                 </li>
                 
                 <li class="nav-heading">Pessoas</li>
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ route('list-network') }}"> <i class="bi bi-person-lines-fill"></i> <span>Minha Rede</span> </a>
-                </li>
+                @if (!empty(Auth::user()->api_key) && !empty(Auth::user()->wallet))
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" href="{{ route('list-network') }}"> <i class="bi bi-person-lines-fill"></i> <span>Minha Rede</span> </a>
+                    </li>
+                @endif
            
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="{{ route('list-client') }}"> <i class="bi bi-file-earmark-person"></i> <span>Clientes</span> </a>
                 </li>
 
-                <li class="nav-heading">Customização</li>
-                <li class="nav-item">
-                    <a class="nav-link collapsed" data-bs-target="#forms-integration" data-bs-toggle="collapse" href="#">
-                        <i class="ri-braces-line"></i><span>Integrações</span><i class="bi bi-chevron-down ms-auto"></i>
-                    </a>
-                    <ul id="forms-integration" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                        @if (Auth::user()->white_label_contract == 1)
-                            <li> 
-                                <a href="{{ route('profile-white-label') }}"><i class="bi bi-circle"></i><span>Contrato</span></a>
-                            </li>
-                        @endif
-                        {{-- <li> <a href=""> <i class="bi bi-circle"></i><span>WhatsApp</span> </a> </li> --}}
-                    </ul>
-                </li>
+                @if (!empty(Auth::user()->api_key) && !empty(Auth::user()->wallet) && Auth::user()->white_label_contract == 1)
+                    <li class="nav-heading">Customização</li>
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" data-bs-target="#forms-integration" data-bs-toggle="collapse" href="#">
+                            <i class="ri-braces-line"></i><span>Integrações</span><i class="bi bi-chevron-down ms-auto"></i>
+                        </a>
+                        <ul id="forms-integration" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                            @if (Auth::user()->white_label_contract == 1)
+                                <li> 
+                                    <a href="{{ route('profile-white-label') }}"><i class="bi bi-circle"></i><span>Contrato</span></a>
+                                </li>
+                            @endif
+                        </ul>
+                    </li>
+                @endif
 
                 @if (Auth::user()->type != 6 && !empty(Auth::user()->api_key) && !empty(Auth::user()->wallet))
                     <li class="nav-heading">Financeiro</li>
@@ -219,16 +223,14 @@
                             <i class="bi bi-bank"></i><span>Operações</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
                         <ul id="forms-finan" class="nav-content collapse " data-bs-parent="#sidebar-nav">  
-                            {{-- <li><a href="{{ route('withdraw') }}"> <i class="bi bi-circle"></i><span>Saques</span> </a></li> --}}
                             <li><a href="{{ route('receivable') }}"> <i class="bi bi-circle"></i><span>Recebíveis</span> </a></li>
                             <li><a href="{{ route('payments') }}"> <i class="bi bi-circle"></i><span>Pagamentos</span> </a></li>
                         </ul>
                     </li>
                 @endif
-
                 
                 @if (Auth::user()->type == 1)
-                <li class="nav-heading">Gestão</li>
+                    <li class="nav-heading">Gestão</li>
                     <li class="nav-item">
                         <a class="nav-link collapsed" href="{{ route('lists') }}"> <i class="bi bi-list-check"></i> <span>Listas</span> </a>
                     </li>
@@ -270,7 +272,6 @@
                     </li>
                 @endif
             </ul>
-
         </aside>
 
         <main id="main" class="main">

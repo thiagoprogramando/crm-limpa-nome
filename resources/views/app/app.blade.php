@@ -18,7 +18,7 @@
                 <div class="col-lg-12">
                     <div class="row">
 
-                        @if (Auth::user()->status <> 1 || Auth::user()->wallet == null || Auth::user()->api_key == null)
+                        @if (Auth::user()->status <> 1)
                             <div class="col-12">
                                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                     <i class="bi bi-exclamation-octagon me-1"></i>
@@ -402,9 +402,9 @@
                                                         @break  
                                                 @endswitch
                                                 @if($user->photo)
-                                                    <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30">
+                                                    <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
                                                 @else
-                                                    <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30">
+                                                    <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
                                                 @endif
                                             </td>
                                             @if ($user->name == Auth::user()->name)

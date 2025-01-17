@@ -7,6 +7,7 @@ use App\Http\Controllers\AppController;
 use App\Http\Controllers\Assas\AssasController;
 use App\Http\Controllers\Client\AppController as ClientAppController;
 use App\Http\Controllers\Client\LoginController;
+use App\Http\Controllers\Faq\FaqController;
 use App\Http\Controllers\Payment\Payment;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Sale\ContractController;
@@ -37,6 +38,8 @@ Route::get('/preview-contract/{id}', [ContractController::class, 'previewContrac
 
 Route::middleware(['auth'])->group(function () {
 
+    Route::get('/faq', [FaqController::class, 'faq'])->name('faq');
+
     Route::middleware(['verify'])->group(function () {
 
         //App 
@@ -66,9 +69,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/createupload/{id}', [UploadController::class, 'create'])->name('createupload');
         Route::get('/create-payment-upload/{id}', [UploadController::class, 'createInvoice'])->name('create-payment-upload');
         Route::post('create-upload', [UploadController::class, 'createSale'])->name('create-upload');
-
-        //Gatway Assas
-        Route::post('create-deposit', [AssasController::class, 'createDeposit'])->name('create-deposit');
 
         //Coupon
         Route::get('/coupons', [CouponController::class, 'coupons'])->name('coupons');

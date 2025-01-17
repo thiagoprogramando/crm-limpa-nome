@@ -275,7 +275,7 @@ class ContractController extends Controller {
 
     public function previewContract($saleId)  {
 
-        $sale = Sale::with(['product', 'user', 'seller', 'paymentMethod'])->find($saleId);
+        $sale = Sale::with(['product', 'user', 'seller'])->find($saleId);
         if (!$sale) {
             return redirect()->route('login.cliente')->with('info', 'Não foi possível localizar os dados da venda! Tente novamente mais tarde.');
         }
@@ -308,7 +308,7 @@ class ContractController extends Controller {
                 $sale->value ? 'R$ ' . number_format($sale->value, 2, ',', '.') : '---'
             )
             ->replace('{SALE_METHOD}', 
-                $sale->paymentMethod->methodLabel() . ' em ' . $sale->paymentMethod->installments . 'x'
+                $sale->paymentMethod->paymentMethod() . ' em ' . $sale->paymentMethod->installments . 'x'
             )
             ->replace('{SALE_DATE}', date('d') . '/' . date('m') . '/' . date('Y'));
         } else {
@@ -326,7 +326,7 @@ class ContractController extends Controller {
             ->replace('{SALE_VALUE}'     , $sale->value 
                     ? 'R$ ' . number_format($sale->value, 2, ',', '.') 
                     : '---')
-            ->replace('{SALE_METHOD}'    , $sale->paymentMethod->methodLabel().' em '.$sale->paymentMethod->installments.'x')
+            ->replace('{SALE_METHOD}'    , $sale->paymentMethod().' em '.$sale->installments.'x')
             ->replace('{SALE_DATE}', date('d').'/'.date('m').'/'.date('Y'));
         }
 

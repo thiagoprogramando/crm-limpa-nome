@@ -18,10 +18,10 @@
 
             <div class="btn-group mb-3" role="group">
                 @if(Auth::user()->type == 1) 
-                    <a href="{{ route('request-invoices', ['id' => $sale->id]) }}" class="btn btn-outline-primary">Gerar Faturas</a>
-                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#invoiceModal">Adicionar Fatura</button> 
+                    {{-- <a href="{{ route('request-invoices', ['id' => $sale->id]) }}" class="btn btn-outline-primary">Gerar Faturas</a> --}}
                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#updatedModal">Alterar dados</button>
                 @endif
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#invoiceModal">Adicionar Fatura</button> 
             </div>
 
             <div class="modal fade" id="updatedModal" tabindex="-1">
@@ -94,39 +94,41 @@
                                             <label for="floatingDueDate">Vencimento:</label>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-6 col-lg-6 mb-2">
-                                        <div class="form-floating">
-                                            <select name="wallet" class="form-select" id="floatingSeller">
-                                                <option value="">Comissão (opcional):</option>
-                                                @foreach ($users as $user)
-                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                @endforeach
-                                            </select>
-                                            <label for="floatingSeller">Consultores</label>
+                                    @if (Auth::user()->type == 1)
+                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                            <div class="form-floating">
+                                                <select name="wallet" class="form-select" id="floatingSeller">
+                                                    <option value="">Comissão (opcional):</option>
+                                                    @foreach ($users as $user)
+                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <label for="floatingSeller">Consultores</label>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-12 col-md-6 col-lg-6 mb-2">
-                                        <div class="form-floating">
-                                            <input type="text" name="commission" class="form-control" id="floatingCommission" placeholder="Comissão (valor):" oninput="mascaraReal(this)">
-                                            <label for="floatingCommission">Comissão (valor):</label>
+                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                            <div class="form-floating">
+                                                <input type="text" name="commission" class="form-control" id="floatingCommission" placeholder="Comissão (valor):" oninput="mascaraReal(this)">
+                                                <label for="floatingCommission">Comissão (valor):</label>
+                                            </div>
                                         </div>
-                                    </div>
+                                    @endif
                                     <div class="col-12 col-md-12 col-lg-12 mb-2">
                                         <div class="form-floating">
-                                            <select name="billingType" class="form-select" id="floatingSeller" required>
+                                            <select name="billingType" class="form-select" id="floatingBillingType" required>
                                                 <option value="">Método de Pagemento:</option>
                                                 <option value="PIX">Pix</option>
                                                 <option value="BOLETO">Boleto</option>
-                                                <option value="CREDIT_CARD">Cartão de Créditp</option>
+                                                <option value="CREDIT_CARD">Cartão de Crédito</option>
                                             </select>
-                                            <label for="floatingSeller">Métodos</label>
+                                            <label for="floatingBillingType">Métodos</label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="modal-footer btn-group">
                                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                                <button type="submit" class="btn btn-success">Criar cobrança</button>
+                                <button type="submit" class="btn btn-success">Criar Fatura</button>
                             </div>
                         </form>
                     </div>
@@ -141,7 +143,7 @@
                         <table class="table table-hover" id="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">N°</th>
+                                    <th scope="col">ID</th>
                                     <th scope="col">Descrição</th>
                                     <th scope="col">Vencimento</th>
                                     <th class="text-center" scope="col">V. Parcela</th>
@@ -153,7 +155,7 @@
                             <tbody>
                                 @foreach ($invoices as $invoice)
                                     <tr>
-                                        <th scope="row">{{ $invoice->num }}</th>
+                                        <th scope="row">{{ $invoice->id }}</th>
                                         <td>{{ $invoice->description }}</td>
                                         <td>{{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y') }}</td>
                                         <td class="text-center">R$ {{ number_format($invoice->value, 2, ',', '.') }}</td>
@@ -163,7 +165,7 @@
                                             <div class="btn-group">
                                                 <a href="{{ $invoice->url_payment }}" target="_blank" class="btn btn-primary text-light"><i class="bi bi-upc"></i></a>
                                                 <a href="{{ route('send-default-whatsapp', ['id' => $invoice->id]) }}" class="btn btn-success text-light confirm"><i class="bi bi-whatsapp"></i></a>
-                                                @if(Auth::user()->type == 1)
+                                                @if($invoice->num <> 1)
                                                     <a href="{{ route('delete-invoice', ['id' => $invoice->id]) }}" class="btn btn-danger text-light confirm"><i class="bi bi-trash"></i></a>
                                                 @endif
                                             </div>

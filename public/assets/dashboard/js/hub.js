@@ -42,7 +42,6 @@ function consultarCPF(cpf, nascimento) {
 
                 $('#consultaHub').addClass('d-none');
                 $('#formSale').removeClass('d-none');
-                $('#formRegistrer').removeClass('d-none');
 
                 $('input[name=name]').val(data.result.nome_da_pf);
                 $('input[name=cpfcnpj]').val(data.result.numero_de_cpf);
@@ -57,7 +56,6 @@ function consultarCPF(cpf, nascimento) {
 
                 $('#consultaHub').addClass('d-none');
                 $('#formSale').removeClass('d-none');
-                $('#formRegistrer').removeClass('d-none');
             }
         })
         .catch(error => {
@@ -70,7 +68,6 @@ function consultarCPF(cpf, nascimento) {
 
             $('#consultaHub').addClass('d-none');
             $('#formSale').removeClass('d-none');
-            $('#formRegistrer').removeClass('d-none');
         });
 }
 

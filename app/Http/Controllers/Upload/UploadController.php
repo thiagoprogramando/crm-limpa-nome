@@ -20,12 +20,14 @@ class UploadController extends Controller {
 
     public function create($id) {
 
-        $product = Product::find($id);
-        $sales = Sale::where('id_seller', Auth::user()->id)->where('status', '!==', 1)->get();
+        $product        = Product::find($id);
+        $sales          = Sale::where('id_seller', Auth::user()->id)->where('status', '!==', 1)->get();
+        $salesApproved  = Sale::where('id_seller', Auth::user()->id)->where('status',  1)->get();
 
         return view('app.Sale.upload', [
-            'product' => $product,
-            'sales'   => $sales
+            'product'       => $product,
+            'sales'         => $sales,
+            'salesApproved' => $salesApproved
         ]);
     }
 
