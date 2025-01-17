@@ -107,7 +107,7 @@ class SaleController extends Controller {
             $sale->id_seller    = !empty($request->id_seller) ? $request->id_seller : Auth::id();
 
             $sale->payment          = $request->payment;
-            $sale->installments     = $request->installments;
+            $sale->installments     = max(1, $request->installments);
             $sale->status_contract  = 3;
             $sale->status           = 0;
 

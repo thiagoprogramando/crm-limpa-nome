@@ -1,0 +1,234 @@
+[33m5640318[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m up
+[33mb01444d[m[33m ([m[1;31morigin/master[m[33m)[m up
+[33m4bb2ff5[m up
+[33m8cc968b[m up
+[33m6760e8e[m up
+[33mb3b69ca[m up
+[33m1018b04[m up
+[33m718a95f[m up
+[33m4f056ef[m up
+[33m802a7ba[m up
+[33m062cd96[m up
+[33m79159d2[m up
+[33mff624cc[m up
+[33m4233040[m up
+[33m27cefb4[m up
+[33m65c1ef8[m up
+[33mb113def[m up
+[33m3f5d738[m up
+[33m679a4fa[m up
+[33m07672bf[m up
+[33m499f458[m up
+[33m0c4223d[m up
+[33mdef91a3[m up
+[33me93ea8f[m up
+[33m7ecdeb3[m up
+[33mde6825b[m up
+[33m585fe53[m up
+[33m1778544[m correcao comissao
+[33m15e81ed[m up
+[33meadbb2e[m up
+[33m2ba6c8b[m up
+[33mf8202e5[m up
+[33mf74673e[m Intervalo de datas gestao de pessoas
+[33m399058a[m up
+[33m7218c39[m up
+[33me61eede[m up
+[33m72f297e[m up
+[33mbd3ee62[m up
+[33mb08708e[m 31122024
+[33m42db327[m contrato separado do pagamento
+[33mddc375f[m correcao route list-user
+[33mf360c84[m repor data de venda na tabela
+[33mf82d72a[m  correcao atualizacao de dados do usuario
+[33m74f462c[m correcao nomenclatura rede => network e listUser para list-user
+[33m2727366[m Reparo filtro data de cadastro da Rede
+[33m86a4fad[m up
+[33m9143b06[m up
+[33m0aa5d2e[m UP
+[33mdf088a5[m up
+[33m2fa44fb[m up
+[33me61c7b4[m git pull
+[33m582cdbc[m up
+[33m2e8d1e5[m up
+[33m3c1e761[m up
+[33mc2affc0[m up
+[33me380e9a[m up
+[33m1417f2d[m up
+[33m37b0116[m up
+[33me0ecb6b[m up
+[33m7e07daf[m up
+[33ma0fd6d4[m up
+[33mc8a1c5c[m up
+[33mb7d6e2b[m up
+[33m9434925[m up
+[33mfdcc72b[m up
+[33me82b33e[m up
+[33m8b222e4[m up
+[33mfbec803[m up
+[33m72ff8b3[m up
+[33m72a8317[m 11122024 - Criação sub contas e documentação
+[33mdb8a982[m up
+[33mc1e6661[m 11122024
+[33m90680d0[m up
+[33me025505[m up
+[33m205e31b[m up
+[33m89ee3b2[m up
+[33m2fab738[m up
+[33m72a6afc[m up
+[33m7c9a126[m 03122024
+[33mbffec25[m up
+[33m84e5d31[m 13112024
+[33md02f353[m up
+[33m455e8b8[m up
+[33m082e4d7[m up
+[33m76d0679[m fix
+[33m5e1d47c[m up
+[33m52ab547[m up
+[33m51c698c[m 13112024
+[33m53b0577[m 13112024
+[33m098cac3[m 13112024
+[33m0f9ef46[m 13112024
+[33ma8e0163[m 30102024
+[33m841d3d9[m up
+[33m336e157[m 30102024 - Cupom por Venda
+[33m596975c[m 30102024
+[33mb6bd02b[m up
+[33ma96a984[m pack 30102024
+[33ma8e6073[m pack 24102024
+[33m30344a9[m correcao mensalidade e outros ajustes
+[33mc18f2b9[m 10102401
+[33m788cd09[m pack 091001
+[33mcc3120d[m up
+[33mda2aa55[m up
+[33m833940c[m remove boleto create all
+[33m536577b[m up
+[33m8ff6119[m create painel cliente
+[33mdd84585[m 19092024
+[33m5c85c86[m Exception
+[33m16d6c39[m up
+[33m2805809[m up
+[33mdd25a0f[m correct rank and investidor profile
+[33mc126adc[m update AssasController
+[33m4d631b8[m correct functions
+[33m3a359ae[m update AssasController
+[33m05a2975[m 2208013
+[33mca61238[m 0909001
+[33mbe4fe09[m up
+[33mbda774b[m 0909002
+[33ma930f6a[m update
+[33m7b23a7c[m updates
+[33mc670960[m update space send message
+[33m8e874af[m update product niveis
+[33m2bf4e9f[m labels
+[33mf015997[m create consultor and vendedor master
+[33m7475dcc[m 2208012 TASK
+[33m2620599[m remove photoshop
+[33m50ea14b[m 2208004 2208005 2208006
+[33md6514ca[m photoshop
+[33m420790c[m update Assas User-Agent
+[33mbb95677[m AMPAY3107
+[33m03a27bd[m AMPAY3107
+[33mca94239[m AMPAY2707
+[33m017b022[m fix wallet in descont
+[33mb144762[m up
+[33m6fa8177[m create descont in sale with wallet investiment
+[33m45b64c8[m Create Wallet OFF
+[33m85d4198[m Update List because payment
+[33m1a61cb0[m Icones
+[33m427b8c5[m Token de disparo Para Cobrar
+[33mf086e97[m Order By send Invoice
+[33mc20c94d[m Block downgrade Gerente Regional
+[33md7062d5[m fix Seller api token
+[33mb77f605[m fix api token zapi
+[33m8bf461a[m Contract token
+[33m24bf813[m AMPAY2307
+[33m003ffbd[m AMPAY2307
+[33m3e06df1[m update User
+[33maf16ab3[m update 15072024
+[33m9f3f121[m add Option List in APP
+[33m3a14961[m task 2604
+[33m1b98184[m repar Assas add IncomeValue
+[33ma96b651[m update task 458652
+[33m88235cc[m Repar msg
+[33m0a83bd2[m Repar Sales Manager
+[33m3e9a671[m Repar External Sale
+[33mae3cd76[m Repar Auth
+[33m2ac66f2[m repar Sale Link
+[33mbc9e6ab[m create update 2905
+[33mbd3656c[m repar
+[33m5610504[m create modules Link and Apresentation
+[33m63821c7[m repar ID list
+[33m7ed730c[m Repar documents
+[33m7f58841[m repar Monthly
+[33m0bc49c4[m repar Address User
+[33m7be3880[m create POP VIDEO for client
+[33mfa314b6[m create Archive Model
+[33m806ec45[m Address
+[33m0b28b7d[m repar date
+[33m00ac1af[m address sub account
+[33md8b86d4[m Excel Exports
+[33m02dc4d6[m manager sale repar and contract url blank
+[33m04b2dbf[m repar filter
+[33m662aa4a[m create curso
+[33m6047c08[m projeto-base refatoraction
+[33mff04990[m repar
+[33mf07ecb0[m repar url payment
+[33m56e5604[m repar url payment
+[33m7cbd50c[m ref part 1
+[33m6539d8a[m repar commission
+[33md603388[m repar url
+[33md8bc352[m repar divisor
+[33m26dcc76[m repar Division
+[33m46141f9[m repar divisor
+[33m658e686[m repar User
+[33m8bbe6a9[m repar favicon
+[33m938f98b[m repar favbicon
+[33mb437134[m repar commission e value
+[33me9425ca[m add consultas menu
+[33m41bbb1e[m repar api key
+[33me25cddc[m repar postal_code
+[33mbfd6121[m repar address state
+[33md4c399c[m repar address
+[33mad6d94d[m repar assas webhook e create api_key
+[33m25663a0[m repar Monthly and Create Cache
+[33m415f489[m create Monthly
+[33m09b23f2[m repar commission invoice
+[33mdc69de9[m repar webhookSing
+[33md6f71fc[m repar invoiceBoleto
+[33m5b4f6d0[m repar cost BOLETO
+[33m0b92a19[m update Product data
+[33m67fe6b5[m update notification
+[33md9297f3[m create nivel 2 commission
+[33me1e89f8[m create nivel 2
+[33m6bf0da1[m up
+[33m00824fc[m update level
+[33m09b85f1[m remove filiate condicion
+[33m2028ac7[m repar Commission
+[33mc9fc9fd[m repar Users
+[33m6f80e78[m repar User
+[33m6981182[m repar Users
+[33m239186d[m update seller intern
+[33mc2336c0[m update user level null
+[33m912c8b8[m create indication
+[33m33c0e73[m update base
+[33mf280eb5[m repar birth_date
+[33m1f20234[m repar birth_date
+[33m607c693[m create send invoice
+[33mf2683cc[m create notification
+[33m933fc74[m repar clock
+[33me52dde3[m Clock time && Mobile repar
+[33meadd0bc[m update project base
+[33mf4de35d[m fix webhook
+[33m94cd76b[m fix commission Monthly
+[33m9241cf3[m fix wallet hefesto
+[33m827df3a[m fix migration repar
+[33mfa393c0[m fix migration repar
+[33m6badc31[m fix migrations
+[33me85297b[m fix data user
+[33m154ebf3[m fix data user
+[33m81960be[m fix document off api_key
+[33mb9117db[m fix Remover pontuação
+[33m21a0c82[m fix config database
+[33mdef86d3[m fix send whatsapp
+[33m8e8a074[m Primeiro commit: Adicionando o sistema Laravel

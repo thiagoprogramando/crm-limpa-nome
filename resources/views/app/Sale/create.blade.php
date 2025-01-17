@@ -121,7 +121,7 @@
                                             </div>
                                             <div class="col-12 col-sm-12 col-md-5 col-lg-5 mb-1">
                                                 <div class="form-floating">
-                                                    <input type="number" name="installments" class="form-control" id="floatingInstallments" placeholder="Parcelas:">
+                                                    <input type="number" name="installments" class="form-control" id="floatingInstallments" placeholder="Parcelas:" min="1">
                                                     <label for="floatingInstallments">Parcelas:</label>
                                                 </div>
                                             </div>
@@ -186,4 +186,40 @@
     </section>
 
     <script src="{{ asset('assets/dashboard/js/hub.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            
+            function updateInstallmentsField() {
+
+                var paymentMethod = $('#floatingSelect').val();
+                var installmentsField = $('#floatingInstallments');
+
+                if (paymentMethod === 'PIX') {
+                    installmentsField.attr('max', 1);
+                    installmentsField.val(1);
+                    installmentsField.prop('disabled', true);
+                } else if (paymentMethod === 'CREDIT_CARD') {
+                    installmentsField.attr('min', 1);
+                    installmentsField.attr('max', 6);
+                    installmentsField.prop('disabled', false);
+                    
+                    installmentsField.on('input', function() {
+                        var value = parseInt(installmentsField.val(), 10);
+                        if (value < 1) {
+                            installmentsField.val(1);
+                        } else if (value > 6) {
+                            installmentsField.val(6);
+                        }
+                    });
+                }
+            }
+
+            updateInstallmentsField();
+
+            $('#floatingSelect').change(function() {
+                updateInstallmentsField();
+            });
+        });
+
+    </script>
 @endsection
