@@ -27,6 +27,7 @@
         <div class="col-12">
 
             <div class="btn-group mb-3" role="group">
+                <button id="toggle-select" class="btn btn-outline-primary">Selecionar</button>
                 <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
                 <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
                 @if(Auth::user()->type == 1)
@@ -122,9 +123,9 @@
             <div class="card p-2">
                 <div class="card-body">
 
-                    <div id="action-buttons" class="d-none btn-group mb-3">
+                    <div id="action-buttons" class="d-none btn-group mb-2 mt-2">
                         @if(Auth::user()->type == 1)
-                            <button id="aprovar-todos" class="btn btn-outline-warning">Aprovar Todos</button>
+                            <button id="aprovar-todos" class="btn btn-outline-primary">Aprovar Todos</button>
                         @endif
                     </div>
 
@@ -148,7 +149,7 @@
                                 @foreach ($sales as $sale)
                                     <tr>
                                         <th scope="row">
-                                            {{--  <input type="checkbox" class="row-checkbox" value="{{ $sale->id }}"> --}} {{ $sale->id }}
+                                             <input type="checkbox" class="row-checkbox" value="{{ $sale->id }}"> {{ $sale->id }}
                                         </th>
                                         <th>
                                             {{ $sale->list->name }} <br>
@@ -254,6 +255,114 @@
             }
         });
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const toggleSelectBtn   = document.getElementById('toggle-select');
+        const rowCheckboxes     = document.querySelectorAll('.row-checkbox');
+        const actionButtons     = document.getElementById('action-buttons');
+        const aprovarTodosBtn   = document.getElementById('aprovar-todos');
+
+        let isSelecting = false;
+
+        toggleSelectBtn.addEventListener('click', () => {
+            isSelecting = !isSelecting;
+
+            rowCheckboxes.forEach(checkbox => checkbox.checked = isSelecting);
+            toggleSelectBtn.textContent = isSelecting ? 'Cancelar' : 'Selecionar';
+            updateActionButtons();
+        });
+
+        rowCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateActionButtons);
+        });
+
+        function updateActionButtons() {
+            const selectedIds = getSelectedIds();
+            if (selectedIds.length > 0) {
+                actionButtons.classList.remove('d-none');
+            } else {
+                actionButtons.classList.add('d-none');
+            }
+        }
+
+        function getSelectedIds() {
+            return Array.from(rowCheckboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+        }
+
+        if (aprovarTodosBtn) {
+            aprovarTodosBtn.addEventListener('click', () => {
+                const selectedIds = getSelectedIds();
+                sendToApi('api/approved-all', selectedIds);
+            });
+        }
+
+        function sendToApi(route, ids) {
+
+            if (ids.length === 0) {
+                Swal.fire({
+                    title: 'Atenção!',
+                    text: 'Nenhuma venda selecionada!',
+                    icon: 'info',
+                    timer: 2000
+                });
+                return;
+            }
+
+            var userCustomer = @json(Auth::user()->customer);
+
+            fetch(route, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ 
+                    ids, 
+                    customer: userCustomer  
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Sucesso!',
+                        text: 'Processo concluído! Você será redirecionado para página de Pagamento.',
+                        icon: 'success',
+                        showCancelButton: false,
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'Pagamento',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            if (data.invoiceUrl) {
+                                window.location.href = data.invoiceUrl;
+                                return;
+                            }
+                            
+                            location.reload();
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Atenção!',
+                        text: data.message,
+                        icon: 'info',
+                        timer: 2000
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Atenção!',
+                    text: error,
+                    icon: 'info',
+                    timer: 2000
+                });
+            });
+        }
+    });
 </script>
 
 @endsection
