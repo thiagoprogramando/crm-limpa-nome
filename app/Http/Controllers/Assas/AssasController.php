@@ -73,10 +73,6 @@ class AssasController extends Controller {
             $commission_filiate = 0;
         }
 
-        $dueDate = $dueDate 
-            ? Carbon::parse($dueDate)->toIso8601String() 
-            : now()->addDay();
-
         $charge = $this->createCharge($customer, $sale->payment, $value, 'Fatura N° 1 da venda N° '.$sale->id, $dueDate, null, $wallet, $commission, $filiate, $commission_filiate);  
         if ($charge == false) {
             return false;

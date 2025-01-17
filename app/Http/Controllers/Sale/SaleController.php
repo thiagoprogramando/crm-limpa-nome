@@ -112,12 +112,14 @@ class SaleController extends Controller {
             $sale->status           = 0;
 
             $sale->value                = $discountedValue;
+            // $sale->value_total          = $this->formatarValor($request->value_total);
             $sale->commission           = max($commission, 0);
             $sale->commission_filiate   = $commissionFiliate;
             if ($sale->save()) {
 
                 $assas = new AssasController();
-                $invoice = $assas->createSalePayment($sale->id, true, $request->dueDate);
+                $dueDate = Carbon::parse($request->dueDate)->format('Y-m-d');
+                $invoice = $assas->createSalePayment($sale->id, true, $dueDate);
                 if ($invoice) {
                     return redirect()->route('update-sale', ['id' => $sale->id])->with('success', 'Sucesso! Os dados de pagamento foram enviados para o cliente!');
                 }
