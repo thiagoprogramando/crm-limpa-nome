@@ -47,7 +47,7 @@ class CheckAccount {
         // }
 
         $user = Auth::user();
-        if ($user && $user->type !== 4) {
+        if ($user && $user->type !== 4 && $user->type !== 1) {
             
             if ($user->name == null || $user->cpfcnpj == null || $user->birth_date == null || $user->phone == null) {
                 return redirect()->route('profile')->with('info', 'Complete seus dados para acessar todos os módulos!');
