@@ -46,8 +46,8 @@ class ContractController extends Controller {
             return redirect()->back()->with('info', 'Produto indisponível/ou sem contrato associado!');
         }
 
-        $document = $this->sendContract($sale->user->id, $product->contract, $sale->value, $sale->id_payment);
-        if ($document['token']) {
+        $document = $this->sendContract($sale, $product->contract);
+        if ($document !== false && $document['token']) {
 
             $sale->fill([
                 'token_contract'  => $document['token'],
@@ -64,14 +64,9 @@ class ContractController extends Controller {
         }
     }
 
-    private function sendContract($user, $contract, $value, $payment) {
-
-        $payment = Payment::find($payment);
-        if (!$payment) {
-            return false;
-        }
+    private function sendContract($sale, $contract) {
     
-        $user = User::find($user);
+        $user = User::find($sale->id_client);
         if (!$user) {
             return false;
         }
@@ -212,11 +207,11 @@ class ContractController extends Controller {
                             ],
                             [
                                 "de"    => "VALOR",
-                                "para"  =>  $value
+                                "para"  =>  $sale->value
                             ],
                             [
                                 "de"    => "FORMADEPAGAMENTO",
-                                "para"  => $payment->methodLabel().' em '.$payment->installments.'x'
+                                "para"  => $sale->paymentMethod().' em '.$sale->installments.'x'
                             ],
                             [
                                 "de"    => "DIA",
