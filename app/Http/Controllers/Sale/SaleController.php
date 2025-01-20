@@ -112,8 +112,15 @@ class SaleController extends Controller {
         $cpfcnpj = preg_replace('/\D/', '', $cpfcnpj);
         $email = preg_replace('/[^\w\d\.\@\-\_]/', '', $email);
     
-        $user = User::firstOrNew(['cpfcnpj' => $cpfcnpj]);
-
+        $user = User::withTrashed()->where('cpfcnpj', preg_replace('/\D/', '', $cpfcnpj))->first();
+        if ($user) {
+            if ($user->trashed()) {
+                $user->restore();
+            }
+        } else {
+            $user = User::firstOrNew(['cpfcnpj' => $cpfcnpj]);
+        }
+        
         $user->fill([
             'name'       => $name,
             'email'      => $email,
