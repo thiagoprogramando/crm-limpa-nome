@@ -31,23 +31,35 @@
                                 </div>
                                 <div class="modal-body">
                                     <div class="row">
-                                        <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                        <div class="col-12 col-md-7 col-lg-7 mb-2">
                                             <div class="form-floating">
                                                 <input type="text" name="name" class="form-control" id="floatingName" placeholder="Nome:">
                                                 <label for="floatingName">Nome:</label>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                        <div class="col-12 col-md-5 col-lg-5 mb-2">
                                             <div class="form-floating">
                                                 <input type="date" name="created_at" class="form-control" id="floatingCreated_at" placeholder="Informe a data:">
                                                 <label for="floatingCreated_at">Data de cadastro:</label>
                                             </div>
                                         </div>
+                                        <div class="col-12 col-md-7 col-lg-7 mb-2">
+                                            <div class="form-floating">
+                                                <input type="text" name="email" class="form-control" id="floatingEmail" placeholder="Email:">
+                                                <label for="floatingEmail">Email:</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-5 col-lg-5 mb-2">
+                                            <div class="form-floating">
+                                                <input type="text" name="cpfcnpj" class="form-control" id="floatingCpfCNpj" placeholder="CPF/CNPJ:">
+                                                <label for="floatingCpfCNpj">CPF/CNPJ:</label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="modal-footer btn-group">
-                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                                    <button type="submit" class="btn btn-success">Consultar</button>
+                                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                    <button type="submit" class="btn btn-primary">Consultar</button>
                                 </div>
                             </form>
                         </div>
@@ -72,7 +84,7 @@
                                     <table class="table table-hover" id="table">
                                         <thead>
                                             <tr>
-                                                <th scope="col">N°</th>
+                                                <th scope="col" class="text-center">°</th>
                                                 <th scope="col">Nome</th>
                                                 <th class="text-center" scope="col">T. Vendas (Geral)</th>
                                                 <th class="text-center" scope="col">T. Comissão (Vendedor)</th>
@@ -83,7 +95,13 @@
                                         <tbody>
                                             @foreach ($users as $key => $user)
                                                 <tr>
-                                                    <th scope="row">{{ $key + 1 }}</th>
+                                                    <td scope="row" class="d-flex justify-content-center">
+                                                        @if($user->photo)
+                                                            <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
+                                                        @else
+                                                            <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
+                                                        @endif
+                                                    </td>
                                                     <td>{{ $user->name }} <br>
                                                         <span class="badge bg-dark">{{ $user->statusLabel() }}</span>
                                                     </td>
@@ -169,8 +187,7 @@
                                     <table class="table table" id="table">
                                         <thead>
                                             <tr class="tr-primary">
-                                                <th scope="col">--</th>
-                                                <th scope="col">N°</th>
+                                                <th scope="col" class="text-center">°</th>
                                                 <th scope="col">Vendedor</th>
                                                 <th scope="col" class="text-center">Estado</th>
                                                 <th scope="col">Faturamento</th>
@@ -180,23 +197,27 @@
                                         <tbody>
                                             @foreach ($usersForRanking as $key => $rank)
                                                 <tr>
-                                                    <td scope="row">
+                                                    <td scope="row" class="d-flex justify-content-center">
                                                         @switch($loop->iteration)
                                                             @case(1)
-                                                                <i class="bi bi-award" style="color: #FFD700;"></i>
+                                                                <i class="bi bi-award" style="color: #fcef87;"></i>
                                                                 @break
                                                             @case(2)
-                                                                <i class="bi bi-award" style="color: #C0C0C0;"></i>
+                                                                <i class="bi bi-award" style="color: #4f4f4f;"></i>
                                                                 @break
                                                             @case(3)
-                                                                <i class="bi bi-award" style="color: #A62A2A;"></i>
+                                                                <i class="bi bi-award" style="color: #ea7e12;"></i>
                                                                 @break
                                                             @default
-                                                                <i class="bi bi-award text-dark"></i>
+                                                                <i class="bi bi-award" style="color: #C0C0C0;"></i>
                                                                 @break  
                                                         @endswitch
+                                                        @if($rank->photo)
+                                                            <img src="{{ asset('storage/' . $rank->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
+                                                        @else
+                                                            <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
+                                                        @endif
                                                     </td>
-                                                    <th scope="row">{{ $loop->iteration }}</th>
                                                     @if ($rank->name == Auth::user()->name)
                                                         <td>{{ $rank->name }}</td>
                                                     @else

@@ -32,16 +32,22 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row">
-                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                    <div class="col-12 col-md-12 col-lg-12 mb-2">
                                         <div class="form-floating">
                                             <input type="text" name="name" class="form-control" id="floatingName" placeholder="Nome:">
                                             <label for="floatingName">Nome:</label>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                    <div class="col-12 col-md-6 col-lg-6 mb-2">
                                         <div class="form-floating">
-                                            <input type="number" name="cpfcnpj" class="form-control" id="floatingCpfCnpj" placeholder="CPF ou CNPJ:">
-                                            <label for="floatingCpfCnpj">CPF ou CNPJ:</label>
+                                            <input type="text" name="email" class="form-control" id="floatingEmail" placeholder="Email:">
+                                            <label for="floatingEmail">Email:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                        <div class="form-floating">
+                                            <input type="text" name="cpfcnpj" class="form-control" id="floatingCpfCNpj" placeholder="CPF/CNPJ:">
+                                            <label for="floatingCpfCNpj">CPF/CNPJ:</label>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6 col-lg-6 mb-1">
@@ -59,8 +65,8 @@
                                 </div>
                             </div>
                             <div class="modal-footer btn-group">
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                                <button type="submit" class="btn btn-success">Consultar</button>
+                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn btn-primary">Consultar</button>
                             </div>
                         </form>
                     </div>
@@ -129,70 +135,64 @@
                                                                     <label for="floatingName">Nome:</label>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                            <div class="col-12 col-md-7 col-lg-7 mb-1">
                                                                 <div class="form-floating">
                                                                     <input type="email" name="email" class="form-control" id="floatingEmail" placeholder="Email:" value="{{ $user->email }}">
                                                                     <label for="floatingEmail">Email:</label>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                                            <div class="col-12 col-md-5 col-lg-5 mb-1">
+                                                                <div class="form-floating">
+                                                                    <input type="text" name="phone" class="form-control" id="floatingPhone" placeholder="Whatsapp:" oninput="mascaraTelefone(this)" value="{{ $user->phone }}">
+                                                                    <label for="floatingPhone">Whatsapp:</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-md-7 col-lg-7 mb-1">
                                                                 <div class="form-floating">
                                                                     <input type="text" name="cpfcnpj" class="form-control" id="floatingCpfCnpj" placeholder="CPF/CNPJ:" oninput="mascaraCpfCnpj(this)" value="{{ $user->cpfcnpj }}">
                                                                     <label for="floatingCpfCnpj">CPF/CNPJ:</label>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                                            <div class="col-12 col-md-5 col-lg-5 mb-1">
                                                                 <div class="form-floating">
                                                                     <input type="date" name="birth_date" class="form-control" id="floatingBirthDate" placeholder="Data Nascimento:" value="{{ $user->birth_date }}">
                                                                     <label for="floatingBirthDate">Data Nascimento:</label>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                                            <div class="col-12 col-md-7 col-lg-7 mb-1">
                                                                 <div class="form-floating">
                                                                     <select name="type" class="form-select" id="floatingType">
-                                                                        <option selected value="{{ $user->type }}">Tipo:</option>
+                                                                        <option selected value="{{ $user->type }}">Tipos:</option>
                                                                         <option value="1">Administrador</option>
                                                                         <option value="2">Consultor</option>
-                                                                        <option value="5">Consultor (Indicador)</option>
-                                                                        <option value="7">Consultor (Master)</option>
                                                                         <option value="3">Cliente</option>
                                                                         <option value="4">Vendendor Interno</option>
-                                                                        <option value="8">Vendendor Master</option>
-                                                                        <option value="9">Consultor VIP</option>
                                                                     </select>
                                                                     <label for="floatingType">Tipo</label>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                                            <div class="col-12 col-md-5 col-lg-5 mb-1">
                                                                 <div class="form-floating">
                                                                     <select name="level" class="form-select" id="floatingLevel">
-                                                                        <option selected value="{{ $user->level }}">Graduação:</option>
-                                                                        <option value="1">INICIANTE</option>
-                                                                        <option value="2">CONSULTOR</option>
-                                                                        <option value="3">CONSULTOR LÍDER</option>
-                                                                        <option value="7">CONSULTOR MASTER</option>
-                                                                        <option value="4">REGIONAL</option>
-                                                                        <option value="5">GERENTE REGIONAL</option>
-                                                                        <option value="6">VENDEDOR INTERNO</option>
-                                                                        <option value="8">VENDEDOR MASTER</option>
-                                                                        <option value="9">CONSULTOR VIP</option>
+                                                                        <option selected value="{{ $user->level }}">Graduações:</option>
+                                                                        <option value="1">Iniciante</option>
+                                                                        <option value="2">Consultor</option>
+                                                                        <option value="3">Consultor Líder</option>
+                                                                        <option value="7">Consultor Master</option>
+                                                                        <option value="4">Regional</option>
+                                                                        <option value="5">Gerente Regional</option>
+                                                                        <option value="6">Vendedor Interno</option>
                                                                     </select>
                                                                     <label for="floatingLevel">Graduação</label>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
                                                                 <div class="form-floating">
                                                                     <input type="text" name="api_token_zapapi" class="form-control" id="api_token_zapapi" placeholder="Api Token ZapSing:" value="{{ $user->api_token_zapapi }}">
-                                                                    <label for="api_token_zapapi">Api Token ZapSing:</label>
+                                                                    <label for="api_token_zapapi">Token ZapApi:</label>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-12 col-md-6 col-lg-6 mb-1">
-                                                                <div class="form-floating">
-                                                                    <input type="text" name="fixed_cost" class="form-control" id="fixed_cost" placeholder="Custo Fixo (R$):" value="{{ $user->fixed_cost }}" oninput="mascaraReal(this)">
-                                                                    <label for="fixed_cost">Custo Fixo (R$):</label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                            <div class="col-12 col-md-7 col-lg-7 mb-1">
                                                                 <div class="form-floating">
                                                                     <select name="white_label_contract" class="form-select" id="floatingWlContract">
                                                                         <option selected value="{{ $user->white_label_contract }}">White Label Contrato:</option>
@@ -202,11 +202,17 @@
                                                                     <label for="floatingWlContract">Opções</label>
                                                                 </div>
                                                             </div>
+                                                            <div class="col-12 col-md-5 col-lg-5 mb-1">
+                                                                <div class="form-floating">
+                                                                    <input type="text" name="fixed_cost" class="form-control" id="fixed_cost" placeholder="Custo Fixo (R$):" value="{{ $user->fixed_cost }}" oninput="mascaraReal(this)">
+                                                                    <label for="fixed_cost">Custo Fixo (R$):</label>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer btn-group">
-                                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                                                        <button type="submit" class="btn btn-success">Atualizar</button>
+                                                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                                        <button type="submit" class="btn btn-primary">Atualizar</button>
                                                     </div>
                                                 </form>
                                             </div>

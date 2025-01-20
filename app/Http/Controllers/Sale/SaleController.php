@@ -51,29 +51,6 @@ class SaleController extends Controller {
                 return redirect()->back()->with('error', 'O valor mín de entrada é: R$ '.$seller->fixed_cost.'!');
             }
 
-            $baseValue = $this->formatarValor($request->value);
-            $discountPercentage = 0;
-
-            if ($request->has('coupon') && !empty($request->coupon)) {
-
-                $coupon = Coupon::where('name', $request->coupon)->first();
-                if ($coupon) {
-                    if ($coupon->qtd < 1) {
-                        return redirect()->back()->with('info', 'CUPOM esgotado!');
-                    }
-        
-                    if (!empty($coupon->expiry_date) && $coupon->expiry_date < now()) {
-                        return redirect()->back()->with('info', 'CUPOM expirado!');
-                    }
-        
-                    $discountPercentage = $coupon->percentage;
-                    $coupon->qtd -= 1;
-                    $coupon->save();
-                } else {
-                    return redirect()->back()->with('info', 'Nenhum CUPOM encontrado!');
-                }
-            }
-
             if (empty($seller->fixed_cost)) {
                 if ($this->formatarValor($request->value) < $product->value_min) {
                     return redirect()->back()->with('error', 'O valor mín de venda é: R$ '.$product->value_min.'!');
@@ -90,9 +67,7 @@ class SaleController extends Controller {
             }
 
             $productCost = ($seller->fixed_cost > 0 ? $seller->fixed_cost : $product->value_cost);
-            $discountedValue = $baseValue * (1 - $discountPercentage / 100);
-
-            $commission = (($discountedValue - $productCost) - $product->value_rate);
+            $commission  = (($this->formatarValor($request->value) - $productCost) - $product->value_rate);
 
             if ($seller->filiate <> null) {
                 $commissionFiliate = max(($seller->fixed_cost - $seller->parent->fixed_cost), 0);
@@ -111,15 +86,15 @@ class SaleController extends Controller {
             $sale->status_contract  = 3;
             $sale->status           = 0;
 
-            $sale->value                = $discountedValue;
-            // $sale->value_total          = $this->formatarValor($request->value_total);
-            $sale->commission           = max($commission, 0);
-            $sale->commission_filiate   = $commissionFiliate;
+            $sale->value              = $this->formatarValor($request->value);
+            $sale->value_total        = $this->formatarValor($request->value_total);
+            $sale->commission         = max($commission, 0);
+            $sale->commission_filiate = $commissionFiliate;
+            $sale->type               = 1;
             if ($sale->save()) {
 
                 $assas = new AssasController();
-                $dueDate = Carbon::parse($request->dueDate)->format('Y-m-d');
-                $invoice = $assas->createSalePayment($sale->id, true, $dueDate);
+                $invoice = $assas->createSalePayment($sale->id, true, $request->dueDate);
                 if ($invoice) {
                     return redirect()->route('update-sale', ['id' => $sale->id])->with('success', 'Sucesso! Os dados de pagamento foram enviados para o cliente!');
                 }
@@ -137,51 +112,22 @@ class SaleController extends Controller {
         $cpfcnpj = preg_replace('/\D/', '', $cpfcnpj);
         $email = preg_replace('/[^\w\d\.\@\-\_]/', '', $email);
     
-        try {
-            $birth_date = Carbon::createFromFormat('d/m/Y', $birth_date)->format('Y-m-d');
-        } catch (\Exception $e) {
-            $birth_date = null;
+        $user = User::firstOrNew(['cpfcnpj' => $cpfcnpj]);
+
+        $user->fill([
+            'name'       => $name,
+            'email'      => $email,
+            'birth_date' => $birth_date,
+            'phone'      => $phone,
+            'filiate'    => $filiate,
+        ]);
+
+        if (!$user->exists) {
+            $user->password = bcrypt($cpfcnpj);
+            $user->type     = 3;
         }
-    
-        $user = User::where('cpfcnpj', $cpfcnpj)->first();
-        if ($user) {
-            $user->name         = $name;
-            $user->email        = $email;
-            $user->cpfcnpj      = $cpfcnpj;
-            $user->birth_date   = $birth_date;
-            $user->phone        = $phone;
-            $user->postal_code  = $postal_code;
-            $user->address      = $address;
-            $user->complement   = $complement;
-            $user->city         = $city;
-            $user->state        = $state;
-            $user->num          = $num;
-            $user->save();
-    
-            return $user;
-        }
-        
-        $user               = new User();
-        $user->name         = $name;
-        $user->email        = $email;
-        $user->cpfcnpj      = $cpfcnpj;
-        $user->birth_date   = $birth_date;
-        $user->password     = bcrypt($cpfcnpj);
-        $user->phone        = $phone;
-        $user->postal_code  = $postal_code;
-        $user->address      = $address;
-        $user->complement   = $complement;
-        $user->city         = $city;
-        $user->state        = $state;
-        $user->num          = $num;
-        $user->type         = 3;
-        $user->filiate      = $filiate;
-    
-        if ($user->save()) {
-            return $user;
-        }
-    
-        return false;
+
+        return $user->save() ? $user : false;
     }    
 
     private function sendWhatsapp($link, $message, $phone, $token = null) {
@@ -212,15 +158,6 @@ class SaleController extends Controller {
         } catch (\Exception $e) {
             return false;
         }
-    }
-
-    private function formatarValor($valor) {
-        
-        $valor = preg_replace('/[^0-9,]/', '', $valor);
-        $valor = str_replace(',', '.', $valor);
-        $valorFloat = floatval($valor);
-    
-        return number_format($valorFloat, 2, '.', '');
     }       
 
     public function manager(Request $request) {
@@ -337,6 +274,11 @@ class SaleController extends Controller {
             }
             
             $invoice->delete();
+        }
+
+        if ($sale->user->type == 3) {
+            $user = $sale->user;
+            $user->delete();
         }
 
         if ($sale->delete()) {
@@ -577,5 +519,14 @@ class SaleController extends Controller {
                 'details'   => $e->getMessage(),
             ], 500);
         }
+    }
+
+    private function formatarValor($valor) {
+        
+        $valor = preg_replace('/[^0-9,]/', '', $valor);
+        $valor = str_replace(',', '.', $valor);
+        $valorFloat = floatval($valor);
+    
+        return number_format($valorFloat, 2, '.', '');
     }
 }

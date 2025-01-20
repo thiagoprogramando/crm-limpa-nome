@@ -51,10 +51,10 @@ class Forgout extends Controller {
         $user = User::where('email', $request->email)->first();
         if($user) {
 
-            $code = new Code();
-            $code->code = $this->generateCode();
-            $code->data_generate = now();
-            $code->id_user = $user->id;
+            $code                   = new Code();
+            $code->code             = $this->generateCode();
+            $code->data_generate    = now();
+            $code->id_user          = $user->id;
             if($code->save()) {
                 if($this->sendCode($user->phone, $code->code)) {
                     return redirect()->route('forgout', ['code' => 1])->with('success', 'Código enviado para o número cadastro!');

@@ -37,7 +37,9 @@
                                     @foreach ($receivables as $receivable)
                                         @if($receivable['value'] > 0)
                                             <tr>
-                                                <th scope="row">{{ $receivable['id'] }}</th>
+                                                <th>
+                                                    <a href=""><b>{{ $receivable['id'] }}</b></a>
+                                                </th>
                                                 <td>{{ $receivable['description'] }}</td>
                                                 <td class="text-justify">R$ {{ number_format($receivable['value'], 2, ',', '.') }}</td>
                                                 <td class="text-center">{{ \Carbon\Carbon::parse($receivable['date'])->format('d/m/Y') }}</td>

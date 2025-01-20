@@ -55,18 +55,15 @@ class AssasController extends Controller {
 
     private function invoiceBoleto($value, $commission, $sale, $wallet, $client, $filiate = null, $notification = null, $dueDate = null) {
 
-        //Válida se já existem faturas (Entrada já emitida)
         if (Invoice::where('id_sale', $sale->id)->count() >= 1) {
             return true;
         }
 
-        //Cria o cliente no Gateway Assas
         $customer = $this->createCustomer($client->name, $client->cpfcnpj, $client->phone, $client->email);
         if ($customer == false) {
             return false;
         }
 
-        //Define Comissão Patrocinador
         if ($filiate) {
             $commission_filiate = max($sale->seller->fixed_cost - $filiate->fixed_cost, 0);
         } else {
@@ -89,7 +86,7 @@ class AssasController extends Controller {
         $invoice->value                 = $value;
         $invoice->commission            = $commission;
         $invoice->commission_filiate    = $commission_filiate;
-        $invoice->due_date              = $dueDate;
+        $invoice->due_date              = isset($dueDate) ? Carbon::parse($dueDate)->format('Y-m-d H:i:s') : now()->addDays(1)->format('Y-m-d H:i:s');
         $invoice->num                   = 1;
         $invoice->type                  = 3;
         $invoice->status                = 0;
@@ -255,6 +252,11 @@ class AssasController extends Controller {
     }
 
     public function createCustomer($name, $cpfcnpj, $mobilePhone, $email) {
+
+        $user = User::where('cpfcnpj', $cpfcnpj)->first();
+        if ($user && $user->customer) {
+            return $user->customer;
+        }
         
         $client = new Client();
 
@@ -279,13 +281,17 @@ class AssasController extends Controller {
         
         if ($response->getStatusCode() === 200) {
             $data = json_decode($body, true);
+            
+            $user->customer = $data['id'];
+            $user->save();
+
             return $data['id'];
         } else {
             return false;
         }
     }
 
-    public function createCharge($customer, $billingType, $value, $description, $dueDate, $installments = null, $wallet = null, $commission = null, $filiate = null, $commission_filiate = null) {
+    public function createCharge($customer, $billingType, $value, $description, $dueDate = null, $installments = null, $wallet = null, $commission = null, $filiate = null, $commission_filiate = null) {
         try {
             $client = new Client();
     
@@ -299,7 +305,7 @@ class AssasController extends Controller {
                     'customer'          => $customer,
                     'billingType'       => $billingType,
                     'value'             => number_format($value, 2, '.', ''),
-                    'dueDate'           => $dueDate,
+                    'dueDate'           => isset($dueDate) ? Carbon::parse($dueDate)->toIso8601String() : now()->addDays(1),
                     'description'       => $description,
                     'installmentCount'  => $installments != null ? $installments : 1,
                     'installmentValue'  => $installments != null ? number_format(($value / intval($installments)), 2, '.', '') : $value,
@@ -907,9 +913,9 @@ class AssasController extends Controller {
 
     public function receivable() {
 
-        $client = new Client();
-        $user = auth()->user();
-        $startDate = $user->created_at->toDateString();
+        $client     = new Client();
+        $user       = auth()->user();
+        $startDate  = $user->created_at->toDateString();
         $finishDate = now()->toDateString();
 
         $response = $client->request('GET',  env('API_URL_ASSAS') . "v3/financialTransactions?startDate={$startDate}&finishDate={$finishDate}&order=desc", [

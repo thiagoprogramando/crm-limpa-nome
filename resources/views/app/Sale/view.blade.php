@@ -18,7 +18,6 @@
 
             <div class="btn-group mb-3" role="group">
                 @if(Auth::user()->type == 1) 
-                    {{-- <a href="{{ route('request-invoices', ['id' => $sale->id]) }}" class="btn btn-outline-primary">Gerar Faturas</a> --}}
                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#updatedModal">Alterar dados</button>
                 @endif
                 <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#invoiceModal">Adicionar Fatura</button> 
@@ -36,7 +35,7 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row">
-                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
                                         <div class="form-floating">
                                             <select name="status" class="form-select" id="floatingSeller">
                                                 <option value="">Status:</option>
@@ -47,7 +46,7 @@
                                             <label for="floatingSeller">Status</label>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
                                         <div class="form-floating">
                                             <select name="id_list" class="form-select" id="floatinglist">
                                                 <option selected="" value="">Lista:</option>
@@ -61,8 +60,8 @@
                                 </div>
                             </div>
                             <div class="modal-footer btn-group">
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                                <button type="submit" class="btn btn-success">Salvar</button>
+                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn btn-primary">Salvar</button>
                             </div>
                         </form>
                     </div>
@@ -127,8 +126,8 @@
                                 </div>
                             </div>
                             <div class="modal-footer btn-group">
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                                <button type="submit" class="btn btn-success">Criar Fatura</button>
+                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn btn-primary">Criar Fatura</button>
                             </div>
                         </form>
                     </div>

@@ -386,7 +386,7 @@
                                 <tbody>
                                     @foreach ($users as $key => $user)
                                         <tr>
-                                            <td scope="row" class="text-center">
+                                            <td scope="row" class="d-flex justify-content-center">
                                                 @switch($loop->iteration)
                                                     @case(1)
                                                         <i class="bi bi-award" style="color: #fcef87;"></i>
@@ -413,12 +413,81 @@
                                                 <td>{{ $user->maskedName() }}</td>
                                             @endif
                                             <td class="text-center">{{ $user->state }}</th>
-                                            <td>R$ {{ number_format($user->saleTotal(), 2, ',', '.') }}</td>
+                                            <td class="text-success">R$ {{ number_format($user->saleTotal(), 2, ',', '.') }}</td>
                                             <td>{{ $user->levelLabel() }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-12 col-lg-12 p-3 row">
+                <div id="fees" class="col-12 col-sm-12 col-md-6 col-lg-6">
+                    <div class="card p-3">
+                        <div class="card-body">
+                            <p class="card-title mb-0">Formas de Pagamento</p>
+                            <small>Cobranças avulsas, parceladas, assinaturas e link de pagamento</small>
+                            <hr>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <p class="lead">
+                                        <i class="bi bi-upc"></i> Boleto Bancário <br>
+                                        <small class="text-success">Recebimento em até 3 dias úteis após o pagamento.</small>
+                                    </p> 
+                                </div>
+                                <div class="col-12">
+                                    <p class="lead">
+                                        <i class="bi bi-credit-card"></i> Cartão de Crédito <br>
+                                        <small class="text-success">Recebimento em 32 dias após o pagamento.</small>
+                                    </p> 
+                                </div>
+                                <div class="col-12">
+                                    <p class="lead">
+                                        <i class="bi bi-credit-card-2-back-fill"></i> Cartão de Débito <br>
+                                        <small class="text-success">Recebimento em 3 dias após o pagamento.</small>
+                                    </p> 
+                                </div>
+                                <div class="col-12">
+                                    <p class="lead">
+                                        <i class="ri-qr-code-line"></i> Pix <br>
+                                        <small class="text-success">Recebimento em poucos segundos após o pagamento.</small>
+                                    </p> 
+                                </div>
+                                <p>
+                                    <b class="text-danger">Atenção:</b> Será descontado 5% por boleto/pix emitido, caso sejam efetuadas notificações extras (R$ 0,99) adicionais.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                    <div class="card p-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Perguntas frequentes</h5>
+                            <div>
+                                <h6 class="text-primary">1. É possível antecipar vendas realizadas no cartão?</h6>
+                                <p>
+                                    Sim, imediatamente após a conclusão do processo de venda, nosso sistema tentará realizar a antecipação das parcelas junto ao banco. 
+                                    Isso permite que você receba o valor total de forma mais rápida.
+                                </p>
+                                <p>
+                                    <b class="text-danger">Atenção:</b> A aprovação da antecipação depende do banco e pode não ser autorizada, mantendo os prazos padrões de repasse.
+                                </p>
+                            </div>
+                            <div class="pt-2">
+                                <h6 class="text-primary">2. Qual é o prazo para receber as comissões?</h6>
+                                <p>
+                                    Boletos podem levar até três (3) dias úteis para compensação. Por padrão, o banco realiza remessas nos seguintes horários (horário de Brasília): 18h e 00h.
+                                </p>
+                                <p>
+                                    <b class="text-danger">Atenção:</b> As vendas podem ser aprovadas assim que o banco confirma a conciliação, porém os valores serão repassados nas datas subsequentes.
+                                </p>
+                            </div>                        
                         </div>
                     </div>
                 </div>

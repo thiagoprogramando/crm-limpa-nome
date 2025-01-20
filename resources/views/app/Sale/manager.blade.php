@@ -27,14 +27,9 @@
         <div class="col-12">
 
             <div class="btn-group mb-3" role="group">
-                <button id="toggle-select" class="btn btn-outline-primary">Selecionar</button>
-                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
+                <button type="button" id="toggle-select" class="btn btn-outline-primary">Selecionar</button>
                 <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
-                @if(Auth::user()->type == 1)
-                    <a href="#" class="btn btn-danger" onclick="confirmDelete()">
-                        <i class="bi bi-trash"></i> Não Assinados
-                    </a>
-                @endif
             </div>
 
             <div class="modal fade" id="filterModal" tabindex="-1">
@@ -61,14 +56,14 @@
                                     </div>
                                     <div class="col-12 col-md-6 col-lg-6 mb-1">
                                         <div class="form-floating">
-                                            <input type="text" name="value" class="form-control" id="floatingValue" placeholder="Informe o valor:" oninput="mascaraReal(this)">
-                                            <label for="floatingValue">Valor:</label>
+                                            <input type="number" name="id" class="form-control" id="floatingId" placeholder="ID:">
+                                            <label for="floatingId">ID</label>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-12 col-lg-12 mb-1">
                                         <div class="form-floating">
                                             <select name="id_list" class="form-select" id="floatinglist">
-                                                <option selected="" value="">Lista:</option>
+                                                <option selected="" value="">Listas:</option>
                                                 @foreach ($lists as $list)
                                                     <option value="{{ $list->id }}">{{ $list->name }}</option>  
                                                 @endforeach
@@ -79,12 +74,9 @@
                                     <div class="col-12 col-md-6 col-lg-6 mb-1">
                                         <div class="form-floating">
                                             <select name="status" class="form-select" id="floatingStatus">
-                                                <option selected value="">Status:</option>
+                                                <option selected value="">Opções:</option>
                                                 <option value="0">Pendente</option>
                                                 <option value="1">Pagamento confirmado</option>
-                                                <option value="2">Contrato Assinado</option>
-                                                <option value="3">Pendente de Assinatura</option>
-                                                <option value="4">Pendente de Pagamento</option>
                                             </select>
                                             <label for="floatingStatus">Status</label>
                                         </div>
@@ -92,7 +84,7 @@
                                     <div class="col-12 col-md-6 col-lg-6 mb-1">
                                         <div class="form-floating">
                                             <select name="label" class="form-select" id="floatingLabel">
-                                                <option selected value="">Label:</option>
+                                                <option selected value="">Opções:</option>
                                                 <option value="REPROTOCOLADO">Reprotocolado</option>
                                             </select>
                                             <label for="floatingLabel">Label</label>
@@ -101,19 +93,19 @@
                                     <div class="col-12 col-md-12 col-lg-12 mb-1">
                                         <div class="form-floating">
                                             <select name="id_seller" class="form-select" id="floatingSeller">
-                                                <option selected="" value="">Vendedor:</option>
+                                                <option selected="" value="">Consultores:</option>
                                                 @foreach ($sellers as $seller)
                                                     <option value="{{ $seller->id }}">{{ $seller->name }}</option>  
                                                 @endforeach
                                             </select>
-                                            <label for="floatingSeller">Vendedor</label>
+                                            <label for="floatingSeller">Consultor</label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="modal-footer btn-group">
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                                <button type="submit" class="btn btn-success">Consultar</button>
+                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn btn-primary">Consultar</button>
                             </div>
                         </form>
                     </div>
@@ -135,7 +127,7 @@
                         <table class="table table-sm table-hover" id="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">N°</th>
+                                    <th scope="col">#ID</th>
                                     <th scope="col">Lista</th>
                                     <th scope="col">Produto</th>
                                     <th scope="col">Cliente</th>
@@ -162,16 +154,16 @@
                                             @endif
                                         </th>
                                         <td title="{{ $sale->product->name }}">
-                                            {{ substr($sale->product->name, 0, 20) }} <br>
+                                            {{ implode(' ', array_slice(explode(' ', $sale->product->name), 0, 2)) }} <br>
                                             @isset($sale->guarantee)
                                                 <span class="badge bg-primary">
                                                     Garantia: {{ \Carbon\Carbon::parse($sale->guarantee)->format('d/m/Y') }}
                                                 </span>
                                             @endisset
-                                            <span class="badge bg-success">Valor Venda: R$ {{ number_format($sale->value, 2, ',', '.') }}</span>
+                                            <span class="badge bg-success">Valor Venda: R$ {{ number_format($sale->value_total, 2, ',', '.') }}</span>
                                         </td>
                                         <td title="{{ $sale->user->name }}">
-                                            {{ substr($sale->user->name, 0, 20) }}... <br>
+                                            {{ implode(' ', array_slice(explode(' ', $sale->user->name), 0, 2)) }} <br>
                                             <span class="badge bg-dark">CPF/CNPJ: {{ $sale->user->cpfcnpjLabel() }}</span>
                                             @isset($sale->label) 
                                                 <span class="badge bg-primary">
@@ -180,14 +172,14 @@
                                             @endisset
                                         </td>
                                         <td title="{{ $sale->seller->parent->name ?? '---' }}">
-                                            {{ substr($sale->seller->name, 0, 20) }}... <br>
+                                            {{ implode(' ', array_slice(explode(' ', $sale->seller->name), 0, 2)) }} <br>
                                             <span class="badge bg-success">Comissão: R$ {{ number_format($sale->commission, 2, ',', '.') }}</span>
                                             @if ($sale->seller->filiate == Auth::user()->id)
                                                 <span class="badge bg-success">Comissão Patrocinador: R$ {{ number_format($sale->commission_filiate, 2, ',', '.') }}</span>
                                             @endif
                                         </td>
                                         <td class="text-center">
-                                            @if (!empty($sale->user->phone))
+                                            @if ($sale->payment !== 'ENVIO MANUAL')
                                                 @if ($sale->status_contract == 3)
                                                     <a title="Gerar Contrato" href="{{ route('send-contract', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="ri-file-edit-line"></i> Gerar Contrato</a>
                                                 @else
@@ -204,7 +196,7 @@
                                                     @endisset
                                                 @endif
                                             @else
-                                                <span class="badge bg-danger">Não disponível para vendas (manuais)</span>
+                                                <span class="badge bg-danger">Não disponível para vendas com Envio Direto</span>
                                             @endif
                                         </td>
                                         <td class="text-center">

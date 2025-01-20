@@ -17,15 +17,15 @@
                 <div class="card">
                     <div class="card-body p-2">
 
-                        <ul class="nav nav-tabs d-flex" id="myTabjustified" role="tablist">
-                            <li class="nav-item flex-fill" role="presentation">
-                                <button class="nav-link w-100 active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-justified" type="button" role="tab" aria-controls="profile" aria-selected="false" tabindex="-1">Enviar Nome</button>
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-justified" type="button" role="tab" aria-controls="profile" aria-selected="false" tabindex="-1">Enviar Nome</button>
                             </li>
-                            <li class="nav-item flex-fill" role="presentation">
-                                <button class="nav-link w-100" id="sale-tab" data-bs-toggle="tab" data-bs-target="#sale-justified" type="button" role="tab" aria-controls="sale" aria-selected="true">Nomes Aprovados</button>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="sale-tab" data-bs-toggle="tab" data-bs-target="#sale-justified" type="button" role="tab" aria-controls="sale" aria-selected="true">Nomes Enviados</button>
                             </li>
-                            <li class="nav-item flex-fill" role="presentation">
-                                <button class="nav-link w-100" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-justified" type="button" role="tab" aria-controls="home" aria-selected="true">Entenda como funciona</button>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-justified" type="button" role="tab" aria-controls="home" aria-selected="true">Saiba Mais</button>
                             </li>
                         </ul>
 
@@ -71,57 +71,59 @@
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer btn-group">
-                                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                                                    <button type="submit" class="btn btn-success">Enviar</button>
+                                                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                                    <button type="submit" class="btn btn-primary">Enviar</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </form>
 
-                                <table class="table table-sm" id="table">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Lista</th>
-                                            <th scope="col">Nome</th>
-                                            <th scope="col">CPF/CNPJ</th>
-                                            <th scope="col" class="text-center">Status Pagamento</th>
-                                            <th scope="col" class="text-center">Opções</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($sales as $sale)
+                                <div class="table-responsive">
+                                    <table class="table table-sm" id="table">
+                                        <thead>
                                             <tr>
-                                                <th scope="row">{{ $sale->id }}</th>
-                                                <td>{{ $sale->list->name }}</td>
-                                                <td>{{ $sale->user->name }}</td>
-                                                <td>{{ $sale->user->cpfcnpj }}</td>
-                                                <td class="text-center">
-                                                    {{ $sale->statusLabel() }} <br>
-                                                </td>
-                                                <td class="text-center">
-                                                    <form action="{{ route('delete-sale') }}" method="POST" class="delete">
-                                                        @csrf
-                                                        <input type="hidden" name="id" value="{{ $sale->id }}"> 
-                                                        <div class="btn-group" role="group">
-                                                            <button type="submit" class="btn btn-danger text-light" title="Excluir"><i class="bi bi-trash"></i></button>
-                                                            @if ($sale->token_payment)
-                                                                <a href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-success text-light" title="Pagar Nome"><i class="bi bi-upc"></i> Acessar Fatura</a>
-                                                            @else
-                                                                <a href="{{ route('create-payment-upload', ['id' => $sale->id]) }}" class="btn btn-success text-light" title="Pagar Nome"><i class="bi bi-upc"></i> Pagar</a>
-                                                            @endif
-                                                        </div>
-                                                    </form>
-                                                </td>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Lista</th>
+                                                <th scope="col">Nome</th>
+                                                <th scope="col">CPF/CNPJ</th>
+                                                <th scope="col" class="text-center">Status Pagamento</th>
+                                                <th scope="col" class="text-center">Opções</th>
                                             </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($sales as $sale)
+                                                <tr>
+                                                    <th scope="row">{{ $sale->id }}</th>
+                                                    <td>{{ $sale->list->name }}</td>
+                                                    <td>{{ $sale->user->name }}</td>
+                                                    <td>{{ $sale->user->cpfcnpj }}</td>
+                                                    <td class="text-center">
+                                                        {{ $sale->statusLabel() }} <br>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <form action="{{ route('delete-sale') }}" method="POST" class="delete">
+                                                            @csrf
+                                                            <input type="hidden" name="id" value="{{ $sale->id }}"> 
+                                                            <div class="btn-group" role="group">
+                                                                <button type="submit" class="btn btn-danger text-light" title="Excluir"><i class="bi bi-trash"></i></button>
+                                                                @if ($sale->token_payment)
+                                                                    <a href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-success text-light" title="Pagar Nome"><i class="bi bi-upc"></i> Acessar Fatura</a>
+                                                                @else
+                                                                    <a href="{{ route('create-payment-upload', ['id' => $sale->id]) }}" class="btn btn-primary text-light" title="Pagar Nome"><i class="bi bi-upc"></i> Pagar</a>
+                                                                @endif
+                                                            </div>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
 
                             <div class="tab-pane fade" id="sale-justified" role="tabpanel" aria-labelledby="sale-tab">
-                                <div class="row p-3">
+                                <div class="table-responsive p-3">
                                     <table class="table table-sm" id="table">
                                         <thead>
                                             <tr>
@@ -165,18 +167,19 @@
 
                             <div class="tab-pane fade" id="home-justified" role="tabpanel" aria-labelledby="home-tab">
                                 <div class="row p-3">
-                                    <div class="col-12 col-sm-12 col-md-4 col-lg-4 text-center" style="background-color: #063986 !important;">
-                                        <img src="{{ asset('assets/dashboard/img/document.png') }}" class="w-50 m-5">
+                                    <div class="col-12 col-sm-12 col-md-4 col-lg-4 text-center">
+                                        
                                     </div>
                                     <div class="col-12 col-sm-12 col-md-8 col-lg-8">
-                                        <p class="card-title">Como Enviar nomes direto para associação sem precisar de planilha de Excel?</p>
+                                        <p class="card-title">Como Enviar Nomes Diretamente para a Associação sem Usar Planilhas do Excel?</p>
                                         <p>
-                                            Ao optar por enviar o nome diretamente para a associação, <b>o seu cliente não terá contrato, 
-                                            link de pagamento nem comissão, pois o nome será encaminhado diretamente para a associação.</b> 
-                                            Neste caso, você só precisará pagar o valor de custo e não será necessário enviar 
-                                            ficha associativa nem documentos.
+                                            Ao escolher enviar os nomes diretamente para a associação, 
+                                            <b>o cliente não receberá um link de pagamento ou contrato, pois os dados serão encaminhados diretamente para a associação.</b> 
+                                            Nesse caso, você precisará apenas pagar o valor de custo, sem a necessidade de enviar a ficha associativa ou documentos adicionais.
+                                            <br><br>
+                                            <b class="text-danger">Atenção:</b> É possível gerar boletos extras ou adicionais, porém os dados do <a href="{{ route('list-client') }}">cliente</a> devem estar completos.
                                         </p>
-                                    </div>
+                                    </div>                                    
                                 </div>
                             </div>
                         </div>

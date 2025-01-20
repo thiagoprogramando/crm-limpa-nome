@@ -187,10 +187,6 @@ class UserController extends Controller {
             $query->where('name', 'like', '%' . $request->name . '%');
         }
 
-        if (!empty($request->city)) {
-            $query->where('city', 'like', '%' . $request->city . '%');
-        }
-
         if (!empty($request->email)) {
             $query->where('email', 'like', '%' . $request->email . '%');
         }
@@ -200,13 +196,15 @@ class UserController extends Controller {
         }
 
         if (!empty($request->created_at_start)) {
-            $query->where('created_at', '>=', $request->created_at_start);
+            $startDate = Carbon::createFromFormat('Y-m-d', $request->created_at_start)->startOfDay();
+            $query->where('created_at', '>=', $startDate);
         }
-
+        
         if (!empty($request->created_at_end)) {
-            $query->where('created_at', '<=', $request->created_at_end);
+            $endDate = Carbon::createFromFormat('Y-m-d', $request->created_at_end)->endOfDay();
+            $query->where('created_at', '<=', $endDate);
         }
-
+        
         $query->where('type', $type);
 
         $users = $query->paginate(100);
@@ -233,6 +231,14 @@ class UserController extends Controller {
             $query->where('name', 'like', '%' . $request->name . '%');
         }
 
+        if ($request->filled('email')) {
+            $query->where('email', $request->email);
+        }
+
+        if ($request->filled('cpfcnpj')) {
+            $query->where('cpfcnpj', $request->cpfcnpj);
+        }
+
         if ($request->filled('created_at')) {
             $query->whereDate('created_at', $request->created_at);
         }
@@ -257,6 +263,14 @@ class UserController extends Controller {
 
         if (!empty($request->name)) {
             $query->where('name', 'like', '%' . $request->name . '%');
+        }
+
+        if ($request->filled('email')) {
+            $query->where('email', $request->email);
+        }
+
+        if ($request->filled('cpfcnpj')) {
+            $query->where('cpfcnpj', $request->cpfcnpj);
         }
 
         if (!empty($request->created_at)) {

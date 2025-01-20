@@ -65,6 +65,8 @@ class UploadController extends Controller {
             $sale->installments = 1;
             $sale->status       = 0;
             $sale->value        = $seller->fixed_cost;
+            $sale->value_total  = $this->formatarValor($seller->fixed_cost);
+            $sale->type         = 1;
             $sale->save();
 
             DB::commit();
@@ -83,7 +85,11 @@ class UploadController extends Controller {
         }
 
         $assas = new AssasController();
-        $charge = $assas->createCharge(Auth::user()->customer, 'PIX', Auth::user()->fixed_cost, 'Fatura da venda N°'.$sale->id, now()->addDay(), null, null, null, Auth::user()->parent, max(0, max(0, Auth::user()->fixed_cost - Auth::user()->parent->fixed_cost)));  
+        if (empty(Auth::user()->customer)) {
+            $customer = $assas->createCustomer(Auth::user()->name, Auth::user()->cpfcnpj, Auth::user()->phone, Auth::user()->email);
+        }
+
+        $charge = $assas->createCharge(Auth::user()->customer ?? $customer, 'PIX', Auth::user()->fixed_cost, 'Fatura da venda N°'.$sale->id, now()->addDay(), null, null, null, Auth::user()->parent, max(0, max(0, Auth::user()->fixed_cost - Auth::user()->parent->fixed_cost)));  
         if ($charge == false) {
             return redirect()->back()->with('info', 'Verifique seus dados e tente novamente!');
         }
@@ -117,8 +123,11 @@ class UploadController extends Controller {
 
     private function createUser($name, $email, $cpfcnpj, $birth_date = null, $phone = null, $postal_code = null, $address = null, $complement = null, $city = null, $state = null, $num = null) {
 
-        $user = User::where('cpfcnpj', str_replace(['.', '-'], '', $cpfcnpj))->first();
-        if($user) {
+        $user = User::withTrashed()->where('cpfcnpj', preg_replace('/\D/', '', $cpfcnpj))->first();
+        if ($user) {
+            if ($user->trashed()) {
+                $user->restore();
+            }
             return $user;
         }
         
@@ -136,7 +145,7 @@ class UploadController extends Controller {
         $user->state        = $state;
         $user->num          = $num;
         $user->type         = 3;
-        if($user->save()) {
+        if ($user->save()) {
             return $user;
         }
 

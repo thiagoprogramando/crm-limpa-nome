@@ -30,23 +30,35 @@
                                 </div>
                                 <div class="modal-body">
                                     <div class="row">
-                                        <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                        <div class="col-12 col-md-7 col-lg-7 mb-2">
                                             <div class="form-floating">
                                                 <input type="text" name="name" class="form-control" id="floatingName" placeholder="Nome:">
                                                 <label for="floatingName">Nome:</label>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                        <div class="col-12 col-md-5 col-lg-5 mb-2">
                                             <div class="form-floating">
                                                 <input type="date" name="created_at" class="form-control" id="floatingCreated_at" placeholder="Informe a data:">
                                                 <label for="floatingCreated_at">Data de cadastro:</label>
                                             </div>
                                         </div>
+                                        <div class="col-12 col-md-7 col-lg-7 mb-2">
+                                            <div class="form-floating">
+                                                <input type="text" name="email" class="form-control" id="floatingEmail" placeholder="Email:">
+                                                <label for="floatingEmail">Email:</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-5 col-lg-5 mb-2">
+                                            <div class="form-floating">
+                                                <input type="text" name="cpfcnpj" class="form-control" id="floatingCpfCNpj" placeholder="CPF/CNPJ:">
+                                                <label for="floatingCpfCNpj">CPF/CNPJ:</label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="modal-footer btn-group">
-                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                                    <button type="submit" class="btn btn-success">Consultar</button>
+                                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                    <button type="submit" class="btn btn-primary">Consultar</button>
                                 </div>
                             </form>
                         </div>
@@ -106,29 +118,35 @@
                                                                         <label for="floatingName">Nome:</label>
                                                                     </div>
                                                                 </div>
-                                                                <div class="col-12 col-md-12 col-lg-12 mb-1">
-                                                                    <div class="form-floating">
-                                                                        <input type="email" name="email" class="form-control" id="floatingEmail" placeholder="Email:" value="{{ $user->email }}">
-                                                                        <label for="floatingEmail">Email:</label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                                                <div class="col-12 col-md-7 col-lg-7 mb-1">
                                                                     <div class="form-floating">
                                                                         <input type="text" name="cpfcnpj" class="form-control" id="floatingCpfCnpj" placeholder="CPF/CNPJ:" oninput="mascaraCpfCnpj(this)" value="{{ $user->cpfcnpj }}">
                                                                         <label for="floatingCpfCnpj">CPF/CNPJ:</label>
                                                                     </div>
                                                                 </div>
-                                                                <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                                                <div class="col-12 col-md-5 col-lg-5 mb-1">
                                                                     <div class="form-floating">
                                                                         <input type="date" name="birth_date" class="form-control" id="floatingBirthDate" placeholder="Data Nascimento:" value="{{ $user->birth_date }}">
                                                                         <label for="floatingBirthDate">Data Nascimento:</label>
                                                                     </div>
                                                                 </div>
+                                                                <div class="col-12 col-md-7 col-lg-7 mb-1">
+                                                                    <div class="form-floating">
+                                                                        <input type="email" name="email" class="form-control" id="floatingEmail" placeholder="Email:" value="{{ $user->email }}">
+                                                                        <label for="floatingEmail">Email:</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12 col-md-5 col-lg-5 mb-1">
+                                                                    <div class="form-floating">
+                                                                        <input type="text" name="phone" class="form-control" id="floatingPhone" placeholder="Whatsapp:" oninput="mascaraTelefone(this)" value="{{ $user->phone }}">
+                                                                        <label for="floatingPhone">Whatsapp:</label>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer btn-group">
-                                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                                                            <button type="submit" class="btn btn-success">Atualizar</button>
+                                                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                                            <button type="submit" class="btn btn-primary">Atualizar</button>
                                                         </div>
                                                     </form>
                                                 </div>

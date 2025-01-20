@@ -47,12 +47,12 @@ class AppController extends Controller {
     
         $invoicing = Sale::where('id_seller', Auth::id())
             ->where('status', 1)
-            ->sum('value');
+            ->sum('value_total');
     
         $invoicingDay = Sale::where('id_seller', Auth::id())
             ->where('status', 1)
             ->whereDate('updated_at', $now->toDateString())
-            ->sum('value');
+            ->sum('value_total');
     
         $list = Lists::where('start', '<=', $now)
             ->where('end', '>=', $now)

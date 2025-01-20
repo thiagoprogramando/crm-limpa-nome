@@ -45,7 +45,15 @@ function consultarCPF(cpf, nascimento) {
 
                 $('input[name=name]').val(data.result.nome_da_pf);
                 $('input[name=cpfcnpj]').val(data.result.numero_de_cpf);
-                $('input[name=birth_date]').val(data.result.data_nascimento);
+
+                let dataNascimento = data.result.data_nascimento;
+                if (dataNascimento) {
+
+                    let partesData = dataNascimento.split('/');
+                    let dataFormatada = `${partesData[2]}-${partesData[1]}-${partesData[0]}`;
+                
+                    $('input[name=birth_date]').val(dataFormatada);
+                }
             } else {
                 Swal.fire({
                     title: 'Atenção',

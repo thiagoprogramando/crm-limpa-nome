@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Sale extends Model {
 
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'sale';
 
@@ -23,6 +24,7 @@ class Sale extends Model {
         'installments',
 
         'value',
+        'value_total',
         'commission',
         'commission_filiate',
 
