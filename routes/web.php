@@ -70,12 +70,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/create-payment-upload/{id}', [UploadController::class, 'createInvoice'])->name('create-payment-upload');
         Route::post('create-upload', [UploadController::class, 'createSale'])->name('create-upload');
 
-        //Coupon
-        Route::get('/coupons', [CouponController::class, 'coupons'])->name('coupons');
-        Route::post('create-coupon', [CouponController::class, 'createCoupon'])->name('create-coupon');
-        Route::post('delete-coupon', [CouponController::class, 'deleteCoupon'])->name('delete-coupon');
-        Route::post('add-coupon', [CouponController::class, 'addCoupon'])->name('add-coupon');
-
         Route::middleware(['monthly'])->group(function () {
             
             //Wallet
@@ -86,31 +80,9 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/receivable', [Payment::class, 'receivable'])->name('receivable');
         });
 
-        //Product
-        Route::get('/listproduct', [ProductController::class, 'list'])->name('listproduct');
-        Route::get('/createproduct', [ProductController::class, 'create'])->name('createproduct');
-        Route::post('create-product', [ProductController::class, 'createProduct'])->name('create-product');
-        Route::get('/updateproduct/{id}', [ProductController::class, 'update'])->name('updateproduct');
-        Route::post('update-product', [ProductController::class, 'updateProduct'])->name('update-product');
-        Route::post('delete-product', [ProductController::class, 'delete'])->name('delete-product');
-        Route::post('create-payment', [ProductController::class, 'payment'])->name('create-payment');
-        Route::post('delete-payment', [ProductController::class, 'deletePayment'])->name('delete-payment');
-        Route::post('update-payment', [ProductController::class, 'updatePayment'])->name('update-payment');
-        Route::post('create-item', [ProductController::class, 'createItem'])->name('create-item');
-        Route::post('delete-item', [ProductController::class, 'deleteItem'])->name('delete-item');
-
         //Active
         Route::get('/list-active/{status}', [UserController::class, 'listActive'])->name('list-active');
         Route::get('/send-active/{id}', [UserController::class, 'sendActive'])->name('send-active');
-
-        //List
-        Route::get('/lists', [ListController::class, 'list'])->name('lists');
-        Route::get('/createlist', [ListController::class, 'create'])->name('createlist');
-        Route::get('/excel-list/{id}', [ListController::class, 'excelList'])->name('excel-list');
-        Route::post('create-list', [ListController::class, 'createList'])->name('create-list');
-        Route::get('/updatelist/{id}', [ListController::class, 'update'])->name('updatelist');
-        Route::post('update-list', [ListController::class, 'updateList'])->name('update-list');
-        Route::post('delete-list', [ListController::class, 'delete'])->name('delete-list');
 
         //WhiteLabel
         Route::get('/profile-white-label', [WhiteLabelContractController::class, 'profileContract'])->name('profile-white-label');
@@ -126,6 +98,34 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/list-client', [UserController::class, 'listClient'])->name('list-client');
     Route::get('view-notification/{id}', [UserController::class, 'viewNotification'])->name('view-notification');
     Route::get('/create-wallet', [UserController::class, 'createWallet'])->name('create-wallet');
+
+    //Product
+    Route::get('/listproduct', [ProductController::class, 'list'])->name('listproduct');
+    Route::get('/createproduct', [ProductController::class, 'create'])->name('createproduct');
+    Route::post('create-product', [ProductController::class, 'createProduct'])->name('create-product');
+    Route::get('/updateproduct/{id}', [ProductController::class, 'update'])->name('updateproduct');
+    Route::post('update-product', [ProductController::class, 'updateProduct'])->name('update-product');
+    Route::post('delete-product', [ProductController::class, 'delete'])->name('delete-product');
+    Route::post('create-payment', [ProductController::class, 'payment'])->name('create-payment');
+    Route::post('delete-payment', [ProductController::class, 'deletePayment'])->name('delete-payment');
+    Route::post('update-payment', [ProductController::class, 'updatePayment'])->name('update-payment');
+    Route::post('create-item', [ProductController::class, 'createItem'])->name('create-item');
+    Route::post('delete-item', [ProductController::class, 'deleteItem'])->name('delete-item');
+
+    //List
+    Route::get('/lists', [ListController::class, 'list'])->name('lists');
+    Route::get('/createlist', [ListController::class, 'create'])->name('createlist');
+    Route::get('/excel-list/{id}', [ListController::class, 'excelList'])->name('excel-list');
+    Route::post('create-list', [ListController::class, 'createList'])->name('create-list');
+    Route::get('/updatelist/{id}', [ListController::class, 'update'])->name('updatelist');
+    Route::post('update-list', [ListController::class, 'updateList'])->name('update-list');
+    Route::post('delete-list', [ListController::class, 'delete'])->name('delete-list');
+
+    //Coupon
+    Route::get('/coupons', [CouponController::class, 'coupons'])->name('coupons');
+    Route::post('create-coupon', [CouponController::class, 'createCoupon'])->name('create-coupon');
+    Route::post('delete-coupon', [CouponController::class, 'deleteCoupon'])->name('delete-coupon');
+    Route::post('add-coupon', [CouponController::class, 'addCoupon'])->name('add-coupon');
 
     //Payments Assas
     Route::get('/createMonthly/{id}', [AssasController::class, 'createMonthly'])->name('createMonthly');
