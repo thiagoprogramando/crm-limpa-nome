@@ -330,6 +330,9 @@ class AssasController extends Controller {
                 }
     
                 if ($g7Commission > 0 && $commission > 0) {
+
+                    $g7Commission -= 1.99;
+
                     $options['json']['split'][] = [
                         'walletId'        => env('WALLET_G7'),
                         'totalFixedValue' => number_format($g7Commission, 2, '.', '')
