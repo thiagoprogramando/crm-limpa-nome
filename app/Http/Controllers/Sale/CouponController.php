@@ -111,11 +111,6 @@ class CouponController extends Controller {
             return redirect()->back()->with('info', 'CUPOM expirado!');
         }
 
-        $value      = $invoice->value * (1 - $coupon->percentage / 100);
-        $commission = $invoice->commission * (1 - ($coupon->percentage + 5) / 100);
-        $dueDate    = $invoice->due_date;
-        $wallet     = $invoice->sale->seller->wallet;
-
         $assas = new AssasController();
         if ($coupon->percentage == 100) {
             if ($assas->cancelInvoice($invoice->token_payment)) {
@@ -130,6 +125,11 @@ class CouponController extends Controller {
                 }
             }
         }
+
+        $value      = $invoice->value * (1 - $coupon->percentage / 100);
+        $commission = $invoice->commission * (1 - ($coupon->percentage + 5) / 100);
+        $dueDate    = $invoice->due_date;
+        $wallet     = $invoice->sale->seller->wallet;
        
         $charge = $assas->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
         if ($charge) {
