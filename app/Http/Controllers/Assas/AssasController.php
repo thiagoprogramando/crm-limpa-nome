@@ -331,11 +331,11 @@ class AssasController extends Controller {
     
                 if ($g7Commission > 0 && $commission > 0) {
 
-                    $g7Commission -= 3;
+                    $g7Commission -= 2;
 
                     $options['json']['split'][] = [
                         'walletId'        => env('WALLET_G7'),
-                        'totalFixedValue' => number_format($g7Commission, 2, '.', '')
+                        'totalFixedValue' => max(0, number_format($g7Commission, 2, '.', ''))
                     ];
     
                     $options['json']['split'][] = [
@@ -347,7 +347,7 @@ class AssasController extends Controller {
                 if (!empty($wallet) && $commission > 0) {
                     $options['json']['split'][] = [
                         'walletId'        => $wallet,
-                        'totalFixedValue' => number_format($commission, 2, '.', '')
+                        'totalFixedValue' => max(0, number_format($commission, 2, '.', ''))
                     ];
                 }
             }
@@ -469,7 +469,6 @@ class AssasController extends Controller {
                 }
 
                 if ($invoice->type == 1) {
-
                     $key = $this->createKey($invoice->id);
                     if ($key == true || $key == 1) {
                         return response()->json(['status' => 'success', 'message' => 'Operação Finalizada & ApiKey criada!']);
@@ -479,20 +478,18 @@ class AssasController extends Controller {
                 }
 
                 $sale = Sale::where('id', $invoice->id_sale)->first();
-                $sale->guarantee = Carbon::parse($sale->guarantee)->addMonths(12);
-                
-                $product = $invoice->id_product <> null ? Product::where('id', $invoice->id_product)->first() : false;
-                if ($product && $invoice->num == 1 && $sale) {
-                        
-                    $sale->status = 1;
-                    $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
-                    if ($list) {
-                        $sale->id_list = $list->id;
-                    }
-                }
-
                 if ($sale) {
-                    
+
+                    $product = $invoice->id_product <> null ? Product::where('id', $invoice->id_product)->first() : false;
+                    if ($product && $invoice->num == 1) {
+                            
+                        $sale->status = 1;
+                        $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
+                        if ($list) {
+                            $sale->id_list = $list->id;
+                        }
+                    }
+
                     $notification               = new Notification();
                     $notification->name         = 'Fatura N°'.$invoice->id;
                     $notification->description  = 'Faturas recebida com sucesso!';
@@ -519,7 +516,19 @@ class AssasController extends Controller {
                                 break;
                             case 100:
                                 $seller->level = 5;
-                                $nivel = 'GERENTE REGIONAL'; 
+                                $nivel = 'GERENTE REGIONAL';
+                                break;
+                            case 300:
+                                $seller->level = 7;
+                                $nivel = 'DIRETOR';
+                                break;
+                            case 500:
+                                $seller->level = 8;
+                                $nivel = 'DIRETOR REGIONAL';
+                                break;
+                            case 1000:
+                                $seller->level = 9;
+                                $nivel = 'PRESIDENTE VIP';
                                 break;
                         }
 
@@ -535,6 +544,7 @@ class AssasController extends Controller {
                         }
                     }
 
+                    $sale->guarantee = Carbon::parse($sale->guarantee)->addMonths(12);
                     $sale->save();
                 }
 
