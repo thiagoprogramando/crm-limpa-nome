@@ -331,7 +331,7 @@ class AssasController extends Controller {
     
                 if ($g7Commission > 0 && $commission > 0) {
 
-                    $g7Commission -= 1.99;
+                    $g7Commission -= 3;
 
                     $options['json']['split'][] = [
                         'walletId'        => env('WALLET_G7'),
@@ -409,11 +409,6 @@ class AssasController extends Controller {
             
             $user = User::find($invoice->id_user);
             if ($user) {
-                
-                // if ($user->api_key != null) {
-                //     return ['status' => true];
-                // }
-
                 if ($user->parent->afiliates()->count() % 2 === 0) {
                     $this->createCoupon($user->parent);
                 }
@@ -422,87 +417,6 @@ class AssasController extends Controller {
                 if ($user->save()) {
                     return ['status' => true];
                 }
-    
-                // $client = new Client();
-                // $options = [
-                //     'headers' => [
-                //         'Content-Type' => 'application/json',
-                //         'access_token' => env('API_TOKEN_ASSAS'),
-                //         'User-Agent'   => env('APP_NAME'),
-                //     ],
-                //     'json' => [
-                //         'name'          => $user->name,
-                //         'email'         => explode('@', $user->email)[0].rand(1, 999).'@ampaysolucoes.com',
-                //         'cpfCnpj'       => $user->cpfcnpj,
-                //         'birthDate'     => $user->birth_date,
-                //         'mobilePhone'   => $user->phone,
-                //         'address'       => '09750-730 Rua José Versolato, 101 - Vila da Saúde, São Bernardo do Campo',
-                //         'addressNumber' => '101',
-                //         'province'      => 'São Paulo',
-                //         'postalCode'    => '09750730',
-                //         'companyType'   => strlen($user->cpfcnpj) === 11 ? '' : 'MEI',
-                //         'incomeValue'   => 1000,
-                //         "accountStatusWebhook" => [
-                //             "url"           => env('APP_URL')."api/webhook-account",
-                //             "email"         => env('APP_EMAIL_SUPORT'),
-                //             "interrupted"   => false,
-                //             "enabled"       => true,
-                //             "apiVersion"    => 3,
-                //         ],
-                //         "transferWebhook"      => [
-                //             "url"           => env('APP_URL')."api/webhook-account",
-                //             "email"         => env('APP_EMAIL_SUPORT'),
-                //             "interrupted"   => false,
-                //             "enabled"       => true,
-                //             "apiVersion"    => 3,
-                //         ],
-                //         "paymentWebhook"       => [
-                //             "url"           => env('APP_URL')."api/webhook-account",
-                //             "email"         => env('APP_EMAIL_SUPORT'),
-                //             "interrupted"   => false,
-                //             "enabled"       => true,
-                //             "apiVersion"    => 3,
-                //         ],
-                //         "invoiceWebhook"        => [
-                //             "url"           => env('APP_URL')."api/webhook-account",
-                //             "email"         => env('APP_EMAIL_SUPORT'),
-                //             "interrupted"   => false,
-                //             "enabled"       => true,
-                //             "apiVersion"    => 3,
-                //         ],
-                //     ],
-                //     'verify' => false,
-                // ];
-    
-                // try {
-
-                //     $response = $client->post(env('API_URL_ASSAS') . 'v3/accounts', $options);
-                //     if ($response->getStatusCode() === 200) {
-                        
-                //         $body             = (string)$response->getBody();
-                //         $data             = json_decode($body, true);
-                //         $user->api_key    = $data['apiKey'];
-                //         $user->wallet     = $data['walletId'];
-                //         $user->wallet_id  = $data['id'];
-                //         $user->status     = 2;
-                //         $user->type       = 2;
-                //         if ($user->save()) {
-                //             return ['status' => true];
-                //         }
-                //     }
-
-                //     return ['status' => false, 'error' => 'Erro desconhecido.'];
-
-                // } catch (\GuzzleHttp\Exception\ClientException $e) {
-                    
-                //     $responseBody = (string)$e->getResponse()->getBody();
-                //     $errorData = json_decode($responseBody, true);
-
-                //     return [
-                //         'status' => false,
-                //         'error' => $errorData['errors'][0]['description'] ?? 'Erro desconhecido.',
-                //     ];
-                // }
             }
         }
     
@@ -566,13 +480,6 @@ class AssasController extends Controller {
 
                 $sale = Sale::where('id', $invoice->id_sale)->first();
                 $sale->guarantee = Carbon::parse($sale->guarantee)->addMonths(12);
-                
-                // if ($sale && ($sale->id_payment <> null)) {
-                //     $invoices = $this->createSalePayment($sale->id);
-                //     if($invoices == false) {
-                //         return response()->json(['status' => 'error', 'message' => 'Não foi possível Gerar Faturas para essa venda!']);
-                //     }
-                // }
                 
                 $product = $invoice->id_product <> null ? Product::where('id', $invoice->id_product)->first() : false;
                 if ($product && $invoice->num == 1 && $sale) {
@@ -879,39 +786,7 @@ class AssasController extends Controller {
     }    
 
     public function myDocuments() {
-
         return [];
-        
-        // $user = auth()->user();
-
-        // if(empty($user->api_key)) {
-        //     return [];
-        // }
-
-        // $client = new Client();
-        // $options = [
-        //     'headers' => [
-        //         'Content-Type' => 'application/json',
-        //         'access_token' => $user->api_key,
-        //         'User-Agent'   => env('APP_NAME')
-        //     ],
-        //     'verify' => false
-        // ];
-
-        // $response = $client->get(env('API_URL_ASSAS') . 'v3/myAccount/documents', $options);
-        // $body = (string) $response->getBody();
-        
-        // if ($response->getStatusCode() === 200) {
-        //     $data = json_decode($body, true);
-    
-        //     if (isset($data['data'])) {
-        //         return $data['data'];
-        //     } else {
-        //         return [];
-        //     }
-        // } else {
-        //     return false;
-        // }
     }
 
     public function receivable() {
@@ -1144,16 +1019,6 @@ class AssasController extends Controller {
         }
     }
 
-    // public function requestInvoice($id) {
-
-    //     $invoices = $this->createSalePayment($id, true);
-    //     if ($invoices <> false) {
-    //         return redirect()->back()->with('success', 'Faturas geradas com sucesso!');
-    //     }
-
-    //     return redirect()->back()->with('error', 'Não foi possível Gerar Faturas!');
-    // } 
-
     public function cancelInvoice($token) {
 
         $client = new Client();
@@ -1328,6 +1193,32 @@ class AssasController extends Controller {
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->jsonError('Erro no processo: ' . $e->getMessage(), 500);
+        }
+    }
+
+    public function accountStatus($api_key) {
+        try {
+            $client = new Client();
+            
+            $options = [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'access_token' => $api_key,
+                    'User-Agent'   => env('APP_NAME')
+                ],
+                'verify' => false
+            ];
+    
+            $response = $client->get(env('API_URL_ASSAS') . 'v3/myAccount/status/', $options);
+            $body = (string) $response->getBody();
+    
+            if ($response->getStatusCode() === 200) {
+                return json_decode($body, true);
+            } else {
+                return false;
+            }
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            return false;
         }
     }
 
