@@ -295,17 +295,6 @@ class SaleController extends Controller {
         return redirect()->back()->with('error', 'Não foi possível excluir a venda!');
     }
 
-    public function deleteSalesPending() {
-
-        $sales = Sale::whereIn('status', [0, 3])->get();
-        $saleIds = $sales->pluck('id')->toArray();
-
-        Invoice::whereIn('id_sale', $saleIds)->delete();
-        Sale::whereIn('id', $saleIds)->delete();
-
-        return redirect()->back()->with('success', 'Vendas pendentes removidas com sucesso!');
-    }
-
     public function default(Request $request) {
         
         $user       = Auth::user();
@@ -447,7 +436,7 @@ class SaleController extends Controller {
             return redirect()->back()->with('info', 'Não foi possível localizar os dados da Venda!');
         }
 
-        if (Auth::user()->type <> 1) {
+        if (Auth::user()->type !== 1) {
             $wallet     = $sale->seller->wallet;
             $commission = $request->value;
         } else {
@@ -482,7 +471,7 @@ class SaleController extends Controller {
             $invoice->value         = $this->formatarValor($request->value);
             $invoice->commission    = $this->formatarValor($request->commission);
             $invoice->status        = 0;
-            $invoice->num           = 1;
+            $invoice->num           = 2;
             $invoice->type          = 3;
             if($invoice->save()) {
                 return redirect()->back()->with('success', 'Fatura adicionada com sucesso!');

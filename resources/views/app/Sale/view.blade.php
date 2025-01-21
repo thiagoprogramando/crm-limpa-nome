@@ -99,7 +99,7 @@
                                                 <select name="wallet" class="form-select" id="floatingSeller">
                                                     <option value="">Comissão (opcional):</option>
                                                     @foreach ($users as $user)
-                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                        <option value="{{ $user->wallet }}">{{ $user->name }}</option>
                                                     @endforeach
                                                 </select>
                                                 <label for="floatingSeller">Consultores</label>
@@ -115,7 +115,7 @@
                                     <div class="col-12 col-md-12 col-lg-12 mb-2">
                                         <div class="form-floating">
                                             <select name="billingType" class="form-select" id="floatingBillingType" required>
-                                                <option value="">Método de Pagemento:</option>
+                                                <option value="">Método de Pagamento:</option>
                                                 <option value="PIX">Pix</option>
                                                 <option value="BOLETO">Boleto</option>
                                                 <option value="CREDIT_CARD">Cartão de Crédito</option>
