@@ -39,6 +39,7 @@ class Registrer extends Controller {
         $password = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 6));
         $user->password = bcrypt($password);
         $user->type     = 2;
+        $user->status   = 3;
         
         if (!empty($request->filiate)) {
             $filiate = User::find($request->filiate);
