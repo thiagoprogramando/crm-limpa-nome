@@ -128,7 +128,12 @@
                                                         <div class="row">
 
                                                             <input type="hidden" name="id" value="{{ $user->id }}">
-                                                            
+                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                                <div class="form-floating">
+                                                                    <input type="text" class="form-control" id="floatingParent" placeholder="Patrocinador:" value="{{ $user->parent->name ?? '' }}" readonly>
+                                                                    <label for="floatingParent">Patrocinador:</label>
+                                                                </div>
+                                                            </div>
                                                             <div class="col-12 col-md-12 col-lg-12 mb-1">
                                                                 <div class="form-floating">
                                                                     <input type="text" name="name" class="form-control" id="floatingName" placeholder="Nome:" value="{{ $user->name }}">
