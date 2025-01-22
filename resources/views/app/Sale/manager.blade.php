@@ -231,23 +231,6 @@
 </section>
 
 <script>
-    function confirmDelete() {
-        Swal.fire({
-            title: 'Você tem certeza?',
-            text: "Essa ação irá remover todas as vendas e faturas pendentes!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sim, deletar!',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = "{{ route('delete-sales-pending') }}";
-            }
-        });
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
 
         const toggleSelectBtn   = document.getElementById('toggle-select');

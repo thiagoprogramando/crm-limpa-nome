@@ -168,7 +168,7 @@
                             <div class="tab-pane fade" id="home-justified" role="tabpanel" aria-labelledby="home-tab">
                                 <div class="row p-3">
                                     <div class="col-12 col-sm-12 col-md-4 col-lg-4 text-center">
-                                        
+                                        <iframe class="embed-responsive-item w-100 h-100" src="https://www.youtube.com/embed/mM9CuIP2dWo?si=Yz1QIOagkGaHNHfd" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                                     </div>
                                     <div class="col-12 col-sm-12 col-md-8 col-lg-8">
                                         <p class="card-title">Como Enviar Nomes Diretamente para a Associação sem Usar Planilhas do Excel?</p>

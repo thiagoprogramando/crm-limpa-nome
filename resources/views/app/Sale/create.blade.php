@@ -30,7 +30,7 @@
                             <div class="tab-pane fade" id="home-justified" role="tabpanel" aria-labelledby="home-tab">
                                 <div class="row p-3">
                                     <div class="col-12 col-sm-12 col-md-4 col-lg-4 text-center">
-                                        
+                                        <iframe class="embed-responsive-item w-100 h-100" src="https://www.youtube.com/embed/i55n31X-2LQ?si=ffJgVnnpEBDvKaOm" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                                     </div>
                                     <div class="col-12 col-sm-12 col-md-8 col-lg-8">
                                         <p class="card-title">Como Gerar uma Venda para o Cliente Final pelo Seu Painel?</p>

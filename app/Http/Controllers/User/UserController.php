@@ -105,6 +105,7 @@ class UserController extends Controller {
 
         if (!empty($request->password)) {
             $user->password = bcrypt($request->password);
+            $this->alertPassword(Auth::user()->id, true);
         }
 
         if (!empty($request->type)) {
@@ -167,6 +168,26 @@ class UserController extends Controller {
         $accountStatus = $assas->accountStatus($api_key);
 
         return $accountStatus;
+    }
+
+    private function alertPassword($id) {
+
+        $user = User::find($id);
+        
+        $message =  "Olá, {$user->name},\r\n\r\n"
+                        . "Foi feito uma redefinição de senha na sua conta! \r\n\r\n"
+                        . "*Caso não reconheça essa ação, entre em contato com nosso suporte imediatamente.*\r\n\r\n"
+                        . "Acesse: ".env('APP_URL')."\r\n"
+                        . "Faça login com seu *E-mail* e *Senha* (Caso tenha solicitado via suporte sua senha será CFP/CNPJ informado no cadastro). \r\n\r\n"
+                        . "Precisa de ajuda? Estamos aqui para você!\r\n\r\n";
+            $this->sendWhatsapp(
+                env('APP_URL'),
+                $message,
+                $user->phone,
+                $user->api_token_zapapi
+            );
+
+            return redirect()->back()->with('success', 'mensagem enviada com sucesso!');
     }
 
     public function search(Request $request) {
