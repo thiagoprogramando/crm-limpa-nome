@@ -116,7 +116,7 @@
                                     </tr>
 
                                     <div class="modal fade" id="updateModal{{ $user->id }}" tabindex="-1">
-                                        <div class="modal-dialog">
+                                        <div class="modal-dialog modal-lg">
                                             <div class="modal-content">
                                                 <form action="{{ route('update-user') }}" method="POST">
                                                     @csrf
@@ -163,10 +163,10 @@
                                                                 <div class="form-floating">
                                                                     <select name="type" class="form-select" id="floatingType">
                                                                         <option selected value="{{ $user->type }}">Tipos:</option>
-                                                                        <option value="1">Administrador</option>
-                                                                        <option value="2">Consultor</option>
-                                                                        <option value="3">Cliente</option>
-                                                                        <option value="4">Vendendor Interno</option>
+                                                                        <option value="1" @selected($user->type == 1)>Administrador</option>
+                                                                        <option value="2" @selected($user->type == 2)>Consultor</option>
+                                                                        <option value="3" @selected($user->type == 3)>Cliente</option>
+                                                                        <option value="4" @selected($user->type == 4)>Vendendor Interno</option>
                                                                     </select>
                                                                     <label for="floatingType">Tipo</label>
                                                                 </div>
@@ -175,13 +175,15 @@
                                                                 <div class="form-floating">
                                                                     <select name="level" class="form-select" id="floatingLevel">
                                                                         <option selected value="{{ $user->level }}">Graduações:</option>
-                                                                        <option value="1">Iniciante</option>
-                                                                        <option value="2">Consultor</option>
-                                                                        <option value="3">Consultor Líder</option>
-                                                                        <option value="7">Consultor Master</option>
-                                                                        <option value="4">Regional</option>
-                                                                        <option value="5">Gerente Regional</option>
-                                                                        <option value="6">Vendedor Interno</option>
+                                                                        <option value="1" @selected($user->level == 1)>Iniciante</option>
+                                                                        <option value="2" @selected($user->level == 2)>Consultor</option>
+                                                                        <option value="3" @selected($user->level == 3)>Consultor Líder</option>
+                                                                        <option value="4" @selected($user->level == 4)>Regional</option>
+                                                                        <option value="5" @selected($user->level == 5)>Gerente Regional</option>
+                                                                        <option value="7" @selected($user->level == 7)>Diretor</option>
+                                                                        <option value="8" @selected($user->level == 8)>Diretor Vip</option>
+                                                                        <option value="9" @selected($user->level == 9)>Presidente Vip</option>
+                                                                        <option value="6" @selected($user->level == 7)>Vendedor Interno</option>
                                                                     </select>
                                                                     <label for="floatingLevel">Graduação</label>
                                                                 </div>
@@ -202,16 +204,16 @@
                                                                     <label for="fixed_cost">Custo Fixo (R$):</label>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
-                                                                <div class="form-floating">
-                                                                    <input type="text" name="api_token_zapapi" class="form-control" id="api_token_zapapi" placeholder="Api Token ZapSing:" value="{{ $user->api_token_zapapi }}">
-                                                                    <label for="api_token_zapapi">Token ZapApi:</label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                            <div class="col-12 col-md-7 col-lg-7 mb-1">
                                                                 <div class="form-floating">
                                                                     <input type="text" name="wallet" class="form-control" id="wallet" placeholder="Wallet:" value="{{ $user->wallet }}">
                                                                     <label for="wallet">Wallet:</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-md-5 col-lg-5 mb-1">
+                                                                <div class="form-floating">
+                                                                    <input type="text" name="password" class="form-control" id="password" placeholder="Senha:">
+                                                                    <label for="password">Senha:</label>
                                                                 </div>
                                                             </div>
                                                             <div class="col-12 col-md-12 col-lg-12 mb-1">
@@ -222,8 +224,8 @@
                                                             </div>
                                                             <div class="col-12 col-md-12 col-lg-12 mb-1">
                                                                 <div class="form-floating">
-                                                                    <input type="text" name="password" class="form-control" id="password" placeholder="Senha:">
-                                                                    <label for="password">Senha:</label>
+                                                                    <input type="text" name="api_token_zapapi" class="form-control" id="api_token_zapapi" placeholder="Api Token ZapSing:" value="{{ $user->api_token_zapapi }}">
+                                                                    <label for="api_token_zapapi">Token ZapApi:</label>
                                                                 </div>
                                                             </div>
                                                         </div>

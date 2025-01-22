@@ -118,7 +118,12 @@ class SaleController extends Controller {
                 $user->restore();
             }
         } else {
-            $user = User::firstOrNew(['cpfcnpj' => $cpfcnpj]);
+            $user = new User([
+                'cpfcnpj' => $cpfcnpj,
+                'password' => bcrypt($cpfcnpj),
+                'type' => 3,
+            ]);
+            $user->filiate = $filiate; 
         }
         
         $user->fill([
@@ -126,7 +131,6 @@ class SaleController extends Controller {
             'email'      => $email,
             'birth_date' => $birth_date,
             'phone'      => $phone,
-            'filiate'    => $filiate,
         ]);
 
         if (!$user->exists) {

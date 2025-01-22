@@ -178,7 +178,7 @@ class UserController extends Controller {
                         . "Foi feito uma redefinição de senha na sua conta! \r\n\r\n"
                         . "*Caso não reconheça essa ação, entre em contato com nosso suporte imediatamente.*\r\n\r\n"
                         . "Acesse: ".env('APP_URL')."\r\n"
-                        . "Faça login com seu *E-mail* e *Senha* (Caso tenha solicitado via suporte sua senha será CFP/CNPJ informado no cadastro). \r\n\r\n"
+                        . "Faça login com seu *E-mail* e *Senha* (Caso tenha solicitado via suporte sua senha será CPF/CNPJ informado no cadastro). \r\n\r\n"
                         . "Precisa de ajuda? Estamos aqui para você!\r\n\r\n";
             $this->sendWhatsapp(
                 env('APP_URL'),

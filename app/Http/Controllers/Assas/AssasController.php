@@ -484,11 +484,15 @@ class AssasController extends Controller {
                     if ($product && $invoice->num == 1) {
                             
                         $sale->status = 1;
+                        $sale->guarantee = Carbon::parse($sale->guarantee)->addMonths(12);
+
                         $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
                         if ($list) {
                             $sale->id_list = $list->id;
                         }
                     }
+
+                    $sale->save();
 
                     $notification               = new Notification();
                     $notification->name         = 'Fatura N°'.$invoice->id;
@@ -543,9 +547,6 @@ class AssasController extends Controller {
                             $notification->save();
                         }
                     }
-
-                    $sale->guarantee = Carbon::parse($sale->guarantee)->addMonths(12);
-                    $sale->save();
                 }
 
                 $client = User::find($invoice->id_user);
@@ -796,8 +797,38 @@ class AssasController extends Controller {
     }    
 
     public function myDocuments() {
+        try {
+            
+            $user = auth()->user();
+    
+            if (empty($user->api_key)) {
+                return [];
+            }
+    
+            $client = new Client();
+            $options = [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'access_token' => $user->api_key,
+                    'User-Agent'   => env('APP_NAME')
+                ],
+                'verify' => false
+            ];
+    
+            $response = $client->get(env('API_URL_ASSAS') . 'v3/myAccount/documents', $options);
+            $body = (string) $response->getBody();
+    
+            if ($response->getStatusCode() === 200) {
+                $data = json_decode($body, true);
+    
+                return $data['data'] ?? [];
+            }
+        } catch (\Exception $e) {
+            return [];
+        }
+    
         return [];
-    }
+    }    
 
     public function receivable() {
 

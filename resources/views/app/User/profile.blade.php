@@ -45,17 +45,7 @@
             </div>
         @endif
 
-        {{-- @if (Auth::user()->api_key == null && Auth::user()->wallet == null && Auth::user()->months() > 0)
-            <div class="col-12">
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <i class="bi bi-info-circle me-1"></i>
-                    Falta pouco! <a href="{{ route('create-wallet') }}">Clique aqui para Criar sua Carteira Digital!</a>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            </div>
-        @endif --}}
-
-        {{-- @if ((Auth::user()->api_key <> null && Auth::user()->wallet <> null && Auth::user()->type != 6) && Auth::user()->status <> 1)
+        @if ((Auth::user()->api_key !== null && Auth::user()->wallet !== null && Auth::user()->type != 6) && Auth::user()->status !== 1)
             <div class="col-12">
                 <div class="card">
                     <div class="card-body p-0">
@@ -109,7 +99,7 @@
                     </div>
                 </div>
             </div>
-        @endif --}}
+        @endif
 
         <div class="col-12">
             <div class="card">

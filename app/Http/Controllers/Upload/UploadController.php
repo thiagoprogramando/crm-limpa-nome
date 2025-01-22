@@ -102,7 +102,7 @@ class UploadController extends Controller {
         $invoice->description           = 'Fatura da venda N° '.$sale->id;
         $invoice->url_payment           = $charge['invoiceUrl'];
         $invoice->token_payment         = $charge['id'];
-        $invoice->value                 = Auth::user()->fixed_cost;
+        $invoice->value                 = $this->formatarValor(Auth::user()->fixed_cost);
         $invoice->commission            = 0;
         $invoice->commission_filiate    = max(0, Auth::user()->fixed_cost - Auth::user()->parent->fixed_cost);
         $invoice->due_date              = now()->addDay();
