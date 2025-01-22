@@ -143,7 +143,7 @@
                                                 </div>
                                                 <div class="col-12 col-sm-12 col-md-5 col-lg-5 mb-2">
                                                     <div class="form-floating">
-                                                        <input type="text" name="dueDate" class="form-control" id="floatingdueDate" placeholder="Vencimento:" oninput="mascaraData(this)">
+                                                        <input type="date" name="dueDate" class="form-control" id="floatingdueDate" placeholder="Vencimento:">
                                                         <label for="floatingdueDate">Vencimento:</label>
                                                     </div>
                                                 </div>

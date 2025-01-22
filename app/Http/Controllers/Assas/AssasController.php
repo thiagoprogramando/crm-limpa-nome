@@ -409,7 +409,7 @@ class AssasController extends Controller {
             
             $user = User::find($invoice->id_user);
             if ($user) {
-                if ($user->parent->afiliates()->count() % 2 === 0) {
+                if ($user->parent->afiliates()->count() % 5 === 0) {
                     $this->createCoupon($user->parent);
                 }
 

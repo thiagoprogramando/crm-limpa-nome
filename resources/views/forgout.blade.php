@@ -84,7 +84,7 @@
                     title: 'Erro!',
                     text: '{{ session('error') }}',
                     icon: 'error',
-                    timer: 2000
+                    timer: 5000
                 })
             @endif
             
@@ -93,7 +93,7 @@
                     title: 'Sucesso!',
                     text: '{{ session('success') }}',
                     icon: 'success',
-                    timer: 2000
+                    timer: 5000
                 })
             @endif
         </script>

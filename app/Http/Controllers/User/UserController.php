@@ -131,6 +131,19 @@ class UserController extends Controller {
             $user->company_email = $request->company_email;
         }
 
+        if (!empty($request->api_key)) {
+            $status = $this->accountStatus($request->api_key);
+            if (is_array($status) && (isset($status['general']) && ($status['general'] == 'APPROVED' || $status['general'] == 'AWAITING_APPROVA'))) {
+                $user->api_key = $request->api_key;
+            } else {
+                return redirect()->back()->with('info', 'Tokens não válidados! Aguarde aprovação da sua carteira/ou entre em contato com o suporte.');
+            }
+        }
+
+        if (!empty($request->wallet)) {
+            $user->wallet = $request->wallet;
+        }
+
         if (!empty($request->photo)) {
 
             if ($user->photo) {
@@ -141,28 +154,19 @@ class UserController extends Controller {
             $user->photo = $path;
         }
 
-        if (
-            $request->filled('name') &&
-            $request->filled('cpfcnpj') &&
-            $request->filled('phone') &&
-            $request->filled('email') &&
-            $request->filled('birth_date') &&
-            $request->filled('postal_code') &&
-            $request->filled('address') &&
-            $request->filled('state') &&
-            $request->filled('city') &&
-            $request->filled('num') &&
-            $user->status !== 1 &&
-            $user->status !== 2
-        ) {
-            $user->status = 3;
-        }
-
         if ($user->save()) {
             return redirect()->back()->with('success', 'Dados atualizados com sucesso!');
         }
 
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
+    }
+
+    private function accountStatus($api_key) {
+
+        $assas = new AssasController();
+        $accountStatus = $assas->accountStatus($api_key);
+
+        return $accountStatus;
     }
 
     public function search(Request $request) {
@@ -396,24 +400,8 @@ class UserController extends Controller {
             return redirect()->back()->with('info', 'Verifique seus dados e tente novamente!');
         }
     
-        $invoice = Invoice::where('id_user', Auth::user()->id)
-            ->where('type', 1)
-            ->where('status', 1)
-            ->first();
-    
-        if (!$invoice) {
-            return redirect()->back()->with('info', 'Afilie-se conosco para Criar Sua Carteira Digital!');
-        }
-    
-        $assas = new AssasController();
-        $apikey = $assas->createKey($invoice->id);
-    
-        if ($apikey['status'] === true) {
-            return redirect()->route('profile')->with('success', 'Vamos para a próxima etapa!');
-        }
-    
-        return redirect()->back()->with('info', $apikey['error']);
-    }  
+        return view('app.User.create-wallet');
+    }
     
     private function formatarValor($valor) {
         

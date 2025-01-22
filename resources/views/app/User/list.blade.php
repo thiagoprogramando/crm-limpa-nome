@@ -186,12 +186,6 @@
                                                                     <label for="floatingLevel">Graduação</label>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
-                                                                <div class="form-floating">
-                                                                    <input type="text" name="api_token_zapapi" class="form-control" id="api_token_zapapi" placeholder="Api Token ZapSing:" value="{{ $user->api_token_zapapi }}">
-                                                                    <label for="api_token_zapapi">Token ZapApi:</label>
-                                                                </div>
-                                                            </div>
                                                             <div class="col-12 col-md-7 col-lg-7 mb-1">
                                                                 <div class="form-floating">
                                                                     <select name="white_label_contract" class="form-select" id="floatingWlContract">
@@ -206,6 +200,30 @@
                                                                 <div class="form-floating">
                                                                     <input type="text" name="fixed_cost" class="form-control" id="fixed_cost" placeholder="Custo Fixo (R$):" value="{{ $user->fixed_cost }}" oninput="mascaraReal(this)">
                                                                     <label for="fixed_cost">Custo Fixo (R$):</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                                <div class="form-floating">
+                                                                    <input type="text" name="api_token_zapapi" class="form-control" id="api_token_zapapi" placeholder="Api Token ZapSing:" value="{{ $user->api_token_zapapi }}">
+                                                                    <label for="api_token_zapapi">Token ZapApi:</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                                <div class="form-floating">
+                                                                    <input type="text" name="wallet" class="form-control" id="wallet" placeholder="Wallet:" value="{{ $user->wallet }}">
+                                                                    <label for="wallet">Wallet:</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                                <div class="form-floating">
+                                                                    <input type="text" name="api_key" class="form-control" id="api_key" placeholder="Api Token ZapSing:" value="{{ $user->api_key }}">
+                                                                    <label for="api_key">Api Key:</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                                <div class="form-floating">
+                                                                    <input type="text" name="password" class="form-control" id="password" placeholder="Senha:">
+                                                                    <label for="password">Senha:</label>
                                                                 </div>
                                                             </div>
                                                         </div>

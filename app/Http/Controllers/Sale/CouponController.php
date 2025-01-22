@@ -8,6 +8,7 @@ use App\Models\Coupon;
 use App\Models\Invoice;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CouponController extends Controller {
     
@@ -23,8 +24,12 @@ class CouponController extends Controller {
             $query->whereDate('expiry_date', $request->expiry_date);
         }
 
-        if (!empty($request->user_id)) {
-            $query->where('user_id', $request->user_id);
+        if (!empty($request->id_user)) {
+            $query->where('id_user', $request->id_user);
+        }
+
+        if (empty($request->id_user) && Auth::user()->type !== 1) {
+            $query->where('id_user', Auth::user()->id);
         }
 
         $coupons = $query->paginate(30);

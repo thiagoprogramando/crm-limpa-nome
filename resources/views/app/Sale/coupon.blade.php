@@ -17,7 +17,9 @@
         <div class="col-12">
 
             <div class="btn-group mb-3" role="group">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerModal">Cadastrar</button>
+                @if (Auth::user()->type == 1)
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerModal">Cadastrar</button>
+                @endif
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
                 <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
             </div>
@@ -76,9 +78,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                                <button type="submit" class="btn btn-success">Cadastrar</button>
+                            <div class="modal-footer btn-group">
+                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn btn-primary">Cadastrar</button>
                             </div>
                         </form>
                     </div>
@@ -107,22 +109,24 @@
                                             <label for="floatingExpiry_date">Data de Expiração:</label>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
-                                        <div class="form-floating">
-                                            <select name="id_user" class="form-select" id="floatingSeller">
-                                                <option selected="" value="">Usuário:</option>
-                                                @foreach ($users as $user)
-                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>  
-                                                @endforeach
-                                            </select>
-                                            <label for="floatingSeller">Usuários</label>
+                                    @if (Auth::user()->type == 1)
+                                        <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                            <div class="form-floating">
+                                                <select name="id_user" class="form-select" id="floatingSeller">
+                                                    <option selected="" value="">Usuário:</option>
+                                                    @foreach ($users as $user)
+                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>  
+                                                    @endforeach
+                                                </select>
+                                                <label for="floatingSeller">Usuários</label>
+                                            </div>
                                         </div>
-                                    </div>
+                                    @endif
                                 </div>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                                <button type="submit" class="btn btn-success">Consultar</button>
+                            <div class="modal-footer btn-group">
+                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn btn-primary">Consultar</button>
                             </div>
                         </form>
                     </div>

@@ -98,6 +98,15 @@ class User extends Authenticatable {
                 break; 
             case 6:
                 return 'VENDEDOR INTERNO';
+                break; 
+            case 7:
+                return 'DIRETOR';
+                break; 
+            case 8:
+                return 'DIRETOR REGIONAL';
+                break; 
+            case 9:
+                return 'PRESIDENTE VIP';
                 break;        
             return $this->method;
         }
