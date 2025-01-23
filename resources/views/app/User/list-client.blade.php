@@ -142,6 +142,16 @@
                                                                         <label for="floatingPhone">Whatsapp:</label>
                                                                     </div>
                                                                 </div>
+                                                                <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                                    <div class="form-floating">
+                                                                        <select name="type" class="form-select" id="floatingType">
+                                                                            <option selected value="{{ $user->type }}">Tipos:</option>
+                                                                            <option value="2" @selected($user->type == 2)>Consultor</option>
+                                                                            <option value="3" @selected($user->type == 3)>Cliente</option>
+                                                                        </select>
+                                                                        <label for="floatingType">Alterar Permissões</label>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer btn-group">
