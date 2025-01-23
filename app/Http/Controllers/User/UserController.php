@@ -105,7 +105,7 @@ class UserController extends Controller {
 
         if (!empty($request->password)) {
             $user->password = bcrypt($request->password);
-            $this->alertPassword(Auth::user()->id, true);
+            $this->alertPassword($request->id, true);
         }
 
         if (!empty($request->type)) {
