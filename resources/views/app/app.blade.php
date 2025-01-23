@@ -13,7 +13,7 @@
 
     
     <section class="section dashboard">
-        <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+        <div id="carouselExampleControls" class="carousel slide mb-3" data-bs-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item active carousel-item-start">
                     <img src="{{ asset('assets/dashboard/img/marketing/indicados_5_1_cupom.png') }}" class="d-block w-100" alt="Indique cinco novos afiliados e ganhe uma mensalidade!">
