@@ -13,6 +13,26 @@
 
     
     <section class="section dashboard">
+        <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active carousel-item-start">
+                    <img src="{{ asset('assets/dashboard/img/marketing/indicados_5_1_cupom.png') }}" class="d-block w-100" alt="Indique cinco novos afiliados e ganhe uma mensalidade!">
+                </div>
+                <div class="carousel-item carousel-item-next carousel-item-start">
+                    <img src="{{ asset('assets/dashboard/img/marketing/nome_10_um_cupom.png') }}" class="d-block w-100" alt="Envie dez nomes e ganhe um!">
+                </div>
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
         @if(empty($dashboard))
             <div class="row">
                 <div class="col-lg-12">
