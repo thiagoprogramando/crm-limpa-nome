@@ -64,7 +64,7 @@ class UploadController extends Controller {
             $sale->payment      = 'ENVIO MANUAL';
             $sale->installments = 1;
             $sale->status       = 0;
-            $sale->value        = $seller->fixed_cost;
+            $sale->value        = $this->formatarValor($seller->fixed_cost);
             $sale->value_total  = $this->formatarValor($seller->fixed_cost);
             $sale->type         = 1;
             $sale->save();
