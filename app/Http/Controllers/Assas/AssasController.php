@@ -322,8 +322,9 @@ class AssasController extends Controller {
             }
     
             if ($value > 0) {
+
                 $g7Commission = ($value == 49.99) ? 0 : $commission * 0.05;
-                $commission   = ($commission - $g7Commission) - 1;
+                $commission   = ($commission - $g7Commission);
     
                 if ($wallet == env('WALLET_HEFESTO')) {
                     $g7Commission = 0;
@@ -331,12 +332,14 @@ class AssasController extends Controller {
     
                 if ($g7Commission > 0 && $commission > 0) {
 
-                    $g7Commission -= 2;
+                    $g7Commission -= 3;
 
-                    $options['json']['split'][] = [
-                        'walletId'        => env('WALLET_G7'),
-                        'totalFixedValue' => max(0, number_format($g7Commission, 2, '.', ''))
-                    ];
+                    if ($g7Commission > 0) {
+                        $options['json']['split'][] = [
+                            'walletId'        => env('WALLET_G7'),
+                            'totalFixedValue' => number_format($g7Commission, 2, '.', '')
+                        ];
+                    }
     
                     $options['json']['split'][] = [
                         'walletId'        => env('WALLET_HEFESTO'),
@@ -410,7 +413,7 @@ class AssasController extends Controller {
             $user = User::find($invoice->id_user);
             if ($user) {
                 if ($user->parent->afiliates()->count() % 5 === 0) {
-                    $this->createCoupon($user->parent);
+                    $this->createCoupon($user->parent, 'Promoção 2 Afiliados 1 Mensalidade!');
                 }
 
                 $user->status = 1;
@@ -423,13 +426,13 @@ class AssasController extends Controller {
         return ['status' => false, 'error' => 'Dados do usuário ou Faturas não localizados'];
     }
     
-    public function createCoupon($parent) {
+    public function createCoupon($parent, $description) {
 
         $couponName = $this->generateCouponName($parent->name);
 
         $coupon                 = new Coupon();
         $coupon->name           = $couponName;
-        $coupon->description    = 'Promoção 2 Afiliados 1 Mensalidade';
+        $coupon->description    = $description;
         $coupon->id_user        = $parent->id;
         $coupon->percentage     = 100;
         $coupon->qtd            = 1;
@@ -536,8 +539,6 @@ class AssasController extends Controller {
                                 break;
                         }
 
-                        $seller->save();
-
                         if (!empty($nivel)) {
                             $notification               = new Notification();
                             $notification->name         = 'Novo nível!';
@@ -546,6 +547,12 @@ class AssasController extends Controller {
                             $notification->id_user      = 14; 
                             $notification->save();
                         }
+
+                        if ($seller->salesSeller()->count() % 10 === 0) {
+                            $this->createCoupon($seller, 'Promoção 10 vendas ganha 1 nome!');
+                        }
+
+                        $seller->save();
                     }
                 }
 
