@@ -5,19 +5,22 @@ namespace App\Http\Controllers\Sale;
 use App\Http\Controllers\Assas\AssasController;
 use App\Http\Controllers\Controller;
 
+use App\Exports\SalesExport;
+
 use App\Models\Invoice;
 use App\Models\Lists;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\User;
-use App\Models\Coupon;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+
+use Maatwebsite\Excel\Facades\Excel;
 
 class SaleController extends Controller {
 
@@ -105,71 +108,7 @@ class SaleController extends Controller {
 
             return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
         }
-    }
-
-    private function createUser($name, $email, $cpfcnpj, $birth_date, $phone, $postal_code = null, $address = null, $complement = null, $city = null, $state = null, $num = null, $filiate = null) {
-        
-        $cpfcnpj = preg_replace('/\D/', '', $cpfcnpj);
-        $email = preg_replace('/[^\w\d\.\@\-\_]/', '', $email);
-    
-        $user = User::withTrashed()->where('cpfcnpj', preg_replace('/\D/', '', $cpfcnpj))->first();
-        if ($user) {
-            if ($user->trashed()) {
-                $user->restore();
-            }
-        } else {
-            $user = new User([
-                'cpfcnpj' => $cpfcnpj,
-                'password' => bcrypt($cpfcnpj),
-                'type' => 3,
-            ]);
-            $user->filiate = $filiate; 
-        }
-        
-        $user->fill([
-            'name'       => $name,
-            'email'      => $email,
-            'birth_date' => $birth_date,
-            'phone'      => $phone,
-        ]);
-
-        if (!$user->exists) {
-            $user->password = bcrypt($cpfcnpj);
-            $user->type     = 3;
-        }
-
-        return $user->save() ? $user : false;
-    }    
-
-    private function sendWhatsapp($link, $message, $phone, $token = null) {
-
-        $client = new Client();
-
-        $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
-        try {
-
-            $response = $client->post($url, [
-                'headers' => [
-                    'Content-Type'  => 'application/json',
-                    'Accept'        => 'application/json',
-                    'Client-Token'  => 'Fabe25dbd69e54f34931e1c5f0dda8c5bS',
-                ],
-                'json' => [
-                    'phone'           => '55' . $phone,
-                    'message'         => $message,
-                    'image'           => env('APP_URL_LOGO'),
-                    'linkUrl'         => $link,
-                    'title'           => 'Assinatura de Documento',
-                    'linkDescription' => 'Link para Assinatura Digital',
-                ],
-                'verify' => false
-            ]);
-
-            return true;
-        } catch (\Exception $e) {
-            return false;
-        }
-    }       
+    }     
 
     public function manager(Request $request) {
         
@@ -198,6 +137,10 @@ class SaleController extends Controller {
                 $query->whereIn('id_client', $users);
             }
         }
+
+        if (!empty($request->id)) {
+            $query->where('id', $request->id);
+        }
     
         if (!empty($request->created_at)) {
             $query->whereDate('created_at', $request->created_at);
@@ -218,6 +161,10 @@ class SaleController extends Controller {
         if (!empty($request->label)) {
             $query->where('label', $request->label);
         }
+
+        if (!empty($request->type) && $request->type == 'excel') {
+            return Excel::download(new SalesExport($query->get()), 'Vendas.xlsx');
+        }
     
         $sales      = $query->paginate(100);
         $sellers    = $currentUser->type == 1 
@@ -230,7 +177,7 @@ class SaleController extends Controller {
             'lists'     => $lists,
             'sellers'   => $sellers
         ]);
-    }    
+    }
 
     public function viewSale($id) {
 
@@ -409,25 +356,6 @@ class SaleController extends Controller {
         return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');
     }
 
-    public function deleteInvoice($id) {
-
-        $invoice = Invoice::find($id);
-        if(!$invoice) {
-            return redirect()->back()->with('info', 'Não foi possível localizar os dados da Fatura!');
-        }
-
-        $assasController = new AssasController();
-        if($invoice->status <> 1) {
-            $cancelInvoice = $assasController->cancelInvoice($invoice->token_payment);
-
-            if($cancelInvoice && $invoice->delete()) {
-                return redirect()->back()->with('success', 'Fatura excluída com sucesso!');
-            }
-        }
-
-        return redirect()->back()->with('error', 'Não é possível excluir uma Fatura já conciliada!');
-    }
-
     public function createInvoice(Request $request) {
 
         $product = Product::find($request->product_id);
@@ -487,6 +415,25 @@ class SaleController extends Controller {
         return redirect()->back()->with('info', 'Não foi possível adicionar Fatura, verifique os dados e tentar novamente!');
     }
 
+    public function deleteInvoice($id) {
+
+        $invoice = Invoice::find($id);
+        if(!$invoice) {
+            return redirect()->back()->with('info', 'Não foi possível localizar os dados da Fatura!');
+        }
+
+        $assasController = new AssasController();
+        if($invoice->status <> 1) {
+            $cancelInvoice = $assasController->cancelInvoice($invoice->token_payment);
+
+            if($cancelInvoice && $invoice->delete()) {
+                return redirect()->back()->with('success', 'Fatura excluída com sucesso!');
+            }
+        }
+
+        return redirect()->back()->with('error', 'Não é possível excluir uma Fatura já conciliada!');
+    }
+
     public function approvedAll(Request $request) {
 
         try {
@@ -518,6 +465,70 @@ class SaleController extends Controller {
                 'message'   => 'Ocorreu um erro ao aprovar as vendas!',
                 'details'   => $e->getMessage(),
             ], 500);
+        }
+    }
+
+    private function createUser($name, $email, $cpfcnpj, $birth_date, $phone, $postal_code = null, $address = null, $complement = null, $city = null, $state = null, $num = null, $filiate = null) {
+        
+        $cpfcnpj = preg_replace('/\D/', '', $cpfcnpj);
+        $email = preg_replace('/[^\w\d\.\@\-\_]/', '', $email);
+    
+        $user = User::withTrashed()->where('cpfcnpj', preg_replace('/\D/', '', $cpfcnpj))->first();
+        if ($user) {
+            if ($user->trashed()) {
+                $user->restore();
+            }
+        } else {
+            $user = new User([
+                'cpfcnpj' => $cpfcnpj,
+                'password' => bcrypt($cpfcnpj),
+                'type' => 3,
+            ]);
+            $user->filiate = $filiate; 
+        }
+        
+        $user->fill([
+            'name'       => $name,
+            'email'      => $email,
+            'birth_date' => $birth_date,
+            'phone'      => $phone,
+        ]);
+
+        if (!$user->exists) {
+            $user->password = bcrypt($cpfcnpj);
+            $user->type     = 3;
+        }
+
+        return $user->save() ? $user : false;
+    }    
+
+    private function sendWhatsapp($link, $message, $phone, $token = null) {
+
+        $client = new Client();
+
+        $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
+        try {
+
+            $response = $client->post($url, [
+                'headers' => [
+                    'Content-Type'  => 'application/json',
+                    'Accept'        => 'application/json',
+                    'Client-Token'  => 'Fabe25dbd69e54f34931e1c5f0dda8c5bS',
+                ],
+                'json' => [
+                    'phone'           => '55' . $phone,
+                    'message'         => $message,
+                    'image'           => env('APP_URL_LOGO'),
+                    'linkUrl'         => $link,
+                    'title'           => 'Assinatura de Documento',
+                    'linkDescription' => 'Link para Assinatura Digital',
+                ],
+                'verify' => false
+            ]);
+
+            return true;
+        } catch (\Exception $e) {
+            return false;
         }
     }
 

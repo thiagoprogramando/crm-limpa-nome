@@ -29,7 +29,7 @@
             <div class="btn-group mb-3" role="group">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
                 <button type="button" id="toggle-select" class="btn btn-outline-primary">Selecionar</button>
-                <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
+                <a href="{{ route('manager-sale', array_merge(request()->query(), ['type' => 'excel'])) }}" class="btn btn-outline-primary">Excel</a>
             </div>
 
             <div class="modal fade" id="filterModal" tabindex="-1">
@@ -85,7 +85,7 @@
                                         <div class="form-floating">
                                             <select name="label" class="form-select" id="floatingLabel">
                                                 <option selected value="">Opções:</option>
-                                                <option value="REPROTOCOLADO">Reprotocolado</option>
+                                                <option value="true">Reprotocolado</option>
                                             </select>
                                             <label for="floatingLabel">Label</label>
                                         </div>
