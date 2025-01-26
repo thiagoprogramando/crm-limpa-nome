@@ -153,11 +153,14 @@ class UploadController extends Controller {
     }
 
     private function formatarValor($valor) {
+        if (is_numeric($valor)) {
+            return number_format((float) $valor, 2, '.', '');
+        }
         
         $valor = preg_replace('/[^0-9,]/', '', $valor);
         $valor = str_replace(',', '.', $valor);
         $valorFloat = floatval($valor);
     
         return number_format($valorFloat, 2, '.', '');
-    }
+    }    
 }
