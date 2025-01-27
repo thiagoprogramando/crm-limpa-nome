@@ -91,38 +91,38 @@
                                                 <label for="floatingContract">Máx de venda:</label>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
                                             <div class="form-floating">
-                                                <select name="level" class="form-select" id="floatingSelect">
-                                                    <option selected="">Nível com acesso:</option>
+                                                <select name="level" class="form-select" id="floatingLevel">
+                                                    <option selected value="}">Nível com acesso:</option>
                                                     <option value="1">INICIANTE</option>
                                                     <option value="2">CONSULTOR</option>
                                                     <option value="3">CONSULTOR LÍDER</option>
-                                                    <option value="7">CONSULTOR MASTER</option>
                                                     <option value="4">REGIONAL</option>
                                                     <option value="5">GERENTE REGIONAL</option>
                                                     <option value="6">VENDEDOR INTERNO</option>
-                                                    <option value="8">VENDEDOR MASTER</option>
-                                                    <option value="9">CONSULTOR VIP</option>
+                                                    <option value="7">DIRETOR</option>
+                                                    <option value="8">DIRETOR REGIONAL</option>
+                                                    <option value="9">PRESIDENTE VIP</option>
                                                     <option value="">TODOS</option>
                                                 </select>
-                                                <label for="floatingSelect">Opções</label>
+                                                <label for="floatingLevel">Opções</label>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
                                             <div class="form-floating">
-                                                <select name="active" class="form-select" id="floatingSelect">
-                                                    <option selected="">Situação:</option>
+                                                <select name="active" class="form-select" id="floatingActive">
+                                                    <option value="">Situação:</option>
                                                     <option value="1">Ativo</option>
                                                     <option value="2">Inativo</option>
                                                 </select>
-                                                <label for="floatingSelect">Opções</label>
+                                                <label for="floatingActive">Opções</label>
                                             </div>
                                         </div>
                                     </div>
         
                                     <div class="col-12 col-md-4 col-lg-4 offset-md-8 offset-lg-8 mb-1 d-grid gap-2 mt-3">
-                                        <button type="button" onclick="openTab('#profile-tab')" class="btn btn-success" type="button">Avançar</button>
+                                        <button type="button" onclick="openTab('#profile-tab')" class="btn btn-outline-primary" type="button">Avançar</button>
                                     </div>
                                 </div>
                             </div>
@@ -137,7 +137,7 @@
                                     <textarea name="contract_subject" class="tinymce-editor" placeholder="Contrato (Pré-visualização)" id="question"></textarea>
                                 </div>
                                 <div class="col-12 col-md-4 col-lg-4 offset-md-8 offset-lg-8 mb-1 d-grid gap-2 mt-3">
-                                    <button type="submit" class="btn btn-success" type="button">Salvar</button>
+                                    <button type="submit" class="btn btn-primary" type="button">Salvar</button>
                                 </div>
                             </div>
                         </form>
