@@ -122,7 +122,8 @@
                                                     <div class="form-floating">
                                                         <select name="payment" class="form-select" id="floatingSelect" required>
                                                             <option selected="">Opções:</option>
-                                                            <option value="PIX">Boleto/Pix</option>
+                                                            <option value="PIX">Pix</option>
+                                                            <option value="BOLETO">Boleto</option>
                                                             <option value="CREDIT_CARD">Cartão de Crédito</option>
                                                         </select>
                                                         <label for="floatingSelect">Forma de Pagamento</label>
@@ -179,7 +180,7 @@
                 var paymentMethod = $('#floatingSelect').val();
                 var installmentsField = $('#floatingInstallments');
 
-                if (paymentMethod === 'PIX') {
+                if (paymentMethod === 'PIX' || paymentMethod === 'BOLETO') {
                     installmentsField.attr('max', 1);
                     installmentsField.val(1);
                     installmentsField.prop('disabled', true);

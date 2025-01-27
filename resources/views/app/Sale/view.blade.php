@@ -83,20 +83,20 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row">
-                                    <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                    <div class="col-12 col-md-7 col-lg-7 mb-2">
                                         <div class="form-floating">
                                             <input type="text" name="value" class="form-control" id="floatingValue" placeholder="Valor:" oninput="mascaraReal(this)" required>
                                             <label for="floatingValue">Valor:</label>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                    <div class="col-12 col-md-5 col-lg-5 mb-2">
                                         <div class="form-floating">
                                             <input type="date" name="due_date" class="form-control" id="floatingDueDate" placeholder="Vencimento:" required>
                                             <label for="floatingDueDate">Vencimento:</label>
                                         </div>
                                     </div>
                                     @if (Auth::user()->type == 1)
-                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                        <div class="col-12 col-md-7 col-lg-7 mb-2">
                                             <div class="form-floating">
                                                 <select name="wallet" class="form-select" id="floatingSeller">
                                                     <option value="">Comissão (opcional):</option>
@@ -107,14 +107,14 @@
                                                 <label for="floatingSeller">Consultores</label>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                        <div class="col-12 col-md-5 col-lg-5 mb-2">
                                             <div class="form-floating">
                                                 <input type="text" name="commission" class="form-control" id="floatingCommission" placeholder="Comissão (valor):" oninput="mascaraReal(this)">
                                                 <label for="floatingCommission">Comissão (valor):</label>
                                             </div>
                                         </div>
                                     @endif
-                                    <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                    <div class="col-12 col-md-7 col-lg-7 mb-2">
                                         <div class="form-floating">
                                             <select name="billingType" class="form-select" id="floatingBillingType" required>
                                                 <option value="">Método de Pagamento:</option>
@@ -123,6 +123,12 @@
                                                 <option value="CREDIT_CARD">Cartão de Crédito</option>
                                             </select>
                                             <label for="floatingBillingType">Métodos</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-5 col-lg-5 mb-2">
+                                        <div class="form-floating">
+                                            <input type="number" name="installments" class="form-control" id="floatingInstallments" placeholder="Parcelas:" min="1" max="1" disabled>
+                                            <label for="floatingInstallments">Parcelas:</label>
                                         </div>
                                     </div>
                                 </div>
@@ -183,4 +189,25 @@
     </div>
 </section>
 
+<script>
+    const billingType = document.getElementById("floatingBillingType");
+    const installments = document.getElementById("floatingInstallments");
+
+    billingType.addEventListener("change", function () {
+        const selectedValue = billingType.value;
+
+        if (selectedValue === "CREDIT_CARD") {
+            installments.disabled = false;
+            installments.max = 6;
+            installments.value = 1;
+        } else if (selectedValue === "PIX" || selectedValue === "BOLETO") {
+            installments.disabled = false;
+            installments.max = 1;
+            installments.value = 1;
+        } else {
+            installments.disabled = true;
+            installments.value = "";
+        }
+    });
+</script>
 @endsection

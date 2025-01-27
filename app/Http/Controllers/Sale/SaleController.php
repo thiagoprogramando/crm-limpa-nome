@@ -388,7 +388,7 @@ class SaleController extends Controller {
             $customer = $sale->user->customer;
         }
         
-        $assasInvoice = $assasController->createCharge($customer, $request->billingType, $this->formatarValor($request->value), 'Fatura para venda N° '.$sale->id, $request->due_date, 1, $wallet, $this->formatarValor($commission));
+        $assasInvoice = $assasController->createCharge($customer, $request->billingType, $this->formatarValor($request->value), 'Fatura para venda N° '.$sale->id, $request->due_date, max(1, $request->installments), $wallet, $this->formatarValor($commission));
         if ($assasInvoice <> false) {
 
             $invoice                = new Invoice();
