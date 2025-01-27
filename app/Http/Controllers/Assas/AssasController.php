@@ -554,6 +554,15 @@ class AssasController extends Controller {
                     }
                 }
 
+                $sales = Sale::where('token_payment', $token)->where('status', 0)->get();
+                if ($sales->isNotEmpty()) {
+
+                    Sale::whereIn('id', $sales->pluck('id'))
+                        ->update(['status' => 1]);
+                
+                    return response()->json(['success' => 'success', 'message' => 'Status das vendas atualizado com sucesso!']);
+                }
+
                 $client = User::find($invoice->id_user);
                 if ($client && $invoice->num == 1) {
                     $this->sendWhatsapp(env('APP_URL').'login-cliente', "Olá, ".$client->name."!\r\n\r\nAgradecemos pelo seu pagamento! \r\n\r\n\r\n Tenha a certeza de que sua situação está em boas mãos. \r\n\r\n\r\n *Nos próximos 30 dias úteis*, nossa equipe especializada acompanhará de perto todo o processo para garantir que seu nome seja limpo o mais rápido possível. \r\n\r\n\r\n Estamos à disposição para qualquer dúvida ou esclarecimento. \r\n\r\n Você pode acompanhar o processo acessando nosso sistema no link abaixo: \r\n\r\n", $client->phone, $seller->api_token_zapapi);
@@ -587,15 +596,6 @@ class AssasController extends Controller {
                 }
                 
                 return response()->json(['status' => 'success', 'message' => 'Operação Finalizada!']);
-            }
-
-            $sales = Sale::where('token_payment', $token)->where('status', 0)->get();
-            if ($sales->isNotEmpty()) {
-
-                Sale::whereIn('id', $sales->pluck('id'))
-                    ->update(['status' => 1]);
-            
-                return response()->json(['success' => 'success', 'message' => 'Status das vendas atualizado com sucesso!']);
             }
             
             return response()->json(['status' => 'success', 'message' => 'Nenhum Fatura/Venda encontrada!']);
