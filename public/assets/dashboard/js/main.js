@@ -223,32 +223,34 @@
   /**
    * Initiate TinyMCE Editor
    */
-  const useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const isSmallScreen = window.matchMedia('(max-width: 1023.5px)').matches;
+  if (typeof tinymce !== 'undefined' && document.querySelector('textarea.tinymce-editor')) {
+    const useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isSmallScreen = window.matchMedia('(max-width: 1023.5px)').matches;
 
-  // TinyMCE initialization
-  tinymce.init({
-    selector: 'textarea.tinymce-editor',
-    plugins: 'preview searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen template codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons',
-    menubar: 'file edit view insert format tools table help',
-    toolbar: 'undo redo | bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen preview save print | template link anchor codesample | ltr rtl',
-    toolbar_sticky: true,
-    toolbar_sticky_offset: isSmallScreen ? 102 : 108,
-    autosave_ask_before_unload: true,
-    autosave_interval: '30s',
-    autosave_prefix: '{path}{query}-{id}-',
-    autosave_restore_when_empty: false,
-    autosave_retention: '2m',
-    height: 300,
-    quickbars_selection_toolbar: 'bold italic | h2 h3 blockquote quicktable',
-    noneditable_class: 'mceNonEditable',
-    toolbar_mode: 'sliding',
-    contextmenu: 'link table',
-    language: 'pt_BR',
-    skin: useDarkMode ? 'oxide-dark' : 'oxide',
-    content_css: useDarkMode ? 'dark' : 'default',
-    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
-  });
+    // Inicializa o TinyMCE
+    tinymce.init({
+      selector: 'textarea.tinymce-editor',
+      plugins: 'preview searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen template codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons',
+      menubar: 'file edit view insert format tools table help',
+      toolbar: 'undo redo | bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen preview save print | template link anchor codesample | ltr rtl',
+      toolbar_sticky: true,
+      toolbar_sticky_offset: isSmallScreen ? 102 : 108,
+      autosave_ask_before_unload: true,
+      autosave_interval: '30s',
+      autosave_prefix: '{path}{query}-{id}-',
+      autosave_restore_when_empty: false,
+      autosave_retention: '2m',
+      height: 300,
+      quickbars_selection_toolbar: 'bold italic | h2 h3 blockquote quicktable',
+      noneditable_class: 'mceNonEditable',
+      toolbar_mode: 'sliding',
+      contextmenu: 'link table',
+      language: 'pt_BR',
+      skin: useDarkMode ? 'oxide-dark' : 'oxide',
+      content_css: useDarkMode ? 'dark' : 'default',
+      content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
+    });
+  }
 
   /**
    * Autoresize echart charts

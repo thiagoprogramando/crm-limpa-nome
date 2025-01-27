@@ -514,36 +514,4 @@
             </div>
         </div>
     </section>
-
-    <style>
-        .circular-progress {
-            position: relative;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: conic-gradient(#004AAD calc(var(--percentage) * 1%), #dee4f0 0);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: #000000;
-        }
-    
-        .percentage-text {
-            position: absolute;
-            font-weight: bold;
-            color: #000000;
-        }
-    </style>
-    
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const progressElement = document.querySelector('.circular-progress');
-            const sales = parseInt(progressElement.getAttribute('data-sales'), 10) || 0;
-            const percentage = Math.min((sales / 100) * 100, 100);
-  
-            progressElement.style.setProperty('--percentage', percentage);
-            document.getElementById('percentage').textContent = Math.round(percentage) + '%';
-        });
-    </script>
 @endsection
