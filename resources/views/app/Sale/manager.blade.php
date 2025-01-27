@@ -117,8 +117,9 @@
 
                     <div id="action-buttons" class="d-none btn-group mb-2 mt-2">
                         @if(Auth::user()->type == 1)
-                            <button id="aprovar-todos" class="btn btn-outline-primary">Aprovar Todos</button>
+                            <button id="aproved-all" class="btn btn-primary">Aprovar Todos</button>
                         @endif
+                        <button id="create-payment" class="btn btn-outline-primary">Gerar Pagamento</button>
                     </div>
 
                     <h5 class="card-title">Vendas</h5>
@@ -236,7 +237,8 @@
         const toggleSelectBtn   = document.getElementById('toggle-select');
         const rowCheckboxes     = document.querySelectorAll('.row-checkbox');
         const actionButtons     = document.getElementById('action-buttons');
-        const aprovarTodosBtn   = document.getElementById('aprovar-todos');
+        const aprovedAll        = document.getElementById('aproved-all');
+        const btnCreatePayment  = document.getElementById('create-payment');
 
         let isSelecting = false;
 
@@ -267,10 +269,17 @@
                 .map(checkbox => checkbox.value);
         }
 
-        if (aprovarTodosBtn) {
-            aprovarTodosBtn.addEventListener('click', () => {
+        if (aprovedAll) {
+            aprovedAll.addEventListener('click', () => {
                 const selectedIds = getSelectedIds();
                 sendToApi('api/approved-all', selectedIds);
+            });
+        }
+
+        if (btnCreatePayment) {
+            btnCreatePayment.addEventListener('click', () => {
+                const selectedIds = getSelectedIds();
+                sendToApi('api/create-payment', selectedIds);
             });
         }
 
@@ -308,11 +317,11 @@
                         icon: 'success',
                         showCancelButton: false,
                         confirmButtonColor: '#3085d6',
-                        confirmButtonText: 'Pagamento',
+                        confirmButtonText: 'Ver Fatura',
                     }).then((result) => {
                         if (result.isConfirmed) {
                             if (data.invoiceUrl) {
-                                window.location.href = data.invoiceUrl;
+                                window.open(data.invoiceUrl, '_blank');
                                 return;
                             }
                             

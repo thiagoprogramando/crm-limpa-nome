@@ -34,8 +34,6 @@ Route::get('/forgout/{code?}', [Forgout::class, 'forgout'])->name('forgout');
 Route::post('send-code-password', [Forgout::class, 'sendCodePassword'])->name('send-code-password');
 Route::post('update-password', [Forgout::class, 'updatePassword'])->name('update-password');
 
-Route::get('/preview-contract/{id}', [ContractController::class, 'previewContract'])->name('preview-contract');
-
 Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['checkMonthly'])->group(function () {
@@ -128,3 +126,5 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/logout', [Login::class, 'logout'])->name('logout');
 });
+
+Route::get('/preview-contract/{id}', [ContractController::class, 'previewContract'])->name('preview-contract');

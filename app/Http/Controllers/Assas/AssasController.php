@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\Lists;
 use App\Models\Notification;
-use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\User;
@@ -17,7 +16,6 @@ use Carbon\Carbon;
 use GuzzleHttp\Client;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AssasController extends Controller {
@@ -1182,34 +1180,23 @@ class AssasController extends Controller {
             $filiate    = $this->validateFiliate($user);
 
             $sales      = $this->getSales($request['ids']);
+            $saleIds    = $sales->pluck('id')->toArray();
             $totalValue = $this->calculateTotalValue($sales, $user);
 
             $commission = $user->filiate ? ($user->fixed_cost - ($filiate->cost ?? 150)) : 0;
 
-            $charge = $this->createCharge(
-                $user->customer,
-                'PIX',
-                $totalValue,
-                'Fatura referente às vendas N° - '.implode(', ', $request['ids']),
-                now()->addDay(),
-                1,
-                null,
-                0,
-                $filiate,
-                $commission
-            );
+            $charge = $this->createCharge($user->customer, 'PIX', $totalValue, 'Fatura referente às vendas N° - '.implode(', ', $saleIds), now()->addDay(), 1, null, null, $filiate, $commission);
 
             if (!$charge || empty($charge['id'])) {
                 return $this->jsonError('Erro ao criar fatura!', 500);
             }
 
-            $this->createInvoice($charge, $user, $totalValue, 'Fatura referente às vendas N° - '.implode(', ', $request['ids']));
+            $this->createInvoice($charge, $user, $totalValue, 'Fatura referente às vendas N° - '.implode(', ', $saleIds), $commission);
 
             Sale::whereIn('id', $request['ids'])->update(['token_payment' => $charge['id']]);
-
             DB::commit();
 
-            return $this->jsonSuccess('Fatura criada com sucesso.', [
+            return $this->jsonSuccess('Fatura criada com sucesso!', [
                 'invoiceUrl' => $charge['invoiceUrl'],
             ]);
 
@@ -1267,7 +1254,7 @@ class AssasController extends Controller {
     }
 
     private function getSales($ids) {
-        $sales = Sale::whereIn('id', $ids)->with('product')->get();
+        $sales = Sale::whereIn('id', $ids)->where('status', 0)->with('product')->get();
         if ($sales->isEmpty()) {
             throw new \Exception('Nenhuma venda encontrada.');
         }
@@ -1275,37 +1262,39 @@ class AssasController extends Controller {
     }
 
     private function calculateTotalValue($sales, $user) {
+        
         $totalValue = 0;
-
         foreach ($sales as $sale) {
             if ($sale->product) {
                 $totalValue += $user->fixed_cost > 0
-                    ? $user->fixed_cost + $sale->product->value_rate
-                    : $sale->product->value_cost + $sale->product->value_rate;
+                    ? $user->fixed_cost
+                    : $sale->product->value_cost;
             }
         }
 
         if ($totalValue <= 0) {
-            throw new \Exception('Valor total inválido.');
+            throw new \Exception('Valor total inválido!');
         }
 
         return $totalValue;
     }
 
-    private function createInvoice($charge, $user, $totalValue, $description) {
-        $invoice = new Invoice();
-        $invoice->name = $description;
-        $invoice->description = $description;
-        $invoice->id_user = $user->id;
-        $invoice->id_product = 0;
-        $invoice->value = $totalValue;
-        $invoice->commission = 0;
-        $invoice->status = 0;
-        $invoice->type = 2;
-        $invoice->num = 1;
-        $invoice->due_date = now()->addDay(2);
-        $invoice->url_payment = $charge['invoiceUrl'];
-        $invoice->token_payment = $charge['id'];
+    private function createInvoice($charge, $user, $totalValue, $description, $commission) {
+
+        $invoice                     = new Invoice();
+        $invoice->name               = $description;
+        $invoice->description        = $description;
+        $invoice->id_user            = $user->id;
+        $invoice->id_product         = 0;
+        $invoice->value              = $totalValue;
+        $invoice->commission         = 0;
+        $invoice->commission_filiate = $commission;
+        $invoice->status             = 0;
+        $invoice->type               = 2;
+        $invoice->num                = 1;
+        $invoice->due_date           = now()->addDay(2);
+        $invoice->url_payment        = $charge['invoiceUrl'];
+        $invoice->token_payment      = $charge['id'];
         $invoice->save();
     }
 

@@ -1,12 +1,12 @@
 @extends('app.layout')
-@section('title') Lançamento de venda: {{ $product->name }} @endsection
+@section('title') Envio Direto (Associação): {{ $product->name }} @endsection
 @section('conteudo')
     <div class="pagetitle">
-        <h1>Lançamento de venda: {{ $product->name }}</h1>
+        <h1>Envio Direto (Associação): {{ $product->name }}</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('app') }}">Escritório</a></li>
-                <li class="breadcrumb-item active">Lançamento de venda</li>
+                <li class="breadcrumb-item active">Envio Direto (Associação)</li>
             </ol>
         </nav>
     </div>
@@ -34,6 +34,7 @@
 
                                 <div class="btn-group mt-2 mb-3" role="group">
                                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nameModal">Adicionar Nome</button>
+                                    <button type="button" id="toggle-select" class="btn btn-outline-primary">Selecionar</button>
                                     <button type="button" class="btn btn-outline-primary">Nomes: {{ $sales->count() }}</button>
                                     <button type="button" class="btn btn-outline-primary">Valor Total: R$ {{ $sales->count() * Auth::user()->fixed_cost }}</button>
                                 </div>
@@ -79,6 +80,10 @@
                                     </div>
                                 </form>
 
+                                <div id="action-buttons" class="d-none btn-group mb-2 mt-2">
+                                    <button id="create-payment" class="btn btn-outline-primary">Gerar Pagamento</button>
+                                </div>
+
                                 <div class="table-responsive">
                                     <table class="table table-sm" id="table">
                                         <thead>
@@ -94,7 +99,9 @@
                                         <tbody>
                                             @foreach ($sales as $sale)
                                                 <tr>
-                                                    <th scope="row">{{ $sale->id }}</th>
+                                                    <th scope="row">
+                                                        <input type="checkbox" class="row-checkbox" value="{{ $sale->id }}"> {{ $sale->id }}
+                                                   </th>
                                                     <td>{{ $sale->list->name }}</td>
                                                     <td>{{ $sale->user->name }}</td>
                                                     <td>{{ $sale->user->cpfcnpj }}</td>
@@ -124,7 +131,7 @@
 
                             <div class="tab-pane fade" id="sale-justified" role="tabpanel" aria-labelledby="sale-tab">
                                 <div class="table-responsive p-3">
-                                    <table class="table table-sm" id="table">
+                                    <table class="table table-sm">
                                         <thead>
                                             <tr>
                                                 <th scope="col">#</th>
@@ -188,4 +195,114 @@
             </div>
         </div>
     </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    
+            const toggleSelectBtn   = document.getElementById('toggle-select');
+            const rowCheckboxes     = document.querySelectorAll('.row-checkbox');
+            const actionButtons     = document.getElementById('action-buttons');
+            const btnCreatePayment  = document.getElementById('create-payment');
+    
+            let isSelecting = false;
+    
+            toggleSelectBtn.addEventListener('click', () => {
+                isSelecting = !isSelecting;
+    
+                rowCheckboxes.forEach(checkbox => checkbox.checked = isSelecting);
+                toggleSelectBtn.textContent = isSelecting ? 'Cancelar' : 'Selecionar';
+                updateActionButtons();
+            });
+    
+            rowCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateActionButtons);
+            });
+    
+            function updateActionButtons() {
+                const selectedIds = getSelectedIds();
+                if (selectedIds.length > 0) {
+                    actionButtons.classList.remove('d-none');
+                } else {
+                    actionButtons.classList.add('d-none');
+                }
+            }
+    
+            function getSelectedIds() {
+                return Array.from(rowCheckboxes)
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => checkbox.value);
+            }
+    
+            if (btnCreatePayment) {
+                btnCreatePayment.addEventListener('click', () => {
+                    const selectedIds = getSelectedIds();
+                    sendToApi(selectedIds);
+                });
+            }
+    
+            function sendToApi(ids) {
+    
+                if (ids.length === 0) {
+                    Swal.fire({
+                        title: 'Atenção!',
+                        text: 'Nenhuma venda selecionada!',
+                        icon: 'info',
+                        timer: 2000
+                    });
+                    return;
+                }
+    
+                var userCustomer = @json(Auth::user()->customer);
+    
+                fetch(`{{ url('api/create-payment') }}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ 
+                        ids, 
+                        customer: userCustomer  
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Sucesso!',
+                            text: 'Processo concluído! Você será redirecionado para página de Pagamento.',
+                            icon: 'success',
+                            showCancelButton: false,
+                            confirmButtonColor: '#002396',
+                            confirmButtonText: 'Ver Fatura',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                if (data.invoiceUrl) {
+                                    window.open(data.invoiceUrl, '_blank');
+                                    return;
+                                }
+                                
+                                location.reload();
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Atenção!',
+                            text: data.message,
+                            icon: 'info',
+                            timer: 2000
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        title: 'Atenção!',
+                        text: error,
+                        icon: 'info',
+                        timer: 2000
+                    });
+                });
+            }
+        });
+    </script>
 @endsection

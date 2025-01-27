@@ -20,7 +20,9 @@
                 @if(Auth::user()->type == 1) 
                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#updatedModal">Alterar dados</button>
                 @endif
-                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#invoiceModal">Adicionar Fatura</button> 
+                @if ($sale->payment !== 'ENVIO MANUAL')
+                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#invoiceModal">Adicionar Fatura</button>
+                @endif
             </div>
 
             <div class="modal fade" id="updatedModal" tabindex="-1">

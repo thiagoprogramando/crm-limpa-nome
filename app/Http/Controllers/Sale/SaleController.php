@@ -184,7 +184,7 @@ class SaleController extends Controller {
         $sale       = Sale::find($id);
         $invoices   = Invoice::where('id_sale', $sale->id)->orWhere('token_payment', $sale->token_payment)->get();
         $users      = User::whereIn('type', [1, 2, 5])->orderBy('name', 'asc')->get();
-        $lists = Lists::orderBy('created_at', 'desc')->get();
+        $lists      = Lists::orderBy('created_at', 'desc')->get();
 
         return view('app.Sale.view', [
             'sale'      => $sale, 
