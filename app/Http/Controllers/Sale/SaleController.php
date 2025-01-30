@@ -234,11 +234,6 @@ class SaleController extends Controller {
             $invoice->delete();
         }
 
-        if ($sale->user->type == 3) {
-            $user = $sale->user;
-            $user->delete();
-        }
-
         if ($sale->delete()) {
             return redirect()->back()->with('success', 'Venda e Faturas excluídas com sucesso!');
         }

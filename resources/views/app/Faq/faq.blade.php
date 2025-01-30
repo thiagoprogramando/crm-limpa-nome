@@ -20,7 +20,6 @@
                     Links Úteis
                 </button>
                 <a href="https://drive.google.com/file/d/1a5ilCLvx10jXZefxX-9_mCdzxybSoZgq/view?usp=sharing" target="_blank" class="list-group-item list-group-item-action">Criativos para Post Limpa nome!🎁🧑‍🎄</a>
-                <a href="https://drive.google.com/file/d/1CRBfGt5hfu_BrRT-fdeTuAKVWadNrcQD/view?usp=drive_link" target="_blank" class="list-group-item list-group-item-action">Funil de Vendas (Diego Duarte)</a>
             </div>
         </div>
     </section>

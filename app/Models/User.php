@@ -7,8 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
+
+use GuzzleHttp\Client;
+use Carbon\Carbon;
+
 
 class User extends Authenticatable {
     
@@ -56,7 +60,7 @@ class User extends Authenticatable {
     }
 
     public function invoices() {
-        return $this->hasMany(Invoice::class, 'id_user');
+        return $this->hasMany(Invoice::class, 'id_user')->orderBy('status', 'asc');
     }
 
     public function lastPendingInvoiceTypeOne() {
@@ -202,18 +206,6 @@ class User extends Authenticatable {
         return 0;
     }
 
-    public function promoCruzeiro() {
-        
-        $saleCount = $this->saleCount();
-        if ($saleCount < 100) {
-            return $saleCount;
-        } elseif ($saleCount >= 100 && $saleCount <= 200) {
-            return $saleCount - 100;
-        } else {
-            return 100;
-        }
-    }
-
     public function maskedName() {
         
         if (!$this->name) {
@@ -226,6 +218,31 @@ class User extends Authenticatable {
     
     public function address() {
         $this->address.', '.$this->num.' '.$this->city.'/'.$this->state.' - '.$this->postal_code;
+    }
+
+    public function balance() {
+        try {
+            $client = new Client();
+
+            $response = $client->request('GET', env('API_URL_ASSAS') . 'v3/finance/balance', [
+                'headers' => [
+                    'accept'       => 'application/json',
+                    'access_token' => $this->api_key,
+                    'User-Agent'   => env('APP_NAME'),
+                ],
+                'verify' => false,
+            ]);
+
+            if ($response->getStatusCode() === 200) {
+                $data = json_decode((string) $response->getBody(), true);
+                return $data['balance'] ?? 0;
+            }
+
+            return false;
+        } catch (\Throwable $e) {
+            Log::error('Erro ao buscar saldo de '.$this->name.': ' . $e->getMessage());
+            return false;
+        }
     }
 
     protected $hidden = [

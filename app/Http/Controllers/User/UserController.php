@@ -4,8 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Assas\AssasController;
 use App\Http\Controllers\Controller;
-use App\Models\Apresentation;
-use App\Models\Archive;
+
 use App\Models\Invoice;
 use App\Models\Lists;
 use App\Models\Notification;
@@ -232,7 +231,7 @@ class UserController extends Controller {
         
         $query->where('type', $type);
 
-        $users = $query->paginate(100);
+        $users = $query->paginate(30);
 
         $users->getCollection()->transform(function ($user) {
             $user->commission_total = $user->commissionTotal();
@@ -242,7 +241,10 @@ class UserController extends Controller {
         $sortedUsers = $users->sortByDesc('commission_total');
         $users->setCollection($sortedUsers);
 
-        return view('app.User.list', ['users' => $users, 'type' => $type]);
+        return view('app.User.list', [
+            'users' => $users, 
+            'type'  => $type
+        ]);
     }
 
     public function listNetwork(Request $request) {

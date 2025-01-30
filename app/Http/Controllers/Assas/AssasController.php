@@ -15,6 +15,7 @@ use App\Models\Coupon;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -860,52 +861,63 @@ class AssasController extends Controller {
         }
     }
 
-    public function balance() {
+    public function balance($id = null) {
+        try {
+            $client = new Client();
 
-        $client = new Client();
-        $user = auth()->user();
+            $user = $id ? User::find($id) : auth()->user();
 
-        $response = $client->request('GET',  env('API_URL_ASSAS') . 'v3/finance/balance', [
-            'headers' => [
-                'accept'       => 'application/json',
-                'access_token' => $user->api_key,
-                'User-Agent'   => env('APP_NAME')
-            ],
-            'verify' => false,
-        ]);
+            if (!$user) {
+                throw new \Exception('Usuário não encontrado.');
+            }
 
-        $body = (string) $response->getBody();
-        if ($response->getStatusCode() === 200) {
+            $response = $client->request('GET', env('API_URL_ASSAS') . 'v3/finance/balance', [
+                'headers' => [
+                    'accept'       => 'application/json',
+                    'access_token' => $user->api_key,
+                    'User-Agent'   => env('APP_NAME'),
+                ],
+                'verify' => false,
+            ]);
 
-            $data = json_decode($body, true);
-            return $data['balance'];
-        } else {
+            if ($response->getStatusCode() === 200) {
+                $data = json_decode((string) $response->getBody(), true);
+                return $data['balance'] ?? 0;
+            }
 
+            return false;
+        } catch (\Throwable $e) {
+            Log::error('Erro ao buscar saldo de '.$user->name.': ' . $e->getMessage());
             return false;
         }
     }
 
     public function statistics() {
+        try {
+            $client = new Client();
+            $user = auth()->user();
 
-        $client = new Client();
-        $user = auth()->user();
+            if (!$user) {
+                throw new \Exception('Usuário não autenticado.');
+            }
 
-        $response = $client->request('GET',  env('API_URL_ASSAS') . 'v3/finance/split/statistics', [
-            'headers' => [
-                'accept'        => 'application/json',
-                'access_token'  => $user->api_key,
-                'User-Agent'    => env('APP_NAME')
-            ],
-            'verify' => false,
-        ]);
+            $response = $client->request('GET', env('API_URL_ASSAS') . 'v3/finance/split/statistics', [
+                'headers' => [
+                    'accept'       => 'application/json',
+                    'access_token' => $user->api_key,
+                    'User-Agent'   => env('APP_NAME')
+                ],
+                'verify' => false,
+            ]);
 
-        $body = (string) $response->getBody();
-        if ($response->getStatusCode() === 200) {
+            if ($response->getStatusCode() === 200) {
+                $data = json_decode((string) $response->getBody(), true);
+                return $data['income'] ?? 0;
+            }
 
-            $data = json_decode($body, true);
-            return $data['income'];
-        } else {
-
+            return false;
+        } catch (\Throwable $e) {
+            Log::error('Erro ao buscar estatísticas financeiras de '.$user->name.': ' . $e->getMessage());
             return false;
         }
     }
@@ -1015,157 +1027,148 @@ class AssasController extends Controller {
     }
 
     public function extract() {
+        try {
 
-        $client = new Client();
-
-        $user = auth()->user();
-        $startDate = $user->created_at->toDateString();
-        $finishDate = now()->toDateString();
-
-        $response = $client->request('GET',  env('API_URL_ASSAS') . "v3/financialTransactions?startDate={$startDate}&finishDate={$finishDate}&order=desc", [
-            'headers' => [
-                'accept'        => 'application/json',
-                'access_token'  => $user->api_key,
-                'User-Agent'    => env('APP_NAME')
-            ],
-            'verify' => false,
-        ]);
-
-        $body = (string) $response->getBody();
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($body, true);
-            return $data['data'];
-        } else {
+            $client = new Client();
+            $user = auth()->user();
+            $startDate = $user->created_at->toDateString();
+            $finishDate = now()->toDateString();
+    
+            $response = $client->request('GET', env('API_URL_ASSAS') . "v3/financialTransactions?startDate={$startDate}&finishDate={$finishDate}&order=desc", [
+                'headers' => [
+                    'accept'       => 'application/json',
+                    'access_token' => $user->api_key,
+                    'User-Agent'   => env('APP_NAME')
+                ],
+                'verify' => false,
+            ]);
+    
+            if ($response->getStatusCode() !== 200) {
+                return [];
+            }
+    
+            return json_decode((string) $response->getBody(), true)['data'] ?? [];
+    
+        } catch (\Exception $e) {
+            Log::error('Erro ao buscar extrato de '.$user->name.': ' . $e->getMessage());
             return [];
         }
     }
 
     public function cancelInvoice($token) {
+        try {
+            $client = new Client();
+            $options = [
+                'headers' => [
+                    'Content-Type'  => 'application/json',
+                    'access_token'  => env('API_TOKEN_ASSAS'),
+                    'User-Agent'    => env('APP_NAME')
+                ],
+                'verify' => false
+            ];
 
-        $client = new Client();
-        $options = [
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'access_token' => env('API_TOKEN_ASSAS'),
-                'User-Agent'   => env('APP_NAME')
-            ],
-            'verify' => false
-        ];
+            $response = $client->delete(env('API_URL_ASSAS') . 'v3/payments/' . $token, $options);
 
-        $response = $client->delete(env('API_URL_ASSAS') . 'v3/payments/'.$token, $options);
-        $body = (string) $response->getBody();
-        
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($body, true);
-    
-            if(isset($data['deleted']) && $data['deleted'] == true) {
-                return true;
-            } else {
-                return false;
+            if ($response->getStatusCode() === 200) {
+                $data = json_decode((string) $response->getBody(), true);
+
+                return isset($data['deleted']) && $data['deleted'] === true;
             }
-        } else {
+
+            return false;
+        } catch (\Throwable $e) {
+            Log::error('Erro ao cancelar fatura (Token: ' . $token . '): ' . $e->getMessage());
             return false;
         }
     }
 
     public function payMonthly($id) {
-
-        $invoice = Invoice::find($id);
-        if(!$invoice || $invoice->status == 1) {
-            return redirect()->back()->with('error', 'Não é possível pagar essa Fatura com saldo!');
-        }
-
-        $user = auth()->user();
-        if($this->balance() < $invoice->value) {
-            return redirect()->back()->with('info', 'Não há saldo disponível!');
-        }
-
-        $client = new Client();
-        $response = $client->request('GET',  env('API_URL_ASSAS') . "v3/payments/{$invoice->token_payment}/pixQrCode", [
-            'headers' => [
-                'accept'        => 'application/json',
-                'access_token'  => $user->api_key,
-                'User-Agent'    => env('APP_NAME')
-            ],
-            'verify' => false,
-        ]);
-
-        $body = (string) $response->getBody();
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($body, true);
-
-            $payqrcode = $this->payQrCode($data['payload'], $invoice->value, $invoice->description);
-            switch($payqrcode) {
-                case 'AWAITING_BALANCE_VALIDATION':
-                    return redirect()->back()->with('info', 'Saldo em análise! Aguarde alguns segundos.');
-                    break;
-                case 'AWAITING_INSTANT_PAYMENT_ACCOUNT_BALANCE':
-                    return redirect()->back()->with('info', 'Transação em análise! Aguarde alguns segundos.');
-                    break;
-                case 'AWAITING_CRITICAL_ACTION_AUTHORIZATION':
-                    return redirect()->back()->with('info', 'Transação aguardando autorização!');
-                    break;
-                case 'AWAITING_CHECKOUT_RISK_ANALYSIS_REQUEST':
-                    return redirect()->back()->with('info', 'Transação aguardando análise!');
-                    break;
-                case 'AWAITING_CASH_IN_RISK_ANALYSIS_REQUEST':
-                    return redirect()->back()->with('info', 'Transação aguardando análise!');
-                    break;
-                case 'SCHEDULED':
-                    return redirect()->back()->with('success', 'Transação agendada com sucesso!');
-                    break;
-                case 'AWAITING_REQUEST':
-                    return redirect()->back()->with('info', 'Transação aguardando análise!');
-                    break;
-                case 'REQUESTED':
-                    return redirect()->back()->with('info', 'Transação solicitada!');
-                    break;
-                case 'DONE':
-                    return redirect()->back()->with('success', 'Transação realizada com sucesso!');
-                    break;
-                case 'REFUSED':
-                    return redirect()->back()->with('info', 'Transação recusada!');
-                    break;
-                case 'CANCELLED':
-                    return redirect()->back()->with('info', 'Transação cancelada!');
-                    break;
-                default:
-                    return redirect()->back()->with('info', 'Transação em análise!');
-                    break;
+        try {
+            $invoice = Invoice::find($id);
+            if (!$invoice || $invoice->status == 1) {
+                return redirect()->back()->with('error', 'Não é possível pagar essa Fatura com saldo!');
             }
-        } else {
-            return redirect()->back()->with('error', 'Não foi possível pagar com o saldo!');
+    
+            $user = User::find($invoice->id_user);
+            if (!$user) {
+                return redirect()->back()->with('info', 'Dados não localizados!');
+            }
+    
+            $balance = $this->balance();
+            if ($balance !== false && $balance < $invoice->value) {
+                return redirect()->back()->with('info', 'Não há saldo disponível!');
+            }
+    
+            $client = new Client();
+            $response = $client->request('GET', env('API_URL_ASSAS') . "v3/payments/{$invoice->token_payment}/pixQrCode", [
+                'headers' => [
+                    'accept'       => 'application/json',
+                    'access_token' => $user->api_key,
+                    'User-Agent'   => env('APP_NAME')
+                ],
+                'verify' => false,
+            ]);
+    
+            if ($response->getStatusCode() !== 200) {
+                return redirect()->back()->with('error', 'Não foi possível pagar com o saldo!');
+            }
+    
+            $data = json_decode((string) $response->getBody(), true);
+            $payqrcode = $this->payQrCode($data['payload'], $invoice->value, $invoice->description);
+    
+            $statusMessages = [
+                'AWAITING_BALANCE_VALIDATION' => 'Saldo em análise! Aguarde alguns segundos.',
+                'AWAITING_INSTANT_PAYMENT_ACCOUNT_BALANCE' => 'Transação em análise! Aguarde alguns segundos.',
+                'AWAITING_CRITICAL_ACTION_AUTHORIZATION' => 'Transação aguardando autorização!',
+                'AWAITING_CHECKOUT_RISK_ANALYSIS_REQUEST' => 'Transação aguardando análise!',
+                'AWAITING_CASH_IN_RISK_ANALYSIS_REQUEST' => 'Transação aguardando análise!',
+                'SCHEDULED' => 'Transação agendada com sucesso!',
+                'AWAITING_REQUEST' => 'Transação aguardando análise!',
+                'REQUESTED' => 'Transação solicitada!',
+                'DONE' => 'Transação realizada com sucesso!',
+                'REFUSED' => 'Transação recusada!',
+                'CANCELLED' => 'Transação cancelada!',
+            ];
+    
+            return redirect()->back()->with($payqrcode === 'DONE' ? 'success' : 'info', $statusMessages[$payqrcode] ?? 'Transação em análise!');
+    
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Ocorreu um erro inesperado! ' . $e->getMessage());
         }
-    }
+    }    
 
     private function payQrCode($payload, $value, $description, $date = null) {
+        try {
+            $client = new Client();
 
-        $client = new Client();
+            $options = [
+                'headers' => [
+                    'Content-Type'  => 'application/json',
+                    'access_token'  => env('API_TOKEN_ASSAS'),
+                    'User-Agent'    => env('APP_NAME')
+                ],
+                'json' => [
+                    'qrCode' => [
+                        'payload' => $payload
+                    ],
+                    'value'        => number_format($value, 2, '.', ''),
+                    'description'  => $description,
+                    'scheduleDate' => $date ?? now(),
+                ],
+                'verify' => false
+            ];
 
-        $options = [
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'access_token' => env('API_TOKEN_ASSAS'),
-                'User-Agent'   => env('APP_NAME')
-            ],
-            'json' => [
-                'qrCode' => [
-                    'payload' => $payload
-                ], 
-                'value'         => number_format($value, 2, '.', ''),
-                'description'   => $description,
-                'scheduleDate'  => $date ?? now(),
-            ],
-            'verify' => false
-        ];
-        
-        $response = $client->post(env('API_URL_ASSAS') . 'v3/pix/qrCodes/pay', $options);
-        $body = (string) $response->getBody();
+            $response = $client->post(env('API_URL_ASSAS') . 'v3/pix/qrCodes/pay', $options);
+            $body = (string) $response->getBody();
 
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($body, true);
-            return $data;
-        } else {
+            if ($response->getStatusCode() === 200) {
+                $data = json_decode($body, true);
+                return $data;
+            }
+
+            return false;
+        } catch (\Throwable $e) {
+            Log::error('Erro ao criar QR Code de pagamento: ' . $e->getMessage());
             return false;
         }
     }
