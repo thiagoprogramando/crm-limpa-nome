@@ -14,6 +14,8 @@ use App\Http\Controllers\Sale\ContractController;
 use App\Http\Controllers\Sale\CouponController;
 use App\Http\Controllers\Sale\DefaultController;
 use App\Http\Controllers\Sale\SaleController;
+use App\Http\Controllers\Trash\RecoverController;
+use App\Http\Controllers\Trash\TrashController;
 use App\Http\Controllers\Upload\UploadController;
 use App\Http\Controllers\User\ListController;
 use App\Http\Controllers\User\UserController;
@@ -74,6 +76,11 @@ Route::middleware(['auth'])->group(function () {
             Route::post('create-upload', [UploadController::class, 'createSale'])->name('create-upload');
 
             Route::get('/profile-white-label', [WhiteLabelContractController::class, 'profileContract'])->name('profile-white-label');
+
+            Route::get('/trash-sales', [TrashController::class, 'trashSales'])->name('trash-sales');
+            Route::get('/trash-users', [TrashController::class, 'trashUsers'])->name('trash-users');
+            Route::post('sale-recover', [RecoverController::class, 'recoverSale'])->name('sale-recover');
+            Route::post('user-recover', [RecoverController::class, 'recoverUser'])->name('user-recover');
         });
 
         Route::get('/search', [UserController::class, 'search'])->name('search');

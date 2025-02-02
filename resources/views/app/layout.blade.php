@@ -231,6 +231,17 @@
                         </ul>
                     </li>
                 @endif
+
+                <li class="nav-heading">Lixeira</li>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" data-bs-target="#forms-trash" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-archive"></i><span>Recuperação</span><i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <ul id="forms-trash" class="nav-content collapse " data-bs-parent="#sidebar-nav">  
+                        <li><a href="{{ route('trash-users') }}"> <i class="bi bi-circle"></i><span>Clientes</span> </a></li>
+                        <li><a href="{{ route('trash-sales') }}"> <i class="bi bi-circle"></i><span>Vendas</span> </a></li>
+                    </ul>
+                </li>
                 
                 @if (Auth::user()->type == 1)
                     <li class="nav-heading">Gestão</li>

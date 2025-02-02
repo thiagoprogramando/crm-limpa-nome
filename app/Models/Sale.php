@@ -58,11 +58,11 @@ class Sale extends Model {
     }
 
     public function user() {
-        return $this->belongsTo(User::class, 'id_client');
+        return $this->belongsTo(User::class, 'id_client')->withTrashed();
     }
 
     public function seller() {
-        return $this->belongsTo(User::class, 'id_seller');
+        return $this->belongsTo(User::class, 'id_seller')->withTrashed();
     }
 
     public function list() {

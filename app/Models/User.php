@@ -75,6 +75,18 @@ class User extends Authenticatable {
             : '---';
     }
 
+    public function lastPendingInvoiceTypeOneUrl() {
+
+        $lastPendingInvoice = $this->invoices()
+            ->where('type', 1)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        return $lastPendingInvoice 
+            ? $lastPendingInvoice->url_payment
+            : '---';
+    }
+
     public function months() {
         return $this->hasMany(Invoice::class, 'id_user')
                 ->where('type', 1)

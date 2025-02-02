@@ -132,7 +132,7 @@
                                     <th scope="col">Lista</th>
                                     <th scope="col">Produto</th>
                                     <th scope="col">Cliente</th>
-                                    <th scope="col">Vendedor</th>
+                                    <th scope="col">Consultor</th>
                                     <th class="text-center" scope="col">Contrato</th>
                                     <th class="text-center" scope="col">Pagamento</th>
                                     <th class="text-center" scope="col">Opções</th>

@@ -334,13 +334,13 @@ class UserController extends Controller {
         $dateLimit = Carbon::now()->subDays(90);
 
         if ($status == 1) {
-            $users = User::whereNotIn('type', [1, 3])
+            $users = User::whereNotIn('type', [1, 3, 4])
             ->whereHas('invoices', function($query) use ($dateLimit) {
                 $query->where('status', 1)
                       ->where('due_date', '>=', $dateLimit);
-            })->orderBy('name', 'asc')->get();
+            })->orderBy('name', 'asc')->paginate(30);
         } elseif ($status == 2) {
-            $users = User::whereNotIn('type', [1, 3])
+            $users = User::whereNotIn('type', [1, 3, 4])
                 ->where(function($query) use ($dateLimit) {
                     $query->whereDoesntHave('invoices', function($subQuery) use ($dateLimit) {
                         $subQuery->where('status', 1)
@@ -351,7 +351,7 @@ class UserController extends Controller {
                                  ->where('due_date', '>=', $dateLimit);
                     });
                 })
-                ->orderBy('name', 'asc')->get();
+                ->orderBy('name', 'asc')->paginate(30);
         } else {
             return redirect()->back()->with('error', 'Dados não encontrados para a pesquisa!');
         }

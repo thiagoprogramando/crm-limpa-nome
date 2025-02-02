@@ -68,7 +68,7 @@ class AppController extends Controller {
             $remainingTime = '0d 0h';
         }
     
-        $users = User::whereIn('type', [2, 5, 6, 7])->get();
+        $users = User::whereIn('type', [2, 4])->get();
     
         $sortedUsers = $users->sortByDesc(function($user) {
             return $user->saleTotal();
@@ -125,7 +125,7 @@ class AppController extends Controller {
             ->whereDate('updated_at', $today)
             ->sum('value');
 
-        $users = User::whereIn('type', [2, 5, 6, 7])->get();
+        $users = User::whereIn('type', [2, 4])->get();
         $sortedUsers = $users->sortByDesc(fn($user) => $user->saleTotal());
         $topUsers = $sortedUsers->take(10);
 
