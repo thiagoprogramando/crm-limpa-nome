@@ -411,7 +411,7 @@ class AssasController extends Controller {
             
             $user = User::find($invoice->id_user);
             if ($user) {
-                if ($user->parent->afiliates()->count() % 5 === 0) {
+                if (($user->parent->afiliates()->count() % 5 === 0) && $user->invoices()->where('type', 1)->count() <= 1) {
                     $this->createCoupon($user->parent, 'Promoção 2 Afiliados 1 Mensalidade!');
                 }
 
@@ -547,7 +547,7 @@ class AssasController extends Controller {
                             $notification->save();
                         }
 
-                        if ($seller->salesSeller()->count() % 10 === 0) {
+                        if ($seller->salesSeller()->where('status', 1)->count() % 10 === 0) {
                             $this->createCoupon($seller, 'Promoção 10 vendas ganha 1 nome!');
                         }
 

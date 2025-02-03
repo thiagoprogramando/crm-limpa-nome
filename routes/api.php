@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Assas\AssasController;
+use App\Http\Controllers\Sale\ContractController;
 use App\Http\Controllers\Sale\SaleController;
 
 use Illuminate\Support\Facades\Route;
@@ -10,3 +11,5 @@ Route::post('webhook-zapsing', [AssasController::class, 'webhookSing'])->name('w
 
 Route::post('approved-all', [SaleController::class, 'approvedAll'])->name('approved-all');
 Route::post('create-payment', [AssasController::class, 'createPayment'])->name('create-payment');
+
+Route::post('sign-sale', [ContractController::class, 'signSale'])->name('sign-sale');
