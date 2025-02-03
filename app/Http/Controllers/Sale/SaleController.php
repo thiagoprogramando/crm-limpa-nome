@@ -301,11 +301,13 @@ class SaleController extends Controller {
             return redirect()->back()->with('error', 'Não há uma lista disponível para reprotocolar a venda!');
         }
 
-        $invoices = Invoice::where('id_sale', $sale->id)->get();
-        $tomorrow = now()->addDay();
-        foreach ($invoices as $invoice) {
-            if ($invoice->due_date <= $tomorrow && $invoice->status == 0) {
-                return redirect()->back()->with('error', 'Existem faturas vencidas associadas a Venda!');
+        if (Auth::user()->type !== 1) {
+            $invoices = Invoice::where('id_sale', $sale->id)->get();
+            $tomorrow = now()->addDay();
+            foreach ($invoices as $invoice) {
+                if ($invoice->due_date <= $tomorrow && $invoice->status == 0) {
+                    return redirect()->back()->with('error', 'Existem faturas vencidas associadas a Venda!');
+                }
             }
         }
         
