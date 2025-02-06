@@ -46,13 +46,13 @@
                             <input type="hidden" name="id" value="{{ Auth::user()->id }}">
                             <div class="col-12 col-md-12 col-lg-12 mb-1">
                                 <div class="form-floating">
-                                    <input type="text" name="wallet" value="{{ Auth::user()->wallet }}" class="form-control" id="floatingWallet" placeholder="Wallet:">
+                                    <input type="text" name="wallet" value="{{ Auth::user()->wallet }}" class="form-control" id="floatingWallet" placeholder="Wallet:" @readonly(!empty(Auth::user()->wallet))>
                                     <label for="floatingWallet">Wallet:</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-12 col-lg-12 mb-1">
                                 <div class="form-floating">
-                                    <input type="text" name="api_key" value="{{ Auth::user()->api_key }}" class="form-control" id="floatingApiKey" placeholder="API KEY:">
+                                    <input type="text" name="api_key" value="{{ Auth::user()->api_key }}" class="form-control" id="floatingApiKey" placeholder="API KEY:" @readonly(!empty(Auth::user()->api_key))>
                                     <label for="floatingApiKey">API KEY:</label>
                                 </div>
                             </div>
