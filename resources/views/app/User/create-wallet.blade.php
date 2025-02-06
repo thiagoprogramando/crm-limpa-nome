@@ -57,7 +57,7 @@
                                 </div>
                             </div>
                             <div class="col-12 col-md-12 col-lg-12 d-grid gap-2 mb-3">
-                                <button type="submit" class="btn btn-primary">Válidar Tokens</button>
+                                <button type="submit" class="btn btn-primary" @disabled(!empty(Auth::user()->api_key) && !empty(Auth::user()->wallet))>Válidar Tokens</button>
                             </div>
                         </form>
                     </div>
