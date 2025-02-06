@@ -85,6 +85,10 @@ class UserController extends Controller {
             $user->api_token_zapapi = $request->api_token_zapapi;
         }
 
+        if (!empty($request->white_label_network)) {
+            $user->white_label_network = $request->white_label_network;
+        }
+
         if (!empty($request->fixed_cost)) {
 
             if ($this->formatarValor($request->fixed_cost) < Auth::user()->fixed_cost) {

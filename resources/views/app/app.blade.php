@@ -384,17 +384,17 @@
         </div>
         @endif
         <div class="row">
-            <div class="col-12 col-sm-12 col-lg-12">
+            <div class="col-12 col-sm-6 col-lg-6">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Ranking <span>| Dados gerados pelo sistema.</span></h5>
+                        <h5 class="card-title">Ranking <span>| Os 10 melhores faturamentos.</span></h5>
                         
                         <div class="table-responsive">
                             <table class="table table" id="table">
                                 <thead>
                                     <tr class="table-primary">
                                         <th scope="col" class="text-center">°</th>
-                                        <th scope="col">Vendedor</th>
+                                        <th scope="col">Consultor</th>
                                         <th scope="col" class="text-center">Estado</th>
                                         <th scope="col">Faturamento</th>
                                         <th scope="col">Graduação</th>
@@ -436,6 +436,54 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Rede <span>| Últimos cadastros</span></h5>
+                        
+                        <div class="table-responsive">
+                            <table class="table table" id="table">
+                                <thead>
+                                    <tr class="table-primary">
+                                        <th scope="col" class="text-center">°</th>
+                                        <th scope="col">Consultor</th>
+                                        <th scope="col" class="text-center">Estado</th>
+                                        <th scope="col" class="text-center">Status</th>
+                                        <th scope="col" class="text-center">Cadastro</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($networks as $key => $network)
+                                        <tr>
+                                            <td scope="row" class="d-flex justify-content-center">
+                                                @if($network->photo)
+                                                    <img src="{{ asset('storage/' . $network->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
+                                                @else
+                                                    <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($network->name == Auth::user()->name)
+                                                    {{ $network->name }}
+                                                @else
+                                                    {{ $network->maskedName() }}
+                                                @endif
+                                            </td>
+                                            <td class="text-center">{{ $network->state }}</th>
+                                            <td class="text-center">{{ $network->statusLabel() }}</th>
+                                            <td class="text-center">{{ \Carbon\Carbon::parse($network->created_at)->format('d/m/Y') }}</th>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            <div class="text-center">
+                                {{ $networks->links() }}
+                            </div>
                         </div>
                     </div>
                 </div>

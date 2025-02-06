@@ -134,10 +134,16 @@
         
                                                                         <input type="hidden" name="id" value="{{ $user->id }}">
                                                                         
-                                                                        <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                                        <div class="col-12 col-md-7 col-lg-7 mb-1">
                                                                             <div class="form-floating">
                                                                                 <input type="text" name="name" class="form-control" id="floatingName" placeholder="Nome:" value="{{ $user->name }}">
                                                                                 <label for="floatingName">Nome:</label>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-12 col-md-5 col-lg-5 mb-1">
+                                                                            <div class="form-floating">
+                                                                                <input type="text" name="fixed_cost" class="form-control" id="fixed_cost" placeholder="Custo Fixo (R$):" oninput="mascaraReal(this)" value="{{ $user->fixed_cost }}">
+                                                                                <label for="fixed_cost">Custo (Min R$ {{Auth::user()->fixed_cost}}):</label>
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-12 col-md-12 col-lg-12 mb-1">
@@ -158,27 +164,31 @@
                                                                                 <label for="floatingBirthDate">Data Nascimento:</label>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="col-12 col-md-12 col-lg-12 mb-1">
-                                                                            <div class="form-floating">
-                                                                                <input type="text" name="fixed_cost" class="form-control" id="fixed_cost" placeholder="Custo Fixo (R$):" oninput="mascaraReal(this)" value="{{ $user->fixed_cost }}">
-                                                                                <label for="fixed_cost">Custo (Min R$ {{Auth::user()->fixed_cost}}):</label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                                        <div class="col-12 col-md-6 col-lg-6 mb-1">
                                                                             <div class="form-floating">
                                                                                 <select name="type" class="form-select" id="floatingType">
                                                                                     <option selected value="{{ $user->type }}">Tipos:</option>
                                                                                     <option value="2" @selected($user->type == 2)>Consultor</option>
                                                                                     <option value="3" @selected($user->type == 3)>Cliente</option>
                                                                                 </select>
-                                                                                <label for="floatingType">Alterar Permissões</label>
+                                                                                <label for="floatingType">Permissões de Usuário</label>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                                                            <div class="form-floating">
+                                                                                <select name="white_label_network" class="form-select" id="floatingNetwork">
+                                                                                    <option selected value="{{ $user->white_label_network }}">Opções:</option>
+                                                                                    <option value="1" @selected($user->white_label_network == 1)>Liberar</option>
+                                                                                    <option value="2" @selected($user->white_label_network == 2)>Bloquear</option>
+                                                                                </select>
+                                                                                <label for="floatingNetwork">Permissões de Rede</label>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                                 <div class="modal-footer btn-group">
-                                                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                                                                    <button type="submit" class="btn btn-success">Atualizar</button>
+                                                                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                                                    <button type="submit" class="btn btn-primary">Atualizar</button>
                                                                 </div>
                                                             </form>
                                                         </div>
