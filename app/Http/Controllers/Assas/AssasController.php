@@ -71,7 +71,7 @@ class AssasController extends Controller {
 
         $charge = $this->createCharge($customer, $sale->payment, $value, 'Fatura N° 1 da venda N° '.$sale->id, $dueDate, null, $wallet, $commission, $filiate, $commission_filiate);  
         if ($charge == false) {
-            return false;
+            return "Não gerou fatura";
         }
         
         $invoice = new Invoice();
@@ -93,7 +93,8 @@ class AssasController extends Controller {
 
             if ($notification == true) {
                 $message = "Prezado(a) {$sale->user->name}, estamos enviando o link para pagamento da sua contratação aos serviços da nossa assessoria. \r\n\r\n\r\n"."Consulte os termos do seu contrato aqui👇🏼 \r\n".env('APP_URL')."preview-contract/".$sale->id."\r\n\r\n\r\n"."PARA FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳";
-                return $this->sendInvoice($invoice->url_payment, $sale->id_client, $message, $sale->seller->api_token_zapapi);
+                $this->sendInvoice($invoice->url_payment, $sale->id_client, $message, $sale->seller->api_token_zapapi);
+                return true;
             }
             
             return true;
@@ -193,6 +194,7 @@ class AssasController extends Controller {
 
                 return true;
             } catch (\Exception $e) {
+                Log::error('Ao enviar notificação ao cliente: '. $e->getMessage());
                 return false;
             }
         }
@@ -364,9 +366,11 @@ class AssasController extends Controller {
                     'invoiceUrl'    => $data['invoiceUrl'],
                 ];
             } else {
+                Log::error('Erro ao Gerar Fatura de '.$customer.': ' . $body);
                 return false;
             }
         } catch (\Exception $e) {
+            Log::error('Erro ao Gerar Fatura de '.$customer.': ' . $e->getMessage());
             return false;
         }
     }    
@@ -887,7 +891,7 @@ class AssasController extends Controller {
 
             return false;
         } catch (\Throwable $e) {
-            Log::error('Erro ao buscar saldo de '.$user->name.': ' . $e->getMessage());
+            // Log::error('Erro ao buscar saldo de '.$user->name.': ' . $e->getMessage());
             return false;
         }
     }
@@ -917,7 +921,7 @@ class AssasController extends Controller {
 
             return false;
         } catch (\Throwable $e) {
-            Log::error('Erro ao buscar estatísticas financeiras de '.$user->name.': ' . $e->getMessage());
+            // Log::error('Erro ao buscar estatísticas financeiras de '.$user->name.': ' . $e->getMessage());
             return false;
         }
     }
@@ -1050,7 +1054,7 @@ class AssasController extends Controller {
             return json_decode((string) $response->getBody(), true)['data'] ?? [];
     
         } catch (\Exception $e) {
-            Log::error('Erro ao buscar extrato de '.$user->name.': ' . $e->getMessage());
+            // Log::error('Erro ao buscar extrato de '.$user->name.': ' . $e->getMessage());
             return [];
         }
     }

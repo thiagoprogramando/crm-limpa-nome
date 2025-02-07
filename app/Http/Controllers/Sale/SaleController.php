@@ -27,18 +27,15 @@ class SaleController extends Controller {
     public function create($id) {
 
         $product = Product::find($id);
-        $payments = Payment::where('id_product', $product->id)->get();
-
         return view('app.Sale.create', [
             'product' => $product, 
-            'payments' => $payments
         ]);
     }
 
     public function createSale(Request $request) {
 
         $user = $this->createUser($request->name, $request->email, $request->cpfcnpj, $request->birth_date, $request->phone, $request->postal_code, $request->address, $request->complement, $request->city, $request->state, $request->num, $request->id_seller);
-        if ($user != false) {
+        if ($user !== false) {
 
             $product = Product::where('id', $request->product)->first();
             if (!$product) {
@@ -98,6 +95,8 @@ class SaleController extends Controller {
 
                 $assas = new AssasController();
                 $invoice = $assas->createSalePayment($sale->id, true, $request->dueDate);
+                var_dump($invoice);
+                die();
                 if ($invoice) {
                     return redirect()->route('update-sale', ['id' => $sale->id])->with('success', 'Sucesso! Os dados de pagamento foram enviados para o cliente!');
                 }
