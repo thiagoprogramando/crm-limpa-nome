@@ -95,8 +95,6 @@ class SaleController extends Controller {
 
                 $assas = new AssasController();
                 $invoice = $assas->createSalePayment($sale->id, true, $request->dueDate);
-                var_dump($invoice);
-                die();
                 if ($invoice) {
                     return redirect()->route('update-sale', ['id' => $sale->id])->with('success', 'Sucesso! Os dados de pagamento foram enviados para o cliente!');
                 }
