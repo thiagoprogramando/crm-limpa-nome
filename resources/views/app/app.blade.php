@@ -452,7 +452,6 @@
                                     <tr class="table-primary">
                                         <th scope="col" class="text-center">°</th>
                                         <th scope="col">Consultor</th>
-                                        <th scope="col" class="text-center">Estado</th>
                                         <th scope="col" class="text-center">Status</th>
                                         <th scope="col" class="text-center">Cadastro</th>
                                     </tr>
@@ -474,8 +473,13 @@
                                                     {{ $network->maskedName() }}
                                                 @endif
                                             </td>
-                                            <td class="text-center">{{ $network->state }}</th>
-                                            <td class="text-center">{{ $network->statusLabel() }}</th>
+                                            <td class="text-center">
+                                                @if ($network->status == 1)
+                                                    Ativo
+                                                @else
+                                                    Pendente
+                                                @endif
+                                            </th>
                                             <td class="text-center">{{ \Carbon\Carbon::parse($network->created_at)->format('d/m/Y') }}</th>
                                         </tr>
                                     @endforeach
