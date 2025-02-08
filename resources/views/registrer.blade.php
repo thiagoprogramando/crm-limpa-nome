@@ -46,7 +46,7 @@
                                         </div>
                                     @endif
                                     <input type="hidden" name="filiate" value="{{ isset($id) ? $id : '' }}">
-                                    <input type="hidden" name="type" value="{{ isset($type) ? $type : '' }}">
+                                    <input type="hidden" name="fixed_cost" value="{{ isset($fixed_cost) ? $fixed_cost : '' }}">
                                     <div class="form-group mb-3">
                                         <input type="text" name="name" class="form-control" placeholder="Nome:" required>
                                     </div>
@@ -89,6 +89,15 @@
                     text: '{{ session('error') }}',
                     icon: 'error',
                     timer: 5000
+                })
+            @endif
+            
+            @if(session('info'))
+                Swal.fire({
+                    title: 'Atenção!',
+                    text: '{{ session('info') }}',
+                    icon: 'info',
+                    timer: 2000
                 })
             @endif
             

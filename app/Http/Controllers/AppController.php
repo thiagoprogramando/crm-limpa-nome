@@ -58,14 +58,13 @@ class AppController extends Controller {
             ->where('end', '>=', $now)
             ->first();
     
+        $remainingTime = '0d 0h';
         if ($list) {
             $endTime = Carbon::parse($list->end)->setTimezone('America/Sao_Paulo');
-            
-            $totalDays = ceil($now->diffInHours($endTime) / 24);
-            $totalHours = $now->diffInHours($endTime) % 24;
-            $remainingTime = sprintf('%dd %dh', $totalDays, $totalHours);
-        } else {
-            $remainingTime = '0d 0h';
+            $totalHours = $now->diffInHours($endTime);
+            $totalDays = intdiv($totalHours, 24);
+            $remainingHours = $totalHours % 24;
+            $remainingTime = sprintf('%dd %dh', $totalDays, $remainingHours);
         }
     
         $users = User::whereIn('type', [2, 4])->get();

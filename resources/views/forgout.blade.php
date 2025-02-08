@@ -88,6 +88,15 @@
                 })
             @endif
             
+            @if(session('info'))
+                Swal.fire({
+                    title: 'Atenção!',
+                    text: '{{ session('info') }}',
+                    icon: 'info',
+                    timer: 2000
+                })
+            @endif
+            
             @if(session('success'))
                 Swal.fire({
                     title: 'Sucesso!',

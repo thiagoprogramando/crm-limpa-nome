@@ -29,7 +29,7 @@ Route::post('/logon', [Login::class, 'logon'])->name('logon');
 Route::get('/login-cliente', [LoginController::class, 'login'])->name('login.cliente');
 Route::post('/logon-cliente', [LoginController::class, 'logon'])->name('logon.cliente');
 
-Route::get('/registrer/{id?}/{type?}', [Registrer::class, 'index'])->name('registrer');
+Route::get('/registrer/{id?}/{fixed_cost?}', [Registrer::class, 'index'])->name('registrer');
 Route::post('registrer-user', [Registrer::class, 'registrerUser'])->name('registrer-user');
 
 Route::get('/forgout/{code?}', [Forgout::class, 'forgout'])->name('forgout');

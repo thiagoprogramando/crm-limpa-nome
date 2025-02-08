@@ -12,9 +12,12 @@ use Illuminate\Support\Facades\Auth;
 
 class Registrer extends Controller {
      
-    public function index($id = null, $type = null) {
+    public function index($id = null, $fixed_cost = null) {
 
-        return view('registrer', ['id' => $id, 'type' => $type]);
+        return view('registrer', [
+            'id' => $id, 
+            'fixed_cost' => $fixed_cost
+        ]);
     }
 
     public function registrerUser(Request $request) {
@@ -36,7 +39,7 @@ class Registrer extends Controller {
         $user->cpfcnpj  = preg_replace('/\D/', '', $request->cpfcnpj);
         $user->phone    = preg_replace('/\D/', '', $request->phone);
         $user->email    = $request->email;
-        $password = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 6));
+        $password       = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 6));
         $user->password = bcrypt($password);
         $user->type     = 2;
         $user->status   = 3;
@@ -44,13 +47,14 @@ class Registrer extends Controller {
         if (!empty($request->filiate)) {
             $filiate = User::find($request->filiate);
             if ($filiate) {
-                $user->filiate          = $request->filiate;
-                $user->fixed_cost       = $filiate->fixed_cost;
+                $user->filiate    = $request->filiate;
+                $user->fixed_cost = $this->formatarValor($request->fixed_cost) ?? $this->formatarValor($filiate->fixed_cost);
             }
         }
 
         if($user->save()) {
             $this->sendActive($user->id, $password);
+            $this->sendActiveParent($filiate->id, $user->name, now()->format('d/m/Y'));
 
             if (Auth::attempt(['email' => $user->email, 'password' => $password])) {
                 return redirect()->route('app');
@@ -75,6 +79,27 @@ class Registrer extends Controller {
                         . "E-mail: {$user->email}\r\n"
                         . "Senha: *{$password}* \r\n\r\n"
                         . "Aproveite a sua jornada com a gente e tenha um ótimo dia! \r\n\r\n";
+            $this->sendWhatsapp(
+                $url,
+                $message,
+                $user->phone,
+                $user->api_token_zapapi
+            );
+
+            return true;
+        }
+    }
+
+    public function sendActiveParent($id, $name, $date) {
+
+        $user = User::find($id);
+        if($user) {
+
+            $url = env('APP_URL');
+            $message =  "🚀 Novo Membro na Rede!\r\n\r\n"
+                        . "Mais uma pessoa acaba de se conectar ao seu time! 🔥\r\n\r\n"
+                        . "Parceiro: {$name}\r\n"
+                        . "Data: {$date}\r\n";
             $this->sendWhatsapp(
                 $url,
                 $message,
@@ -119,4 +144,12 @@ class Registrer extends Controller {
         }
     }
 
+    private function formatarValor($valor) {
+        
+        $valor = preg_replace('/[^0-9,]/', '', $valor);
+        $valor = str_replace(',', '.', $valor);
+        $valorFloat = floatval($valor);
+    
+        return number_format($valorFloat, 2, '.', '');
+    }
 }
