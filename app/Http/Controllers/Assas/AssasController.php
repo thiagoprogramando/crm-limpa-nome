@@ -1188,12 +1188,10 @@ class AssasController extends Controller {
 
             $sales      = $this->getSales($request['ids']);
             $saleIds    = $sales->pluck('id')->toArray();
-            $totalValue = $this->calculateTotalValue($sales, $user);
-
-            $commission = $user->filiate ? ($user->fixed_cost - ($filiate->cost ?? 150)) : 0;
+            $totalValue = $this->calculateTotalValue($sales, $user); 
+            $commission = ($user->fixed_cost - $filiate->fixed_cost) * $sales->count();
 
             $charge = $this->createCharge($user->customer, 'PIX', $totalValue, 'Fatura referente às vendas N° - '.implode(', ', $saleIds), now()->addDay(), 1, null, null, $filiate, $commission);
-
             if (!$charge || empty($charge['id'])) {
                 return $this->jsonError('Erro ao criar fatura!', 500);
             }
