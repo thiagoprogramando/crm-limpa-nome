@@ -113,9 +113,12 @@
                                                             @csrf
                                                             <input type="hidden" name="id" value="{{ $sale->id }}"> 
                                                             <div class="btn-group" role="group">
-                                                                <button type="submit" class="btn btn-danger text-light" title="Excluir"><i class="bi bi-trash"></i></button>
+                                                                <button type="submit" class="btn btn-outline-primary text-danger" title="Remover Nome"><i class="bi bi-trash"></i></button>
+                                                                @if ($sale->status !== 1)
+                                                                    <button type="button" class="btn btn-outline-primary" title="Aplicar CUPOM" data-bs-toggle="modal" data-bs-target="#couponModal{{ $sale->id }}"><i class="bi bi-percent"></i> Aplicar CUPOM</button>
+                                                                @endif
                                                                 @if ($sale->token_payment)
-                                                                    <a href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-success text-light" title="Pagar Nome"><i class="bi bi-upc"></i> Acessar Fatura</a>
+                                                                    <a href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-primary text-light" title="Pagar Nome"><i class="bi bi-upc"></i> Acessar Fatura</a>
                                                                 @else
                                                                     <a href="{{ route('create-payment-upload', ['id' => $sale->id]) }}" class="btn btn-primary text-light" title="Pagar Nome"><i class="bi bi-upc"></i> Pagar</a>
                                                                 @endif
@@ -123,6 +126,35 @@
                                                         </form>
                                                     </td>
                                                 </tr>
+
+                                                <div class="modal fade" id="couponModal{{ $sale->id }}" tabindex="-1">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <form action="{{ route('add-coupon') }}" method="POST">
+                                                                @csrf
+                                                                <input type="hidden" name="sale_id" value="{{ $sale->id }}">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title">CUPOM:</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <div class="row">
+                                                                        <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                                                            <div class="form-floating">
+                                                                                <input type="text" name="name" class="form-control" id="floatingName" placeholder="Código:">
+                                                                                <label for="floatingName">Código:</label>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer btn-group">
+                                                                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Fechar</button>
+                                                                    <button type="submit" class="btn btn-primary">Adicionar</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             @endforeach
                                         </tbody>
                                     </table>

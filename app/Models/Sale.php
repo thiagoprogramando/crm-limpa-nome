@@ -43,6 +43,18 @@ class Sale extends Model {
         return $this->belongsTo(Product::class, 'id_product');
     }
 
+    public function user() {
+        return $this->belongsTo(User::class, 'id_client')->withTrashed();
+    }
+
+    public function seller() {
+        return $this->belongsTo(User::class, 'id_seller')->withTrashed();
+    }
+
+    public function list() {
+        return $this->belongsTo(Lists::class, 'id_list');
+    }
+
     public function paymentMethod() {
         switch ($this->payment) {
             case 'PIX':
@@ -56,19 +68,7 @@ class Sale extends Model {
                 break;
         }
     }
-
-    public function user() {
-        return $this->belongsTo(User::class, 'id_client')->withTrashed();
-    }
-
-    public function seller() {
-        return $this->belongsTo(User::class, 'id_seller')->withTrashed();
-    }
-
-    public function list() {
-        return $this->belongsTo(Lists::class, 'id_list');
-    }
-
+    
     public function statusLabel() {
         switch ($this->status) {
             case 1:

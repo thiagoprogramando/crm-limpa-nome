@@ -6,6 +6,7 @@ use App\Http\Controllers\Assas\AssasController;
 use App\Http\Controllers\Controller;
 use App\Models\Coupon;
 use App\Models\Invoice;
+use App\Models\Sale;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -98,11 +99,6 @@ class CouponController extends Controller {
 
     public function addCoupon(Request $request) {
 
-        $invoice = Invoice::find($request->invoice_id);
-        if (!$invoice) {
-            return redirect()->back()->with('info', 'Nenhuma Fatura encontrada!');
-        }
-
         $coupon = Coupon::where('name', $request->name)->first();
         if (!$coupon) {
             return redirect()->back()->with('info', 'Nenhum CUPOM encontrado!');
@@ -117,34 +113,65 @@ class CouponController extends Controller {
         }
 
         $assas = new AssasController();
-        if ($coupon->percentage == 100) {
-            if ($assas->cancelInvoice($invoice->token_payment)) {
-                
-                $invoice->status = 1;
-                if($invoice->save()) {
 
+        $invoice = Invoice::find($request->invoice_id);
+        if ($invoice) {
+            if ($coupon->percentage == 100) {
+                if ($assas->cancelInvoice($invoice->token_payment)) {
+                    
+                    $invoice->status = 1;
+                    if($invoice->save()) {
+    
+                        $coupon->qtd -= 1;
+                        $coupon->save();
+    
+                        return redirect()->back()->with('success', 'CUPOM aplicado com sucesso!');
+                    }
+                }
+            }
+    
+            $value      = $invoice->value * (1 - $coupon->percentage / 100);
+            $commission = $invoice->commission * (1 - ($coupon->percentage + 5) / 100);
+            $dueDate    = $invoice->due_date;
+            $wallet     = $invoice->sale->seller->wallet;
+           
+            $charge = $assas->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
+            if ($charge) {
+    
+                $invoice->url_payment   = $charge['invoiceUrl'];
+                $invoice->token_payment = $charge['id'];
+                $invoice->value         = $value;
+                $invoice->commission    = $commission;
+                if ($invoice->save()) {
+    
                     $coupon->qtd -= 1;
                     $coupon->save();
-
+    
                     return redirect()->back()->with('success', 'CUPOM aplicado com sucesso!');
                 }
             }
+
+            return redirect()->back()->with('error', 'Não foi possível aplicar o CUPOM!');
         }
 
-        $value      = $invoice->value * (1 - $coupon->percentage / 100);
-        $commission = $invoice->commission * (1 - ($coupon->percentage + 5) / 100);
-        $dueDate    = $invoice->due_date;
-        $wallet     = $invoice->sale->seller->wallet;
-       
-        $charge = $assas->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
-        if ($charge) {
+        $sale = Sale::find($request->sale_id);
+        if ($sale) {
 
-            $invoice->url_payment   = $charge['invoiceUrl'];
-            $invoice->token_payment = $charge['id'];
-            $invoice->value         = $value;
-            $invoice->commission    = $commission;
-            if ($invoice->save()) {
+            if ($coupon->percentage == 100) {
+                $sale->status   = 1;
+                $sale->type     = 3;
+                if($sale->save()) {
 
+                    $coupon->qtd -= 1;
+                    $coupon->save();
+                    return redirect()->back()->with('success', 'CUPOM aplicado com sucesso!');
+                }
+            }
+
+            $sale->value_total      = $sale->value_total * (1 - $coupon->percentage / 100);
+            $sale->commission       = $sale->commission * (1 - ($coupon->percentage + 5) / 100);
+            $sale->token_payment    = null;
+            if ($sale->save()) {
                 $coupon->qtd -= 1;
                 $coupon->save();
 
