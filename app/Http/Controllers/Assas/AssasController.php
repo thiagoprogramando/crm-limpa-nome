@@ -840,12 +840,12 @@ class AssasController extends Controller {
         return [];
     }    
 
-    public function receivable() {
+    public function receivable($startDate = null, $finishDate = null) {
 
         $client     = new Client();
         $user       = auth()->user();
-        $startDate  = $user->created_at->toDateString();
-        $finishDate = now()->toDateString();
+        $startDate  = $startDate ?? $user->created_at->toDateString();
+        $finishDate = $finishDate ?? now()->toDateString();
 
         $response = $client->request('GET',  env('API_URL_ASSAS') . "v3/financialTransactions?startDate={$startDate}&finishDate={$finishDate}&order=desc", [
             'headers' => [

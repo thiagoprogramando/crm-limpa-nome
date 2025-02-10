@@ -29,7 +29,6 @@
                                     <tr>
                                         <th scope="col">#</th>
                                         <th scope="col">Nome</th>
-                                        <th scope="col">Descrição</th>
                                         <th class="text-center" scope="col">Valor</th>
                                         <th class="text-center" scope="col">Status</th>
                                         <th class="text-center" scope="col">Vencimento</th>
@@ -41,21 +40,20 @@
                                         <tr>
                                             <th scope="row">{{ $payment->id }}</th>
                                             <td>{{ $payment->name }}</td>
-                                            <td>{{ $payment->description }}</td>
                                             <td class="text-center">R$ {{ $payment->value }}</td>
                                             <td class="text-center">{{ $payment->statusLabel() }}</td>
                                             <td class="text-center">{{ \Carbon\Carbon::parse($payment->due_date)->format('d/m/Y') }}</td>
                                             <td class="text-center btn-group">
-                                                @if ($payment->type == 1)
+                                                @if ($payment->type == 1 && $payment->status !== 1)
                                                     <button type="button" class="btn btn-dark text-light" data-bs-toggle="modal" data-bs-target="#couponModal{{ $payment->id }}"><i class="bi bi-percent"></i> Aplicar CUPOM</button>
                                                 @endif
-                                                @if(!empty(Auth::user()->wallet))
+                                                @if(!empty(Auth::user()->wallet) && $payment->status !== 1)
                                                     <a href="{{ route('payMonthly', ['id' => $payment->id]) }}" class="btn btn-success text-light">
-                                                        <i class="bi bi-credit-card"></i> Pagar com saldo
+                                                        <i class="bi bi-credit-card"></i> Pagar
                                                     </a>
                                                 @endif
                                                 <a href="{{ $payment->url_payment }}" target="_blank" class="btn btn-primary text-light">
-                                                    <i class="bi bi-arrow-up-right-circle"></i> Acessar Pagamento
+                                                    <i class="bi bi-arrow-up-right-circle"></i> Acessar
                                                 </a>
                                             </td>
                                         </tr>
@@ -92,7 +90,9 @@
                                 </tbody>
                             </table>
                         </div>
-
+                        <div class="text-center">
+                            {{ $payments->appends(request()->query())->links() }}
+                        </div>
                     </div>
                 </div>
             </div>

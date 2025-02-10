@@ -14,11 +14,13 @@ class Payment extends Controller {
     
     public function payments() {
 
-        $payments = Invoice::where('id_user', Auth::id())->orderBy('status', 'asc')->get();
-        return view('app.Payment.payment', ['payments' => $payments]);
+        $payments = Invoice::where('id_user', Auth::id())->orderBy('status', 'asc')->paginate(10);
+        return view('app.Payment.payment', [
+            'payments' => $payments
+        ]);
     }
 
-    public function receivable() {
+    public function receivable(Request $request) {
 
         $assas = new AssasController();
         $receivables = $assas->receivable();

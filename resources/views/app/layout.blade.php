@@ -223,7 +223,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link collapsed" data-bs-target="#forms-finan" data-bs-toggle="collapse" href="#">
-                            <i class="bi bi-bank"></i><span>Operações</span><i class="bi bi-chevron-down ms-auto"></i>
+                            <i class="bi bi-bank"></i><span>Meu Dinheiro</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
                         <ul id="forms-finan" class="nav-content collapse " data-bs-parent="#sidebar-nav">  
                             <li><a href="{{ route('receivable') }}"> <i class="bi bi-circle"></i><span>Recebíveis</span> </a></li>
