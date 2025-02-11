@@ -52,6 +52,16 @@ class AssasController extends Controller {
         return false;
     }
 
+    public function requestInvoice($sale) {
+        
+        $createSalePayment = $this->createSalePayment($sale);
+        if ($createSalePayment) {
+            return redirect()->back()->with('success', 'Fatura criada para a venda!'); 
+        }
+
+        return redirect()->back()->with('info', 'Verifique os dados e tente novamente!');
+    }
+
     private function invoiceBoleto($value, $commission, $sale, $wallet, $client, $filiate = null, $notification = null, $dueDate = null) {
 
         if (Invoice::where('id_sale', $sale->id)->count() >= 1) {

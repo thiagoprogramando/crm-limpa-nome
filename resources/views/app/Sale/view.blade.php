@@ -21,7 +21,11 @@
                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#updatedModal">Alterar dados</button>
                 @endif
                 @if ($sale->payment !== 'ENVIO MANUAL')
-                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#invoiceModal">Adicionar Fatura</button>
+                    @if ($invoices->count() >= 1)
+                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#invoiceModal">Adicionar Fatura</button>
+                    @else
+                        <a href="{{ route('request-invoices', ['id' => $sale->id]) }}" class="btn btn-outline-primary" href="">Gerar Fatura</a>
+                    @endif
                 @endif
             </div>
 
