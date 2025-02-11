@@ -34,7 +34,7 @@ class SaleController extends Controller {
 
     public function createSale(Request $request) {
 
-        $user = $this->createUser($request->name, $request->email, $request->cpfcnpj, $request->birth_date, $request->phone, $request->postal_code, $request->address, $request->complement, $request->city, $request->state, $request->num, $request->id_seller);
+        $user = $this->createUser($request->name, $request->email, $request->cpfcnpj, $request->birth_date, $request->phone, $request->id_seller);
         if ($user !== false) {
 
             $product = Product::where('id', $request->product)->first();
@@ -100,7 +100,7 @@ class SaleController extends Controller {
                 }
 
                 $sale->delete();
-                return redirect()->back()->with('info', 'Verifique os dados e tente novamente!');
+                return redirect()->back()->with('info', 'Verifique os dados (Cliente e Venda) e tente novamente!');
             }
 
             return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
@@ -462,7 +462,7 @@ class SaleController extends Controller {
         }
     }
 
-    private function createUser($name, $email, $cpfcnpj, $birth_date, $phone, $postal_code = null, $address = null, $complement = null, $city = null, $state = null, $num = null, $filiate = null) {
+    private function createUser($name, $email, $cpfcnpj, $birth_date, $phone, $filiate = null) {
         
         $cpfcnpj = preg_replace('/\D/', '', $cpfcnpj);
         $email = preg_replace('/[^\w\d\.\@\-\_]/', '', $email);

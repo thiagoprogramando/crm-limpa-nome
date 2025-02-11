@@ -14,6 +14,7 @@ use App\Models\Coupon;
 
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
@@ -50,16 +51,6 @@ class AssasController extends Controller {
         }
 
         return false;
-    }
-
-    public function requestInvoice($sale) {
-        
-        $createSalePayment = $this->createSalePayment($sale);
-        if ($createSalePayment) {
-            return redirect()->back()->with('success', 'Fatura criada para a venda!'); 
-        }
-
-        return redirect()->back()->with('info', 'Verifique os dados e tente novamente!');
     }
 
     private function invoiceBoleto($value, $commission, $sale, $wallet, $client, $filiate = null, $notification = null, $dueDate = null) {
@@ -211,6 +202,16 @@ class AssasController extends Controller {
 
         return false;
     }
+
+    public function requestInvoice($sale) {
+        
+        $createSalePayment = $this->createSalePayment($sale);
+        if ($createSalePayment) {
+            return redirect()->back()->with('success', 'Fatura criada para a venda!'); 
+        }
+
+        return redirect()->back()->with('info', 'Verifique os dados e tente novamente!');
+    }
     
     public function createMonthly($id) {
 
@@ -264,40 +265,50 @@ class AssasController extends Controller {
 
     public function createCustomer($name, $cpfcnpj, $mobilePhone, $email) {
 
-        $user = User::where('cpfcnpj', $cpfcnpj)->first();
-        if ($user && $user->customer) {
-            return $user->customer;
-        }
-        
-        $client = new Client();
-
-        $options = [
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'accept'       => 'application/json',
-                'access_token' => env('API_TOKEN_ASSAS'),
-                'User-Agent'   => env('APP_NAME')
-            ],
-            'json' => [
-                'name'          => $name,
-                'cpfCnpj'       => $cpfcnpj,
-                'mobilePhone'   => $mobilePhone,
-                'email'         => $email,
-            ],
-            'verify' => false
-        ];
-
-        $response = $client->post(env('API_URL_ASSAS') . 'v3/customers', $options);
-        $body = (string) $response->getBody();
-        
-        if ($response->getStatusCode() === 200) {
+        try {
+            $user = User::where('cpfcnpj', $cpfcnpj)->first();
+    
+            if ($user && $user->customer) {
+                return $user->customer;
+            }
+    
+            $client = new Client();
+            $options = [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'accept'       => 'application/json',
+                    'access_token' => env('API_TOKEN_ASSAS'),
+                    'User-Agent'   => env('APP_NAME')
+                ],
+                'json' => [
+                    'name'        => $name,
+                    'cpfCnpj'     => $cpfcnpj,
+                    'mobilePhone' => $mobilePhone,
+                    'email'       => $email,
+                ],
+                'verify' => false
+            ];
+    
+            $response = $client->post(env('API_URL_ASSAS') . 'v3/customers', $options);
+            $body = (string) $response->getBody();
             $data = json_decode($body, true);
-            
-            $user->customer = $data['id'];
-            $user->save();
-
-            return $data['id'];
-        } else {
+    
+            if ($response->getStatusCode() === 200 && isset($data['id'])) {
+                if ($user) {
+                    $user->customer = $data['id'];
+                    $user->save();
+                }
+                return $data['id'];
+            } else {
+                Log::error("Erro na criação do cliente: " . json_encode($data));
+                return false;
+            }
+    
+        } catch (RequestException $e) {
+            Log::error("Erro de requisição na API Assas CreateCustomer: " . $e->getMessage());
+            return false;
+        } catch (\Exception $e) {
+            Log::error("Erro geral na função createCustomer: " . $e->getMessage());
             return false;
         }
     }
