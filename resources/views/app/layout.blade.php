@@ -181,10 +181,10 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link collapsed" data-bs-target="#forms-sale" data-bs-toggle="collapse" href="#">
+                    <a class="nav-link {{ Route::currentRouteName() == 'manager-sale' || Route::currentRouteName() == 'invoice-default' || Route::currentRouteName() == 'coupons' ? '' : 'collapsed' }}" data-bs-target="#forms-sale" data-bs-toggle="collapse" href="#">
                         <i class="bi bi-bag"></i><span>Vendas</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul id="forms-sale" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    <ul id="forms-sale" class="nav-content collapse {{ Route::currentRouteName() == 'manager-sale' || Route::currentRouteName() == 'invoice-default' || Route::currentRouteName() == 'coupons' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
                         <li> <a href="{{ route('manager-sale') }}"> <i class="bi bi-circle"></i><span>Vendas</span> </a> </li>
                         <li> <a href="{{ route('invoice-default') }}"> <i class="bi bi-circle"></i><span>Inadimplência</span> </a> </li>
                         <li><a href="{{ route('coupons') }}"> <i class="bi bi-circle"></i><span>Cupons</span> </a></li>
@@ -222,10 +222,10 @@
                         <a class="nav-link collapsed" href="{{ route('wallet') }}"> <i class="bi bi-wallet2"></i> <span>Carteira</span> </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link collapsed" data-bs-target="#forms-finan" data-bs-toggle="collapse" href="#">
+                        <a class="nav-link {{ Route::currentRouteName() == 'receivable' || Route::currentRouteName() == 'payments' ? '' : 'collapsed' }}" data-bs-target="#forms-finan" data-bs-toggle="collapse" href="#">
                             <i class="bi bi-bank"></i><span>Meu Dinheiro</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
-                        <ul id="forms-finan" class="nav-content collapse " data-bs-parent="#sidebar-nav">  
+                        <ul id="forms-finan" class="nav-content collapse {{ Route::currentRouteName() == 'receivable' || Route::currentRouteName() == 'payments' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">  
                             <li><a href="{{ route('receivable') }}"> <i class="bi bi-circle"></i><span>Recebíveis</span> </a></li>
                             <li><a href="{{ route('payments') }}"> <i class="bi bi-circle"></i><span>Pagamentos</span> </a></li>
                         </ul>
@@ -234,10 +234,10 @@
 
                 <li class="nav-heading">Lixeira</li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" data-bs-target="#forms-trash" data-bs-toggle="collapse" href="#">
+                    <a class="nav-link {{ Route::currentRouteName() == 'trash-users' || Route::currentRouteName() == 'trash-sales' ? '' : 'collapsed' }}" data-bs-target="#forms-trash" data-bs-toggle="collapse" href="#">
                         <i class="bi bi-archive"></i><span>Recuperação</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul id="forms-trash" class="nav-content collapse " data-bs-parent="#sidebar-nav">  
+                    <ul id="forms-trash" class="nav-content collapse {{ Route::currentRouteName() == 'trash-users' || Route::currentRouteName() == 'trash-sales' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">  
                         <li><a href="{{ route('trash-users') }}"> <i class="bi bi-circle"></i><span>Clientes</span> </a></li>
                         <li><a href="{{ route('trash-sales') }}"> <i class="bi bi-circle"></i><span>Vendas</span> </a></li>
                     </ul>
@@ -250,10 +250,10 @@
                     </li>
                     
                     <li class="nav-item">
-                        <a class="nav-link collapsed" data-bs-target="#forms-product" data-bs-toggle="collapse" href="#">
+                        <a class="nav-link {{ Route::currentRouteName() == 'listproduct' || Route::currentRouteName() == 'createproduct' ? '' : 'collapsed' }}" data-bs-target="#forms-product" data-bs-toggle="collapse" href="#">
                             <i class="bi bi-box"></i><span>Produtos</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
-                        <ul id="forms-product" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                        <ul id="forms-product" class="nav-content collapse {{ Route::currentRouteName() == 'listproduct' || Route::currentRouteName() == 'createproduct' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
                             <li>
                                 <a href="{{ route('listproduct') }}"> <i class="bi bi-circle"></i><span>Produtos</span> </a>
                             </li>
@@ -264,10 +264,10 @@
                     </li>
                 
                     <li class="nav-item">
-                        <a class="nav-link collapsed" data-bs-target="#forms-users" data-bs-toggle="collapse" href="#">
+                        <a class="nav-link {{ Route::currentRouteName() == 'list-user' ? '' : 'collapsed' }}" data-bs-target="#forms-users" data-bs-toggle="collapse" href="#">
                             <i class="bi bi-file-earmark-person"></i><span>Pessoas</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
-                        <ul id="forms-users" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                        <ul id="forms-users" class="nav-content collapse {{ Route::currentRouteName() == 'list-user' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
                             <li> <a href="{{ route('list-user', ['type' => 1]) }}"><i class="bi bi-circle"></i><span>Administradores</span></a> </li>
                             <li> <a href="{{ route('list-user', ['type' => 3]) }}"><i class="bi bi-circle"></i><span>Clientes</span></a> </li>
                             <li> <a href="{{ route('list-user', ['type' => 2]) }}"><i class="bi bi-circle"></i><span>Consultores</span></a>
@@ -276,10 +276,10 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link collapsed" data-bs-target="#forms-actvie" data-bs-toggle="collapse" href="#">
+                        <a class="nav-link {{ Route::currentRouteName() == 'list-active' ? '' : 'collapsed' }}" data-bs-target="#forms-actvie" data-bs-toggle="collapse" href="#">
                             <i class="bi bi-person-bounding-box"></i><span>Atividade</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
-                        <ul id="forms-actvie" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                        <ul id="forms-actvie" class="nav-content collapse {{ Route::currentRouteName() == 'list-active' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
                             <li> <a href="{{ route('list-active', ['status' => 1]) }}"><i class="bi bi-circle"></i><span>Ativos</span></a> </li>
                             <li> <a href="{{ route('list-active', ['status' => 2]) }}"><i class="bi bi-circle"></i><span>Inativos</span></a> </li>
                         </ul>
