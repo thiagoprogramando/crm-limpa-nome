@@ -381,7 +381,7 @@ h6 {
   z-index: 997;
   height: 60px;
   box-shadow: 0px 2px 20px rgba(1, 41, 112, 0.1);
-  background-color: #002396;
+  background-color: #000F3E;
   color: #fff;
   padding-left: 20px;
   /* Toggle Sidebar Button */
@@ -846,7 +846,7 @@ h6 {
 
 .dashboard .clock-card .card-icon {
   color: #f6f6fe;
-  background: #002396;
+  background: #000F3E;
 }
 
 .dashboard .wallet-card .card-icon {
@@ -1261,6 +1261,6 @@ h6 {
 }
 
 table thead tr th {
-  background-color: #002396 !important;
+  background-color: #000F3E !important;
   color: #fff !important;
 }

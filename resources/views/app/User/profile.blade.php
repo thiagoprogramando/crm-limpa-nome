@@ -199,7 +199,7 @@
                                     </div>
                                 </div>
                                 <div class="col-12 d-grid gap-2 mb-1">
-                                    <button type="submit" class="btn btn-outline-success">Atualizar</button>
+                                    <button type="submit" class="btn btn-primary">Atualizar</button>
                                 </div>
                             </div>
 
