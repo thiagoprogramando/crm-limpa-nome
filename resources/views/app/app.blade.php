@@ -329,31 +329,26 @@
                         <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">T. de Consultores</h5>
-                                <div class="d-flex align-items-center">
-                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-person-lines-fill"></i>
-                                    </div>
-                                    <div class="ps-3">
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered table-sm table-striped text-center" style="font-size: 14px !important; margin: 0;">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Consultor</th>
-                                                        <th>Líder</th>
-                                                        <th>Regional</th>
-                                                        <th>Gerente</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>{{ $consultant['CONSULTOR'] }}</td>
-                                                        <td>{{ $consultant['LIDER'] }}</td>
-                                                        <td>{{ $consultant['REGIONAL'] }}</td>
-                                                        <td>{{ $consultant['GERENTE'] }}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-sm table-striped text-center" style="font-size: 14px !important; margin: 0;">
+                                            <thead>
+                                                <tr>
+                                                    <th>Consultor</th>
+                                                    <th>Líder</th>
+                                                    <th>Regional</th>
+                                                    <th>Gerente</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>{{ $consultant['CONSULTOR'] }}</td>
+                                                    <td>{{ $consultant['LIDER'] }}</td>
+                                                    <td>{{ $consultant['REGIONAL'] }}</td>
+                                                    <td>{{ $consultant['GERENTE'] }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
