@@ -82,12 +82,22 @@ class AppController extends Controller {
             'GERENTE'   => User::where('type', 2)->where('level', 5)->where('filiate', Auth::user()->id)->count(),
         ];
 
-        $actives = User::where('type', 2)->where('filiate', Auth::user()->id)->whereDoesntHave('invoices', function ($query) {
-            $query->where('type', 1)->where('status', 0);
+        $dateLimit = Carbon::now()->subDays(30);
+        $actives = User::where('type', 2)->where('filiate', Auth::user()->id)->whereHas('invoices', function ($query) use ($dateLimit) {
+            $query->where('type', 1)
+                  ->where('status', 1)
+                  ->whereDate('due_date', '>=', $dateLimit);
         })->count();
 
-        $inactives = User::where('type', 2)->where('filiate', Auth::user()->id)->whereHas('invoices', function ($query) {
-            $query->where('type', 1)->where('status', 0);
+        $inactives = User::where('type', 2)->where('filiate', Auth::user()->id)->where(function ($query) use ($dateLimit) {
+            $query->whereDoesntHave('invoices', function ($subQuery) {
+                $subQuery->where('type', 1);
+            })
+            ->orWhereHas('invoices', function ($subQuery) use ($dateLimit) {
+                $subQuery->where('type', 1)
+                         ->where('status', '!=', 1)
+                         ->whereDate('due_date', '>=', $dateLimit);
+            });
         })->count();
 
         $networks = User::where('created_at', now())->where('filiate', Auth::user()->id)->orderBy('created_at', 'desc')->paginate(10);
@@ -150,13 +160,23 @@ class AppController extends Controller {
             'REGIONAL'  => User::where('type', 2)->where('level', 4)->count(),
             'GERENTE'   => User::where('type', 2)->where('level', 5)->count(),
         ];
-
-        $actives = User::where('type', 2)->whereDoesntHave('invoices', function ($query) {
-            $query->where('type', 1)->where('status', 0);
+        
+        $dateLimit = Carbon::now()->subDays(30);
+        $actives = User::where('type', 2)->whereHas('invoices', function ($query) use ($dateLimit) {
+            $query->where('type', 1)
+                  ->where('status', 1)
+                  ->whereDate('due_date', '>=', $dateLimit);
         })->count();
 
-        $inactives = User::where('type', 2)->whereHas('invoices', function ($query) {
-            $query->where('type', 1)->where('status', 0);
+        $inactives = User::where('type', 2)->where(function ($query) use ($dateLimit) {
+            $query->whereDoesntHave('invoices', function ($subQuery) {
+                $subQuery->where('type', 1);
+            })
+            ->orWhereHas('invoices', function ($subQuery) use ($dateLimit) {
+                $subQuery->where('type', 1)
+                         ->where('status', '!=', 1)
+                         ->whereDate('due_date', '>=', $dateLimit);
+            });
         })->count();
 
         $networks = User::where('created_at', now())->orderBy('created_at', 'desc')->paginate(8);

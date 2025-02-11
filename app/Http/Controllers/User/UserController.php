@@ -335,32 +335,34 @@ class UserController extends Controller {
 
     public function listActive($status = null) {
 
-        $dateLimit = Carbon::now()->subDays(90);
-
-        if ($status == 1) {
-            $users = User::whereNotIn('type', [1, 3, 4])
-            ->whereHas('invoices', function($query) use ($dateLimit) {
-                $query->where('status', 1)
-                      ->where('due_date', '>=', $dateLimit);
-            })->orderBy('name', 'asc')->paginate(30);
-        } elseif ($status == 2) {
-            $users = User::whereNotIn('type', [1, 3, 4])
-                ->where(function($query) use ($dateLimit) {
-                    $query->whereDoesntHave('invoices', function($subQuery) use ($dateLimit) {
-                        $subQuery->where('status', 1)
-                                 ->where('due_date', '>=', $dateLimit);
-                    })
-                    ->orWhereHas('invoices', function($subQuery) use ($dateLimit) {
-                        $subQuery->where('status', 0)
-                                 ->where('due_date', '>=', $dateLimit);
-                    });
-                })
-                ->orderBy('name', 'asc')->paginate(30);
-        } else {
+        if (!in_array($status, [1, 2])) {
             return redirect()->back()->with('error', 'Dados não encontrados para a pesquisa!');
         }
 
-        return view('app.User.active', ['users' => $users]);
+        $dateLimit = Carbon::now()->subDays(30);
+        if ($status == 1) {
+            $query = User::where('type', 2)->whereHas('invoices', function ($query) use ($dateLimit) {
+                $query->where('type', 1)
+                      ->where('status', 1)
+                      ->whereDate('due_date', '>=', $dateLimit);
+            });
+        } elseif ($status == 2) {
+            $query = User::where('type', 2)->where(function ($query) use ($dateLimit) {
+                $query->whereDoesntHave('invoices', function ($subQuery) {
+                    $subQuery->where('type', 1);
+                })
+                ->orWhereHas('invoices', function ($subQuery) use ($dateLimit) {
+                    $subQuery->where('type', 1)
+                             ->where('status', '!=', 1)
+                             ->whereDate('due_date', '>=', $dateLimit);
+                });
+            });
+        }
+
+        $users = $query->orderBy('name', 'asc')->paginate(30);
+        return view('app.User.active', [
+            'users' => $users
+        ]);
     }
 
     public function sendActive($id) {
