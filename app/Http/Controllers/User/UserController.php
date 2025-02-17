@@ -245,9 +245,23 @@ class UserController extends Controller {
         $sortedUsers = $users->sortByDesc('commission_total');
         $users->setCollection($sortedUsers);
 
+        $currentYear = Carbon::now()->year;
+        $usersByMonth = User::where('type', $type)
+            ->whereYear('created_at', $currentYear)
+            ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('total', 'month');
+
+        $months = array_fill(1, 12, 0);
+        foreach ($usersByMonth as $month => $total) {
+            $months[$month] = $total;
+        }
+
         return view('app.User.list', [
-            'users' => $users, 
-            'type'  => $type
+            'users'     => $users, 
+            'type'      => $type,
+            'usersData' => array_values($months)
         ]);
     }
 
@@ -359,9 +373,22 @@ class UserController extends Controller {
             });
         }
 
-        $users = $query->orderBy('name', 'asc')->paginate(30);
+        $currentYear = Carbon::now()->year;
+
+        $invoices = Invoice::where('type', 1)->where('status', $status)
+            ->whereYear('created_at', $currentYear)
+            ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('total', 'month');
+
+        $months = array_fill(1, 12, 0);
+        foreach ($invoices as $month => $total) {
+            $months[$month] = $total;
+        }
         return view('app.User.active', [
-            'users' => $users
+            'users'         => $query->orderBy('name', 'asc')->paginate(30),
+            'invoicesData'  => array_values($months)
         ]);
     }
 

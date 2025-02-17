@@ -16,7 +16,7 @@
         <div id="carouselExampleControls" class="carousel slide mb-3" data-bs-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item carousel-item-next carousel-item-start">
-                    <img src="{{ asset('assets/dashboard/img/marketing/nome_10_um_cupom.png') }}" class="d-block w-100" alt="Envie dez nomes e ganhe um!">
+                    <img style="max-height: 300px !important;" src="{{ asset('assets/dashboard/img/marketing/nome_10_um_cupom.png') }}" class="d-block w-100" alt="Envie dez nomes e ganhe um!">
                 </div>
             </div>
 

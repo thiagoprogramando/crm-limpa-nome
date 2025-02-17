@@ -23,7 +23,6 @@
                                     <tr>
                                         <th scope="col">#</th>
                                         <th scope="col">Fatura</th>
-                                        <th class="text-center" scope="col">Valor</th>
                                         <th class="text-center" scope="col">Status</th>
                                         <th class="text-center" scope="col">Vencimento</th>
                                         <th class="text-center" scope="col">Opções</th>
@@ -37,7 +36,6 @@
                                                 {{ $invoice->name }} <br>
                                                 <span class="badge bg-dark">{{ $invoice->description }}</span>
                                             </td>
-                                            <td class="text-center">R$ {{ $invoice->value }}</td>
                                             <td class="text-center">{{ $invoice->statusLabel() }}</td>
                                             <td class="text-center">{{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y') }}</td>
                                             <td class="text-center">

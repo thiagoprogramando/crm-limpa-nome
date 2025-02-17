@@ -14,7 +14,16 @@
 
 <section class="section dashboard">
     <div class="row">
-        <div class="col-12">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Assinaturas {{ date('Y') }}</h5>
+                    <div id="lineChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card p-2">
                 <div class="card-body">
                     <h5 class="card-title">Ativos/Inativos</h5>
@@ -25,10 +34,7 @@
                                 <tr>
                                     <th scope="col">N°</th>
                                     <th scope="col">Nome</th>
-                                    <th scope="col">Saldo</th>
                                     <th scope="col">Situação</th>
-                                    <th class="text-center" scope="col">T. Vendas (Geral)</th>
-                                    <th class="text-center" scope="col">T. Comissão (Vendedor)</th>
                                     <th class="text-center" scope="col">Última Mens</th>
                                     <th class="text-center" scope="col">Opções</th>
                                 </tr>
@@ -37,11 +43,10 @@
                                 @foreach ($users as $user)
                                     <tr>
                                         <th scope="row">{{ $user->id }}</th>
-                                        <td>{{ $user->name }}</td>
-                                        <td>R$ {{ number_format($user->balance(), 2, ',', '.') }}</td>
+                                        <td>
+                                            {{ implode(' ', array_slice(explode(' ', $user->name), 0, 2)) }}
+                                        </td>
                                         <td>{{ $user->statusLabel() }}</td>
-                                        <td class="text-center">R$ {{ number_format($user->saleTotal(), 2, ',', '.') }}</td>
-                                        <td class="text-center">R$ {{ number_format($user->commissionTotal(), 2, ',', '.') }}</td>
                                         <td class="text-center">
                                             <a href="{{ $user->lastPendingInvoiceTypeOneUrl() }}" target="_blank">
                                                 {{ $user->lastPendingInvoiceTypeOne() }}
@@ -68,5 +73,42 @@
         </div>
     </div>
 </section>
+
+<script src="{{ asset('assets/dashboard/vendor/apexcharts/apexcharts.min.js') }}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const invoicesData = @json($invoicesData);
+
+        new ApexCharts(document.querySelector("#lineChart"), {
+            series: [{
+                name: "Assinaturas",
+                data: invoicesData
+            }],
+            chart: {
+                height: 350,
+                type: 'line',
+                zoom: {
+                    enabled: false
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'straight'
+            },
+            grid: {
+                row: {
+                    colors: ['#f3f3f3', 'transparent'],
+                    opacity: 0.5
+                },
+            },
+            xaxis: {
+                categories: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+            }
+        }).render();
+    });
+</script>
 
 @endsection

@@ -13,7 +13,7 @@ class WalletController extends Controller {
     public function wallet() {
 
         $assas = new AssasController();
-        $balance = $assas->balance();
+        $balance = $assas->balance() ?? 0;
         if($balance == 0 || $balance > 0) {
             $statistics = $assas->statistics();
             $extracts    = $assas->receivable();
