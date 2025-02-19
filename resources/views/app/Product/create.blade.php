@@ -29,14 +29,14 @@
                             <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                                 <div class="row g-3">
                                     @csrf
-                                    <div class="col-12 col-md-8 col-lg-8 mb-1">
+                                    <div class="col-12 col-md-7 col-lg-7">
                                         <div class="form-floating">
                                             <input type="text" name="name" class="form-control" id="floatingName" placeholder="Indique um nome para o Produto:" required>
                                             <label for="floatingName">Indique um nome para o Produto:</label>
                                         </div>
                                     </div>
                                     
-                                    <div class="col-12 col-md-4 col-lg-4 mb-1">
+                                    <div class="col-12 col-md-5 col-lg-5">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" name="address" id="address">
                                             <label class="form-check-label" for="address">Solicitar Endereço ao Cliente</label>
@@ -45,53 +45,45 @@
                                             <input class="form-check-input" type="checkbox" name="terms" id="terms">
                                             <label class="form-check-label" for="terms">Solicitar aceite de termos</label>
                                         </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="createuser" id="link">
-                                            <label class="form-check-label" for="link">Venda por Link</label>
+                                    </div>
+        
+                                    <div class="col-12 col-md-7 col-lg-7">
+                                        <div class="form-floating mb-2">
+                                            <textarea name="description" class="form-control" placeholder="Descrição" id="floatingTextarea" style="height: 100px;"></textarea>
+                                            <label for="floatingTextarea">Indique uma descrição para o Produto:</label>
+                                        </div>
+                                        <div class="form-floating mb-2">
+                                            <textarea name="terms_text" class="form-control" placeholder="Indique uma descrição para os Termos" id="floatingTextarea" style="height: 100px;"></textarea>
+                                            <label for="floatingTextarea">Indique uma descrição para os Termos:</label>
                                         </div>
                                     </div>
         
-                                    <div class="col-12 col-md-8 col-lg-8 row">
-                                        <div class="col-12 col-md-12 col-lg-12 mb-2">
-                                            <div class="form-floating">
-                                                <textarea name="description" class="form-control" placeholder="Descrição" id="floatingTextarea" style="height: 100px;"></textarea>
-                                                <label for="floatingTextarea">Indique uma descrição para o Produto:</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-md-12 col-lg-12 mb-2">
-                                            <div class="form-floating">
-                                                <textarea name="terms_text" class="form-control" placeholder="Indique uma descrição para os Termos" id="floatingTextarea" style="height: 100px;"></textarea>
-                                                <label for="floatingTextarea">Indique uma descrição para os Termos:</label>
-                                            </div>
-                                        </div>
-                                    </div>
-        
-                                    <div class="col-12 col-md-4 col-lg-4 row">
-                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                    <div class="col-12 col-md-5 col-lg-5 row">
+                                        <div class="col-12 col-md-6 col-lg-6">
                                             <div class="form-floating">
                                                 <input type="text" name="value_cost" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
                                                 <label for="floatingContract">Custo:</label>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                        <div class="col-12 col-md-6 col-lg-6">
                                             <div class="form-floating">
                                                 <input type="text" name="value_rate" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
                                                 <label for="floatingContract">Taxas:</label>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                        <div class="col-12 col-md-6 col-lg-6">
                                             <div class="form-floating">
                                                 <input type="text" name="value_min" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
                                                 <label for="floatingContract">Mín de venda :</label>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                        <div class="col-12 col-md-6 col-lg-6">
                                             <div class="form-floating">
                                                 <input type="text" name="value_max" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
                                                 <label for="floatingContract">Máx de venda:</label>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                        <div class="col-12 col-md-6 col-lg-6">
                                             <div class="form-floating">
                                                 <select name="level" class="form-select" id="floatingLevel">
                                                     <option selected value="}">Nível com acesso:</option>
@@ -109,7 +101,7 @@
                                                 <label for="floatingLevel">Opções</label>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                        <div class="col-12 col-md-6 col-lg-6">
                                             <div class="form-floating">
                                                 <select name="active" class="form-select" id="floatingActive">
                                                     <option value="">Situação:</option>

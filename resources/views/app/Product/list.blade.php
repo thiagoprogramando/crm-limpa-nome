@@ -23,7 +23,6 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th scope="col">#</th>
                                     <th scope="col">Nome</th>
                                     <th class="text-center" scope="col">Valor Mín</th>
                                     <th class="text-center" scope="col">Valor Máx</th>
@@ -34,7 +33,6 @@
                             <tbody>
                                 @foreach ($products as $product)
                                     <tr>
-                                        <th scope="row">{{ $product->id }}</th>
                                         <td>{{ $product->name }}</td>
                                         <td class="text-center">R$ {{ number_format($product->value_min, 2, ',', '.') }}</td>
                                         <td class="text-center">R$ {{ number_format($product->value_max, 2, ',', '.') }}</td>

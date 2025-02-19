@@ -31,68 +31,61 @@
                                 <div class="row g-3">
                                     @csrf
                                     <input type="hidden" name="id" value="{{ $product->id }}">
-                                    
-                                    <div class="col-12 col-md-12 col-lg-12 row mt-3">
-                                        <div class="col-12 col-md-8 col-lg-8 mb-2">
-                                            <div class="form-floating">
-                                                <input type="text" name="name" value="{{ $product->name }}" class="form-control" id="floatingName" placeholder="Indique um nome para o Produto:" required>
-                                                <label for="floatingName">Nome do Produto:</label>
-                                            </div>
+                                    <div class="col-12 col-md-7 col-lg-7">
+                                        <div class="form-floating mb-2">
+                                            <input type="text" name="name" value="{{ $product->name }}" class="form-control" id="floatingName" placeholder="Indique um nome para o Produto:" required>
+                                            <label for="floatingName">Nome do Produto:</label>
                                         </div>
-                                        <div class="col-12 col-md-4 col-lg-4 mb-2">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="terms" id="terms" @if($product->terms) checked @endif>
-                                                <label class="form-check-label" for="terms">Aceite de termos</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="createuser" id="user" @if($product->createuser) checked @endif>
-                                                <label class="form-check-label" for="user">Venda por Link</label>
-                                            </div>
+                                    </div>
+                                    <div class="col-12 col-md-5 col-lg-5">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="address" id="address">
+                                            <label class="form-check-label" for="address">Solicitar Endereço ao Cliente</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="terms" id="terms" @if($product->terms) checked @endif>
+                                            <label class="form-check-label" for="terms">Aceite de termos</label>
                                         </div>
                                     </div>
                         
-                                    <div class="col-12 col-md-8 col-lg-8 row">
-                                        <div class="col-12 col-md-12 col-lg-12 mb-2">
-                                            <div class="form-floating">
-                                                <textarea name="description" class="form-control" placeholder="Descrição" id="floatingTextarea" style="height: 100px;">{{ $product->description }}</textarea>
-                                                <label for="floatingTextarea">Indique uma descrição para o Produto:</label>
-                                            </div>
+                                    <div class="col-12 col-md-7 col-lg-7">
+                                        <div class="form-floating mb-2">
+                                            <textarea name="description" class="form-control" placeholder="Descrição" id="floatingTextarea" style="height: 100px;">{{ $product->description }}</textarea>
+                                            <label for="floatingTextarea">Indique uma descrição para o Produto:</label>
                                         </div>
-                                        <div class="col-12 col-md-12 col-lg-12 mb-2">
-                                            <div class="form-floating">
-                                                <textarea name="terms_text" class="form-control" placeholder="Indique uma descrição para os Termos" id="floatingTextarea" style="height: 100px;">{{ $product->terms_text }}</textarea>
-                                                <label for="floatingTextarea">Indique uma descrição para os Termos:</label>
-                                            </div>
+                                        <div class="form-floating mb-2">
+                                            <textarea name="terms_text" class="form-control" placeholder="Indique uma descrição para os Termos" id="floatingTextarea" style="height: 100px;">{{ $product->terms_text }}</textarea>
+                                            <label for="floatingTextarea">Indique uma descrição para os Termos:</label>
                                         </div>
                                     </div>
                         
-                                    <div class="col-12 col-md-4 col-lg-4 row">
-                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
-                                            <div class="form-floating">
+                                    <div class="col-12 col-md-5 col-lg-5 row">
+                                        <div class="col-12 col-md-6 col-lg-6">
+                                            <div class="form-floating mb-2">
                                                 <input type="text" name="value_cost" value="{{ $product->value_cost }}" class="form-control" id="floatingCost" placeholder="Custo:" oninput="mascaraReal(this)">
                                                 <label for="floatingCost">Custo:</label>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
-                                            <div class="form-floating">
+                                        <div class="col-12 col-md-6 col-lg-6">
+                                            <div class="form-floating mb-2">
                                                 <input type="text" name="value_rate" value="{{ $product->value_rate }}" class="form-control" id="floatingRate" placeholder="Taxas:" oninput="mascaraReal(this)">
                                                 <label for="floatingRate">Taxas:</label>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
-                                            <div class="form-floating">
+                                        <div class="col-12 col-md-6 col-lg-6">
+                                            <div class="form-floating mb-2">
                                                 <input type="text" name="value_min" value="{{ $product->value_min }}" class="form-control" id="floatingMin" placeholder="Mín de venda:" oninput="mascaraReal(this)">
                                                 <label for="floatingMin">Mín de venda:</label>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
-                                            <div class="form-floating">
+                                        <div class="col-12 col-md-6 col-lg-6">
+                                            <div class="form-floating mb-2">
                                                 <input type="text" name="value_max" value="{{ $product->value_max }}" class="form-control" id="floatingMax" placeholder="Máx de venda:" oninput="mascaraReal(this)">
                                                 <label for="floatingMax">Máx de venda:</label>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
-                                            <div class="form-floating">
+                                        <div class="col-12 col-md-6 col-lg-6">
+                                            <div class="form-floating mb-2">
                                                 <select name="level" class="form-select" id="floatingLevel">
                                                     <option selected value="{{ $product->level }}">Nível com acesso:</option>
                                                     <option value="1" @selected($product->level == 1)>INICIANTE</option>
@@ -109,8 +102,8 @@
                                                 <label for="floatingLevel">Opções</label>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
-                                            <div class="form-floating">
+                                        <div class="col-12 col-md-6 col-lg-6">
+                                            <div class="form-floating mb-2">
                                                 <select name="active" class="form-select" id="floatingActive">
                                                     <option value="{{ $product->active }}">Situação:</option>
                                                     <option value="1" @selected($product->active == 1)>Ativo</option>
@@ -129,7 +122,7 @@
                                 
                             <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                                 <div class="col-12 col-sm-12 col-md-12 col-lg-12 mb-2">
-                                    <div class="form-floating">
+                                    <div class="form-floating mb-2">
                                         <input type="text" name="contract" class="form-control" id="floatingContract" placeholder="Token ZapSing:" value="{{ $product->contract }}">
                                         <label for="floatingContract">Token ZapSing:</label>
                                     </div>

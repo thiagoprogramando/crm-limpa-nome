@@ -13,10 +13,20 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller {
     
-    public function list(Request $request) {
-
-        $products = Product::orderBy('created_at', 'desc')->get();
-        return view('app.Product.list', ['products' => $products]);
+    public function list() {
+        
+        $products = Product::withCount([
+            'sales' => function ($query) {
+                $query->whereIn('status', [1, 2]);
+            }
+        ])
+        ->orderByDesc('sales_count')
+        ->orderBy('created_at', 'desc')
+        ->get();
+    
+        return view('app.Product.list', [
+            'products' => $products
+        ]);
     }
 
     public function create() {
@@ -54,14 +64,9 @@ class ProductController extends Controller {
     public function update($id) {
 
         $product = Product::find($id);
-        $payments = Payment::where('id_product', $product->id)->get();
-        $itens = Item::where('id_product', $product->id)->get();
-        
         if($product) {
             return view('app.Product.update', [
-                'product'   => $product, 
-                'payments'  => $payments,
-                'itens'     => $itens
+                'product'   => $product,
             ]);
         }
         
@@ -116,99 +121,11 @@ class ProductController extends Controller {
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, dados do Produto não encontrados!');
     }
 
-    public function payment(Request $request) {
-
-        $product = Product::find($request->id);
-        if($product) {
-
-            $payment                = new Payment();
-            $payment->method        = $request->method;
-            $payment->installments  = $request->installments;
-            $payment->value_rate    = $this->formatarValor($request->value_rate);
-            $payment->id_product    = $request->id;
-
-            if($payment->save()) {
-                return redirect()->back()->with('success', 'Forma de pagamento incluído com sucesso!');
-            }
-        }
-
-        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, dados do Produto não encontrados!');
-    }
-
-    public function updatePayment(Request $request) {
-
-        $payment = Payment::find($request->id);
-        if($payment) {
-
-            $payment->installments  = $request->installments;
-            $payment->value_rate    = $this->formatarValor($request->value_rate);
-            if($payment->save()) {
-                return redirect()->back()->with('success', 'Dados atualizados com sucesso!');
-            }
-
-            return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
-        }
-        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, dados do Método não encontrados!');
-    }
-
-    public function deletePayment(Request $request) {
-
-        $payment = Payment::find($request->id);
-        if($payment) {
-
-            $payment->delete();
-            return redirect()->back()->with('success', 'Registro excluído com sucesso!');
-        }
-
-        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
-    }
-
     private function formatarValor($valor) {
         
         $valor = preg_replace('/[^0-9,.]/', '', $valor);
         $valor = str_replace(['.', ','], '', $valor);
 
         return number_format(floatval($valor) / 100, 2, '.', '');
-    }
-
-    public function createItem(Request $request) {
-
-        $product = Product::find($request->id);
-        if($product) {
-
-            $item               = new Item();
-            $item->id_product   = $product->id;
-            $item->name         = $request->name;
-            $item->description  = $request->description;
-            $item->type         = $request->type;
-
-            if ($request->hasFile('file') && $request->file('file')->isValid()) {
-                $item->item = $request->file->store('public/item');
-            } else {
-                $item->item = $request->file;
-            }
-
-            if($item->save()) {
-                return redirect()->back()->with('success', 'Item incluído com sucesso!');
-            }
-        }
-
-        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, dados do Produto não encontrados!');
-    }
-
-    public function deleteItem(Request $request) {
-
-        $item = Item::find($request->id);
-        if($item) {
-
-            if(!empty($item->item) && Storage::exists($item->item)) {
-                Storage::delete($item->item);
-            }
-
-            $item->delete();
-            return redirect()->back()->with('success', 'Registro excluído com sucesso!');
-        }
-
-        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
     }
 }

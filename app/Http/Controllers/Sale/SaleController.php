@@ -156,7 +156,7 @@ class SaleController extends Controller {
         }
     
         if (!empty($request->label)) {
-            $query->where('label', $request->label);
+            $query->where('label', 'LIKE', '%'.$request->label.'%');
         }
 
         if (!empty($request->type) && $request->type == 'excel') {
@@ -308,16 +308,17 @@ class SaleController extends Controller {
             }
         }
         
-        $sale->id_list = $sale->label === 'REPROTOCOLADO' 
-            ? $sale->id_list 
-            : $list->id;
-        $sale->label   = $sale->label === 'REPROTOCOLADO - ' . now()->format('d/m/Y') 
-            ? null 
-            : 'REPROTOCOLADO - ' . now()->format('d/m/Y');
+        $sale->id_list = $sale->label !== null 
+                        ? $sale->id_list 
+                        : $list->id;
+
+        $sale->label = str_contains($sale->label, 'REPROTOCOLADO -') 
+                    ? null 
+                    : 'REPROTOCOLADO - ' . now()->format('d/m/Y');
 
         if ($sale->save()) {
 
-            if ($sale->label === 'REPROTOCOLADO') {
+            if ($sale->label !== null) {
                 $clientName     = $sale->user->name;
                 $phone          = $sale->user->phone;
                 $sellerApiToken = $sale->seller->api_token_zapapi;
@@ -331,6 +332,7 @@ class SaleController extends Controller {
                            "Agradecemos sua paciência e estamos à disposição para esclarecer qualquer dúvida.";
             
                 $this->sendWhatsapp(env('APP_URL') . 'login-cliente', $message, $phone, $sellerApiToken);
+                return redirect()->back()->with('success', 'Processo reprotocolado!');
             } else {
                 $clientName     = $sale->user->name;
                 $phone          = $sale->user->phone;
@@ -342,6 +344,7 @@ class SaleController extends Controller {
                            "Agradecemos pela confiança em nosso trabalho.";
             
                 $this->sendWhatsapp(env('APP_URL') . 'login-cliente', $message, $phone, $sellerApiToken);
+                return redirect()->back()->with('success', 'Processo concluído!');
             }            
 
             return redirect()->back()->with('success', 'Venda alterada com sucesso!');

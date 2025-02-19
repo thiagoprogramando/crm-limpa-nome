@@ -103,11 +103,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/updateproduct/{id}', [ProductController::class, 'update'])->name('updateproduct');
     Route::post('update-product', [ProductController::class, 'updateProduct'])->name('update-product');
     Route::post('delete-product', [ProductController::class, 'delete'])->name('delete-product');
-    Route::post('create-payment', [ProductController::class, 'payment'])->name('create-payment');
-    Route::post('delete-payment', [ProductController::class, 'deletePayment'])->name('delete-payment');
-    Route::post('update-payment', [ProductController::class, 'updatePayment'])->name('update-payment');
-    Route::post('create-item', [ProductController::class, 'createItem'])->name('create-item');
-    Route::post('delete-item', [ProductController::class, 'deleteItem'])->name('delete-item');
 
     Route::get('/lists', [ListController::class, 'list'])->name('lists');
     Route::get('/createlist', [ListController::class, 'create'])->name('createlist');
