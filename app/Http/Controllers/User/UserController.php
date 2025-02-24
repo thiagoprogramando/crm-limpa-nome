@@ -91,7 +91,7 @@ class UserController extends Controller {
 
         if (!empty($request->fixed_cost)) {
 
-            if ($this->formatarValor($request->fixed_cost) < Auth::user()->fixed_cost) {
+            if (($this->formatarValor($request->fixed_cost) < Auth::user()->fixed_cost) && Auth::user()->type !== 1) {
                 return redirect()->back()->with('info', 'O valor mín para custo é R$ '.Auth::user()->fixed_cost);
             }
 
