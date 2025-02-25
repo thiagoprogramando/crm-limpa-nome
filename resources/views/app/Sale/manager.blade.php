@@ -85,7 +85,7 @@
                                         <div class="form-floating">
                                             <select name="label" class="form-select" id="floatingLabel">
                                                 <option selected value="">Opções:</option>
-                                                <option value="true">Reprotocolado</option>
+                                                <option value="REPROTOCOLADO">Reprotocolado</option>
                                             </select>
                                             <label for="floatingLabel">Label</label>
                                         </div>
@@ -120,6 +120,7 @@
                             <button id="aproved-all" class="btn btn-primary">Aprovar Todos</button>
                         @endif
                         <button id="create-payment" class="btn btn-outline-primary">Gerar Pagamento</button>
+                        <button id="quanty-name" class="btn btn-outline-primary">Nomes: </button>
                     </div>
 
                     <h5 class="card-title">Vendas</h5>
@@ -146,13 +147,9 @@
                                         </th>
                                         <th>
                                             {{ $sale->list->name }} <br>
-                                            @if($sale->status == 1)
-                                                @if(($sale->list->serasa_status != 'Em Andamento') && ($sale->list->status_spc != 'Em Andamento') && ($sale->list->status_boa_vista != 'Em Andamento') && ($sale->list->status_quod != 'Em Andamento') && ($sale->list->status_cenprot != 'Em Andamento'))
-                                                    <span class="badge bg-success">Baixada</span>
-                                                @else
-                                                    <span class="badge bg-warning">Em Andamento</span>
-                                                @endif
-                                            @endif
+                                            <span class="badge bg-{{ $sale->protocolLabel()['color'] }}" title=" {{ $sale->protocolLabel()['title'] }}">
+                                                {{ $sale->protocolLabel()['label'] }}
+                                            </span>                                            
                                         </th>
                                         <td title="{{ $sale->product->name }}">
                                             {{ implode(' ', array_slice(explode(' ', $sale->product->name), 0, 2)) }} <br>
@@ -239,6 +236,7 @@
         const actionButtons     = document.getElementById('action-buttons');
         const aprovedAll        = document.getElementById('aproved-all');
         const btnCreatePayment  = document.getElementById('create-payment');
+        const btnQuantyNames    = document.getElementById('quanty-name');
 
         let isSelecting = false;
 
@@ -256,6 +254,7 @@
 
         function updateActionButtons() {
             const selectedIds = getSelectedIds();
+            btnQuantyNames.textContent = 'Nomes: ' + selectedIds.length;
             if (selectedIds.length > 0) {
                 actionButtons.classList.remove('d-none');
             } else {

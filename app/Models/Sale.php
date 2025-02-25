@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -98,5 +99,69 @@ class Sale extends Model {
                 return 'Contrato não gerado';
                 break;
         }
+    }
+
+    public function protocolLabel() {
+        
+        //Venda Aprovada
+        if ($this->status == 1) {
+            $data = [
+                'label' => 'Protocolado',
+                'color' => 'warning',
+                'title' => 'O pedido foi oficialmente registrado e está aguardando processamento.'
+            ];
+        }
+
+        //Venda Aprovada | Lista Existe | Lista Encerrada
+        if ($this->status == 1 && $this->list()->exists() && $this->list->status == 2) {
+            $data = [
+                'label' => 'Em Processamento',
+                'color' => 'info',
+                'title' => 'A remoção está sendo tratada pelos órgãos responsáveis.'
+            ];
+        }
+
+        //Venda Aprovada | Todos os orgãos baixados | Lista Encerrada
+        if ($this->status == 1 && $this->allStatus() && $this->list->status == 2) {
+            $data = [
+                'label' => 'Em Fase de Finalização',
+                'color' => 'info',
+                'title' => 'Últimos ajustes antes da remoção ser concluída.'
+            ];
+        }
+
+        //Venda Aprovada | Lista Encerrada | Lista encerrada há +7 dias | Todos os orgãos baixados
+        if ($this->status == 1 && $this->list->status == 2 && $this->listEnd() && $this->allStatus()) {
+            $data = [
+                'label' => 'Regularizado',
+                'color' => 'success',
+                'title' => 'O cliente está oficialmente com o nome limpo e pode consultar nos órgãos de proteção ao crédito.'
+            ];
+        }
+
+        return $data ?? [
+            'label' => '',
+            'color' => '',
+            'title' => ''
+        ];
+    }
+
+    public function allStatus() {
+        return $this->list()->exists() &&
+            $this->list->serasa_status      === 'Baixado' &&
+            $this->list->status_spc         === 'Baixado' &&
+            $this->list->status_boa_vista   === 'Baixado' &&
+            $this->list->status_quod        === 'Baixado' &&
+            $this->list->status_cenprot     === 'Baixado';
+    }
+
+    public function listEnd() {
+        
+        if (!$this->list()->exists() || !$this->list->end) {
+            return false;
+        }
+
+        $date_due = Carbon::parse($this->list->end);
+        return $date_due->diffInWeekdays(now()) >= 7;
     }
 }
