@@ -76,14 +76,6 @@
                 <div class="col-12 col-sm-12 col-md-12 col-lg-12">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Crescimento {{ date('Y') }}</h5>
-                            <div id="lineChart"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-                    <div class="card">
-                        <div class="card-body">
                             <h5 class="card-title">Pessoas</h5>
                             
                             <div class="accordion" id="accordionExample">
@@ -293,6 +285,15 @@
                             <div class="text-center">
                                 {{ $users->appends(request()->query())->links() }}
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Crescimento {{ date('Y') }}</h5>
+                            <div id="lineChart"></div>
                         </div>
                     </div>
                 </div>
