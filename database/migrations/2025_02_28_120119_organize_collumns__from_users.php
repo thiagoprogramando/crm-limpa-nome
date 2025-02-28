@@ -8,15 +8,13 @@ return new class extends Migration {
 
     public function up(): void {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('email')->nullable()->change();
-            $table->dropUnique('users_email_unique');
+            $table->dropColumn('token_acess');
         });
     }
 
     public function down(): void {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('email')->nullable(false)->change();
-            $table->unique('email');
+            
         });
     }
 };

@@ -16,7 +16,6 @@ class Sale extends Model {
     protected $fillable = [
 
         'id_product',
-        'id_payment',
         'id_list',
         'id_client',
         'id_seller',
@@ -103,7 +102,6 @@ class Sale extends Model {
 
     public function protocolLabel() {
         
-        //Venda Aprovada
         if ($this->status == 1) {
             $data = [
                 'label' => 'Protocolado',
@@ -112,7 +110,6 @@ class Sale extends Model {
             ];
         }
 
-        //Venda Aprovada | Lista Existe | Lista Encerrada
         if ($this->status == 1 && $this->list()->exists() && $this->list->status == 2) {
             $data = [
                 'label' => 'Em Processamento',
@@ -121,7 +118,6 @@ class Sale extends Model {
             ];
         }
 
-        //Venda Aprovada | Todos os orgãos baixados | Lista Encerrada
         if ($this->status == 1 && $this->allStatus() && $this->list->status == 2) {
             $data = [
                 'label' => 'Em Fase de Finalização',
@@ -130,7 +126,6 @@ class Sale extends Model {
             ];
         }
 
-        //Venda Aprovada | Lista Encerrada | Lista encerrada há +7 dias | Todos os orgãos baixados
         if ($this->status == 1 && $this->list->status == 2 && $this->listEnd() && $this->allStatus()) {
             $data = [
                 'label' => 'Regularizado',

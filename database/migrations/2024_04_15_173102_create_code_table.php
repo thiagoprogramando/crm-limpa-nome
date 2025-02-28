@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('id_user');
             $table->string('code');
-            $table->integer('status')->nullable(); // null = Livre 1 = usado
+            $table->integer('status')->nullable();
             $table->date('data_generate');
             $table->date('data_used')->nullable();
             $table->timestamps();

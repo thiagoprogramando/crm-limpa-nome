@@ -8,13 +8,14 @@ return new class extends Migration {
 
     public function up(): void {
         Schema::table('sale', function (Blueprint $table) {
-            $table->softDeletes();
+            $table->dropForeign('sale_id_payment_foreign');
+            $table->dropColumn(['id_payment', ]);
         });
     }
 
     public function down(): void {
         Schema::table('sale', function (Blueprint $table) {
-            $table->dropSoftDeletes();
+            
         });
     }
 };

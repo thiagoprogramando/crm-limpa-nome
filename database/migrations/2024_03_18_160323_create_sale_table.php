@@ -28,18 +28,23 @@ return new class extends Migration {
             $table->string('payment');
             $table->integer('installments');
 
-            $table->decimal('value', 10, 2)->nullable();
-            $table->decimal('commission', 10, 2)->nullable();
+            $table->decimal('value', 10, 2)->default(0);
+            $table->decimal('value_total', 10, 2)->after('value')->default(0);
+            $table->decimal('commission', 10, 2)->default(0);
+            $table->decimal('commission_filiate', 10, 2)->default(0)->after('commission');
 
             $table->string('token_payment')->nullable();
             $table->string('token_contract')->nullable();
             $table->longText('url_contract')->nullable();
+            $table->integer('status_contract')->nullable();
 
-            $table->integer('status')->nullable(); // 0 - Pendente 1 - Pagamento confirmado 2 - Contrato Assinado 3 - Pendente de Assinatura 4 - Pendente de Pagamento
+            $table->integer('status')->nullable();
             $table->integer('wallet_off')->nullable();
             $table->string('label')->nullable();
-
+            $table->date('guarantee')->nullable();
+            $table->integer('type')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

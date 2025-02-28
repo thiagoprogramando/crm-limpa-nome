@@ -24,12 +24,14 @@ return new class extends Migration {
 
             $table->date('due_date');
 
-            $table->decimal('value', 10, 2);
-            $table->decimal('commission', 10, 2);
+            $table->decimal('value', 10, 2)->default(0);
+            $table->decimal('commission', 10, 2)->default(0);
+            $table->decimal('commission_filiate', 10, 2)->default(0);
             
             $table->integer('status');
             $table->integer('num');
             $table->integer('type'); // 1 - Mensalidade 2 - Faturas 3 - Extras 4 - Saldo em Carteira
+            $table->integer('notification_number')->default(1);
 
             $table->timestamps();
         });

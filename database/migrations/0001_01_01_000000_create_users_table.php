@@ -9,16 +9,16 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('filiate')->nullable();
+            $table->foreign('filiate')->references('id')->on('users')->onDelete('set null');
+
+            $table->string('photo')->nullable();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email')->nullable();
             $table->string('cpfcnpj')->unique();
             $table->date('birth_date')->nullable();
             $table->string('phone')->nullable();
             $table->string('password');
-            
-
-            $table->integer('level')->nullable()->default('1'); // 1 - INICIANTE 2 - CONSULTOR 3 - CONSULTOR LÍDER 4 - REGIONAL 5 - GERENTE REGIONAL
-            $table->integer('status')->nullable()->default('4'); // 1 - Ativo 2 - Documentos Pendentes 3 - Filiação Pendente 4 - Estado inicial
 
             $table->string('postal_code')->nullable();
             $table->string('address')->nullable();
@@ -26,19 +26,30 @@ return new class extends Migration {
             $table->string('city')->nullable();
             $table->string('state')->nullable();
             $table->string('num')->nullable();
+            
+            $table->integer('level')->nullable()->default('1'); // 1 - INICIANTE 2 - CONSULTOR 3 - CONSULTOR LÍDER 4 - REGIONAL 5 - GERENTE REGIONAL
+            $table->integer('status')->nullable()->default('4'); // 1 - Ativo 2 - Documentos Pendentes 3 - Filiação Pendente 4 - Estado inicial
 
             $table->longText('token_acess')->nullable();
+            $table->decimal('wallet_off', 10, 2)->default(0);
             $table->longText('wallet')->nullable();
+            $table->longText('wallet_id')->nullable();
             $table->longText('api_key')->nullable();
             $table->longText('api_token_zapapi')->nullable();
             $table->longText('customer')->nullable();
-            $table->decimal('wallet_off', 10, 2)->default(0);
             
+            $table->decimal('fixed_cost', 10, 2)->nullable();
+            $table->integer('type')->nullable()->default(2);
 
-            $table->integer('type')->nullable()->default('2'); // 1 - ADMINISTRADOR 2 - CONSULTOR 3 - CLIENTE 4 - V INTERNO
-            $table->unsignedBigInteger('filiate')->nullable();
+            $table->integer('white_label_contract')->default(0);
+            $table->integer('white_label_network')->default(0);
+            $table->string('company_name')->nullable();
+            $table->string('company_cpfcnpj')->nullable();
+            $table->string('company_address')->nullable();
+            $table->string('company_email')->nullable();
 
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

@@ -11,9 +11,18 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->longText('description')->nullable();
-            $table->date('start');
-            $table->date('end');
+
+            $table->dateTime('start');
+            $table->dateTime('end');
+
             $table->integer('status');
+
+            $table->string('serasa_status')->default('Pendente');
+            $table->string('status_spc')->default('Pendente');
+            $table->string('status_boa_vista')->default('Pendente');
+            $table->string('status_quod')->default('Pendente');
+            $table->string('status_cenprot')->default('Pendente');
+            
             $table->timestamps();
         });
     }

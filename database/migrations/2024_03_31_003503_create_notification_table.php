@@ -12,7 +12,7 @@ return new class extends Migration {
 
             $table->integer('id_user')->nullable();
             $table->integer('id_event')->nullable();
-            $table->integer('type')->nullable(); // 1 - Sucesso 2 - Atenção 3 - Erro
+            $table->integer('type')->nullable();
             $table->integer('view')->nullable();
 
             $table->string('name');
