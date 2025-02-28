@@ -29,7 +29,6 @@
                                 <th class="text-center" scope="col">V. Venda</th>
                                 <th class="text-center" scope="col">V. Comissão</th>
                                 <th class="text-center" scope="col">Status</th>
-                                <th class="text-center" scope="col">Processo</th>
                                 <th class="text-center" scope="col">Opções</th>
                             </tr>
                         </thead>
@@ -37,12 +36,11 @@
                             @foreach ($sales as $sale)
                                 <tr>
                                     <th scope="row">{{ $sale->id }}</th>
-                                    <td>{{ $sale->product->name }}</td>
-                                    <td>{{ $sale->user->name }}</td>
+                                    <td>{{ implode(' ', array_slice(explode(' ', $sale->product->name), 0, 2)) }}</td>
+                                    <td>{{ implode(' ', array_slice(explode(' ', $sale->user->name), 0, 2)) }}</td>
                                     <td class="text-center">R$ {{ number_format($sale->value, 2, ',', '.') }}</td>
                                     <td class="text-center">R$ {{ number_format($sale->commission, 2, ',', '.') }}</td>
                                     <td class="text-center">{{ $sale->statusLabel() }}</td>
-                                    <td class="text-center">{{ $sale->label }}</td>
                                     <td class="text-center">
                                         <form action="{{ route('delete-sale') }}" method="POST" class="delete">
                                             @csrf
@@ -97,50 +95,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="col-xxl-12 col-md-12 mb-3">
-            <div class="card p-2">
-                <h5 class="card-title">Listas</h5>
-
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Nome</th>
-                                <th scope="col">Descrição</th>
-                                <th class="text-center" scope="col">Encerramento</th>
-                                <th class="text-center" scope="col">Status</th>
-                                <th class="text-center" scope="col">Opções</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($lists as $list)
-                                <tr>
-                                    <th scope="row">{{ $list->id }}</th>
-                                    <td>{{ $list->name }}</td>
-                                    <td>{{ $list->description }}</td>
-                                    <td class="text-center">{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y H:i') }}</td>
-                                    <td class="text-center">{{ $list->statusLabel() }}</td>
-                                    <td class="text-center">
-                                        <form action="{{ route('delete-list') }}" method="POST" class="delete">
-                                            @csrf
-                                            <input type="hidden" name="id" value="{{ $list->id }}">
-                                            @if (Auth::user()->type == 1)
-                                                <a href="{{ route('updatelist', ['id' => $list->id]) }}" class="btn btn-warning text-light"><i class="bi bi-pencil-square"></i></a>
-                                                <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
-                                            @endif
-                                            <a href="{{ route('updatelist', ['id' => $list->id]) }}" class="btn btn-success text-light"><i class="bi bi-file-earmark-excel"></i></a>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
     </div>
 </section>
 

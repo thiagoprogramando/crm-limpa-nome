@@ -195,15 +195,26 @@ class UserController extends Controller {
 
     public function search(Request $request) {
 
-        $sales      = Sale::where('id', 'like', '%' . $request->search . '%')->orWhereHas('user', function ($query) use ($request) {$query->where('name', 'like', '%' . $request->search . '%');})->get();
-        $invoices   = Invoice::where('name', 'like', '%' . $request->search . '%')->orWhere('id', 'like', '%' . $request->search . '%')->where('id_user', Auth::id())->get();
-        $lists      = Lists::where('name', 'like', '%' . $request->search . '%')->orWhere('id', 'like', '%' . $request->search . '%')->get();
+        $sales = Sale::where('id_seller', Auth::user()->id)
+            ->where(function ($query) use ($request) {
+                $query->where('id', 'like', '%' . $request->search . '%')
+                    ->orWhereHas('user', function ($query) use ($request) {
+                        $query->where('name', 'like', '%' . $request->search . '%');
+                    });
+            })
+            ->get();
 
+        $invoices = Invoice::where('id_user', Auth::id())
+            ->where(function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->search . '%')
+                      ->orWhere('id', 'like', '%' . $request->search . '%');
+            })
+            ->get();
+        
         return view('app.User.search', [
             'search'    => $request->search,
             'sales'     => $sales,
-            'invoices'  => $invoices,
-            'lists'     => $lists
+            'invoices'  => $invoices
         ]);
     }
 

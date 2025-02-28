@@ -100,7 +100,7 @@ class AppController extends Controller {
             });
         })->count();
 
-        $networks = User::where('filiate', Auth::user()->id)->orderBy('created_at', 'desc')->paginate(10);
+        $networks = User::where('filiate', Auth::user()->id)->where('type', 2)->orderBy('created_at', 'desc')->paginate(10);
     
         return view('app.app', [
             'sales'         => $sales,
@@ -179,7 +179,7 @@ class AppController extends Controller {
             });
         })->count();
 
-        $networks = User::orderBy('created_at', 'desc')->paginate(8);
+        $networks = User::where('type', 2)->orderBy('created_at', 'desc')->paginate(8);
 
         return view('app.app', [
             'sales'         => $sales,
