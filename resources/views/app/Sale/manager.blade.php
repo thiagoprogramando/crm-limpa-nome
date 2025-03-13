@@ -184,7 +184,7 @@
                                                     {{ $sale->statusContractLabel() }} <br>
                                                     @isset($sale->url_contract)
                                                         <span class="badge bg-primary">
-                                                            <a title="Contrato" href="{{ $sale->url_contract }}" target="_blank" class="text-white">Acessar</a>
+                                                            <a title="Contrato" href="{{ env('APP_URL').'preview-contract/'.$sale->id }}" target="_blank" class="text-white">Acessar</a>
                                                         </span>
                                                         @if ($sale->status_contract == 2)
                                                             <span class="badge bg-warning">

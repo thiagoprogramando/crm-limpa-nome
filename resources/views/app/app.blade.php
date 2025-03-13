@@ -14,51 +14,26 @@
     
     <section class="section dashboard">
         <div class="row">
-            <div class="col-sm-12 col-md-7 col-lg-7">
-                <div id="carouselExampleControls" class="carousel slide mb-3" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        <div class="carousel-item carousel-item-next carousel-item-start">
-                            <img style="max-height: 300px !important;" src="{{ asset('assets/dashboard/img/marketing/nome_10_um_cupom.png') }}" class="d-block w-100" alt="Envie dez nomes e ganhe um!">
-                        </div>
-                    </div>
-
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
-                </div>
-            </div>
-            <div class="col-sm-12 col-md-5 col-lg-5">
-                <ul class="list-group mb-3">
-                    <button type="button" class="list-group-item list-group-item-action active" aria-current="true">
-                        T. de Consultores
-                    </button>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Consultor
-                        <span class="badge bg-primary rounded-pill">{{ $consultant['CONSULTOR'] }}</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Líder
-                        <span class="badge bg-primary rounded-pill">{{ $consultant['LIDER'] }}</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Regional
-                        <span class="badge bg-primary rounded-pill">{{ $consultant['REGIONAL'] }}</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Gerente
-                        <span class="badge bg-primary rounded-pill">{{ $consultant['GERENTE'] }}</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-       
-        <div class="row">
             <div class="col-sm-12 col-md-7 col-lg-7 row">
+                <div class="col-12">
+                    <div id="carouselExampleControls" class="carousel slide mb-2" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item carousel-item-next carousel-item-start">
+                                <img style="max-height: 300px !important;" src="{{ asset('assets/dashboard/img/marketing/nome_10_um_cupom.png') }}" class="d-block w-100" alt="Envie dez nomes e ganhe um!">
+                            </div>
+                        </div>
+
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+
                 @if (Auth::user()->status <> 1)
                     <div class="col-12">
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -136,8 +111,66 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="col-sm-12 col-md-5 col-lg-5 row">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="card info-card clock-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Próxima Lista @if($list) <span>{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</span> @else --- @endif</h5>
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-clock-history"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6>{{ $remainingTime }}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="card info-card clock-card">
+                        <div class="card-body p-2">
+                            <canvas id="pieChart"></canvas>
+                            <script>
+                                @php
+                                    $labels = array_keys($consultant);
+                                    $values = array_values($consultant);
+                                @endphp
+                                document.addEventListener("DOMContentLoaded", () => {
+                                    const ctx = document.querySelector('#pieChart');
+                                    new Chart(ctx, {
+                                        type: 'pie',
+                                        data: {
+                                            labels: @json($labels),
+                                            datasets: [{
+                                                data: @json($values),
+                                                backgroundColor: [
+                                                    'rgb(255, 99, 132)',
+                                                    'rgb(54, 162, 235)',
+                                                    'rgb(255, 205, 86)',
+                                                    'rgb(75, 192, 192)'
+                                                ],
+                                                hoverOffset: 4
+                                            }]
+                                        },
+                                        options: {
+                                            plugins: {
+                                                legend: {
+                                                    display: false
+                                                }
+                                            }
+                                        }
+                                    });
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-12 col-md-12 col-lg-12">
                     <div class="card info-card clock-card">
                         <div class="card-body">
                             <h5 class="card-title">Ativos/Inativos</h5>
@@ -156,43 +189,7 @@
                     </div>
                 </div>
 
-                @php
-                    $saleTotal = Auth::user()->saleCount();
-                    
-                    $maxSalesConsultor = 2;
-                    $maxSalesConsultorLider = 10;
-                    $maxSalesRegional = 50;
-                    $maxSalesRegionalLider = 100;
-
-                    $progressConsultor = min(100, ($saleTotal / $maxSalesConsultor) * 100);
-                    $progressConsultorLider = min(100, ($saleTotal / $maxSalesConsultorLider) * 100);
-                    $progressRegional = min(100, ($saleTotal / $maxSalesRegional) * 100);
-                    $progressRegionalLider = min(100, ($saleTotal / $maxSalesRegionalLider) * 100);
-
-                    $nivel = '';
-                    $progressAtual = 0;
-                    $maxSalesAtual = 0;
-
-                    if ($saleTotal < $maxSalesConsultor) {
-                        $nivel = 'Consultor';
-                        $progressAtual = $progressConsultor;
-                        $maxSalesAtual = $maxSalesConsultor;
-                    } elseif ($saleTotal < $maxSalesConsultorLider) {
-                        $nivel = 'Consultor Líder';
-                        $progressAtual = $progressConsultorLider;
-                        $maxSalesAtual = $maxSalesConsultorLider;
-                    } elseif ($saleTotal < $maxSalesRegional) {
-                        $nivel = 'Regional';
-                        $progressAtual = $progressRegional;
-                        $maxSalesAtual = $maxSalesRegional;
-                    } elseif ($saleTotal < $maxSalesRegionalLider) {
-                        $nivel = 'Gerente Regional';
-                        $progressAtual = $progressRegionalLider;
-                        $maxSalesAtual = $maxSalesRegionalLider;
-                    }
-                @endphp
-
-                <div class="col-sm-12 col-md-6 col-lg-6">
+                {{-- <div class="col-sm-12 col-md-12 col-lg-12">
                     <div class="card info-card clock-card">
                         <div class="card-body">
                             <h5 class="card-title">Graduação</h5>
@@ -203,53 +200,19 @@
                                 <div class="ps-3">
                                     <p>{{ Auth::user()->levelLabel() }}</p>
                                     <div class="progress">
-                                        <div class="progress-bar" role="progressbar" style="width: {{ $progressAtual }}%" aria-valuenow="{{ $progressAtual }}" aria-valuemin="0" aria-valuemax="{{ $maxSalesAtual }}"></div>
-                                        <small>{{ $progressAtual }}%</small>
+                                        <div class="progress-bar" role="progressbar" 
+                                            style="width: {{ Auth::user()->getGraduation()->progress }}%" 
+                                            aria-valuenow="{{ Auth::user()->getGraduation()->progress }}" 
+                                            aria-valuemin="0" 
+                                            aria-valuemax="{{ Auth::user()->getGraduation()->maxSales }}">
+                                        </div>
+                                        <small>{{ Auth::user()->getGraduation()->progress }}%</small>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="col-sm-12 col-md-12 col-lg-12">
-                    <div class="card info-card clock-card">
-                        <div class="card-body">
-                            <h5 class="card-title">Próxima Lista @if($list) <span>{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</span> @else --- @endif</h5>
-                            <div class="d-flex align-items-center">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-clock-history"></i>
-                                </div>
-                                <div class="ps-3">
-                                    <h6>{{ $remainingTime }}</h6>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-12 col-md-5 col-lg-5">
-                <div class="card p-2">
-                    <div class="card-body">
-                        <h5 class="card-title">Perguntas frequentes</h5>
-                        <div>
-                            <h6 class="text-primary">1. É possível antecipar vendas realizadas no cartão?</h6>
-                            <p>
-                                Sim, imediatamente após a conclusão do processo de venda, nosso sistema tentará realizar a antecipação das parcelas junto ao banco. 
-                                Isso permite que você receba o valor total de forma mais rápida.
-                            </p>
-                            <p>
-                                <b class="text-danger">Atenção:</b> A aprovação da antecipação depende do banco e pode não ser autorizada, mantendo os prazos padrões de repasse.
-                            </p>
-                        </div>
-                        <div class="pt-2">
-                            <h6 class="text-primary">2. Qual é o prazo para receber as comissões?</h6>
-                            <p>
-                                Boletos podem levar até três (3) dias úteis para compensação. Por padrão, o banco realiza remessas nos seguintes horários (horário de Brasília): 18h e 00h.
-                            </p>
-                        </div>                        
-                    </div>
-                </div>
+                </div> --}}
             </div>
         </div>
        

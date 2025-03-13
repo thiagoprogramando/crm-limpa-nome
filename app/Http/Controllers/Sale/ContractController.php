@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Sale;
 
 use App\Http\Controllers\Controller;
-
+use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Sale;
@@ -31,37 +31,44 @@ class ContractController extends Controller {
             return redirect()->back()->with('info', 'Cliente não está com os dados completos/ou é uma Venda Direta Associação!');
         }
 
-        if (!empty($sale->url_contract)) {
+        $message = "{$sale->user->name}, segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria.\r\n\r\n".
+                    "ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼\r\n".
+                    " ⚠ Salva o contato se não tiver aparecendo o link.\r\n";
 
-            $message = "{$sale->user->name}, segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria.\r\n\r\n".
-                        "ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼\r\n".
-                        " ⚠ Salva o contato se não tiver aparecendo o link.\r\n";
+        $this->sendWhatsapp(env('APP_URL').'preview-contract/'.$sale->id, $message, $sale->user->phone, $sale->seller->api_token_zapapi);
+        return redirect()->back()->with('success', 'Contrato enviado para o Cliente!');
 
-            $this->sendWhatsapp($sale->url_contract, $message, $sale->user->phone, $sale->seller->api_token_zapapi);
-            return redirect()->back()->with('success', 'Contrato enviado para o Cliente!');
-        }
+        // if (!empty($sale->url_contract)) {
 
-        $product = Product::find($sale->id_product);
-        if (!$product || empty($product->contract)) {
-            return redirect()->back()->with('info', 'Produto indisponível/ou sem contrato associado!');
-        }
+        //     $message = "{$sale->user->name}, segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria.\r\n\r\n".
+        //                 "ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼\r\n".
+        //                 " ⚠ Salva o contato se não tiver aparecendo o link.\r\n";
 
-        $document = $this->sendContract($sale, $product->contract);
-        if ($document !== false && $document['token']) {
+        //     $this->sendWhatsapp($sale->url_contract, $message, $sale->user->phone, $sale->seller->api_token_zapapi);
+        //     return redirect()->back()->with('success', 'Contrato enviado para o Cliente!');
+        // }
 
-            $sale->fill([
-                'token_contract'  => $document['token'],
-                'url_contract'    => $document['signers'][0]['sign_url'],
-                'status_contract' => 2,
-            ]);
+        // $product = Product::find($sale->id_product);
+        // if (!$product || empty($product->contract)) {
+        //     return redirect()->back()->with('info', 'Produto indisponível/ou sem contrato associado!');
+        // }
 
-            if ($sale->save()) {
-                $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado(a) ".$sale->user->name.", segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ⚠ Se não estiver aparecendo o link, Salva o nosso contato que aparecerá! \r\n\r\n\r\n ASSINAR O CONTRATO TOCANDO NO LINK 👇🏼✍🏼 \r\n", $sale->user->phone, $sale->seller->api_token_zapapi); 
-                return redirect()->back()->with('success', 'Sucesso! O contrato foi enviado para o cliente via WhatsApp.');
-            }
-        } else {
-            return redirect()->back()->with('error', 'Foram encontrados problemas ao gerar contrato do cliente, contate o suporte!');
-        }
+        // $document = $this->sendContract($sale, $product->contract);
+        // if ($document !== false && $document['token']) {
+
+        //     $sale->fill([
+        //         'token_contract'  => $document['token'],
+        //         'url_contract'    => $document['signers'][0]['sign_url'],
+        //         'status_contract' => 2,
+        //     ]);
+
+        //     if ($sale->save()) {
+        //         $this->sendWhatsapp($document['signers'][0]['sign_url'], "Prezado(a) ".$sale->user->name.", segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria. \r\n\r\n ⚠ Se não estiver aparecendo o link, Salva o nosso contato que aparecerá! \r\n\r\n\r\n ASSINAR O CONTRATO TOCANDO NO LINK 👇🏼✍🏼 \r\n", $sale->user->phone, $sale->seller->api_token_zapapi); 
+        //         return redirect()->back()->with('success', 'Sucesso! O contrato foi enviado para o cliente via WhatsApp.');
+        //     }
+        // } else {
+        //     return redirect()->back()->with('error', 'Foram encontrados problemas ao gerar contrato do cliente, contate o suporte!');
+        // }
     }
 
     private function sendContract($sale, $contract) {
@@ -275,6 +282,8 @@ class ContractController extends Controller {
             return redirect()->route('login.cliente')->with('info', 'Não foi possível localizar os dados da venda! Tente novamente mais tarde.');
         }
 
+        $invoices = Invoice::where('id_sale', $sale->id)->get();
+
         if (empty($sale->product->contract_subject)) {
             return redirect()->route('login.cliente')->with('info', 'Contrato indisponível para venda N° '.$sale->id);
         }
@@ -326,9 +335,26 @@ class ContractController extends Controller {
         }
 
         return view('contract.contract', [
-            'title'             => 'Contrato de serviço - ' . $sale->product->name,
-            'contractContent'   => $contractContent,
-            'sale'              => $sale,
+            'title'           => 'Contrato de serviço - ' . $sale->product->name,
+            'contractContent' => $contractContent,
+            'sale'            => $sale,
+            'invoices'        => $invoices
         ]);
+    }
+
+    public function signSale(Request $request) {
+
+        $sale = Sale::find($request->id);
+        if (!$sale) {
+            return response()->json(['success' => false, 'message' => 'Contrato não encontrado na base de dados!'], 403, [], JSON_UNESCAPED_UNICODE);
+        }
+
+        $sale->sign_contract    = $request->sign;
+        $sale->status_contract  = 1;
+        if ($sale->save()) {
+            return response()->json(['success' => true, 'message' => 'Contrato Assinado com sucesso!'], 200, [], JSON_UNESCAPED_UNICODE);
+        }
+
+        return response()->json(['success' => false, 'message' => ''], 403, [], JSON_UNESCAPED_UNICODE);
     }
 }

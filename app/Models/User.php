@@ -171,6 +171,36 @@ class User extends Authenticatable {
         }
     }
 
+    public function getGraduation() {
+        $saleTotal = $this->saleCount();
+
+        $levels = [
+            'Consultor' => 2,
+            'Consultor Líder' => 10,
+            'Regional' => 50,
+            'Gerente Regional' => 100,
+        ];
+
+        $nivel = 'Gerente Regional';
+        $maxSalesAtual = end($levels);
+        $progressAtual = 100;
+
+        foreach ($levels as $key => $maxSales) {
+            if ($saleTotal < $maxSales) {
+                $nivel = $key;
+                $maxSalesAtual = $maxSales;
+                $progressAtual = min(100, ($saleTotal / $maxSales) * 100);
+                break;
+            }
+        }
+
+        return (object) [
+            'nivel' => $nivel,
+            'progress' => $progressAtual,
+            'maxSales' => $maxSalesAtual,
+        ];
+    }
+
     public function cpfcnpjLabel() {
         $cpfCnpj = $this->cpfcnpj;
 

@@ -1264,3 +1264,7 @@ table thead tr th {
   background-color: #000F3E !important;
   color: #fff !important;
 }
+
+canvas {
+  max-height: 150px;
+}
