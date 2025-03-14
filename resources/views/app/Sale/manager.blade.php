@@ -200,6 +200,9 @@
                                         <td class="text-center">
                                             {{ $sale->statusLabel() }} <br>
                                             <span class="badge bg-primary">{{ \Carbon\Carbon::parse($sale->created_at)->format('d/m/Y') }}</span>
+                                            @if ($sale->type == 3)
+                                                <span class="badge bg-dark">CUPOM</span>
+                                            @endif
                                         </td>
                                         <td class="text-center">
                                             <form action="{{ route('delete-sale') }}" method="POST" class="delete">

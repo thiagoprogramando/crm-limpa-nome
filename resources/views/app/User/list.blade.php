@@ -262,7 +262,7 @@
                                                                                     <a href="{{ $invoice->url_payment }}" target="_blank" class="btn btn-primary text-light">
                                                                                         <i class="bi bi-arrow-up-right-circle"></i> Acessar Fatura
                                                                                     </a>
-                                                                                    @if($invoice->num <> 1 && $invoice->status <> 1)
+                                                                                    @if($invoice->status <> 1 )
                                                                                         <a href="{{ route('delete-invoice', ['id' => $invoice->id]) }}" class="btn btn-danger text-light confirm">
                                                                                             <i class="bi bi-trash"></i>
                                                                                         </a>
