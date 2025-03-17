@@ -139,7 +139,7 @@
                                                 <div class="col-12 col-sm-12 col-md-7 col-lg-7 mb-2">
                                                     <div class="form-floating">
                                                         <input type="text" name="value" class="form-control" id="floatingValue" placeholder="Valor da venda (Mín R$ {{ Auth::user()->fixed_cost }}):" oninput="mascaraReal(this)" required>
-                                                        <label for="floatingValue">Entrada (Mín R$ {{ Auth::user()->fixed_cost }}):</label>
+                                                        <label for="floatingValue">Entrada (Mín R$ {{ $product->value_min }}):</label>
                                                     </div>
                                                 </div>
                                                 <div class="col-12 col-sm-12 col-md-5 col-lg-5 mb-2">
