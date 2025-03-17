@@ -124,12 +124,6 @@
                                     <span>Carteira Digital</span>
                                 </a>
                             </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" href="{{ route('app') }}#fees">
-                                    <i class="ri-feedback-line"></i>
-                                    <span>Taxas</span>
-                                </a>
-                            </li>
                             <li> <hr class="dropdown-divider"> </li>
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}">
@@ -157,7 +151,7 @@
                     <a class="nav-link collapsed" href="https://servicos.ehmconsultas.com/index.php" target="_blank"> <i class="bi bi-search"></i> <span>Consultas</span> </a>
                 </li>
 
-                <li class="nav-heading">Vendas</li>
+                <li class="nav-heading">Gestão de Vendas</li>
                 <li class="nav-item">
                     <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
                         <i class="bi bi-briefcase"></i><span>Enviar Contrato (Cliente)</span><i class="bi bi-chevron-down ms-auto"></i>
@@ -191,7 +185,7 @@
                     </ul>
                 </li>
                 
-                <li class="nav-heading">Pessoas</li>
+                <li class="nav-heading">Gestão de Pessoas</li>
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="{{ route('list-network') }}"> <i class="bi bi-person-lines-fill"></i> <span>Minha Rede</span> </a>
                 </li>
@@ -232,10 +226,10 @@
                     </li>
                 @endif
 
-                <li class="nav-heading">Lixeira</li>
+                <li class="nav-heading">Outros</li>
                 <li class="nav-item">
                     <a class="nav-link {{ Route::currentRouteName() == 'trash-users' || Route::currentRouteName() == 'trash-sales' ? '' : 'collapsed' }}" data-bs-target="#forms-trash" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-archive"></i><span>Recuperação</span><i class="bi bi-chevron-down ms-auto"></i>
+                        <i class="bi bi-archive"></i><span>Lixeira</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
                     <ul id="forms-trash" class="nav-content collapse {{ Route::currentRouteName() == 'trash-users' || Route::currentRouteName() == 'trash-sales' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">  
                         <li><a href="{{ route('trash-users') }}"> <i class="bi bi-circle"></i><span>Clientes</span> </a></li>
