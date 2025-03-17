@@ -137,7 +137,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($extracts as $extract)
+                                    @foreach ($extracts['data'] as $extract)
                                         <tr>
                                             <td>
                                                 <a href=""><b>{{ $extract['id'] }}</b></a>

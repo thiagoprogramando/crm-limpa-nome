@@ -12,13 +12,18 @@ class WalletController extends Controller {
     
     public function wallet() {
 
-        $assas = new AssasController();
+        $assas   = new AssasController();
         $balance = $assas->balance() ?? 0;
         if($balance == 0 || $balance > 0) {
-            $statistics = $assas->statistics();
-            $extracts    = $assas->receivable();
-            $accumulated    = $assas->accumulated();
-            return view('app.User.wallet', ['balance' => $balance, 'statistics' => $statistics, 'extracts' => $extracts, 'accumulated' => $accumulated]);
+            $statistics   = $assas->statistics();
+            $extracts     = $assas->receivable();
+            $accumulated  = $assas->accumulated();
+            return view('app.User.wallet', [
+                'balance'       => $balance, 
+                'statistics'    => $statistics, 
+                'extracts'      => $extracts, 
+                'accumulated'   => $accumulated
+            ]);
         }
         
         return view('app.User.wallet', ['balance' => 'sem dados!', 'statistics' => 'sem dados!', 'accumulated' => 'sem dados!', 'extracts' => '']);

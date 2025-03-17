@@ -861,14 +861,14 @@ class AssasController extends Controller {
         return [];
     }    
 
-    public function receivable($startDate = null, $finishDate = null) {
+    public function receivable($startDate = null, $finishDate = null, $offset = 0) {
 
         $client     = new Client();
         $user       = auth()->user();
-        $startDate  = $startDate ?? $user->created_at->toDateString();
+        $startDate  = $startDate  ?? now()->toDateString();
         $finishDate = $finishDate ?? now()->toDateString();
 
-        $response = $client->request('GET',  env('API_URL_ASSAS') . "v3/financialTransactions?startDate={$startDate}&finishDate={$finishDate}&order=desc", [
+        $response = $client->request('GET',  env('API_URL_ASSAS') . "v3/financialTransactions?limit=100&startDate={$startDate}&finishDate={$finishDate}&offset={$offset}&order=asc", [
             'headers' => [
                 'accept'        => 'application/json',
                 'access_token'  => $user->api_key,
@@ -880,9 +880,17 @@ class AssasController extends Controller {
         $body = (string) $response->getBody();
         if ($response->getStatusCode() === 200) {
             $data = json_decode($body, true);
-            return $data['data'];
+            return [
+                'data'    => $data['data'],
+                'hasMore' => $data['hasMore'],
+                'offset'  => $offset
+            ];
         } else {
-            return [];
+            return [
+                'data'    => [],
+                'hasMore' => false,
+                'offset'  => $offset
+            ];
         }
     }
 
