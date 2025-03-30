@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Lists;
 use App\Models\Sale;
+use App\Models\SaleList;
 use App\Models\User;
 
 use Illuminate\Http\Request;
@@ -54,7 +54,7 @@ class AppController extends Controller {
             ->whereDate('updated_at', $now->toDateString())
             ->sum('value_total');
     
-        $list = Lists::where('start', '<=', $now)
+        $list = SaleList::where('start', '<=', $now)
             ->where('end', '>=', $now)
             ->first();
     
@@ -110,7 +110,7 @@ class AppController extends Controller {
             'remainingTime' => $remainingTime,
             'invoicing'     => $invoicing,
             'invoicingDay'  => $invoicingDay,
-            'lists'         => Lists::orderBy('id', 'desc')->get(),
+            'SaleList'         => SaleList::orderBy('id', 'desc')->get(),
             'users'         => $users,
             'consultant'    => $consultant,
             'actives'       => $actives,
@@ -141,7 +141,7 @@ class AppController extends Controller {
         $sortedUsers = $users->sortByDesc(fn($user) => $user->saleTotal());
         $topUsers = $sortedUsers->take(10);
 
-        $list = Lists::where('start', '<=', $formattedNow)
+        $list = SaleList::where('start', '<=', $formattedNow)
         ->where('end', '>=', $formattedNow)
         ->first();
 

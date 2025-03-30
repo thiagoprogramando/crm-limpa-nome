@@ -65,8 +65,6 @@
 
                 <div class="card p-2">
                     <div class="card-body">
-                        <h5 class="card-title">Pagamentos</h5>
-                        
                         <div class="table-responsive">
                             <table class="table table-hover" id="table">
                                 <thead>
@@ -87,18 +85,20 @@
                                             <td class="text-center">R$ {{ $payment->value }}</td>
                                             <td class="text-center">{{ $payment->statusLabel() }}</td>
                                             <td class="text-center">{{ \Carbon\Carbon::parse($payment->due_date)->format('d/m/Y') }}</td>
-                                            <td class="text-center btn-group">
-                                                @if ($payment->type == 1 && $payment->status !== 1)
-                                                    <button type="button" class="btn btn-dark text-light" data-bs-toggle="modal" data-bs-target="#couponModal{{ $payment->id }}"><i class="bi bi-percent"></i> Aplicar CUPOM</button>
-                                                @endif
-                                                @if(!empty(Auth::user()->wallet) && $payment->status !== 1)
-                                                    <a href="{{ route('payMonthly', ['id' => $payment->id]) }}" class="btn btn-success text-light">
-                                                        <i class="bi bi-credit-card"></i> Pagar
+                                            <td class="text-center">
+                                                <div class="btn-group">
+                                                    @if ($payment->type == 1 && $payment->status !== 1)
+                                                        <button type="button" class="btn btn-primary text-light" data-bs-toggle="modal" data-bs-target="#couponModal{{ $payment->id }}"><i class="bi bi-percent" title="Aplicar Cupom"></i>CUPOM</button>
+                                                    @endif
+                                                    @if(!empty(Auth::user()->wallet) && $payment->status !== 1)
+                                                        <a href="{{ route('payMonthly', ['id' => $payment->id]) }}" class="btn btn-primary text-light" title="Pagar com saldo">
+                                                            <i class="bi bi-credit-card"></i> Pagar com saldo
+                                                        </a>
+                                                    @endif
+                                                    <a href="{{ $payment->url_payment }}" target="_blank" class="btn btn-primary text-light" title="Acessar Fatura">
+                                                        <i class="bi bi-arrow-up-right-circle"></i> Acessar
                                                     </a>
-                                                @endif
-                                                <a href="{{ $payment->url_payment }}" target="_blank" class="btn btn-primary text-light">
-                                                    <i class="bi bi-arrow-up-right-circle"></i> Acessar
-                                                </a>
+                                                </div>
                                             </td>
                                         </tr>
 

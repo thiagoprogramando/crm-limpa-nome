@@ -272,7 +272,7 @@
             <div class="col-12 col-sm-6 col-lg-6">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Rede <span>| Últimos cadastros</span></h5>
+                        <h5 class="card-title">Rede <span>| Últimos Associados</span></h5>
                         
                         <div class="table-responsive">
                             <table class="table table" id="table">

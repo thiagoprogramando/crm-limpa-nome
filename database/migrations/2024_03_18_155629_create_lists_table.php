@@ -7,27 +7,23 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
 
     public function up(): void {
-        Schema::create('list', function (Blueprint $table) {
+        Schema::create('lists', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->longText('description')->nullable();
-
             $table->dateTime('start');
             $table->dateTime('end');
-
-            $table->integer('status');
-
-            $table->string('serasa_status')->default('Pendente');
-            $table->string('status_spc')->default('Pendente');
-            $table->string('status_boa_vista')->default('Pendente');
-            $table->string('status_quod')->default('Pendente');
-            $table->string('status_cenprot')->default('Pendente');
-            
+            $table->tinyInteger('status');
+            $table->tinyInteger('status_serasa')->default(0);
+            $table->tinyInteger('status_spc')->default(0);
+            $table->tinyInteger('status_boa_vista')->default(0);
+            $table->tinyInteger('status_quod')->default(0);
+            $table->tinyInteger('status_cenprot')->default(0);
             $table->timestamps();
         });
     }
 
     public function down(): void {
-        Schema::dropIfExists('list');
+        Schema::dropIfExists('lists');
     }
 };

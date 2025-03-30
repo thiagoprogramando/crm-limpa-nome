@@ -7,37 +7,34 @@ use App\Http\Controllers\Controller;
 
 use App\Models\Lists;
 use App\Models\Sale;
+use App\Models\SaleList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ListController extends Controller {
     
-    public function list() {
+    public function lists() {
 
-        $lists = Lists::orderBy('created_at', 'desc')->get();
-        return view('app.List.list', [
+        $lists = SaleList::orderBy('created_at', 'desc')->get();
+        return view('app.List.list-lists', [
             'lists' => $lists
         ]);
     }
 
-    public function create() {
-        return view('app.List.create');
-    }
-
     public function createList(Request $request) {
 
-        $startDate = Carbon::parse($request->date_start);
-        $endDate = Carbon::parse($request->date_end);
+        $startDate  = Carbon::parse($request->date_start);
+        $endDate    = Carbon::parse($request->date_end);
     
-        $existingListInside = Lists::where('start', '>=', $startDate)->where('end', '<=', $endDate)->exists();
-        $existingListContains = Lists::where('start', '<=', $startDate)->where('end', '>=', $endDate)->exists();
+        $existingListInside     = SaleList::where('start', '>=', $startDate)->where('end', '<=', $endDate)->exists();
+        $existingListContains   = SaleList::where('start', '<=', $startDate)->where('end', '>=', $endDate)->exists();
     
         if ($existingListInside || $existingListContains) {
             return redirect()->back()->with('info', 'Já existe uma Lista nesse período e horário!');
         }
     
-        $list = new Lists();
+        $list = new SaleList();
         $list->name         = $request->name;
         $list->description  = $request->description;
         $list->start        = $startDate;
@@ -45,22 +42,29 @@ class ListController extends Controller {
         $list->status       = $request->status;
     
         if($list->save()) {
-            return redirect()->route('lists')->with('success', 'Lista cadastrada com sucesso!');
+            return redirect()->route('list-lists')->with('success', 'Lista cadastrada com sucesso!');
         }
     
-        return redirect()->route('lists')->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
+        return redirect()->route('list-lists')->with('error', 'Não foi possível cadastrar a Lista, tente novamente mais tarde!');
     }    
 
-    public function update($id) {
+    public function view($id) {
 
-        $list = Lists::find($id);
-        return view('app.List.update', ['list' => $list]);
+        $list = SaleList::find($id);
+        if (!$list) {
+            return redirect()->back()->with('info', 'Lista indisponível!');
+        }
+
+        return view('app.List.list-update', [
+            'list' => $list
+        ]);
     }
     
     public function updateList(Request $request) {
         
-        $list = Lists::find($request->id);
+        $list = SaleList::find($request->id);
         if ($list) {
+
             $currentStartDate = Carbon::parse($list->start);
             $currentEndDate = Carbon::parse($list->end);
     
@@ -71,8 +75,8 @@ class ListController extends Controller {
     
             if ($isDateRangeDifferent && $newStartDate && $newEndDate) {
 
-                $existingListInside = Lists::where('id', '!==', $list->id)->where('start', '>=', $newStartDate)->where('end', '<=', $newEndDate)->exists();
-                $existingListContains = Lists::where('id', '!==', $list->id)->where('start', '<=', $newStartDate)->where('end', '>=', $newEndDate)->exists();
+                $existingListInside = SaleList::where('id', '!==', $list->id)->where('start', '>=', $newStartDate)->where('end', '<=', $newEndDate)->exists();
+                $existingListContains = SaleList::where('id', '!==', $list->id)->where('start', '<=', $newStartDate)->where('end', '>=', $newEndDate)->exists();
             
                 if ($existingListInside || $existingListContains) {
                     return redirect()->back()->with('info', 'Já existe uma Lista nesse período e horário!');
@@ -91,8 +95,8 @@ class ListController extends Controller {
             if ($request->status) {
                 $list->status = $request->status;
             }
-            if ($request->has('serasa_status')) {
-                $list->serasa_status = $request->serasa_status;
+            if ($request->has('status_serasa')) {
+                $list->status_serasa = $request->status_serasa;
             }
             if ($request->has('status_spc')) {
                 $list->status_spc = $request->status_spc;
@@ -106,29 +110,31 @@ class ListController extends Controller {
             if ($request->has('status_cenprot')) {
                 $list->status_cenprot = $request->status_cenprot;
             }
+
             if ($list->save()) {
                 return redirect()->back()->with('success', 'Lista atualizada com sucesso!');
             }
     
-            return redirect()->route('lists')->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
+            return redirect()->route('list-lists')->with('error', 'Não foi possível atualizar a Lista, tente novamente mais tarde!');
         }
     
-        return redirect()->route('lists')->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
+        return redirect()->route('list-lists')->with('error', 'Não foi possível atualizar a Lista, tente novamente mais tarde!');
     }      
 
     public function delete(Request $request) {
 
-        $list = Lists::find($request->id);
+        $list = SaleList::find($request->id);
         if($list && $list->delete()) {
+
             return redirect()->back()->with('success', 'Lista excluída com sucesso!');
         }
 
-        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, dados da Lista não encontrados!');
+        return redirect()->back()->with('error', 'Não foi possível excluir a Lista, dados da Lista não encontrados!');
     }
 
     public function excelList($id) {
 
-        $list = Lists::find($id);
+        $list = SaleList::find($id);
         if ($list) {
 
             $sales = Sale::where('id_list', $list->id)->where('status', 1)->orderBy('label', 'asc')->get();

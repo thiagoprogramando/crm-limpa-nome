@@ -6,33 +6,31 @@ use App\Http\Controllers\Assas\AssasController;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class WalletController extends Controller {
     
     public function wallet() {
 
-        $assas   = new AssasController();
-        $balance = $assas->balance() ?? 0;
-        if($balance == 0 || $balance > 0) {
-            $statistics   = $assas->statistics();
-            $extracts     = $assas->receivable();
-            $accumulated  = $assas->accumulated();
-            return view('app.User.wallet', [
-                'balance'       => $balance, 
-                'statistics'    => $statistics, 
-                'extracts'      => $extracts, 
-                'accumulated'   => $accumulated
-            ]);
-        }
+        $assas        = new AssasController();
+        $balance      = $assas->balance() ?? 0;
+        $statistics   = $assas->statistics();
+        $extracts     = $assas->receivable();
+        $accumulated  = $assas->accumulated();
         
-        return view('app.User.wallet', ['balance' => 'sem dados!', 'statistics' => 'sem dados!', 'accumulated' => 'sem dados!', 'extracts' => '']);
+        return view('app.Finance.wallet', [
+            'balance'       => $balance, 
+            'statistics'    => $statistics, 
+            'extracts'      => $extracts, 
+            'accumulated'   => $accumulated
+        ]);
     }
 
     public function withdrawSend(Request $request) {
 
         $password = $request->password;    
-        if (Hash::check($password, auth()->user()->password)) {
+        if (Hash::check($password, Auth::user()->passowrd)) {
 
             if(empty($request->key) || empty($request->value) || empty($request->type)) {
                 return redirect()->back()->with('error', 'Dados incompletos!');

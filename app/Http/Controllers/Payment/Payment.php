@@ -14,7 +14,7 @@ class Payment extends Controller {
     
     public function payments(Request $request) {
 
-        $query = Invoice::where('id_user', Auth::id());
+        $query = Invoice::where('user_id', Auth::id());
         if ($request->has('status') && !empty($request->status)) {
             $query->where('status', $request->status);
         }
@@ -29,7 +29,7 @@ class Payment extends Controller {
     
         $payments = $query->orderBy('status', 'asc')->paginate(10);
 
-        return view('app.Payment.payment', [
+        return view('app.Finance.payment', [
             'payments' => $payments,
         ]);
     }    
@@ -40,7 +40,7 @@ class Payment extends Controller {
         $offset      = $request->offset ?? 0;
         $receivables = $assas->receivable($request->start_date, $request->finish_date, $offset);
 
-        return view('app.Payment.receivable', [
+        return view('app.Finance.receivable', [
             'receivables' => $receivables['data'],
             'hasMore'     => $receivables['hasMore'],
             'offset'      => $receivables['offset']

@@ -9,13 +9,11 @@ class Code extends Model {
 
     use HasFactory;
 
-    protected $table = 'code';
+    protected $table = 'codes';
 
     protected $fillable = [
         'id_user',
         'code',
         'status',
-        'data_generate',
-        'data_used',
     ];
 }

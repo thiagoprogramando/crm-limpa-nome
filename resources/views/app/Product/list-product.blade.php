@@ -24,9 +24,8 @@
                             <thead>
                                 <tr>
                                     <th scope="col">Nome</th>
-                                    <th class="text-center" scope="col">Valor Mín</th>
-                                    <th class="text-center" scope="col">Valor Máx</th>
-                                    <th class="text-center" scope="col">To. Vendas</th>
+                                    <th class="text-center" scope="col">Valor</th>
+                                    <th class="text-center" scope="col">T. Vendas</th>
                                     <th class="text-center" scope="col">Opções</th>
                                 </tr>
                             </thead>
@@ -34,11 +33,10 @@
                                 @foreach ($products as $product)
                                     <tr>
                                         <td>{{ $product->name }}</td>
-                                        <td class="text-center">R$ {{ number_format($product->value_min, 2, ',', '.') }}</td>
-                                        <td class="text-center">R$ {{ number_format($product->value_max, 2, ',', '.') }}</td>
+                                        <td class="text-center">R$ {{ number_format($product->value, 2, ',', '.') }}</td>
                                         <td class="text-center">{{ $product->totalSale() }}</td>
                                         <td class="text-center">
-                                            <form action="{{ route('delete-product') }}" method="POST" class="delete btn-group">
+                                            <form action="{{ route('deleted-product') }}" method="POST" class="delete btn-group">
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $product->id }}">
                                                 <a href="{{ route('updateproduct', ['id' => $product->id]) }}" class="btn btn-warning text-light"><i class="bi bi-pencil-square"></i></a>

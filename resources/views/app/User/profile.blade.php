@@ -143,14 +143,14 @@
                                 </div>
                                 <div class="col-12 col-md-6 col-lg-6 mb-1">
                                     <div class="form-floating">
-                                        <input type="text" name="phone" value="{{ Auth::user()->phone }}" class="form-control" id="floatingPhone" placeholder="Telefone:">
-                                        <label for="floatingPhone">Telefone:</label>
+                                        <input type="text" name="phone" value="{{ Auth::user()->phone }}" oninput="mascaraTelefone(this)" class="form-control" id="phone" placeholder="Telefone:">
+                                        <label for="phone">Telefone:</label>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6 col-lg-6 mb-1">
                                     <div class="form-floating">
-                                        <input type="text" name="cpfcnpj" value="{{ Auth::user()->cpfcnpj }}" class="form-control" id="floatingCpfcnpj" placeholder="CPF ou CNPJ:">
-                                        <label for="floatingCpfcnpj">CPF ou CNPJ:</label>
+                                        <input type="text" name="cpfcnpj" value="{{ Auth::user()->cpfcnpj }}" oninput="mascaraCpfCnpj(this)" class="form-control" id="cpfcnpj" placeholder="CPF ou CNPJ:">
+                                        <label for="cpfcnpj">CPF ou CNPJ:</label>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6 col-lg-6 mb-1">
@@ -159,10 +159,15 @@
                                         <label for="floatingDate">Data de Aniversário:</label>
                                     </div>
                                 </div>
-                                <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                <div class="col-12 col-md-6 col-lg-6 mb-1">
                                     <div class="form-floating">
-                                        <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Senha:">
+                                        <input type="text" name="password" class="form-control" id="floatingPassword" placeholder="Senha:">
                                         <label for="floatingPassword">Senha:</label>
+                                    </div>
+                                </div><div class="col-12 col-md-6 col-lg-6 mb-1">
+                                    <div class="form-floating">
+                                        <input type="password" name="Confirmpassword" class="form-control" id="floatingConfirmPassword" placeholder="Confirme a Senha:">
+                                        <label for="floatingConfirmPassword">Confirme a Senha:</label>
                                     </div>
                                 </div>
                             </div>
@@ -170,40 +175,38 @@
                             <div class="col-5 row">
                                 <div class="col-12 col-md-6 col-lg-6 mb-1">
                                     <div class="form-floating">
-                                        <input type="number" name="postal_code" value="{{ Auth::user()->postal_code }}" onblur="consultaCEP()" class="form-control" id="floatingPostalCode" placeholder="CEP:">
-                                        <label for="floatingPostalCode">CEP:</label>
+                                        <input type="number" name="postal_code" value="{{ Auth::user()->postal_code }}" onblur="consultaCEP()" class="form-control" id="postal_code" placeholder="CEP:">
+                                        <label for="postal_code">CEP:</label>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6 col-lg-6 mb-1">
                                     <div class="form-floating">
-                                        <input type="number" name="num" value="{{ Auth::user()->num }}" class="form-control" id="floatingNum" placeholder="N°:">
-                                        <label for="floatingNum">N°:</label>
+                                        <input type="number" name="num" value="{{ Auth::user()->num }}" class="form-control" id="num" placeholder="N°:">
+                                        <label for="num">N°:</label>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-12 col-lg-12 mb-1">
                                     <div class="form-floating">
-                                        <input type="text" name="address" value="{{ Auth::user()->address }}" class="form-control" id="floatingAddress" placeholder="Endereço:">
-                                        <label for="floatingAddress">Endereço:</label>
+                                        <input type="text" name="address" value="{{ Auth::user()->address }}" class="form-control" id="address" placeholder="Endereço:">
+                                        <label for="address">Endereço:</label>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6 col-lg-6 mb-1">
                                     <div class="form-floating">
-                                        <input type="text" name="city" value="{{ Auth::user()->city }}" class="form-control" id="floatingCity" placeholder="Cidade:">
-                                        <label for="floatingCity">Cidade:</label>
+                                        <input type="text" name="city" value="{{ Auth::user()->city }}" class="form-control" id="city" placeholder="Cidade:">
+                                        <label for="city">Cidade:</label>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6 col-lg-6 mb-1">
                                     <div class="form-floating">
-                                        <input type="text" name="state" value="{{ Auth::user()->state }}" class="form-control" id="floatingState" placeholder="Estado:">
-                                        <label for="floatingState">Estado:</label>
+                                        <input type="text" name="state" value="{{ Auth::user()->state }}" class="form-control" id="state" placeholder="Estado:">
+                                        <label for="state">Estado:</label>
                                     </div>
                                 </div>
                                 <div class="col-12 d-grid gap-2 mb-1">
                                     <button type="submit" class="btn btn-primary">Atualizar</button>
                                 </div>
                             </div>
-
-                            
                         </form>
                     </div>
                 </div>

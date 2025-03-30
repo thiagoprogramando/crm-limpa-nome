@@ -61,11 +61,11 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
                             <i class="bi bi-bell text-white"></i>
-                            <span class="badge bg-primary badge-number">{{ $totalNotification }}</span>
+                            <span class="badge bg-primary badge-number">{{ $notifications->count() }}</span>
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
-                            <li class="dropdown-header"> Você possui {{ $totalNotification }} notificações </li>
+                            <li class="dropdown-header"> Você possui {{ $notifications->count() }} notificações </li>
                             <li><hr class="dropdown-divider"></li>
 
                             @foreach ($notifications as $notification)
@@ -240,16 +240,16 @@
                 @if (Auth::user()->type == 1)
                     <li class="nav-heading">Gestão</li>
                     <li class="nav-item">
-                        <a class="nav-link collapsed" href="{{ route('lists') }}"> <i class="bi bi-list-check"></i> <span>Listas</span> </a>
+                        <a class="nav-link collapsed" href="{{ route('list-lists') }}"> <i class="bi bi-list-check"></i> <span>Listas</span> </a>
                     </li>
                     
                     <li class="nav-item">
-                        <a class="nav-link {{ Route::currentRouteName() == 'listproduct' || Route::currentRouteName() == 'createproduct' ? '' : 'collapsed' }}" data-bs-target="#forms-product" data-bs-toggle="collapse" href="#">
+                        <a class="nav-link {{ Route::currentRouteName() == 'list-products' || Route::currentRouteName() == 'createproduct' ? '' : 'collapsed' }}" data-bs-target="#forms-product" data-bs-toggle="collapse" href="#">
                             <i class="bi bi-box"></i><span>Produtos</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
-                        <ul id="forms-product" class="nav-content collapse {{ Route::currentRouteName() == 'listproduct' || Route::currentRouteName() == 'createproduct' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
+                        <ul id="forms-product" class="nav-content collapse {{ Route::currentRouteName() == 'list-products' || Route::currentRouteName() == 'createproduct' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
                             <li>
-                                <a href="{{ route('listproduct') }}"> <i class="bi bi-circle"></i><span>Produtos</span> </a>
+                                <a href="{{ route('list-products') }}"> <i class="bi bi-circle"></i><span>Produtos</span> </a>
                             </li>
                             <li>
                                 <a href="{{ route('createproduct') }}"> <i class="bi bi-circle"></i><span>Criar Produto</span> </a>
@@ -331,6 +331,16 @@
             @endif
 
             document.addEventListener('DOMContentLoaded', function () {
+
+                const phone         = document.getElementById('phone');
+                const cpfcnpj       = document.getElementById('cpfcnpj');
+                const money         = document.getElementById('value');
+                const postal_code   = document.getElementById('postal_code');
+
+                if (phone && phone.value) mascaraTelefone(phone);
+                if (cpfcnpj && cpfcnpj.value) mascaraCpfCnpj(cpfcnpj);
+                if (money && money.value) mascaraReal(money);
+                if (postal_code && postal_code.value) mascaraCEP(postal_code);
                 
                 const deleteForms = document.querySelectorAll('form.delete');
                 deleteForms.forEach(form => {

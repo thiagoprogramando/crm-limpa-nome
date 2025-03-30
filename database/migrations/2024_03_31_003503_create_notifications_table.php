@@ -7,17 +7,15 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
 
     public function up(): void {
-        Schema::create('notification', function (Blueprint $table) {
+        Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-
-            $table->integer('id_user')->nullable();
-            $table->integer('id_event')->nullable();
-            $table->integer('type')->nullable();
-            $table->integer('view')->nullable();
-
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->tinyInteger('type')->nullable();
+            $table->tinyInteger('view')->default(0);
             $table->string('name');
             $table->string('description');
-
+            $table->string('url')->nullable();
             $table->timestamps();
         });
     }

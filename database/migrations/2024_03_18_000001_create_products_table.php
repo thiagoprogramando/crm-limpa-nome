@@ -7,30 +7,28 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
 
     public function up(): void {
-        Schema::create('product', function (Blueprint $table) {
+        Schema::create('products', function (Blueprint $table) {
             $table->id();
-            
             $table->string('name');
             $table->string('description');
-
             $table->decimal('value_min', 10, 2)->nullable();
             $table->decimal('value_max', 10, 2)->nullable();
             $table->decimal('value_cost', 10, 2)->default(0);
-            $table->decimal('value_rate', 10, 2)->nullable();
+            $table->decimal('value_rate', 10, 2)->default(0);
             
-            $table->integer('address')->default(0);
-            $table->integer('level')->nullable();
-            $table->integer('active')->default(1);
+            $table->tinyInteger('address')->default(0);
+            $table->tinyInteger('level')->nullable();
+            $table->tinyInteger('active')->default(2);
+            $table->tinyInteger('terms')->default(2);
             
-            $table->string('token_contract')->nullable();
             $table->longText('subject_contract')->nullable();
-            $table->longText('terms')->nullable();
-            $table->longText('terms_text')->nullable();
+            $table->longText('subject_terms')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
     public function down(): void {
-        Schema::dropIfExists('product');
+        Schema::dropIfExists('products');
     }
 };

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -19,6 +18,9 @@ class User extends Authenticatable {
     use HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
+        'sponsor_id',
+        'association_id',
+
         'photo',
         'name',
         'email',
@@ -27,9 +29,6 @@ class User extends Authenticatable {
         'phone',
         'password',
 
-        'level',
-        'status',
-
         'postal_code',
         'address',
         'complement',
@@ -37,18 +36,26 @@ class User extends Authenticatable {
         'state',
         'num',
 
-        'token_acess',
+        'level',
+        'status',
+
+        'wallet_off',
         'wallet',
         'wallet_id',
         'api_key',
-        'api_token_zapapi',
         'customer',
-        'wallet_off',
 
+        'fixed_cost',
         'type',
-        'filiate',
+       
+        'white_label_whatsapp',
+        'white_label_contract',
+        'white_label_network',
 
-        'fixed_cost'
+        'company_name',
+        'company_cpfcnpj',
+        'company_address',
+        'company_email'
     ];
 
     public function salesClient() {
@@ -60,7 +67,7 @@ class User extends Authenticatable {
     }
 
     public function invoices() {
-        return $this->hasMany(Invoice::class, 'id_user')->orderBy('status', 'asc');
+        return $this->hasMany(Invoice::class, 'user_id')->orderBy('status', 'asc');
     }
 
     public function lastPendingInvoiceTypeOne() {
@@ -88,7 +95,7 @@ class User extends Authenticatable {
     }
 
     public function months() {
-        return $this->hasMany(Invoice::class, 'id_user')
+        return $this->hasMany(Invoice::class, 'user_id')
                 ->where('type', 1)
                 ->where('status', 1)
                 ->count();

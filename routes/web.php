@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Access\Forgout;
+use App\Http\Controllers\Access\ForgoutController;
 use App\Http\Controllers\Access\Login;
 use App\Http\Controllers\Access\Registrer;
 use App\Http\Controllers\AppController;
@@ -32,9 +32,9 @@ Route::post('/logon-cliente', [LoginController::class, 'logon'])->name('logon.cl
 Route::get('/registrer/{id?}/{fixed_cost?}', [Registrer::class, 'index'])->name('registrer');
 Route::post('registrer-user', [Registrer::class, 'registrerUser'])->name('registrer-user');
 
-Route::get('/forgout/{code?}', [Forgout::class, 'forgout'])->name('forgout');
-Route::post('send-code-password', [Forgout::class, 'sendCodePassword'])->name('send-code-password');
-Route::post('update-password', [Forgout::class, 'updatePassword'])->name('update-password');
+Route::get('/forgout/{code?}', [ForgoutController::class, 'forgout'])->name('forgout');
+Route::post('send-code-password', [ForgoutController::class, 'sendCodePassword'])->name('send-code-password');
+Route::post('forgout-password', [ForgoutController::class, 'forgoutPassword'])->name('forgout-password');
 
 Route::middleware(['auth'])->group(function () {
 
@@ -54,7 +54,6 @@ Route::middleware(['auth'])->group(function () {
 
                 Route::get('/wallet', [WalletController::class, 'wallet'])->name('wallet');
                 Route::post('withdraw-send', [WalletController::class, 'withdrawSend'])->name('withdraw-send');
-                Route::get('/receivable', [Payment::class, 'receivable'])->name('receivable');
 
                 Route::post('create-invoice', [SaleController::class, 'createInvoice'])->name('create-invoice');
             });
@@ -91,23 +90,27 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/create-wallet', [UserController::class, 'createWallet'])->name('create-wallet');
     });
 
+    Route::middleware(['checkAdmin'])->group(function () {
+
+        Route::get('/list-products', [ProductController::class, 'index'])->name('list-products');
+        Route::get('/create-product', [ProductController::class, 'productView'])->name('createproduct');
+        Route::post('created-product', [ProductController::class, 'productCreate'])->name('created-product');
+        Route::get('/update-product/{id}', [ProductController::class, 'productDetails'])->name('update-product');
+        Route::post('updated-product', [ProductController::class, 'productUpdate'])->name('updated-product');
+        Route::post('deleted-product', [ProductController::class, 'productDelete'])->name('deleted-product');
+    });
+
     Route::get('/profile', [UserController::class, 'profile'])->name('profile');
     Route::post('update-user', [UserController::class, 'updateProfile'])->name('update-user');
     Route::post('delete-user', [UserController::class, 'deleteUser'])->name('delete-user');
     Route::get('/list-active/{status}', [UserController::class, 'listActive'])->name('list-active');
     Route::get('/send-active/{id}', [UserController::class, 'sendActive'])->name('send-active');
 
-    Route::get('/listproduct', [ProductController::class, 'list'])->name('listproduct');
-    Route::get('/createproduct', [ProductController::class, 'create'])->name('createproduct');
-    Route::post('create-product', [ProductController::class, 'createProduct'])->name('create-product');
-    Route::get('/updateproduct/{id}', [ProductController::class, 'update'])->name('updateproduct');
-    Route::post('update-product', [ProductController::class, 'updateProduct'])->name('update-product');
-    Route::post('delete-product', [ProductController::class, 'delete'])->name('delete-product');
+    
 
-    Route::get('/lists', [ListController::class, 'list'])->name('lists');
-    Route::get('/createlist', [ListController::class, 'create'])->name('createlist');
+    Route::get('/list-lists', [ListController::class, 'lists'])->name('list-lists');
     Route::post('create-list', [ListController::class, 'createList'])->name('create-list');
-    Route::get('/updatelist/{id}', [ListController::class, 'update'])->name('updatelist');
+    Route::get('/view-list/{id}', [ListController::class, 'view'])->name('view-list');
     Route::post('update-list', [ListController::class, 'updateList'])->name('update-list');
     Route::post('delete-list', [ListController::class, 'delete'])->name('delete-list');
     Route::get('/excel-list/{id}', [ListController::class, 'excelList'])->name('excel-list');
@@ -120,7 +123,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/createMonthly/{id}', [AssasController::class, 'createMonthly'])->name('createMonthly');
     Route::get('/payMonthly/{id}', [AssasController::class, 'payMonthly'])->name('payMonthly');
     Route::get('/request-invoices/{id}', [AssasController::class, 'requestInvoice'])->name('request-invoices');
+    
     Route::get('/payments', [Payment::class, 'payments'])->name('payments');
+    Route::get('/receivable', [Payment::class, 'receivable'])->name('receivable');
 
     Route::get('/app-cliente', [ClientAppController::class, 'app'])->name('app.cliente');
     Route::get('/invoice-cliente/{sale?}', [ClientAppController::class, 'invoice'])->name('invoice.cliente');

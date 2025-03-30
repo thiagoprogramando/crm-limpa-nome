@@ -30,16 +30,11 @@
                                         <h3 class="mb-4">Recuperação</h3>
                                         
                                     </div>
-                                    <div class="w-100">
-                                        {{-- <p class="social-media d-flex justify-content-end">
-                                            <a href="https://www.facebook.com/diegoduarteg7/" target="_blank" class="social-icon d-flex align-items-center justify-content-center"><span class="fa fa-facebook"></span></a>
-                                            <a href="https://www.instagram.com/g7assessoria/" target="_blank" class="social-icon d-flex align-items-center justify-content-center"><span class="fa fa-instagram"></span></a>
-                                        </p> --}}
-                                    </div>
+                                    <div class="w-100"></div>
                                 </div>
 
                                 @if($code != null)
-                                    <form action="{{ route('update-password') }}" method="POST" class="signin-form">
+                                    <form action="{{ route('forgout-password') }}" method="POST" class="signin-form">
                                         @csrf
                                         <div class="form-group mb-3">
                                             <input type="text" name="code" class="form-control" placeholder="Código:" required>
@@ -58,7 +53,7 @@
                                     <form action="{{ route('send-code-password') }}" method="POST" class="signin-form">
                                         @csrf
                                         <div class="form-group mb-3">
-                                            <input type="email" name="email" class="form-control" placeholder="Email:" required>
+                                            <input type="text" name="cpfcnpj" class="form-control" placeholder="CPF ou CNPJ:" oninput="mascaraCpfCnpj(this)" required>
                                         </div>
                                         <div class="form-group">
                                             <button type="submit" class="form-control btn btn-primary rounded submit px-3">Solicitar código</button>

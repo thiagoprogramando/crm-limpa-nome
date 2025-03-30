@@ -7,13 +7,12 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
 
     public function up(): void {
-        Schema::create('code', function (Blueprint $table) {
+        Schema::create('codes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_user');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('code');
-            $table->integer('status')->nullable();
-            $table->date('data_generate');
-            $table->date('data_used')->nullable();
+            $table->tinyInteger('status')->default(0);
             $table->timestamps();
         });
     }

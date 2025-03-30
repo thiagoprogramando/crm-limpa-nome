@@ -11,7 +11,7 @@ class Sale extends Model {
 
     use HasFactory, SoftDeletes;
 
-    protected $table = 'sale';
+    protected $table = 'sales';
 
     protected $fillable = [
 
@@ -20,27 +20,31 @@ class Sale extends Model {
         'id_client',
         'id_seller',
 
-        'payment',
-        'installments',
+        'payment_token',
+        'payment_method',
+        'payment_installments',
 
         'value',
         'value_total',
         'commission',
         'commission_filiate',
 
-        'token_payment',
-        'token_contract',
-        'url_contract',
-        'status_contract',
+        'contract_url',
+        'contract_sign',
+
+        'guarantee',
+        'label',
 
         'status',
-        'wallet_off',
-        'label',
-        'guarantee'
+        'type',
     ];
 
     public function product() {
         return $this->belongsTo(Product::class, 'id_product');
+    }
+
+    public function list() {
+        return $this->belongsTo(Lists::class, 'id_list');
     }
 
     public function user() {
@@ -49,11 +53,7 @@ class Sale extends Model {
 
     public function seller() {
         return $this->belongsTo(User::class, 'id_seller')->withTrashed();
-    }
-
-    public function list() {
-        return $this->belongsTo(Lists::class, 'id_list');
-    }
+    }    
 
     public function paymentMethod() {
         switch ($this->payment) {
@@ -84,20 +84,12 @@ class Sale extends Model {
     }
 
     public function statusContractLabel() {
-        switch ($this->status_contract) {
-            case 1:
-                return 'Assinado';
-                break;
-            case 2:
-                return 'Pendente';
-                break;
-            case 3:
-                return 'Contrato não gerado';
-                break;
-            default:
-                return 'Contrato não gerado';
-                break;
+
+        if (empty($this->sign_contract)) {
+            return 'Pendente de Assinatura';
         }
+
+        return 'Assinado';
     }
 
     public function protocolLabel() {

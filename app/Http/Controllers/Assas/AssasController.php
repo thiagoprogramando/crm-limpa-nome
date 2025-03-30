@@ -19,6 +19,7 @@ use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class AssasController extends Controller {
 
@@ -76,7 +77,7 @@ class AssasController extends Controller {
         }
         
         $invoice = new Invoice();
-        $invoice->id_user               = $sale->id_client;
+        $invoice->user_id               = $sale->id_client;
         $invoice->id_sale               = $sale->id;
         $invoice->id_product            = $sale->id_product;
         $invoice->name                  = env('APP_NAME').' - Fatura';
@@ -113,7 +114,7 @@ class AssasController extends Controller {
         }
 
         $invoice                = new Invoice();
-        $invoice->id_user       = $sale->id_client;
+        $invoice->user_id       = $sale->id_client;
         $invoice->id_sale       = $sale->id;
         $invoice->id_product    = $sale->id_product;
 
@@ -152,7 +153,7 @@ class AssasController extends Controller {
         $notification->name         = 'Faturas criada';
         $notification->description  = 'Faturas geradas para venda N° '.$sale->id;
         $notification->type         = 1;
-        $notification->id_user      = $sale->id_seller; 
+        $notification->user_id      = $sale->id_seller; 
         $notification->save();
 
         if($invoice->save()) {
@@ -161,43 +162,6 @@ class AssasController extends Controller {
             $this->sendInvoice($charge['invoiceUrl'], $sale->id_client, $sale->seller->api_token_zapapi);
 
             return true;
-        }
-
-        return false;
-    }
-
-    private function sendInvoice($url_payment, $id, $message = null, $token = null) {
-
-        $user = User::find($id);
-        if ($user) {
-
-            $client = new Client();
-
-            $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
-            try {
-
-                $response = $client->post($url, [
-                    'headers' => [
-                        'Content-Type'  => 'application/json',
-                        'Accept'        => 'application/json',
-                        'Client-Token'  => 'Fabe25dbd69e54f34931e1c5f0dda8c5bS',
-                    ],
-                    'json' => [
-                        'phone'           => '55' . $user->phone,
-                        'message'         => $message ?? "Prezado(a) ".$user->name.", estamos enviando o link para pagamento da sua contratação aos serviços da nossa assessoria.  \r\n\r\n\r\n FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳 \r\n",
-                        'image'           => env('APP_URL_LOGO'),
-                        'linkUrl'         => $url_payment,
-                        'title'           => 'Pagamento de Fatura',
-                        'linkDescription' => 'Link para Pagamento Digital',
-                    ],
-                    'verify' => false
-                ]);
-
-                return true;
-            } catch (\Exception $e) {
-                Log::error('Ao enviar notificação ao cliente: '. $e->getMessage());
-                return false;
-            }
         }
 
         return false;
@@ -220,7 +184,7 @@ class AssasController extends Controller {
             return redirect()->route('profile')->with('info', 'Verifique seus dados e tente novamente!');
         }
        
-        $invoice = Invoice::where('id_user', $user->id)->where('type', 1)->where('status', 0)->exists();
+        $invoice = Invoice::where('user_id', $user->id)->where('type', 1)->where('status', 0)->exists();
         if ($invoice) {
             return redirect()->route('payments')->with('error', 'Você possui uma mensalidade em aberto!');
         }
@@ -243,8 +207,8 @@ class AssasController extends Controller {
             $invoice->name          = 'Mensalidade '.env('APP_NAME');
             $invoice->description   = 'Mensalidade '.env('APP_NAME');
 
-            $invoice->id_user       = $user->id;
-            $invoice->id_product    = 0;
+            $invoice->user_id       = $user->id;
+            $invoice->product_id    = 1;
             $invoice->value         = 49.99;
             $invoice->commission    = 20;
             $invoice->status        = 0;
@@ -252,8 +216,8 @@ class AssasController extends Controller {
             $invoice->num           = 1;
             $invoice->due_date      = now()->addDay();
 
-            $invoice->url_payment   = $charge['invoiceUrl'];
-            $invoice->token_payment = $charge['id'];
+            $invoice->payment_url   = $charge['invoiceUrl'];
+            $invoice->payment_token = $charge['id'];
 
             if($invoice->save()) {
                 return redirect($charge['invoiceUrl']);
@@ -300,15 +264,15 @@ class AssasController extends Controller {
                 }
                 return $data['id'];
             } else {
-                Log::error("Erro na criação do cliente: " . json_encode($data));
+                Log::error("Erro na criação do cliente Controller AssasController: " . json_encode($data));
                 return false;
             }
     
         } catch (RequestException $e) {
-            Log::error("Erro de requisição na API Assas CreateCustomer: " . $e->getMessage());
+            Log::error("Erro de requisição na API Assas CreateCustomer Controller AssasController: " . $e->getMessage());
             return false;
         } catch (\Exception $e) {
-            Log::error("Erro geral na função createCustomer: " . $e->getMessage());
+            Log::error("Erro geral na função createCustomer Controller AssasController: " . $e->getMessage());
             return false;
         }
     }
@@ -387,68 +351,14 @@ class AssasController extends Controller {
                     'invoiceUrl'    => $data['invoiceUrl'],
                 ];
             } else {
-                Log::error('Erro ao Gerar Fatura de '.$customer.': ' . $body);
+                Log::error('Erro ao Gerar Fatura (Controller AssasController) de '.$customer.': ' . $body);
                 return false;
             }
         } catch (\Exception $e) {
-            Log::error('Erro ao Gerar Fatura de '.$customer.': ' . $e->getMessage());
+            Log::error('Erro ao Gerar Fatura (Controller AssasController) de '.$customer.': ' . $e->getMessage());
             return false;
         }
     }    
-
-    public function sendWhatsapp($link, $message, $phone, $token = null) {
-
-        $client = new Client();
-        $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
-    
-        try {
-            $response = $client->post($url, [
-                'headers' => [
-                    'Content-Type'  => 'application/json',
-                    'Accept'        => 'application/json',
-                    'Client-Token'  => 'Fabe25dbd69e54f34931e1c5f0dda8c5bS',
-                ],
-                'json' => [
-                    'phone'           => '55' . $phone,
-                    'message'         => $message,
-                    'image'           => env('APP_URL_LOGO'),
-                    'linkUrl'         => $link,
-                    'title'           => 'Assinatura de Documento',
-                    'linkDescription' => 'Link para Assinatura Digital',
-                ],
-                'verify' => false
-            ]);
-    
-            if ($response->getStatusCode() == 200) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (\Exception $e) {
-            return false;
-        }
-    }    
-
-    public function createKey($id) {
-
-        $invoice = Invoice::find($id);
-        if ($invoice) {
-            
-            $user = User::find($invoice->id_user);
-            if ($user) {
-                if (($user->parent->afiliates()->count() % 5 === 0) && $user->invoices()->where('type', 1)->count() <= 1) {
-                    $this->createCoupon($user->parent, 'Promoção 2 Afiliados 1 Mensalidade!');
-                }
-
-                $user->status = 1;
-                if ($user->save()) {
-                    return ['status' => true];
-                }
-            }
-        }
-    
-        return ['status' => false, 'error' => 'Dados do usuário ou Faturas não localizados'];
-    }
     
     public function createCoupon($parent, $description) {
 
@@ -457,7 +367,7 @@ class AssasController extends Controller {
         $coupon                 = new Coupon();
         $coupon->name           = $couponName;
         $coupon->description    = $description;
-        $coupon->id_user        = $parent->id;
+        $coupon->user_id        = $parent->id;
         $coupon->percentage     = 100;
         $coupon->qtd            = 1;
         if($coupon->save()) {
@@ -495,15 +405,6 @@ class AssasController extends Controller {
                     return response()->json(['status' => 'error', 'message' => 'Não foi possível confirmar o pagamento da fatura!']);
                 }
 
-                if ($invoice->type == 1) {
-                    $key = $this->createKey($invoice->id);
-                    if ($key == true || $key == 1) {
-                        return response()->json(['status' => 'success', 'message' => 'Operação Finalizada & ApiKey criada!']);
-                    }
-
-                    return response()->json(['status' => 'success', 'message' => 'Operação Finalizada, mas houve um erro na criação da ApiKey!']);
-                }
-
                 $sale = Sale::where('id', $invoice->id_sale)->first();
                 if ($sale) {
 
@@ -525,7 +426,7 @@ class AssasController extends Controller {
                     $notification->name         = 'Fatura N°'.$invoice->id;
                     $notification->description  = 'Faturas recebida com sucesso!';
                     $notification->type         = 1;
-                    $notification->id_user      = $invoice->id_seller; 
+                    $notification->user_id      = $invoice->id_seller; 
                     $notification->save();
 
                     $seller = User::find($sale->id_seller);
@@ -568,7 +469,7 @@ class AssasController extends Controller {
                             $notification->name         = 'Novo nível!';
                             $notification->description  = $seller->name.' Alcançou o nível: '.$nivel;
                             $notification->type         = 2;
-                            $notification->id_user      = 14; 
+                            $notification->user_id      = 14; 
                             $notification->save();
                         }
 
@@ -589,7 +490,7 @@ class AssasController extends Controller {
                     return response()->json(['success' => 'success', 'message' => 'Status das vendas atualizado com sucesso!']);
                 }
 
-                $client = User::find($invoice->id_user);
+                $client = User::find($invoice->user_id);
                 if ($client && $invoice->num == 1) {
                     $this->sendWhatsapp(env('APP_URL').'login-cliente', "Olá, ".$client->name."!\r\n\r\nAgradecemos pelo seu pagamento! \r\n\r\n\r\n Tenha a certeza de que sua situação está em boas mãos. \r\n\r\n\r\n *Nos próximos 30 dias úteis*, nossa equipe especializada acompanhará de perto todo o processo para garantir que seu nome seja limpo o mais rápido possível. \r\n\r\n\r\n Estamos à disposição para qualquer dúvida ou esclarecimento. \r\n\r\n Você pode acompanhar o processo acessando nosso sistema no link abaixo: \r\n\r\n", $client->phone, $seller->api_token_zapapi);
                 } else {
@@ -830,7 +731,7 @@ class AssasController extends Controller {
     public function myDocuments() {
         try {
             
-            $user = auth()->user();
+            $user = Auth::user();
     
             if (empty($user->api_key)) {
                 return [];
@@ -862,30 +763,39 @@ class AssasController extends Controller {
     }    
 
     public function receivable($startDate = null, $finishDate = null, $offset = 0) {
+        try {
 
-        $client     = new Client();
-        $user       = auth()->user();
-        $startDate  = $startDate  ?? now()->toDateString();
-        $finishDate = $finishDate ?? now()->toDateString();
+            $client     = new Client();
+            $user       = Auth::user();
+            $startDate  = $startDate  ?? now()->toDateString();
+            $finishDate = $finishDate ?? now()->toDateString();
+    
+            $response = $client->request('GET',  env('API_URL_ASSAS') . "v3/financialTransactions?limit=100&startDate={$startDate}&finishDate={$finishDate}&offset={$offset}&order=asc", [
+                'headers' => [
+                    'accept'        => 'application/json',
+                    'access_token'  => $user->api_key,
+                    'User-Agent'    => env('APP_NAME')
+                ],
+                'verify' => env('APP_ENV') == 'local' ? false : true,
+            ]);
 
-        $response = $client->request('GET',  env('API_URL_ASSAS') . "v3/financialTransactions?limit=100&startDate={$startDate}&finishDate={$finishDate}&offset={$offset}&order=asc", [
-            'headers' => [
-                'accept'        => 'application/json',
-                'access_token'  => $user->api_key,
-                'User-Agent'    => env('APP_NAME')
-            ],
-            'verify' => false,
-        ]);
-
-        $body = (string) $response->getBody();
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($body, true);
-            return [
-                'data'    => $data['data'],
-                'hasMore' => $data['hasMore'],
-                'offset'  => $offset
-            ];
-        } else {
+            $body = (string) $response->getBody();
+            if ($response->getStatusCode() === 200) {
+                $data = json_decode($body, true);
+                return [
+                    'data'    => $data['data'],
+                    'hasMore' => $data['hasMore'],
+                    'offset'  => $offset
+                ];
+            } else {
+                return [
+                    'data'    => [],
+                    'hasMore' => false,
+                    'offset'  => $offset
+                ];
+            }
+        } catch (\Exception $e) {
+            Log::error('Erro ao consultar Extrato '.$user->name.': ' . $e->getMessage());
             return [
                 'data'    => [],
                 'hasMore' => false,
@@ -898,7 +808,7 @@ class AssasController extends Controller {
         try {
             $client = new Client();
 
-            $user = $id ? User::find($id) : auth()->user();
+            $user = $id ? User::find($id) : Auth::user();
 
             if (!$user) {
                 throw new \Exception('Usuário não encontrado.');
@@ -910,7 +820,7 @@ class AssasController extends Controller {
                     'access_token' => $user->api_key,
                     'User-Agent'   => env('APP_NAME'),
                 ],
-                'verify' => false,
+                'verify' => env('APP_ENV') == 'local' ? false : true,
             ]);
 
             if ($response->getStatusCode() === 200) {
@@ -928,7 +838,7 @@ class AssasController extends Controller {
     public function statistics() {
         try {
             $client = new Client();
-            $user = auth()->user();
+            $user = Auth::user();
 
             if (!$user) {
                 throw new \Exception('Usuário não autenticado.');
@@ -940,7 +850,7 @@ class AssasController extends Controller {
                     'access_token' => $user->api_key,
                     'User-Agent'   => env('APP_NAME')
                 ],
-                'verify' => false,
+                'verify' => env('APP_ENV') == 'local' ? false : true,
             ]);
 
             if ($response->getStatusCode() === 200) {
@@ -958,7 +868,7 @@ class AssasController extends Controller {
     public function accumulated() {
         try {
             $client = new Client();
-            $user = auth()->user();
+            $user = Auth::user();
             $startDate = $user->created_at->toDateString();
             $finishDate = now()->toDateString();
     
@@ -968,7 +878,7 @@ class AssasController extends Controller {
                     'access_token'  => $user->api_key,
                     'User-Agent'    => env('APP_NAME')
                 ],
-                'verify' => false,
+                'verify' => env('APP_ENV') == 'local' ? false : true,
             ]);
     
             if ($response->getStatusCode() === 200) {
@@ -1023,7 +933,7 @@ class AssasController extends Controller {
 
         $client = new Client();
         
-        $user = auth()->user();
+        $user = Auth::user();
         try {
             $response = $client->request('POST', env('API_URL_ASSAS').'v3/transfers', [
                 'headers' => [
@@ -1063,7 +973,7 @@ class AssasController extends Controller {
         try {
 
             $client = new Client();
-            $user = auth()->user();
+            $user = Auth::user();
             $startDate = $user->created_at->toDateString();
             $finishDate = now()->toDateString();
     
@@ -1073,7 +983,7 @@ class AssasController extends Controller {
                     'access_token' => $user->api_key,
                     'User-Agent'   => env('APP_NAME')
                 ],
-                'verify' => false,
+                'verify' => env('APP_ENV') == 'local' ? false : true,
             ]);
     
             if ($response->getStatusCode() !== 200) {
@@ -1122,7 +1032,7 @@ class AssasController extends Controller {
                 return redirect()->back()->with('error', 'Não é possível pagar essa Fatura com saldo!');
             }
     
-            $user = User::find($invoice->id_user);
+            $user = User::find($invoice->user_id);
             if (!$user) {
                 return redirect()->back()->with('info', 'Dados não localizados!');
             }
@@ -1139,7 +1049,7 @@ class AssasController extends Controller {
                     'access_token' => $user->api_key,
                     'User-Agent'   => env('APP_NAME')
                 ],
-                'verify' => false,
+                'verify' => env('APP_ENV') == 'local' ? false : true,
             ]);
     
             if ($response->getStatusCode() !== 200) {
@@ -1318,7 +1228,7 @@ class AssasController extends Controller {
         $invoice                     = new Invoice();
         $invoice->name               = $description;
         $invoice->description        = $description;
-        $invoice->id_user            = $user->id;
+        $invoice->user_id            = $user->id;
         $invoice->id_product         = 0;
         $invoice->value              = $totalValue;
         $invoice->commission         = 0;
@@ -1340,4 +1250,73 @@ class AssasController extends Controller {
         return response()->json(['success' => false, 'message' => $message], $code);
     }
 
+    private function sendInvoice($url_payment, $id, $message = null, $token = null) {
+
+        $user = User::find($id);
+        if ($user) {
+
+            $client = new Client();
+
+            $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
+            try {
+
+                $response = $client->post($url, [
+                    'headers' => [
+                        'Content-Type'  => 'application/json',
+                        'Accept'        => 'application/json',
+                        'Client-Token'  => 'Fabe25dbd69e54f34931e1c5f0dda8c5bS',
+                    ],
+                    'json' => [
+                        'phone'           => '55' . $user->phone,
+                        'message'         => $message ?? "Prezado(a) ".$user->name.", estamos enviando o link para pagamento da sua contratação aos serviços da nossa assessoria.  \r\n\r\n\r\n FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳 \r\n",
+                        'image'           => env('APP_URL_LOGO'),
+                        'linkUrl'         => $url_payment,
+                        'title'           => 'Pagamento de Fatura',
+                        'linkDescription' => 'Link para Pagamento Digital',
+                    ],
+                    'verify' => false
+                ]);
+
+                return true;
+            } catch (\Exception $e) {
+                Log::error('Ao enviar notificação ao cliente Controller AssasController: '. $e->getMessage());
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    private function sendWhatsapp($link, $message, $phone, $token = null) {
+
+        $client = new Client();
+        $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
+    
+        try {
+            $response = $client->post($url, [
+                'headers' => [
+                    'Content-Type'  => 'application/json',
+                    'Accept'        => 'application/json',
+                    'Client-Token'  => 'Fabe25dbd69e54f34931e1c5f0dda8c5bS',
+                ],
+                'json' => [
+                    'phone'           => '55' . $phone,
+                    'message'         => $message,
+                    'image'           => env('APP_URL_LOGO'),
+                    'linkUrl'         => $link,
+                    'title'           => 'Assinatura de Documento',
+                    'linkDescription' => 'Link para Assinatura Digital',
+                ],
+                'verify' => false
+            ]);
+    
+            if ($response->getStatusCode() == 200) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
 }

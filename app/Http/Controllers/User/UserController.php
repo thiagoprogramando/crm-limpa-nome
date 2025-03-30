@@ -26,7 +26,7 @@ class UserController extends Controller {
             return view('app.User.profile');
         }
 
-        $documents = new AssasController();
+        $documents   = new AssasController();
         $mydocuments = $documents->myDocuments();
         return view('app.User.profile', [
             'mydocuments' => $mydocuments
@@ -36,6 +36,9 @@ class UserController extends Controller {
     public function updateProfile(Request $request) {
 
         $user = User::where('id', $request->id)->first();
+        if (!$user) {
+            return redirect()->back()->with('info', 'Ops! Não foi possível acessar o seu perfil, tente novamente mais tarde!'); 
+        }
 
         if (!empty($request->name)) {
             $user->name = $request->name;
@@ -50,7 +53,7 @@ class UserController extends Controller {
         }
 
         if ($request->email && $request->email != $user->email) {
-            $user->email = preg_replace('/[^\w\d\.\@\-\_]/', '', $request->email);
+            $user->email = $request->email;
         }
 
         if (!empty($request->birth_date)) {
@@ -81,14 +84,6 @@ class UserController extends Controller {
             $user->num = $request->num;
         }
 
-        if (!empty($request->api_token_zapapi)) {
-            $user->api_token_zapapi = $request->api_token_zapapi;
-        }
-
-        if (!empty($request->white_label_network)) {
-            $user->white_label_network = $request->white_label_network;
-        }
-
         if (!empty($request->fixed_cost)) {
 
             if (($this->formatarValor($request->fixed_cost) < Auth::user()->fixed_cost) && Auth::user()->type !== 1) {
@@ -102,17 +97,22 @@ class UserController extends Controller {
             $user->level = $request->level;
         }
 
-        if (!empty($request->num)) {
-            $user->num = $request->num;
-        }
-
         if (!empty($request->password)) {
+
+            if ($request->password !== $request->Confirmpassword) {
+                return redirect()->back()->with('info', 'Senhas não coincidem!');
+            }
+
             $user->password = bcrypt($request->password);
-            $this->alertPassword($request->id, true);
+            $this->alertPassword($user->id);
         }
 
         if (!empty($request->type)) {
             $user->type = $request->type;
+        }
+
+        if (!empty($request->white_label_network)) {
+            $user->white_label_network = $request->white_label_network;
         }
 
         if (!empty($request->white_label_contract)) {
@@ -139,13 +139,14 @@ class UserController extends Controller {
             $status = $this->accountStatus($request->api_key);
             if (is_array($status) && (isset($status['general']) && ($status['general'] == 'APPROVED' || $status['general'] == 'AWAITING_APPROVA'))) {
                 $user->api_key = $request->api_key;
+                $user->status  = 1;
             } else {
                 return redirect()->back()->with('info', 'Tokens não válidados! Aguarde aprovação da sua carteira/ou entre em contato com o suporte.');
             }
-        }
 
-        if (!empty($request->wallet)) {
-            $user->wallet = $request->wallet;
+            if (!empty($request->wallet)) {
+                $user->wallet = $request->wallet;
+            }
         }
 
         if (!empty($request->photo)) {
@@ -176,18 +177,20 @@ class UserController extends Controller {
     private function alertPassword($id) {
 
         $user = User::find($id);
+        if (!$user) {
+            return false;
+        }
         
         $message =  "Olá, {$user->name},\r\n\r\n"
                         . "Foi feito uma redefinição de senha na sua conta! \r\n\r\n"
                         . "*Caso não reconheça essa ação, entre em contato com nosso suporte imediatamente.*\r\n\r\n"
                         . "Acesse: ".env('APP_URL')."\r\n"
-                        . "Faça login com seu *E-mail* e *Senha* (Caso tenha solicitado via suporte sua senha será CPF/CNPJ informado no cadastro). \r\n\r\n"
+                        . "Faça login com seu *E-mail* e *Senha*. \r\n\r\n"
                         . "Precisa de ajuda? Estamos aqui para você!\r\n\r\n";
             $this->sendWhatsapp(
                 env('APP_URL'),
                 $message,
-                $user->phone,
-                $user->api_token_zapapi
+                $user->phone
             );
 
             return redirect()->back()->with('success', 'mensagem enviada com sucesso!');

@@ -1,6 +1,9 @@
 @extends('app.layout')
 @section('title') Criação de Produtos & Negócios @endsection
 @section('conteudo')
+
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet"/>
+
     <div class="pagetitle">
         <h1>Criação de Produtos & Negócios</h1>
         <nav>
@@ -25,17 +28,16 @@
                             </li>
                         </ul>
 
-                        <form action="{{ route('create-product') }}" method="POST" class="tab-content pt-2" id="myTabContent">
+                        <form action="{{ route('created-product') }}" method="POST" class="tab-content pt-2" id="myTabContent">
                             <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                <div class="row g-3">
+                                <div class="row">
                                     @csrf
                                     <div class="col-12 col-md-7 col-lg-7">
-                                        <div class="form-floating">
-                                            <input type="text" name="name" class="form-control" id="floatingName" placeholder="Indique um nome para o Produto:" required>
-                                            <label for="floatingName">Indique um nome para o Produto:</label>
+                                        <div class="form-floating mb-2">
+                                            <input type="text" name="name" class="form-control" id="floatingName" placeholder="Título:" required>
+                                            <label for="floatingName">Título:</label>
                                         </div>
                                     </div>
-                                    
                                     <div class="col-12 col-md-5 col-lg-5">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" name="address" id="address">
@@ -49,43 +51,43 @@
         
                                     <div class="col-12 col-md-7 col-lg-7">
                                         <div class="form-floating mb-2">
-                                            <textarea name="description" class="form-control" placeholder="Descrição" id="floatingTextarea" style="height: 100px;"></textarea>
-                                            <label for="floatingTextarea">Indique uma descrição para o Produto:</label>
+                                            <textarea name="description" class="form-control" placeholder="Descrição" id="description" style="height: 100px;"></textarea>
+                                            <label for="description">Descrição:</label>
                                         </div>
                                         <div class="form-floating mb-2">
-                                            <textarea name="terms_text" class="form-control" placeholder="Indique uma descrição para os Termos" id="floatingTextarea" style="height: 100px;"></textarea>
-                                            <label for="floatingTextarea">Indique uma descrição para os Termos:</label>
+                                            <textarea name="terms_text" class="form-control" placeholder="Termos" id="terms_text" style="height: 100px;"></textarea>
+                                            <label for="terms_text">Termos:</label>
                                         </div>
                                     </div>
         
                                     <div class="col-12 col-md-5 col-lg-5 row">
                                         <div class="col-12 col-md-6 col-lg-6">
                                             <div class="form-floating">
-                                                <input type="text" name="value_cost" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
-                                                <label for="floatingContract">Custo:</label>
+                                                <input type="text" name="value_cost" class="form-control" id="value_cost" placeholder="Custo:" oninput="mascaraReal(this)">
+                                                <label for="value_cost">Custo:</label>
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-6 col-lg-6">
                                             <div class="form-floating">
-                                                <input type="text" name="value_rate" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
-                                                <label for="floatingContract">Taxas:</label>
+                                                <input type="text" name="value_rate" class="form-control" id="value_rate" placeholder="Taxas:" oninput="mascaraReal(this)">
+                                                <label for="value_rate">Taxas:</label>
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-6 col-lg-6">
                                             <div class="form-floating">
-                                                <input type="text" name="value_min" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
-                                                <label for="floatingContract">Mín de venda :</label>
+                                                <input type="text" name="value_min" class="form-control" id="value_min" placeholder="Mín de venda:" oninput="mascaraReal(this)">
+                                                <label for="value_min">Mín de venda:</label>
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-6 col-lg-6">
                                             <div class="form-floating">
-                                                <input type="text" name="value_max" class="form-control" id="floatingContract" placeholder="Indique um ID de contrato para o Produto:" oninput="mascaraReal(this)">
-                                                <label for="floatingContract">Máx de venda:</label>
+                                                <input type="text" name="value_max" class="form-control" id="value_max" placeholder="Máx de venda:" oninput="mascaraReal(this)">
+                                                <label for="value_max">Máx de venda:</label>
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-6 col-lg-6">
                                             <div class="form-floating">
-                                                <select name="level" class="form-select" id="floatingLevel">
+                                                <select name="level" class="form-select" id="level">
                                                     <option selected value="}">Nível com acesso:</option>
                                                     <option value="1">INICIANTE</option>
                                                     <option value="2">CONSULTOR</option>
@@ -98,38 +100,33 @@
                                                     <option value="9">PRESIDENTE VIP</option>
                                                     <option value="">TODOS</option>
                                                 </select>
-                                                <label for="floatingLevel">Opções</label>
+                                                <label for="level">Opções</label>
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-6 col-lg-6">
                                             <div class="form-floating">
-                                                <select name="active" class="form-select" id="floatingActive">
+                                                <select name="active" class="form-select" id="active">
                                                     <option value="">Situação:</option>
                                                     <option value="1">Ativo</option>
                                                     <option value="2">Inativo</option>
                                                 </select>
-                                                <label for="floatingActive">Opções</label>
+                                                <label for="active">Opções</label>
                                             </div>
                                         </div>
                                     </div>
         
-                                    <div class="col-12 col-md-4 col-lg-4 offset-md-8 offset-lg-8 mb-1 d-grid gap-2 mt-3">
+                                    <div class="col-12 offset-md-7 col-md-5 offset-lg-7 col-lg-5 d-grid gap-2">
                                         <button type="button" onclick="openTab('#profile-tab')" class="btn btn-outline-primary" type="button">Avançar</button>
                                     </div>
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                                 <div class="col-12 col-md-12 col-lg-12 mb-2">
-                                    <div class="form-floating">
-                                        <input type="text" name="contract" class="form-control" id="floatingContract" placeholder="Token ZapSing:">
-                                        <label for="floatingContract">Token ZapSing:</label>
-                                    </div>
+                                    <div id="editor"></div>
+                                    <textarea id="subject_contract" name="subject_contract" style="display:none;"></textarea>
                                 </div>
-                                <div class="col-12 col-md-12 col-lg-12 mb-2">
-                                    <textarea name="contract_subject" class="tinymce-editor" placeholder="Contrato (Pré-visualização)" id="question"></textarea>
-                                </div>
-                                <div class="col-12 col-md-4 col-lg-4 offset-md-8 offset-lg-8 mb-1 d-grid gap-2 mt-3">
-                                    <button type="submit" class="btn btn-primary" type="button">Salvar</button>
+                                <div class="col-12 offset-md-7 col-md-5 offset-lg-7 col-lg-5 d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary" type="button">Cadastrar</button>
                                 </div>
                             </div>
                         </form>
@@ -139,10 +136,31 @@
         </div>
     </section>
 
-    <script src="{{ asset('assets/dashboard/vendor/tinymce/tinymce.min.js') }}"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     <script>
         function openTab(tab) {
             $(tab).click();
         }
+
+        const quill = new Quill('#editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'align': [] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    ['link', 'blockquote', 'code-block'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'indent': '-1'}, { 'indent': '+1' }]
+                ]
+            }
+        });
+
+        $('form').submit(function() {
+            var content = quill.root.innerHTML;
+            $('#subject_contract').val(content);
+        });
     </script>
 @endsection

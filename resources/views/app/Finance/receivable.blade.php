@@ -55,8 +55,6 @@
                 
                 <div class="card p-2">
                     <div class="card-body">
-                        <h5 class="card-title">Extrato</h5>
-                        
                         <div class="table-responsive">
                             <table class="table table-hover" id="table">
                                 <thead>
@@ -83,11 +81,11 @@
                                 </tbody>
                             </table>
                             <div class="d-flex justify-content-between mt-3">
-                                @if ($offset > 0)
-                                    <a href="{{ route('receivable', ['offset' => $offset - 100, 'start_date' => request('start_date'), 'finish_date' => request('finish_date')]) }}" class="btn btn-primary">
+                                
+                                    <a href="{{ $offset == 0 ? '#' : route('receivable', ['offset' => $offset - 100, 'start_date' => request('start_date'), 'finish_date' => request('finish_date')]) }}" class="btn btn-primary">
                                         Página Anterior
                                     </a>
-                                @endif
+                               
                             
                                 @if ($hasMore)
                                     <a href="{{ route('receivable', ['offset' => $offset + 100, 'start_date' => request('start_date'), 'finish_date' => request('finish_date')]) }}" class="btn btn-primary">

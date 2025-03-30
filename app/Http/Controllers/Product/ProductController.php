@@ -4,16 +4,13 @@ namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
 
-use App\Models\Item;
-use App\Models\Payment;
 use App\Models\Product;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller {
     
-    public function list() {
+    public function index() {
         
         $products = Product::withCount([
             'sales' => function ($query) {
@@ -21,20 +18,18 @@ class ProductController extends Controller {
             }
         ])
         ->orderByDesc('sales_count')
-        ->orderBy('created_at', 'desc')
-        ->get();
+        ->paginate(30);
     
-        return view('app.Product.list', [
+        return view('app.Product.list-product', [
             'products' => $products
         ]);
     }
 
-    public function create() {
-
+    public function productView() {
         return view('app.Product.create');
     }
 
-    public function createProduct(Request $request) {
+    public function productCreate(Request $request) {
 
         $product                = new Product();
         $product->name          = $request->name;
@@ -61,7 +56,7 @@ class ProductController extends Controller {
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
     }
 
-    public function update($id) {
+    public function productDetails($id) {
 
         $product = Product::find($id);
         if($product) {
@@ -73,7 +68,7 @@ class ProductController extends Controller {
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, dados do Produto não encontrados!');
     }
 
-    public function updateProduct(Request $request) {
+    public function productUpdate(Request $request) {
 
         $product = Product::find($request->id);
         if($product) {
