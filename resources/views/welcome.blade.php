@@ -35,13 +35,18 @@
                                             {{ session('error') }}
                                         </div>
                                     @endif
-                                    <div class="form-group mb-3">
+                                    <div class="form-group mb-1">
                                         <label class="label" for="name">Email:</label>
                                         <input type="email" name="email" class="form-control" placeholder="joao@xxxxx.com" required>
                                     </div>
-                                    <div class="form-group mb-3">
+                                    <div class="form-group mb-1 position-relative">
                                         <label class="label" for="password">Senha:</label>
-                                        <input type="password" name="password" class="form-control" placeholder="Senha" required>
+                                        <div class="input-group">
+                                            <input type="password" id="password" name="password" class="form-control" placeholder="Senha" required>
+                                            <button type="button" class="btn btn-outline-secondary toggle-password" onclick="togglePassword()">
+                                                <i id="eyeIcon" class="fa fa-eye"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <button type="submit" class="form-control btn btn-primary rounded submit px-3">Acessar</button>
@@ -90,6 +95,21 @@
                     timer: 5000
                 })
             @endif
+
+            function togglePassword() {
+                const passwordField = document.getElementById("password");
+                const eyeIcon = document.getElementById("eyeIcon");
+
+                if (passwordField.type === "password") {
+                    passwordField.type = "text";
+                    eyeIcon.classList.remove("fa-eye");
+                    eyeIcon.classList.add("fa-eye-slash");
+                } else {
+                    passwordField.type = "password";
+                    eyeIcon.classList.remove("fa-eye-slash");
+                    eyeIcon.classList.add("fa-eye");
+                }
+            }
         </script>
 	</body>
 </html>
