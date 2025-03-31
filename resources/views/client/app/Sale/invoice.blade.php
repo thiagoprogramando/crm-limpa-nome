@@ -5,12 +5,11 @@
         <h1>Faturas</h1>
         <nav>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('app.cliente') }}">Início</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('app-cliente') }}">Início</a></li>
                 <li class="breadcrumb-item active">Faturas</li>
             </ol>
         </nav>
     </div>
-
     
     <section class="section dashboard">
         <div class="row">
@@ -40,8 +39,13 @@
                                             <td class="text-center">{{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y') }}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <button type="button" class="btn btn-dark text-light" data-bs-toggle="modal" data-bs-target="#couponModal{{ $invoice->id }}"><i class="bi bi-percent"></i> Aplicar CUPOM</button>
-                                                    <a href="{{ $invoice->url_payment }}" target="_blank" class="btn btn-success text-light"><i class="bi bi-credit-card"></i> Ver Fatura</a>
+                                                    @if ($invoice->status !== 1)
+                                                        <a href="{{ route('update-invoice', ['id' => $invoice->token_payment, 'value' => $invoice->value, 'dueDate' => now()->addDays(1), 'callback' => 5]) }}" class="btn btn-outline-primary">SEGUNDA VIA</a>
+                                                        @if ($invoice->type == 1)
+                                                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#couponModal{{ $invoice->id }}">CUPOM</button>
+                                                        @endif
+                                                    @endif
+                                                    <a href="{{ $invoice->url_payment }}" target="_blank" class="btn btn-primary text-light">ACESSA</a>
                                                 </div>
                                             </td>
                                         </tr>

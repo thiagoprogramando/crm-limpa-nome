@@ -5,7 +5,7 @@
         <h1>Minhas Compras</h1>
         <nav>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('app.cliente') }}">Início</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('app-cliente') }}">Início</a></li>
                 <li class="breadcrumb-item active">Minhas Compras</li>
             </ol>
         </nav>
@@ -13,17 +13,26 @@
 
     <section class="section dashboard">
         <div class="row">
-            <div class="col-12 co-sm-12 col-md-12 col-lg-12">
+            <div class="col-12 co-sm-12 col-md-12 col-lg-12 m-0 p-0">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body m-0 p-0">
                         <div class="row">
                             @foreach ($sales as $sale)
                                 <div class="col-sm-12 col-md-6 col-lg-6">
-                                    <div class="card mb-3">
+                                    <div class="card">
                                         <div class="row g-0">
+                                            <div class="col-12 col-sm-12 col-md-5 col-lg-5">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">{{$sale->product->name }}</h5>
+                                                    <p class="card-text">
+                                                        {{$sale->product->description }} <br>
+                                                        <span class="badge bg-dark">{{ $sale->statusLabel() }} {{ \Carbon\Carbon::parse($sale->created_at)->format('d/m/Y') }}</span>
+                                                    </p>
+                                                </div>
+                                            </div>
                                             <div class="col-12 col-sm-12 col-md-7 col-lg-7">
                                                 <div class="card-body">
-                                                    <h5 class="card-title">Lista {{ $sale->list->name }}</h5>
+                                                    <h5 class="card-title">{{ $sale->list->name }}</h5>
                                                     <p class="card-text">
                                                         {{$sale->list->description }}
                                                         <span class="badge bg-primary">{{ \Carbon\Carbon::parse($sale->list->end)->format('d/m/Y') }}</span>
@@ -32,18 +41,9 @@
                                                         <span class="badge bg-primary">{{ $sale->label }}</span> 
                                                     @endif
                                                     <div class="btn-group" role="group">
-                                                        <a title="Acessar Contrato" href="{{ $sale->url_contract }}" target="_blank" class="btn btn-outline-primary card-link">Contrato <i class="bi bi-file-earmark-text"></i></a>
-                                                        <a title="Acessar Faturas" href="{{ route('invoice.cliente', ['sale' => $sale->id]) }}" class="btn btn-outline-primary card-link">Faturas <i class="bi bi-currency-dollar"></i></a>
+                                                        <a title="Acessar Contrato" href="{{ $sale->url_contract }}" target="_blank" class="btn btn-outline-primary card-link"><i class="bi bi-file-earmark-text"></i>Contrato</a>
+                                                        <a title="Acessar Faturas" href="{{ route('invoice-cliente', ['sale' => $sale->id]) }}" class="btn btn-outline-primary card-link"><i class="bi bi-currency-dollar"></i>Faturas</a>
                                                     </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-12 col-sm-12 col-md-5 col-lg-5">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">{{$sale->product->name }}</h5>
-                                                    <p class="card-text">
-                                                        {{$sale->product->description }}
-                                                        <span class="badge bg-dark">{{ $sale->statusLabel() }} </br> {{ \Carbon\Carbon::parse($sale->created_at)->format('d/m/Y') }}</span>
-                                                    </p>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-12 col-md-12 col-lg-12">

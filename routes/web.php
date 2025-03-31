@@ -123,9 +123,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/update-invoice/{id}/{value}/{dueDate}/{callback?}/{commission?}/{wallet?}/', [AssasController::class, 'updateInvoice'])->name('update-invoice');
     Route::get('/payments', [Payment::class, 'payments'])->name('payments');
 
-    Route::get('/app-cliente', [ClientAppController::class, 'app'])->name('app.cliente');
-    Route::get('/invoice-cliente/{sale?}', [ClientAppController::class, 'invoice'])->name('invoice.cliente');
-    Route::get('/logout-cliente', [ClientAppController::class, 'logout'])->name('logout.cliente');
+    Route::get('/app-cliente', [ClientAppController::class, 'app'])->name('app-cliente');
+    Route::get('/invoice-cliente/{sale?}', [ClientAppController::class, 'invoice'])->name('invoice-cliente');
+    Route::get('/logout-cliente', [ClientAppController::class, 'logout'])->name('logout-cliente');
 
     Route::get('/logout', [Login::class, 'logout'])->name('logout');
 });

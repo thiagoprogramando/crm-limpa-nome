@@ -847,7 +847,7 @@ class AssasController extends Controller {
         } else {
             return false;
         }
-    }    
+    } 
 
     public function myDocuments() {
         try {

@@ -31,11 +31,10 @@
 
         <header id="header" class="header fixed-top d-flex align-items-center">
             <div class="d-flex align-items-center justify-content-between">
-                <a href="{{ route('app.cliente') }}" class="logo d-flex align-items-center">
-                    <img src="{{ asset('assets/dashboard/img/favicon.png') }}">
-                    <span class="d-none d-lg-block text-white">{{ env('APP_NAME') }}</span>
+                <a href="{{ route('app-cliente') }}" class="logo d-flex align-items-center">
+                    <img src="{{ asset('assets/dashboard/img/logo.png') }}">
                 </a>
-                <i class="bi bi-list toggle-sidebar-btn"></i>
+                <i class="bi bi-list toggle-sidebar-btn text-white"></i>
             </div>
 
             <nav class="header-nav ms-auto">
@@ -51,7 +50,7 @@
                     @endphp
                     <li class="nav-item dropdown pe-3">
                         <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                            <span class="dropdown-toggle ps-2 text-white">{{ $firstName }}</span>
+                            <span class="dropdown-toggle ps-2 text-white">{{ $firstName }} {{ $lastName }}</span>
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
@@ -62,7 +61,7 @@
                             <li> <hr class="dropdown-divider"> </li>
                             <li> <hr class="dropdown-divider"> </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center" href="{{ route('logout.cliente') }}">
+                                <a class="dropdown-item d-flex align-items-center" href="{{ route('logout-cliente') }}">
                                     <i class="bi bi-box-arrow-right"></i>
                                     <span>Sair</span>
                                 </a>
@@ -76,10 +75,10 @@
         <aside id="sidebar" class="sidebar">
             <ul class="sidebar-nav" id="sidebar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('app.cliente') }}"> <i class="bi bi-grid"></i> <span>Minhas Compras</span> </a>
+                    <a class="nav-link" href="{{ route('app-cliente') }}"> <i class="bi bi-grid"></i> <span>Minhas Compras</span> </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ route('invoice.cliente') }}"> <i class="bi bi-shop-window"></i> <span>Faturas</span> </a>
+                    <a class="nav-link collapsed" href="{{ route('invoice-cliente') }}"> <i class="bi bi-shop-window"></i> <span>Faturas</span> </a>
                 </li>
             </ul>
         </aside>
