@@ -55,6 +55,10 @@ class SaleController extends Controller {
                 return redirect()->back()->with('error', 'O valor max de venda é: R$ '.$product->value_max.'!');
             }
 
+            if (($seller && $seller->fixed_cost > 0) && ($this->formatarValor($request->value) < $seller->fixed_cost)) {
+                return redirect()->back()->with('error', 'O valor mín de entrada é: R$ '.$seller->fixed_cost.'!');
+            }
+
             $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
             if (!$list) {
                 return redirect()->back()->with('error', 'Não há uma lista disponível para vendas!');
