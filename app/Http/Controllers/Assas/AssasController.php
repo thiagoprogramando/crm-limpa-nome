@@ -629,8 +629,8 @@ class AssasController extends Controller {
 
         if($jsonData['event'] === 'PAYMENT_OVERDUE') {
 
-            $token = $jsonData['payment']['id'];
-            $invoice = Invoice::where('token_payment', $token)->where('status', 0)->first();
+            $token      = $jsonData['payment']['id'];
+            $invoice    = Invoice::where('token_payment', $token)->where('status', 0)->first();
             if($invoice) {
 
                 if(($invoice->type == 2 || $invoice->type == 3) && $invoice->num > 1) {
@@ -641,7 +641,7 @@ class AssasController extends Controller {
                             $dueDate    = Carbon::now()->addDays(7);
                             $wallet     = $invoice->sale->seller->wallet ?? null;
 
-                            $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
+                            $charge = $this->updateInvoice($invoice->token_payment, $value, $dueDate, $commission, $wallet);
                             if($charge) {
 
                                 $invoice->due_date               = $dueDate;
@@ -671,7 +671,7 @@ class AssasController extends Controller {
                             $dueDate    = Carbon::now()->addDays(7);
                             $wallet     = $invoice->sale->seller->wallet ?? null;
 
-                            $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
+                            $charge = $this->updateInvoice($invoice->token_payment, $value, $dueDate, $commission, $wallet);
                             if($charge) {
 
                                 $invoice->due_date               = $dueDate;
@@ -701,7 +701,7 @@ class AssasController extends Controller {
                             $dueDate    = Carbon::now()->addDays(7);
                             $wallet     = $invoice->sale->seller->wallet ?? null;
 
-                            $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
+                            $charge = $this->updateInvoice($invoice->token_payment, $value, $dueDate, $commission, $wallet);
                             if($charge) {
 
                                 $invoice->due_date               = $dueDate;
@@ -731,7 +731,7 @@ class AssasController extends Controller {
                             $dueDate    = Carbon::now()->addDays(7);
                             $wallet     = $invoice->sale->seller->wallet ?? null;
 
-                            $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
+                            $charge = $this->updateInvoice($invoice->token_payment, $value, $dueDate, $commission, $wallet);
                             if($charge) {
 
                                 $invoice->due_date               = $dueDate;
@@ -771,7 +771,7 @@ class AssasController extends Controller {
         return response()->json(['status' => 'success', 'message' => 'Webhook não utilizado!']);
     }
 
-    public function addDiscount($id, $value, $dueDate, $commission = null, $wallet = null) {
+    public function updateInvoice($id, $value, $dueDate, $callback = null, $commission = null, $wallet = null) {
         
         $client = new Client();
         
@@ -809,22 +809,44 @@ class AssasController extends Controller {
 
             if ($response->getStatusCode() === 200) {
                 $data = json_decode($body, true);
-                return [
-                    'id'         => $data['id'],
-                    'invoiceUrl' => $data['invoiceUrl'],
-                ];
+                if ($callback) {
+
+                    $invoice = Invoice::where('token_payment', $id)->first();
+                    if ($invoice) {
+                        $invoice->token_payment = $data['id'];
+                        $invoice->url_payment   = $data['invoiceUrl'];
+                        $invoice->due_date      = $dueDate;
+                        $invoice->save();
+                    }
+
+                    return redirect()->back()->with('success', 'Fatura atualizada com sucesso!');
+                } else {
+                    return [
+                        'id'         => $data['id'],
+                        'invoiceUrl' => $data['invoiceUrl'],
+                    ];
+                }
             }
     
         } catch (\GuzzleHttp\Exception\ClientException $e) {
-            $responseBody = $e->getResponse()->getBody()->getContents();
-            $error = json_decode($responseBody, true);
-
-            return false;
+            if ($callback) {
+                return redirect()->back()->with('error', 'Não foi possível atualizar essa Fatura!');
+            } else {
+                return false;
+            }
         } catch (\Exception $e) {    
-            return false;
+            if ($callback) {
+                return redirect()->back()->with('error', 'Não foi possível atualizar essa Fatura!');
+            } else {
+                return false;
+            }
         }
   
-        return false;
+        if ($callback) {
+            return redirect()->back()->with('error', 'Não foi possível atualizar essa Fatura!');
+        } else {
+            return false;
+        }
     }    
 
     public function myDocuments() {

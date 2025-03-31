@@ -87,18 +87,23 @@
                                             <td class="text-center">R$ {{ $payment->value }}</td>
                                             <td class="text-center">{{ $payment->statusLabel() }}</td>
                                             <td class="text-center">{{ \Carbon\Carbon::parse($payment->due_date)->format('d/m/Y') }}</td>
-                                            <td class="text-center btn-group">
-                                                @if ($payment->type == 1 && $payment->status !== 1)
-                                                    <button type="button" class="btn btn-dark text-light" data-bs-toggle="modal" data-bs-target="#couponModal{{ $payment->id }}"><i class="bi bi-percent"></i> Aplicar CUPOM</button>
-                                                @endif
-                                                @if(!empty(Auth::user()->wallet) && $payment->status !== 1)
-                                                    <a href="{{ route('payMonthly', ['id' => $payment->id]) }}" class="btn btn-success text-light">
-                                                        <i class="bi bi-credit-card"></i> Pagar
+                                            <td class="text-center">
+                                                <div class="btn-group">
+                                                    @if ($payment->status !== 1)
+                                                        <a href="{{ route('update-invoice', ['id' => $payment->token_payment, 'value' => $payment->value, 'dueDate' => now()->addDays(1), 'callback' => 5]) }}" class="btn btn-outline-primary">SEGUNDA VIA</a>
+                                                        @if ($payment->type == 1)
+                                                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#couponModal{{ $payment->id }}">CUPOM</button>
+                                                        @endif
+                                                    @endif
+                                                    @if(!empty(Auth::user()->wallet) && $payment->status !== 1)
+                                                        <a href="{{ route('payMonthly', ['id' => $payment->id]) }}" class="btn btn-outline-primary">
+                                                            Pagar
+                                                        </a>
+                                                    @endif
+                                                    <a href="{{ $payment->url_payment }}" target="_blank" class="btn btn-primary text-light">
+                                                        Acessar
                                                     </a>
-                                                @endif
-                                                <a href="{{ $payment->url_payment }}" target="_blank" class="btn btn-primary text-light">
-                                                    <i class="bi bi-arrow-up-right-circle"></i> Acessar
-                                                </a>
+                                                </div>
                                             </td>
                                         </tr>
 

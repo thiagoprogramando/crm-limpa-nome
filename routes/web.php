@@ -120,6 +120,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/createMonthly/{id}', [AssasController::class, 'createMonthly'])->name('createMonthly');
     Route::get('/payMonthly/{id}', [AssasController::class, 'payMonthly'])->name('payMonthly');
     Route::get('/request-invoices/{id}', [AssasController::class, 'requestInvoice'])->name('request-invoices');
+    Route::get('/update-invoice/{id}/{value}/{dueDate}/{callback?}/{commission?}/{wallet?}/', [AssasController::class, 'updateInvoice'])->name('update-invoice');
     Route::get('/payments', [Payment::class, 'payments'])->name('payments');
 
     Route::get('/app-cliente', [ClientAppController::class, 'app'])->name('app.cliente');
