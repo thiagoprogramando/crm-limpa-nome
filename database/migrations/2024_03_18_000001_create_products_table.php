@@ -16,13 +16,16 @@ return new class extends Migration {
             $table->decimal('value_cost', 10, 2)->default(0);
             $table->decimal('value_rate', 10, 2)->default(0);
             
-            $table->tinyInteger('address')->default(0);
-            $table->tinyInteger('level')->nullable();
-            $table->tinyInteger('active')->default(2);
-            $table->tinyInteger('terms')->default(2);
-            
+            $table->tinyInteger('request_photo')->default(0);
+            $table->tinyInteger('request_document_photo')->default(0);
+            $table->tinyInteger('request_address')->default(0);
+            $table->tinyInteger('request_contract')->default(0);
             $table->longText('subject_contract')->nullable();
+            $table->tinyInteger('request_terms')->default(0);
             $table->longText('subject_terms')->nullable();
+
+            $table->tinyInteger('access_level')->nullable();
+            $table->tinyInteger('status')->default(2);
             $table->timestamps();
             $table->softDeletes();
         });

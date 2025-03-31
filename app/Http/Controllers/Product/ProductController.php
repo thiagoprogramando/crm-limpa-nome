@@ -26,7 +26,7 @@ class ProductController extends Controller {
     }
 
     public function productView() {
-        return view('app.Product.create');
+        return view('app.Product.create-product');
     }
 
     public function productCreate(Request $request) {
@@ -34,23 +34,25 @@ class ProductController extends Controller {
         $product                = new Product();
         $product->name          = $request->name;
         $product->description   = $request->description;
-        $product->terms_text    = $request->terms_text;
-
-        $product->address           = $request->has('address') ? 1 : 0;
-        $product->createuser        = $request->has('createuser') ? 1 : 0;
-        $product->terms             = $request->has('terms') ? 1 : 0;
-        $product->level             = $request->level;
-        $product->contract          = $request->contract;
-        $product->contract_subject  = $request->contract_subject;
-        $product->active            = $request->active;
 
         $product->value_cost    = $this->formatarValor($request->value_cost);
         $product->value_rate    = $this->formatarValor($request->value_rate);
         $product->value_min     = $this->formatarValor($request->value_min);
         $product->value_max     = $this->formatarValor($request->value_max);
 
+        $product->request_photo  = $request->has('request_photo') ? 1 : 0;
+        $product->request_document_photo  = $request->has('request_document_photo') ? 1 : 0;
+        $product->request_address  = $request->has('request_address') ? 1 : 0;
+        
+        $product->request_contract = !empty($request->request_contract) ? 1 : 0;
+        $product->subject_contract = $request->subject_contract;
+        $product->request_terms    = $request->has('request_terms') ? 1 : 0;
+        $product->subject_terms    = $request->subject_terms;
+
+        $product->access_level = $request->access_level;
+        $product->status       = $request->status;
         if($product->save()) {
-            return redirect()->route('updateproduct', ['id' => $product->id])->with('success', 'Produto criado com sucesso!');
+            return redirect()->route('update-product', ['id' => $product->id])->with('success', 'Produto criado com sucesso!');
         }
         
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
@@ -60,7 +62,7 @@ class ProductController extends Controller {
 
         $product = Product::find($id);
         if($product) {
-            return view('app.Product.update', [
+            return view('app.Product.update-product', [
                 'product'   => $product,
             ]);
         }
@@ -79,41 +81,41 @@ class ProductController extends Controller {
             if($request->description) {
                 $product->description = $request->description;
             }
-            if($request->terms_text) {
-                $product->terms_text = $request->terms_text;
-            }
+
+            $product->value_cost = $this->formatarValor($request->value_cost) ?? 0;
+            $product->value_rate = $this->formatarValor($request->value_rate) ?? 0;
+            $product->value_min  = $this->formatarValor($request->value_min) ?? 0;
+            $product->value_max  = $this->formatarValor($request->value_max) ?? 0;
             
-            $product->address       = $request->has('address') ? 1 : 0;
-            $product->createuser    = $request->has('createuser') ? 1 : 0;
-            $product->terms         = $request->has('terms') ? 1 : 0;
+            $product->request_address        = $request->has('request_address') ? 1 : 0;
+            $product->request_photo          = $request->has('request_photo') ? 1 : 0;
+            $product->request_document_photo = $request->has('request_document_photo') ? 1 : 0;
             
-            $product->level             = $request->level;
-            $product->contract          = $request->contract ?? '';
-            $product->contract_subject  = $request->contract_subject ?? '';
-            $product->active            = $request->active;
-            $product->value_cost        = $this->formatarValor($request->value_cost) ?? 0;
-            $product->value_rate        = $this->formatarValor($request->value_rate) ?? 0;
-            $product->value_min         = $this->formatarValor($request->value_min) ?? 0;
-            $product->value_max         = $this->formatarValor($request->value_max) ?? 0;
-    
+            $product->request_contract  = $request->has('request_contract') ? 1 : 0;
+            $product->subject_contract  = $request->subject_contract;
+            $product->request_terms     = $request->has('request_terms') ? 1 : 0;
+            $product->subject_terms     = $request->subject_terms;
+
+            $product->access_level = $request->access_level;
+            $product->status       = $request->status;
             if($product->save()) {
                 return redirect()->back()->with('success', 'Produto atualizado com sucesso!');
-            }    
+            }
+            
+            return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
         }
 
-        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
+        return redirect()->back()->with('error', 'Produto não localizado na base, verifique os dados e tente novamente!');
     }
 
-    public function delete(Request $request) {
+    public function productDelete(Request $request) {
 
         $product = Product::find($request->id);
-        if($product) {
-
-            $product->delete();
+        if($product && $product->delete()) {
             return redirect()->back()->with('success', 'Produto excluído com sucesso!');
         }
 
-        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, dados do Produto não encontrados!');
+        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, ente novamente mais tarde!');
     }
 
     private function formatarValor($valor) {

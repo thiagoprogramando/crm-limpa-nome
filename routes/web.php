@@ -93,7 +93,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['checkAdmin'])->group(function () {
 
         Route::get('/list-products', [ProductController::class, 'index'])->name('list-products');
-        Route::get('/create-product', [ProductController::class, 'productView'])->name('createproduct');
+        Route::get('/create-product', [ProductController::class, 'productView'])->name('create-product');
         Route::post('created-product', [ProductController::class, 'productCreate'])->name('created-product');
         Route::get('/update-product/{id}', [ProductController::class, 'productDetails'])->name('update-product');
         Route::post('updated-product', [ProductController::class, 'productUpdate'])->name('updated-product');

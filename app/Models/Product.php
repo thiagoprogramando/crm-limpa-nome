@@ -15,19 +15,19 @@ class Product extends Model {
     protected $fillable = [
         'name',
         'description',
-
         'value_min',
         'value_max',
         'value_cost',
         'value_rate',
-
-        'address',
-        'level',
-        'active'.
-        'terms',
-
+        'request_photo',
+        'request_document_photo',
+        'request_address'.
+        'request_contract',
         'subject_contract',
-        'subject_terms'
+        'request_terms',
+        'subject_terms',
+        'access_level',
+        'status'
     ];
 
     public function sales() {
@@ -35,6 +35,6 @@ class Product extends Model {
     }
 
     public function totalSale() {
-        return $this->sales()->whereIn('status', 1)->count();
+        return $this->sales()->where('status', 1)->count();
     }
 }

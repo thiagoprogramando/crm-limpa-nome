@@ -244,17 +244,9 @@
                     </li>
                     
                     <li class="nav-item">
-                        <a class="nav-link {{ Route::currentRouteName() == 'list-products' || Route::currentRouteName() == 'createproduct' ? '' : 'collapsed' }}" data-bs-target="#forms-product" data-bs-toggle="collapse" href="#">
-                            <i class="bi bi-box"></i><span>Produtos</span><i class="bi bi-chevron-down ms-auto"></i>
-                        </a>
-                        <ul id="forms-product" class="nav-content collapse {{ Route::currentRouteName() == 'list-products' || Route::currentRouteName() == 'createproduct' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
-                            <li>
-                                <a href="{{ route('list-products') }}"> <i class="bi bi-circle"></i><span>Produtos</span> </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('createproduct') }}"> <i class="bi bi-circle"></i><span>Criar Produto</span> </a>
-                            </li>
-                        </ul>
+                        <li class="nav-item">
+                            <a class="nav-link collapsed" href="{{ route('list-products') }}"> <i class="bi bi-box"></i> <span>Produtos</span> </a>
+                        </li>
                     </li>
                 
                     <li class="nav-item">
