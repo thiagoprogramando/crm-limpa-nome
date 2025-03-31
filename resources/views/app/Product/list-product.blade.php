@@ -21,10 +21,8 @@
                 <button type="button" class="btn btn-outline-primary" id="gerarExcel">Excel</button>
             </div>
 
-            <div class="card p-2">
-                <div class="card-body">
-                    <h5 class="card-title">Produtos</h5>
-                    
+            <div class="card">
+                <div class="card-body m-0 p-0">
                     <div class="table-responsive">
                         <table class="table table-hover" id="table">
                             <thead>
