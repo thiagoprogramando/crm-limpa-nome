@@ -25,6 +25,6 @@ class LoginController extends Controller {
         }
 
         Auth::login($user);
-        return redirect()->route('app.cliente');
+        return redirect()->route('app-cliente');
     }
 }
