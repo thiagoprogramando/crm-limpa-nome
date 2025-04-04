@@ -511,7 +511,7 @@ class AssasController extends Controller {
                     if ($product && $invoice->num == 1) {
                             
                         $sale->status = 1;
-                        $sale->guarantee = Carbon::parse($sale->guarantee)->addMonths(12);
+                        $sale->guarantee = Carbon::parse($sale->guarantee)->addMonths(3);
 
                         $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
                         if ($list) {
