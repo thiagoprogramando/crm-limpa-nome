@@ -14,7 +14,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ListController extends Controller {
     
-    public function lists() {
+    public function listLists() {
 
         $lists = SaleList::orderBy('created_at', 'desc')->get();
         return view('app.List.list-lists', [
@@ -22,7 +22,19 @@ class ListController extends Controller {
         ]);
     }
 
-    public function createList(Request $request) {
+    public function viewList($id) {
+
+        $list = SaleList::find($id);
+        if (!$list) {
+            return redirect()->back()->with('info', 'Lista indisponível!');
+        }
+
+        return view('app.List.list-update', [
+            'list' => $list
+        ]);
+    }
+
+    public function createdList(Request $request) {
 
         $startDate  = Carbon::parse($request->date_start);
         $endDate    = Carbon::parse($request->date_end);
@@ -47,20 +59,8 @@ class ListController extends Controller {
     
         return redirect()->route('list-lists')->with('error', 'Não foi possível cadastrar a Lista, tente novamente mais tarde!');
     }    
-
-    public function view($id) {
-
-        $list = SaleList::find($id);
-        if (!$list) {
-            return redirect()->back()->with('info', 'Lista indisponível!');
-        }
-
-        return view('app.List.list-update', [
-            'list' => $list
-        ]);
-    }
     
-    public function updateList(Request $request) {
+    public function updatedList(Request $request) {
         
         $list = SaleList::find($request->id);
         if ($list) {
@@ -121,7 +121,7 @@ class ListController extends Controller {
         return redirect()->route('list-lists')->with('error', 'Não foi possível atualizar a Lista, tente novamente mais tarde!');
     }      
 
-    public function delete(Request $request) {
+    public function deletedList(Request $request) {
 
         $list = SaleList::find($request->id);
         if($list && $list->delete()) {

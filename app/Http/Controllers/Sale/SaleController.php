@@ -12,6 +12,7 @@ use App\Models\Lists;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Sale;
+use App\Models\SaleList;
 use App\Models\User;
 
 use Illuminate\Http\Request;
@@ -24,81 +25,95 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class SaleController extends Controller {
 
-    public function create($id) {
+    public function createSale($id) {
 
         $product = Product::find($id);
-        return view('app.Sale.create', [
+        if (!$product) {
+            return redirect()->back()->with('error', 'Produto não disponível!');
+        }
+
+        return view('app.Sale.create-sale', [
             'product' => $product, 
         ]);
     }
 
-    public function createSale(Request $request) {
+    public function createdClientSale(Request $request) {
 
-        $user = $this->createUser($request->name, $request->email, $request->cpfcnpj, $request->birth_date, $request->phone, $request->id_seller);
+        $user = $this->createdUser($request->name, $request->email, $request->cpfcnpj, $request->birth_date, $request->phone);
         if ($user !== false) {
-
-            $product = Product::where('id', $request->product)->first();
-            if (!$product) {
-                return redirect()->back()->with('error', 'Produto não disponível!');
-            }
-
-            $seller = User::find($request->id_seller);
-            if (!$seller) {
-                return redirect()->back()->with('error', 'Consultor de Vendas não localizado no sistema!');
-            }
-            
-            if ($this->formatarValor($request->value) < $product->value_min) {
-                return redirect()->back()->with('error', 'O valor mín de venda é: R$ '.$product->value_min.'!');
-            }
-
-            if ($this->formatarValor($request->value) > $product->value_max && $product->value_max > 0) {
-                return redirect()->back()->with('error', 'O valor max de venda é: R$ '.$product->value_max.'!');
-            }
-
-            $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
-            if (!$list) {
-                return redirect()->back()->with('error', 'Não há uma lista disponível para vendas!');
-            }
-
-            $productCost = ($seller->fixed_cost > 0 ? $seller->fixed_cost : $product->value_cost);
-            $commission  = (($this->formatarValor($request->value) - $productCost) - $product->value_rate);
-
-            if ($seller->filiate <> null) {
-                $commissionFiliate = max(($seller->fixed_cost - $seller->parent->fixed_cost), 0);
-            } else {
-                $commissionFiliate = 0;
-            }          
-    
-            $sale = new Sale();
-            $sale->id_client    = $user->id;
-            $sale->id_product   = $request->product;
-            $sale->id_list      = $list->id;
-            $sale->id_seller    = !empty($request->id_seller) ? $request->id_seller : Auth::id();
-
-            $sale->payment          = $request->payment;
-            $sale->installments     = max(1, $request->installments);
-            $sale->status_contract  = 3;
-            $sale->status           = 0;
-
-            $sale->value              = $this->formatarValor($request->value);
-            $sale->value_total        = $this->formatarValor($request->value_total);
-            $sale->commission         = max($commission, 0);
-            $sale->commission_filiate = $commissionFiliate;
-            $sale->type               = 1;
-            if ($sale->save()) {
-
-                $assas = new AssasController();
-                $invoice = $assas->createSalePayment($sale->id, true, $request->dueDate);
-                if ($invoice) {
-                    return redirect()->route('update-sale', ['id' => $sale->id])->with('success', 'Sucesso! Os dados de pagamento foram enviados para o cliente!');
-                }
-
-                $sale->delete();
-                return redirect()->back()->with('info', 'Verifique os dados (Cliente e Venda) e tente novamente!');
-            }
-
-            return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
+            return redirect()->route('create-sale', ['id' => $request->product])->with('success', 'Cliente incluído com sucesso!');
         }
+
+        return redirect()->back()->with('error', 'Não foi possível incluir o cliente!');
+    }
+
+    public function createdPaymentSale(Request $request) {
+
+        $product = Product::find($request->product);
+        if (!$product) {
+            return redirect()->back()->with('error', 'Produto não disponível!');
+        }
+
+        $seller = User::find($request->id_seller);
+        if (!$seller) {
+            return redirect()->route('logout')->with('error', 'Acesso negado!');
+        }
+            
+        if ((empty($seller->fixed_cost) || $seller->fixed_cost == 0) && $this->formatarValor($request->value) < $product->value_min) {
+            return redirect()->back()->with('error', 'O valor mín de venda é: R$ '.$product->value_min.'!');
+        } 
+
+        if (($seller->fixed_cost > 0 )&& ($this->formatarValor($request->value) < $seller->fixed_cost)) {
+            return redirect()->back()->with('error', 'O valor mín de venda é: R$ '.$product->value_min.'!');
+        } 
+
+        if ($this->formatarValor($request->value) > $product->value_max && $product->value_max > 0) {
+            return redirect()->back()->with('error', 'O valor max de venda é: R$ '.$product->value_max.'!');
+        }
+
+        $list = SaleList::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
+        if (!$list) {
+            return redirect()->back()->with('error', 'Não há uma lista disponível para vendas!');
+        }
+
+        $productCost = ($seller->fixed_cost > 0 ? $seller->fixed_cost : $product->value_cost);
+        $commission  = (($this->formatarValor($request->value) - $productCost) - $product->value_rate);
+
+        if ($seller->filiate <> null) {
+            $commissionFiliate = max(($seller->fixed_cost - $seller->parent->fixed_cost), 0);
+        } else {
+            $commissionFiliate = 0;
+        }          
+    
+        $sale = new Sale();
+        $sale->id_client    = $user->id;
+        $sale->id_product   = $request->product;
+        $sale->id_list      = $list->id;
+        $sale->id_seller    = !empty($request->id_seller) ? $request->id_seller : Auth::id();
+
+        $sale->payment          = $request->payment;
+        $sale->installments     = max(1, $request->installments);
+        $sale->status_contract  = 3;
+        $sale->status           = 0;
+
+        $sale->value              = $this->formatarValor($request->value);
+        $sale->value_total        = $this->formatarValor($request->value_total);
+        $sale->commission         = max($commission, 0);
+        $sale->commission_filiate = $commissionFiliate;
+        $sale->type               = 1;
+        if ($sale->save()) {
+
+            $assas = new AssasController();
+            $invoice = $assas->createSalePayment($sale->id, true, $request->dueDate);
+            if ($invoice) {
+                return redirect()->route('update-sale', ['id' => $sale->id])->with('success', 'Sucesso! Os dados de pagamento foram enviados para o cliente!');
+            }
+
+            $sale->delete();
+            return redirect()->back()->with('info', 'Verifique os dados (Cliente e Venda) e tente novamente!');
+        }
+
+        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
     }     
 
     public function manager(Request $request) {
@@ -459,7 +474,7 @@ class SaleController extends Controller {
         }
     }
 
-    private function createUser($name, $email, $cpfcnpj, $birth_date, $phone, $filiate = null) {
+    private function createdUser($name, $email, $cpfcnpj, $birth_date, $phone, $filiate = null) {
         
         $cpfcnpj = preg_replace('/\D/', '', $cpfcnpj);
         $email = preg_replace('/[^\w\d\.\@\-\_]/', '', $email);

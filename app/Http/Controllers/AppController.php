@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 
 use Carbon\Carbon;
 
-
 class AppController extends Controller {
 
     public function handleApp() {
@@ -76,20 +75,20 @@ class AppController extends Controller {
         $users = $sortedUsers->take(10);
 
         $consultant = [
-            'CONSULTOR' => User::where('type', 2)->whereIn('level', [1, 2])->where('filiate', Auth::user()->id)->count(),
-            'LIDER'     => User::where('type', 2)->where('level', 3)->where('filiate', Auth::user()->id)->count(),
-            'REGIONAL'  => User::where('type', 2)->where('level', 4)->where('filiate', Auth::user()->id)->count(),
-            'GERENTE'   => User::where('type', 2)->where('level', 5)->where('filiate', Auth::user()->id)->count(),
+            'CONSULTOR' => User::where('type', 2)->whereIn('level', [1, 2])->where('sponsor_id', Auth::user()->id)->count(),
+            'LIDER'     => User::where('type', 2)->where('level', 3)->where('sponsor_id', Auth::user()->id)->count(),
+            'REGIONAL'  => User::where('type', 2)->where('level', 4)->where('sponsor_id', Auth::user()->id)->count(),
+            'GERENTE'   => User::where('type', 2)->where('level', 5)->where('sponsor_id', Auth::user()->id)->count(),
         ];
 
         $dateLimit = Carbon::now()->subDays(30);
-        $actives = User::where('type', 2)->where('filiate', Auth::user()->id)->whereHas('invoices', function ($query) use ($dateLimit) {
+        $actives = User::where('type', 2)->where('sponsor_id', Auth::user()->id)->whereHas('invoices', function ($query) use ($dateLimit) {
             $query->where('type', 1)
                   ->where('status', 1)
                   ->whereDate('due_date', '>=', $dateLimit);
         })->count();
 
-        $inactives = User::where('type', 2)->where('filiate', Auth::user()->id)->where(function ($query) use ($dateLimit) {
+        $inactives = User::where('type', 2)->where('sponsor_id', Auth::user()->id)->where(function ($query) use ($dateLimit) {
             $query->whereDoesntHave('invoices', function ($subQuery) {
                 $subQuery->where('type', 1);
             })
@@ -100,7 +99,7 @@ class AppController extends Controller {
             });
         })->count();
 
-        $networks = User::where('filiate', Auth::user()->id)->where('type', 2)->orderBy('created_at', 'desc')->paginate(10);
+        $networks = User::where('sponsor_id', Auth::user()->id)->where('type', 2)->orderBy('created_at', 'desc')->paginate(10);
     
         return view('app.app', [
             'sales'         => $sales,

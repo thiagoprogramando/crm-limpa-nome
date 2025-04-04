@@ -37,19 +37,19 @@
                 <i class="bi bi-list toggle-sidebar-btn text-white"></i>
             </div>
 
-            <div class="search-bar">
+            {{-- <div class="search-bar">
                 <form class="search-form d-flex align-items-center" method="GET" action="{{ route('search') }}">
                     <input type="text" name="search" placeholder="Pesquisar" title="Pesquisar">
                     <button type="submit" title="Search"><i class="bi bi-search"></i></button>
                 </form>
-            </div>
+            </div> --}}
 
             <nav class="header-nav ms-auto">
                 <ul class="d-flex align-items-center">
 
-                    <li class="nav-item d-block d-lg-none">
+                    {{-- <li class="nav-item d-block d-lg-none">
                         <a class="nav-link nav-icon search-bar-toggle " href="#"><i class="bi bi-search text-white"></i></a>
-                    </li>
+                    </li> --}}
 
                     <li class="nav-item">
                         <a class="nav-link nav-icon" href="#">
@@ -119,7 +119,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center" href="{{ route('create-wallet') }}">
+                                <a class="dropdown-item d-flex align-items-center" href="{{ route('Integrate-wallet') }}">
                                     <i class="bi bi-wallet2"></i>
                                     <span>Carteira Digital</span>
                                 </a>
@@ -140,11 +140,7 @@
         <aside id="sidebar" class="sidebar">
             <ul class="sidebar-nav" id="sidebar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('app') }}"> <i class="bi bi-grid"></i> <span>Dashboard</span> </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ route('faq') }}"> <i class="bi bi-book"></i> <span>Material de Apoio</span> </a>
+                    <a class="nav-link" href="{{ route('app') }}"> <i class="bi bi-grid"></i> <span>Escritório</span> </a>
                 </li>
 
                 <li class="nav-item">
@@ -158,7 +154,7 @@
                     </a>
                     <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                         @foreach($business as $busines)
-                            <li><a href="@if(Auth::user()->type == 7 || Auth::user()->type == 9) {{ route('createupload', ['id' => $busines->id]) }} @else {{ route('createsale', ['id' => $busines->id]) }} @endif"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
+                            <li><a href="{{ route('create-sale', ['product' => $busines->id]) }}"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
                         @endforeach
                     </ul>
                 </li>
@@ -169,7 +165,7 @@
                     </a>
                     <ul id="forms-upload" class="nav-content collapse " data-bs-parent="#sidebar-upload">
                         @foreach($business as $busines)
-                            <li><a href="{{ route('createupload', ['id' => $busines->id]) }}"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
+                            <li><a href=""> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
                         @endforeach
                     </ul>
                 </li>
@@ -181,7 +177,7 @@
                     <ul id="forms-sale" class="nav-content collapse {{ Route::currentRouteName() == 'manager-sale' || Route::currentRouteName() == 'invoice-default' || Route::currentRouteName() == 'coupons' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
                         <li> <a href="{{ route('manager-sale') }}"> <i class="bi bi-circle"></i><span>Vendas</span> </a> </li>
                         <li> <a href="{{ route('invoice-default') }}"> <i class="bi bi-circle"></i><span>Inadimplência</span> </a> </li>
-                        <li><a href="{{ route('coupons') }}"> <i class="bi bi-circle"></i><span>Cupons</span> </a></li>
+                        <li><a href="{{ route('list-coupons') }}"> <i class="bi bi-circle"></i><span>Cupons</span> </a></li>
                     </ul>
                 </li>
                 

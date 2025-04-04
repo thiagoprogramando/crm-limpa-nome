@@ -196,83 +196,49 @@ class UserController extends Controller {
             return redirect()->back()->with('success', 'mensagem enviada com sucesso!');
     }
 
-    public function search(Request $request) {
-
-        $sales = Sale::where('id_seller', Auth::user()->id)
-            ->where(function ($query) use ($request) {
-                $query->where('id', 'like', '%' . $request->search . '%')
-                    ->orWhereHas('user', function ($query) use ($request) {
-                        $query->where('name', 'like', '%' . $request->search . '%');
-                    });
-            })
-            ->get();
-
-        $invoices = Invoice::where('id_user', Auth::id())
-            ->where(function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->search . '%')
-                      ->orWhere('id', 'like', '%' . $request->search . '%');
-            })
-            ->get();
-        
-        return view('app.User.search', [
-            'search'    => $request->search,
-            'sales'     => $sales,
-            'invoices'  => $invoices
-        ]);
-    }
-
     public function listuser(Request $request, $type) {
 
-        $query = User::orderBy('name', 'desc');
+        $query = User::query()
+            ->where('type', $type)
+            ->orderBy('name', 'desc');
 
-        if (!empty($request->name)) {
-            $query->where('name', 'like', '%' . $request->name . '%');
-        }
+        $query->when($request->name, fn($q, $name) => $q->where('name', 'like', "%{$name}%"));
+        $query->when($request->email, fn($q, $email) => $q->where('email', 'like', "%{$email}%"));
+        $query->when($request->cpfcnpj, fn($q, $cpfcnpj) => $q->where('cpfcnpj', $cpfcnpj));
 
-        if (!empty($request->email)) {
-            $query->where('email', 'like', '%' . $request->email . '%');
-        }
+        $query->when($request->created_at_start, function ($q, $start) {
+            $q->where('created_at', '>=', Carbon::parse($start)->startOfDay());
+        });
 
-        if (!empty($request->cpfcnpj)) {
-            $query->where('cpfcnpj', $request->cpfcnpj);
-        }
+        $query->when($request->created_at_end, function ($q, $end) {
+            $q->where('created_at', '<=', Carbon::parse($end)->endOfDay());
+        });
 
-        if (!empty($request->created_at_start)) {
-            $startDate = Carbon::createFromFormat('Y-m-d', $request->created_at_start)->startOfDay();
-            $query->where('created_at', '>=', $startDate);
-        }
-        
-        if (!empty($request->created_at_end)) {
-            $endDate = Carbon::createFromFormat('Y-m-d', $request->created_at_end)->endOfDay();
-            $query->where('created_at', '<=', $endDate);
-        }
-        
-        $query->where('type', $type);
 
         $users = $query->paginate(30);
+        $users->setCollection(
+            $users->getCollection()->map(function ($user) {
+                $user->commission_total = $user->commissionTotal();
+                return $user;
+            })->sortByDesc('commission_total')
+        );
 
         $users->getCollection()->transform(function ($user) {
             $user->commission_total = $user->commissionTotal();
             return $user;
         });
 
-        $sortedUsers = $users->sortByDesc('commission_total');
-        $users->setCollection($sortedUsers);
-
-        $currentYear = Carbon::now()->year;
+        $currentYear = now()->year;
         $usersByMonth = User::where('type', $type)
             ->whereYear('created_at', $currentYear)
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
             ->groupBy('month')
             ->orderBy('month')
-            ->pluck('total', 'month');
+            ->pluck('total', 'month')
+            ->toArray();
+        $months = array_replace(array_fill(1, 12, 0), $usersByMonth);
 
-        $months = array_fill(1, 12, 0);
-        foreach ($usersByMonth as $month => $total) {
-            $months[$month] = $total;
-        }
-
-        return view('app.User.list', [
+        return view('app.User.list-users', [
             'users'     => $users, 
             'type'      => $type,
             'usersData' => array_values($months)
@@ -400,7 +366,7 @@ class UserController extends Controller {
         foreach ($invoices as $month => $total) {
             $months[$month] = $total;
         }
-        return view('app.User.active', [
+        return view('app.User.list-actives', [
             'users'         => $query->orderBy('name', 'asc')->paginate(30),
             'invoicesData'  => array_values($months)
         ]);
@@ -462,15 +428,6 @@ class UserController extends Controller {
         } catch (\Exception $e) {
             return false;
         }
-    }
-
-    public function createWallet() {
-        
-        if (!Auth::check()) {
-            return redirect()->back()->with('info', 'Verifique seus dados e tente novamente!');
-        }
-    
-        return view('app.User.create-wallet');
     }
     
     private function formatarValor($valor) {

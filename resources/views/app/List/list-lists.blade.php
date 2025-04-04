@@ -23,7 +23,7 @@
                 <div class="modal fade" id="createModal" tabindex="-1">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
-                            <form action="{{ route('create-list') }}" method="POST">
+                            <form action="{{ route('created-list') }}" method="POST">
                                 @csrf
                                 <div class="modal-header">
                                     <h5 class="modal-title">Filtrar dados da pesquisa</h5>
@@ -80,8 +80,8 @@
                 </div>
             </div>
 
-            <div class="card p-2">
-                <div class="card-body">
+            <div class="card">
+                <div class="card-body m-0 p-0">
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
@@ -116,7 +116,7 @@
                                         <td class="text-center">{{ $list->statusLabelQuod() }}</td>
                                         <td class="text-center">{{ $list->statusLabelCenprot() }}</td>
                                         <td class="text-center">
-                                            <form action="{{ route('delete-list') }}" method="POST" class="delete btn-group">
+                                            <form action="{{ route('deleted-list') }}" method="POST" class="delete btn-group">
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $list->id }}">
                                                 @if (Auth::user()->type == 1)

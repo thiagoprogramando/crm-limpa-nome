@@ -16,7 +16,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <form action="{{ route('update-list') }}" method="POST" class="row mt-3">
+                        <form action="{{ route('updated-list') }}" method="POST" class="row mt-3">
                             @csrf
                             <input type="hidden" name="id" value="{{ $list->id }}">
                             <div class="col-12 col-sm-12 col-md-5 col-lg-5">

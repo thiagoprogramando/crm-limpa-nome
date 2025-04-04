@@ -1,29 +1,29 @@
 <?php
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers\Wallet;
 
 use App\Http\Controllers\Assas\AssasController;
 use App\Http\Controllers\Controller;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class WalletController extends Controller {
-    
+
     public function wallet() {
 
         $assas        = new AssasController();
         $balance      = $assas->balance() ?? 0;
-        $statistics   = $assas->statistics();
-        $extracts     = $assas->receivable();
-        $accumulated  = $assas->accumulated();
+        $accumulated  = $assas->accumulated() ?? 0;
+        $statistics   = $assas->statistics() ?? 0;
+        $extracts     = $assas->receivable() ?? [];
         
-        return view('app.Finance.wallet', [
+        
+        return view('app.Finance.Wallet.wallet', [
             'balance'       => $balance, 
             'statistics'    => $statistics, 
-            'extracts'      => $extracts, 
-            'accumulated'   => $accumulated
+            'accumulated'   => $accumulated,
+            'extracts'      => $extracts
         ]);
     }
 
@@ -49,6 +49,15 @@ class WalletController extends Controller {
         return redirect()->back()->with('error', 'Senha inválida!');
     }
 
+    public function IntegrateWallet() {
+        
+        if (!Auth::check()) {
+            return redirect()->back()->with('info', 'Verifique seus dados e tente novamente!');
+        }
+    
+        return view('app.Finance.Wallet.Integrate-wallet');
+    }
+
     private function formatarValor($valor) {
         
         $valor = preg_replace('/[^0-9,.]/', '', $valor);
@@ -56,5 +65,4 @@ class WalletController extends Controller {
 
         return number_format(floatval($valor) / 100, 2, '.', '');
     }
-
 }
