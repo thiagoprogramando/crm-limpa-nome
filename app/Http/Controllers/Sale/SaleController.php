@@ -47,7 +47,11 @@ class SaleController extends Controller {
                 return redirect()->back()->with('error', 'Consultor de Vendas não localizado no sistema!');
             }
             
-            if ($this->formatarValor($request->value) < $product->value_min) {
+            if ((empty($seller->fixed_cost) || $seller->fixed_cost == 0) && $this->formatarValor($request->value) < $product->value_min) {
+                return redirect()->back()->with('error', 'O valor mín de venda é: R$ '.$product->value_min.'!');
+            } 
+    
+            if (($seller->fixed_cost > 0 )&& ($this->formatarValor($request->value) < $seller->fixed_cost)) {
                 return redirect()->back()->with('error', 'O valor mín de venda é: R$ '.$product->value_min.'!');
             }
 
