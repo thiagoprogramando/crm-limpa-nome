@@ -58,6 +58,10 @@ class User extends Authenticatable {
         'company_email'
     ];
 
+    public function sponsor() {
+        return $this->belongsTo(User::class, 'sponsor_id')->withTrashed();
+    }
+
     public function salesClient() {
         return $this->hasMany(Sale::class, 'id_client');
     }

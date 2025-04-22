@@ -27,9 +27,9 @@
         <div class="col-12">
 
             <div class="btn-group mb-3" role="group">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
-                <button type="button" id="toggle-select" class="btn btn-outline-primary">Selecionar</button>
-                <a href="{{ route('manager-sale', array_merge(request()->query(), ['type' => 'excel'])) }}" class="btn btn-outline-primary">Excel</a>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
+                <button type="button" id="toggle-select" class="btn btn-sm btn-outline-primary">Selecionar</button>
+                <a href="{{ route('manager-sale', array_merge(request()->query(), ['type' => 'excel'])) }}" class="btn btn-sm btn-outline-primary">Excel</a>
             </div>
 
             <div class="modal fade" id="filterModal" tabindex="-1">
@@ -60,7 +60,7 @@
                                             <label for="floatingId">ID</label>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                    {{-- <div class="col-12 col-md-12 col-lg-12 mb-1">
                                         <div class="form-floating">
                                             <select name="id_list" class="form-select" id="floatinglist">
                                                 <option selected="" value="">Listas:</option>
@@ -70,7 +70,7 @@
                                             </select>
                                             <label for="floatinglist">Listas</label>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="col-12 col-md-6 col-lg-6 mb-1">
                                         <div class="form-floating">
                                             <select name="status" class="form-select" id="floatingStatus">
@@ -90,7 +90,7 @@
                                             <label for="floatingLabel">Label</label>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                    {{-- <div class="col-12 col-md-12 col-lg-12 mb-1">
                                         <div class="form-floating">
                                             <select name="id_seller" class="form-select" id="floatingSeller">
                                                 <option selected="" value="">Consultores:</option>
@@ -100,7 +100,7 @@
                                             </select>
                                             <label for="floatingSeller">Consultor</label>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                             <div class="modal-footer btn-group">
@@ -117,10 +117,10 @@
 
                     <div id="action-buttons" class="d-none btn-group mb-2 mt-2">
                         @if(Auth::user()->type == 1)
-                            <button id="aproved-all" class="btn btn-primary">Aprovar Todos</button>
+                            <button id="aproved-all" class="btn btn-sm btn-primary">Aprovar Todos</button>
                         @endif
-                        <button id="create-payment" class="btn btn-outline-primary">Gerar Pagamento</button>
-                        <button id="quanty-name" class="btn btn-outline-primary">Nomes: </button>
+                        <button id="create-payment" class="btn btn-sm btn-outline-primary">Gerar Pagamento</button>
+                        <button id="quanty-name" class="btn btn-sm btn-outline-primary">Nomes: </button>
                     </div>
 
                     <h5 class="card-title">Vendas</h5>
@@ -129,91 +129,76 @@
                         <table class="table table-sm table-hover" id="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">#ID</th>
-                                    <th scope="col">Lista</th>
-                                    <th scope="col">Produto</th>
                                     <th scope="col">Cliente</th>
-                                    <th scope="col">Consultor</th>
-                                    <th class="text-center" scope="col">Contrato</th>
-                                    <th class="text-center" scope="col">Pagamento</th>
-                                    <th class="text-center" scope="col">Opções</th>
+                                    <th>Produto</th>
+                                    <th>Detalhes</th>
+                                    <th class="text-center">Contrato</th>
+                                    <th class="text-center">Pagamento</th>
+                                    <th class="text-center">Opções</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($sales as $sale)
                                     <tr>
-                                        <th scope="row">
-                                             <input type="checkbox" class="row-checkbox" value="{{ $sale->id }}"> {{ $sale->id }}
-                                        </th>
-                                        <th>
-                                            {{ $sale->list->name }} <br>
-                                            <span class="badge bg-{{ $sale->protocolLabel()['color'] }}" title=" {{ $sale->protocolLabel()['title'] }}">
-                                                {{ $sale->protocolLabel()['label'] }}
-                                            </span>                                            
-                                        </th>
-                                        <td title="{{ $sale->product->name }}">
-                                            {{ implode(' ', array_slice(explode(' ', $sale->product->name), 0, 2)) }} <br>
-                                            @isset($sale->guarantee)
-                                                <span class="badge bg-primary">
-                                                    Garantia: {{ \Carbon\Carbon::parse($sale->guarantee)->format('d/m/Y') }}
+                                        <td title="{{ $sale->client->name }}">
+                                            <input type="checkbox" class="row-checkbox" value="{{ $sale->id }}">
+                                            {{ implode(' ', array_slice(explode(' ', $sale->client->name), 0, 2)) }} <br>
+                                            <span class="badge bg-dark">CPF/CNPJ: {{ $sale->client->cpfcnpjLabel() }}</span>
+                                        </td>
+                                        <td>
+                                            <p class="m-0 p-0">
+                                                {{ implode(' ', array_slice(explode(' ', $sale->product->name), 0, 2)) }} <br>
+                                            </p>
+                                            <span>R$ {{ number_format($sale->totalInvoices(), 2, ',', '.') }}</span> 
+                                        </td>
+                                        <td>
+                                            <div class="text-start">
+                                                <span class="badge bg-{{ $sale->protocolLabel()['color'] }}" title=" {{ $sale->protocolLabel()['title'] }}">
+                                                    {{ $sale->list->name }} <br> {{ $sale->protocolLabel()['label'] }}
                                                 </span>
-                                            @endisset
-                                            <span class="badge bg-success">Valor Venda: R$ {{ number_format($sale->value_total, 2, ',', '.') }}</span>
-                                        </td>
-                                        <td title="{{ $sale->user->name }}">
-                                            {{ implode(' ', array_slice(explode(' ', $sale->user->name), 0, 2)) }} <br>
-                                            <span class="badge bg-dark">CPF/CNPJ: {{ $sale->user->cpfcnpjLabel() }}</span>
-                                            @isset($sale->label) 
-                                                <span class="badge bg-primary">
-                                                    {{ $sale->label }}
-                                                </span> 
-                                            @endisset
-                                        </td>
-                                        <td title="{{ $sale->seller->parent->name ?? '---' }}">
-                                            {{ implode(' ', array_slice(explode(' ', $sale->seller->name), 0, 2)) }} <br>
-                                            <span class="badge bg-success">Comissão: R$ {{ number_format($sale->commission, 2, ',', '.') }}</span>
-                                            @if ($sale->seller->filiate == Auth::user()->id)
-                                                <span class="badge bg-success">Comissão Patrocinador: R$ {{ number_format($sale->commission_filiate, 2, ',', '.') }}</span>
-                                            @endif
+                                                @isset($sale->label) 
+                                                    <span class="badge bg-primary">
+                                                        {{ $sale->label }}
+                                                    </span> 
+                                                @endisset
+                                                @isset($sale->guarantee)
+                                                    <span class="badge bg-primary">
+                                                        Garantia: {{ \Carbon\Carbon::parse($sale->guarantee)->format('d/m/Y') }}
+                                                    </span>
+                                                @endisset
+                                            </div>                     
                                         </td>
                                         <td class="text-center">
-                                            @if ($sale->payment !== 'ENVIO MANUAL')
-                                                @if ($sale->status_contract == 3)
-                                                    <a title="Gerar Contrato" href="{{ route('send-contract', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="ri-file-edit-line"></i> Gerar Contrato</a>
-                                                @else
-                                                    {{ $sale->statusContractLabel() }} <br>
-                                                    @isset($sale->url_contract)
-                                                        <span class="badge bg-primary">
-                                                            <a title="Contrato" href="{{ env('APP_URL').'preview-contract/'.$sale->id }}" target="_blank" class="text-white">Acessar</a>
-                                                        </span>
-                                                        @if ($sale->status_contract == 2)
-                                                            <span class="badge bg-warning">
-                                                                <a title="Reenviar Contrato" href="{{ route('send-contract', ['id' => $sale->id]) }}" class="text-white"><i class="ri-file-edit-line"></i> Reenviar Contrato</a>
-                                                            </span>
-                                                        @endif
-                                                    @endisset
-                                                @endif
+                                            @if (empty($sale->contract_sign))
+                                                <a title="Gerar Contrato" href="{{ route('send-contract', ['id' => $sale->id]) }}" class="btn btn-sm btn-outline-primary"><i class="ri-file-edit-line"></i> Gerar Contrato</a>
                                             @else
-                                                <span class="badge bg-danger">Não disponível para vendas com Envio Direto</span>
-                                            @endif
-                                        </td>
-                                        <td class="text-center">
-                                            {{ $sale->statusLabel() }} <br>
-                                            <span class="badge bg-primary">{{ \Carbon\Carbon::parse($sale->created_at)->format('d/m/Y') }}</span>
-                                            @if ($sale->type == 3)
-                                                <span class="badge bg-dark">CUPOM</span>
-                                            @endif
-                                        </td>
-                                        <td class="text-center">
-                                            <form action="{{ route('delete-sale') }}" method="POST" class="delete">
-                                                @csrf
-                                                <input type="hidden" name="id" value="{{ $sale->id }}"> 
-                                                <div class="btn-group" role="group" aria-label="Basic outlined example">
-                                                    <a title="Faturas" href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="bi bi-currency-dollar"></i></a>
-                                                    @if ($sale->status == 1)
-                                                        <a title="Reprotocolar" href="{{ route('reprotocol-sale', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="bx bx-check-shield"></i></a>
+                                                {{ $sale->statusContractLabel() }} <br>
+                                                @isset($sale->url_contract)
+                                                    <span class="badge bg-primary">
+                                                        <a title="Contrato" href="{{ env('APP_URL').'preview-contract/'.$sale->id }}" target="_blank" class="text-white">Acessar</a>
+                                                    </span>
+                                                    @if (!empty($sale->contract_sign))
+                                                        <span class="badge bg-warning">
+                                                            <a title="Reenviar Contrato" href="{{ route('send-contract', ['id' => $sale->id]) }}" class="text-white"><i class="ri-file-edit-line"></i> Reenviar Contrato</a>
+                                                        </span>
                                                     @endif
-                                                    <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
+                                                @endisset
+                                            @endif
+                                        </td>
+                                        <td class="text-center">
+                                            {{ $sale->statusPaymentLabel() }} <br>
+                                            <span class="badge bg-primary">{{ \Carbon\Carbon::parse($sale->created_at)->format('d/m/Y') }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <form action="{{ route('deleted-sale') }}" method="POST" class="delete">
+                                                @csrf
+                                                <input type="hidden" name="uuid" value="{{ $sale->uuid }}"> 
+                                                <div class="btn-group" role="group">
+                                                    <a title="Ver Dados da Venda" href="{{ route('view-sale', ['uuid' => $sale->uuid]) }}" class="btn btn-outline-primary btn-sm">Editar</a>
+                                                    @if ($sale->status == 1 && Auth::user()->type == 1)
+                                                        <a title="Reprotocolar" href="{{ route('reprotocol-sale', ['id' => $sale->id]) }}" class="btn btn-outline-primary btn-sm"><i class="bx bx-check-shield"></i></a>
+                                                    @endif
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm">Excluir</button>
                                                 </div>
                                             </form>
                                         </td>

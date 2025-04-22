@@ -14,49 +14,47 @@ class Sale extends Model {
     protected $table = 'sales';
 
     protected $fillable = [
-
-        'id_product',
-        'id_list',
-        'id_client',
-        'id_seller',
-
+        'product_id',
+        'list_id',
+        'client_id',
+        'seller_id',
         'payment_token',
         'payment_method',
         'payment_installments',
-
-        'value',
-        'value_total',
-        'commission',
-        'commission_filiate',
-
         'contract_url',
         'contract_sign',
-
         'guarantee',
         'label',
-
         'status',
         'type',
     ];
 
     public function product() {
-        return $this->belongsTo(Product::class, 'id_product');
+        return $this->belongsTo(Product::class, 'product_id');
+    }
+
+    public function invoices() {
+        return $this->hasMany(Invoice::class);
     }
 
     public function list() {
-        return $this->belongsTo(Lists::class, 'id_list');
+        return $this->belongsTo(SaleList::class, 'list_id');
     }
 
-    public function user() {
-        return $this->belongsTo(User::class, 'id_client')->withTrashed();
+    public function client() {
+        return $this->belongsTo(User::class, 'client_id')->withTrashed();
     }
 
     public function seller() {
-        return $this->belongsTo(User::class, 'id_seller')->withTrashed();
+        return $this->belongsTo(User::class, 'seller_id')->withTrashed();
     }    
 
+    public function totalInvoices() {
+        return $this->invoices()->sum('value');
+    }
+
     public function paymentMethod() {
-        switch ($this->payment) {
+        switch ($this->payment_method) {
             case 'PIX':
                 return 'Pix';
                 break;
@@ -69,16 +67,16 @@ class Sale extends Model {
         }
     }
     
-    public function statusLabel() {
+    public function statusPaymentLabel() {
         switch ($this->status) {
             case 1:
                 return 'Confirmado';
                 break;
-            case 4:
+            case 2:
                 return 'Pendente';
                 break;
             default:
-                return 'Pendente';
+                return 'Desconhecido';
                 break;
         }
     }
@@ -128,7 +126,7 @@ class Sale extends Model {
 
         return $data ?? [
             'label' => '',
-            'color' => '',
+            'color' => 'dark',
             'title' => ''
         ];
     }

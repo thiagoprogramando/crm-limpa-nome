@@ -13,9 +13,9 @@ class Invoice extends Model {
     protected $table = 'invoices';
 
     protected $fillable = [
-        'id_user',
-        'id_product',
-        'id_sale',
+        'user_id',
+        'product_id',
+        'sale_id',
 
         'name',
         'description',
@@ -26,18 +26,18 @@ class Invoice extends Model {
 
         'due_date',
         'value',
-        'commission',
-        'commission_filiate',
+        'commission_seller',
+        'commission_sponsor',
         'status',
         'type',
     ];
 
     public function user() {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function sale() {
-        return $this->belongsTo(Sale::class, 'id_sale');
+        return $this->belongsTo(Sale::class, 'sale_id');
     }
 
     public function statusLabel() {

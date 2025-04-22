@@ -23,208 +23,46 @@ use Illuminate\Support\Facades\Auth;
 
 class AssasController extends Controller {
 
-    public function createSalePayment($id, $notification = null, $dueDate = null) {
+    public function createCharge($customer, $billingType, $value, $dueDate = null, $description, $commissions = null) {
 
-        $sale      = Sale::find($id);
-        $client    = User::find($sale->id_client);
-        $seller    = User::find($sale->id_seller);
-        $filiate   = User::where('id', $seller->filiate)->first() ?? null;
-        
-        $commission  = $sale->commission;
-
-        if ($seller->type == 4) {
-            $commission = 0;
-        }
-
-        switch ($sale->payment) {
-            case 'BOLETO':
-                return $this->invoiceBoleto($sale->value, $commission, $sale, $seller->wallet, $client, $filiate, $notification, $dueDate);
-                break;
-            case 'CREDIT_CARD':
-                return $this->invoiceCard($sale->value, $commission, $sale, $seller->wallet, $client, $filiate);
-                break;
-            case 'PIX':
-                return $this->invoiceBoleto($sale->value, $commission, $sale, $seller->wallet, $client, $filiate, $notification, $dueDate);
-                break;
-            default:
-                return false;
-                break;
-        }
-
-        return false;
-    }
-
-    private function invoiceBoleto($value, $commission, $sale, $wallet, $client, $filiate = null, $notification = null, $dueDate = null) {
-
-        if (Invoice::where('id_sale', $sale->id)->count() >= 1) {
-            return true;
-        }
-
-        $customer = $this->createCustomer($client->name, $client->cpfcnpj, $client->phone, $client->email);
-        if ($customer == false) {
-            return false;
-        }
-
-        if ($filiate) {
-            $commission_filiate = max($sale->seller->fixed_cost - $filiate->fixed_cost, 0);
-        } else {
-            $commission_filiate = 0;
-        }
-
-        $charge = $this->createCharge($customer, $sale->payment, $value, 'Fatura N° 1 da venda N° '.$sale->id, $dueDate, null, $wallet, $commission, $filiate, $commission_filiate);  
-        if ($charge == false) {
-            return "Não gerou fatura";
-        }
-        
-        $invoice = new Invoice();
-        $invoice->user_id               = $sale->id_client;
-        $invoice->id_sale               = $sale->id;
-        $invoice->id_product            = $sale->id_product;
-        $invoice->name                  = env('APP_NAME').' - Fatura';
-        $invoice->description           = 'Fatura N° 1 da venda N° '.$sale->id;
-        $invoice->url_payment           = $charge['invoiceUrl'];
-        $invoice->token_payment         = $charge['id'];
-        $invoice->value                 = $value;
-        $invoice->commission            = $commission;
-        $invoice->commission_filiate    = $commission_filiate;
-        $invoice->due_date              = isset($dueDate) ? Carbon::parse($dueDate)->format('Y-m-d H:i:s') : now()->addDays(1)->format('Y-m-d H:i:s');
-        $invoice->num                   = 1;
-        $invoice->type                  = 3;
-        $invoice->status                = 0;
-        if ($invoice->save()) {
-
-            if ($notification == true) {
-                $message = "Prezado(a) {$sale->user->name}, estamos enviando o link para pagamento da sua contratação aos serviços da nossa assessoria. \r\n\r\n\r\n"."Consulte os termos do seu contrato aqui👇🏼 \r\n".env('APP_URL')."preview-contract/".$sale->id."\r\n\r\n\r\n"."PARA FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳";
-                $this->sendInvoice($invoice->url_payment, $sale->id_client, $message, $sale->seller->api_token_zapapi);
-                return true;
-            }
-            
-            return true;
-        }
-        
-        return false;
-    }        
+        try {
+            $client = new Client();
     
-    private function invoiceCard($value, $commission, $sale, $wallet, $client, $filiate = null) {
-
-        if ($filiate) {
-            $commission_filiate = $sale->seller->fixed_cost - $filiate->fixed_cost;
-        } else {
-            $commission_filiate = 0;
-        }
-
-        $invoice                = new Invoice();
-        $invoice->user_id       = $sale->id_client;
-        $invoice->id_sale       = $sale->id;
-        $invoice->id_product    = $sale->id_product;
-
-        $invoice->name          = env('APP_NAME').' - Fatura';
-        $invoice->description   = 'Fatura única para venda N°'.$sale->id;
-
-        $invoice->value                 = $value;
-        $invoice->commission            = $commission;
-        $invoice->commission_filiate    = $commission_filiate;
-        $invoice->due_date              = now()->addDay();
-        $invoice->num                   = 1;
-        $invoice->type                  = 3;
-        $invoice->status                = 0;
-
-        $charge = $this->createCharge(
-            $this->createCustomer($client->name, $client->cpfcnpj, $client->phone, $client->email),
-            $sale->payment, 
-            $value, 
-            'Fatura única para venda N°'.$sale->id,
-            now()->addDay(),
-            $sale->installments,
-            $wallet,
-            $commission,
-            $filiate,
-            $commission_filiate
-        );
-
-        if($charge) {
-            $invoice->url_payment   = $charge['invoiceUrl'];
-            $invoice->token_payment = $charge['id'];
-        } else {
-            return false;
-        }
-
-        $notification               = new Notification();
-        $notification->name         = 'Faturas criada';
-        $notification->description  = 'Faturas geradas para venda N° '.$sale->id;
-        $notification->type         = 1;
-        $notification->user_id      = $sale->id_seller; 
-        $notification->save();
-
-        if($invoice->save()) {
-            
-            $invoice = Invoice::where('id_sale', $sale->id)->where('status', 0)->first();
-            $this->sendInvoice($charge['invoiceUrl'], $sale->id_client, $sale->seller->api_token_zapapi);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public function requestInvoice($sale) {
-        
-        $createSalePayment = $this->createSalePayment($sale);
-        if ($createSalePayment) {
-            return redirect()->back()->with('success', 'Fatura criada para a venda!'); 
-        }
-
-        return redirect()->back()->with('info', 'Verifique os dados e tente novamente!');
-    }
+            $options = [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'access_token' => env('API_TOKEN_ASSAS'),
+                    'User-Agent'   => env('APP_NAME')
+                ],
+                'json' => [
+                    'customer'          => $customer,
+                    'billingType'       => $billingType,
+                    'value'             => number_format($value, 2, '.', ''),
+                    'dueDate'           => isset($dueDate) ? Carbon::parse($dueDate)->toIso8601String() : now()->addDays(1),
+                    'description'       => $description,
+                    'isAddressRequired' => false,
+                    'split'             => env('APP_ENV') !== 'local' ? $commissions : null,
+                ],
+                'verify' => false
+            ];
     
-    public function createMonthly($id) {
-
-        $user = User::find($id);
-        if (!$user) {
-            return redirect()->route('profile')->with('info', 'Verifique seus dados e tente novamente!');
-        }
-       
-        $invoice = Invoice::where('user_id', $user->id)->where('type', 1)->where('status', 0)->exists();
-        if ($invoice) {
-            return redirect()->route('payments')->with('error', 'Você possui uma mensalidade em aberto!');
-        }
-        
-        if ($user->customer == null) {
-            
-            $customer = $this->createCustomer($user->name, $user->cpfcnpj, $user->phone, $user->email);
-            if ($customer) {
-                $user->customer = $customer;
-                $user->save();
+            $response = $client->post(env('API_URL_ASSAS') . 'v3/payments', $options);
+            $body = (string) $response->getBody();
+    
+            if ($response->getStatusCode() === 200) {
+                $data = json_decode($body, true);
+                return [
+                    'id'            => $data['id'],
+                    'invoiceUrl'    => $data['invoiceUrl'],
+                ];
             } else {
-                return redirect()->route('profile')->with('info', 'Verifique seus dados e tente novamente!');
+                Log::error('Erro ao Gerar Fatura (Controller AssasController) de '.$customer.': ' . $body);
+                return false;
             }
+        } catch (\Exception $e) {
+            Log::error('Erro ao Gerar Fatura (Controller AssasController) de '.$customer.': ' . $e->getMessage());
+            return false;
         }
-
-        $charge = $this->createCharge($user->customer, 'PIX', '49.99', 'Assinatura -'.env('APP_NAME'), now()->addDay(), null, env('WALLET_HEFESTO'), 20);
-        if($charge <> false) {
-
-            $invoice = new Invoice();
-            $invoice->name          = 'Mensalidade '.env('APP_NAME');
-            $invoice->description   = 'Mensalidade '.env('APP_NAME');
-
-            $invoice->user_id       = $user->id;
-            $invoice->product_id    = 1;
-            $invoice->value         = 49.99;
-            $invoice->commission    = 20;
-            $invoice->status        = 0;
-            $invoice->type          = 1;
-            $invoice->num           = 1;
-            $invoice->due_date      = now()->addDay();
-
-            $invoice->payment_url   = $charge['invoiceUrl'];
-            $invoice->payment_token = $charge['id'];
-
-            if($invoice->save()) {
-                return redirect($charge['invoiceUrl']);
-            }
-        }
-
-        return redirect()->back()->with('error', 'Tivemos um pequeno problema, contate o suporte!');
     }
 
     public function createCustomer($name, $cpfcnpj, $mobilePhone, $email) {
@@ -277,402 +115,379 @@ class AssasController extends Controller {
         }
     }
 
-    public function createCharge($customer, $billingType, $value, $description, $dueDate = null, $installments = null, $wallet = null, $commission = null, $filiate = null, $commission_filiate = null) {
-        try {
-            $client = new Client();
+    // public function requestInvoice($sale) {
+        
+    //     $createSalePayment = $this->createSalePayment($sale);
+    //     if ($createSalePayment) {
+    //         return redirect()->back()->with('success', 'Fatura criada para a venda!'); 
+    //     }
+
+    //     return redirect()->back()->with('info', 'Verifique os dados e tente novamente!');
+    // }
     
-            $options = [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'access_token' => env('API_TOKEN_ASSAS'),
-                    'User-Agent'   => env('APP_NAME')
-                ],
-                'json' => [
-                    'customer'          => $customer,
-                    'billingType'       => $billingType,
-                    'value'             => number_format($value, 2, '.', ''),
-                    'dueDate'           => isset($dueDate) ? Carbon::parse($dueDate)->toIso8601String() : now()->addDays(1),
-                    'description'       => $description,
-                    'installmentCount'  => $installments != null ? $installments : 1,
-                    'installmentValue'  => $installments != null ? number_format(($value / intval($installments)), 2, '.', '') : $value,
-                    'isAddressRequired' => false
-                ],
-                'verify' => false
-            ];
-    
-            if (($filiate <> null) && ($commission_filiate > 0)) {
-                $options['json']['split'][] = [
-                    'walletId'        => $filiate->wallet,
-                    'totalFixedValue' => number_format($commission_filiate, 2, '.', '')
-                ];
-            }
-    
-            if ($value > 0) {
+    // public function createMonthly($id) {
 
-                $g7Commission = ($value == 49.99) ? 0 : $commission * 0.05;
-                $commission   = ($commission - $g7Commission);
-    
-                if ($wallet == env('WALLET_HEFESTO')) {
-                    $g7Commission = 0;
-                }
-    
-                if ($g7Commission > 0 && $commission > 0) {
-
-                    $g7Commission -= 3;
-
-                    if ($g7Commission > 0) {
-                        $options['json']['split'][] = [
-                            'walletId'        => env('WALLET_G7'),
-                            'totalFixedValue' => number_format($g7Commission, 2, '.', '')
-                        ];
-                    }
-    
-                    $options['json']['split'][] = [
-                        'walletId'        => env('WALLET_HEFESTO'),
-                        'totalFixedValue' => 1
-                    ];
-                }
-    
-                if (!empty($wallet) && $commission > 0) {
-                    $options['json']['split'][] = [
-                        'walletId'        => $wallet,
-                        'totalFixedValue' => max(0, number_format($commission, 2, '.', ''))
-                    ];
-                }
-            }
-    
-            $response = $client->post(env('API_URL_ASSAS') . 'v3/payments', $options);
-            $body = (string) $response->getBody();
-    
-            if ($response->getStatusCode() === 200) {
-                $data = json_decode($body, true);
-                return [
-                    'id'            => $data['id'],
-                    'invoiceUrl'    => $data['invoiceUrl'],
-                ];
-            } else {
-                Log::error('Erro ao Gerar Fatura (Controller AssasController) de '.$customer.': ' . $body);
-                return false;
-            }
-        } catch (\Exception $e) {
-            Log::error('Erro ao Gerar Fatura (Controller AssasController) de '.$customer.': ' . $e->getMessage());
-            return false;
-        }
-    }    
-    
-    public function createCoupon($parent, $description) {
-
-        $couponName = $this->generateCouponName($parent->name);
-
-        $coupon                 = new Coupon();
-        $coupon->name           = $couponName;
-        $coupon->description    = $description;
-        $coupon->user_id        = $parent->id;
-        $coupon->percentage     = 100;
-        $coupon->qtd            = 1;
-        if($coupon->save()) {
-            $message =  "*Surpresa Especial para Você! 🎁* \r\n\r\n"
-                        . "Como forma de agradecimento por ser um parceiro incrível, preparamos um *cupom de {$coupon->percentage}% de desconto* para você aproveitar na sua próxima mensalidade! \r\n\r\n"
-                        . "Código do cupom: *{$couponName}* \r\n"
-                        . "Não deixe essa oportunidade passar! Use o código na sua fatura e aproveite para economizar. \r\n"
-                        . "Agradecemos por fazer parte da nossa jornada! \r\n\r\n";
-
-            $assas = new AssasController();
-            $assas->sendWhatsapp('', $message, $parent->phone, $parent->api_token_zapapi);
-        }
-
-        return true;
-    }
-
-    private function generateCouponName(string $name): string {
-
-        $baseName = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $name));
-        $existingCouponsCount = Coupon::where('name', 'like', "{$baseName}%")->count();
-        return $existingCouponsCount > 0 ? "{$baseName}".($existingCouponsCount + 1) : $baseName;
-    }
-
-    public function webhook(Request $request) {
-
-        $jsonData = $request->json()->all();
-        if ($jsonData['event'] === 'PAYMENT_CONFIRMED' || $jsonData['event'] === 'PAYMENT_RECEIVED') {
+    //     $user = User::find($id);
+    //     if (!$user) {
+    //         return redirect()->route('profile')->with('info', 'Verifique seus dados e tente novamente!');
+    //     }
+       
+    //     $invoice = Invoice::where('user_id', $user->id)->where('type', 1)->where('status', 0)->exists();
+    //     if ($invoice) {
+    //         return redirect()->route('payments')->with('error', 'Você possui uma mensalidade em aberto!');
+    //     }
+        
+    //     if ($user->customer == null) {
             
-            $token = $jsonData['payment']['id'];
-            $invoice = Invoice::where('token_payment', $token)->where('status', 0)->first();
-            if ($invoice) {
+    //         $customer = $this->createCustomer($user->name, $user->cpfcnpj, $user->phone, $user->email);
+    //         if ($customer) {
+    //             $user->customer = $customer;
+    //             $user->save();
+    //         } else {
+    //             return redirect()->route('profile')->with('info', 'Verifique seus dados e tente novamente!');
+    //         }
+    //     }
 
-                $invoice->status = 1;
-                if (!$invoice->save()) {
-                    return response()->json(['status' => 'error', 'message' => 'Não foi possível confirmar o pagamento da fatura!']);
-                }
+    //     $charge = $this->createCharge($user->customer, 'PIX', '49.99', 'Assinatura -'.env('APP_NAME'), now()->addDay(), null, env('WALLET_HEFESTO'), 20);
+    //     if($charge <> false) {
 
-                $sale = Sale::where('id', $invoice->id_sale)->first();
-                if ($sale) {
+    //         $invoice = new Invoice();
+    //         $invoice->name          = 'Mensalidade '.env('APP_NAME');
+    //         $invoice->description   = 'Mensalidade '.env('APP_NAME');
 
-                    $product = $invoice->id_product <> null ? Product::where('id', $invoice->id_product)->first() : false;
-                    if ($product && $invoice->num == 1) {
+    //         $invoice->user_id       = $user->id;
+    //         $invoice->product_id    = 1;
+    //         $invoice->value         = 49.99;
+    //         $invoice->commission    = 20;
+    //         $invoice->status        = 0;
+    //         $invoice->type          = 1;
+    //         $invoice->num           = 1;
+    //         $invoice->due_date      = now()->addDay();
+
+    //         $invoice->payment_url   = $charge['invoiceUrl'];
+    //         $invoice->payment_token = $charge['id'];
+
+    //         if($invoice->save()) {
+    //             return redirect($charge['invoiceUrl']);
+    //         }
+    //     }
+
+    //     return redirect()->back()->with('error', 'Tivemos um pequeno problema, contate o suporte!');
+    // }    
+    
+    // public function createCoupon($parent, $description) {
+
+    //     $couponName = $this->generateCouponName($parent->name);
+
+    //     $coupon                 = new Coupon();
+    //     $coupon->name           = $couponName;
+    //     $coupon->description    = $description;
+    //     $coupon->user_id        = $parent->id;
+    //     $coupon->percentage     = 100;
+    //     $coupon->qtd            = 1;
+    //     if($coupon->save()) {
+    //         $message =  "*Surpresa Especial para Você! 🎁* \r\n\r\n"
+    //                     . "Como forma de agradecimento por ser um parceiro incrível, preparamos um *cupom de {$coupon->percentage}% de desconto* para você aproveitar na sua próxima mensalidade! \r\n\r\n"
+    //                     . "Código do cupom: *{$couponName}* \r\n"
+    //                     . "Não deixe essa oportunidade passar! Use o código na sua fatura e aproveite para economizar. \r\n"
+    //                     . "Agradecemos por fazer parte da nossa jornada! \r\n\r\n";
+
+    //         $assas = new AssasController();
+    //         $assas->sendWhatsapp('', $message, $parent->phone, $parent->api_token_zapapi);
+    //     }
+
+    //     return true;
+    // }
+
+    // private function generateCouponName(string $name): string {
+
+    //     $baseName = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $name));
+    //     $existingCouponsCount = Coupon::where('name', 'like', "{$baseName}%")->count();
+    //     return $existingCouponsCount > 0 ? "{$baseName}".($existingCouponsCount + 1) : $baseName;
+    // }
+
+    // public function webhook(Request $request) {
+
+    //     $jsonData = $request->json()->all();
+    //     if ($jsonData['event'] === 'PAYMENT_CONFIRMED' || $jsonData['event'] === 'PAYMENT_RECEIVED') {
+            
+    //         $token = $jsonData['payment']['id'];
+    //         $invoice = Invoice::where('token_payment', $token)->where('status', 0)->first();
+    //         if ($invoice) {
+
+    //             $invoice->status = 1;
+    //             if (!$invoice->save()) {
+    //                 return response()->json(['status' => 'error', 'message' => 'Não foi possível confirmar o pagamento da fatura!']);
+    //             }
+
+    //             $sale = Sale::where('id', $invoice->id_sale)->first();
+    //             if ($sale) {
+
+    //                 $product = $invoice->id_product <> null ? Product::where('id', $invoice->id_product)->first() : false;
+    //                 if ($product && $invoice->num == 1) {
                             
-                        $sale->status = 1;
-                        $sale->guarantee = Carbon::parse($sale->guarantee)->addMonths(12);
+    //                     $sale->status = 1;
+    //                     $sale->guarantee = Carbon::parse($sale->guarantee)->addMonths(12);
 
-                        $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
-                        if ($list) {
-                            $sale->id_list = $list->id;
-                        }
-                    }
+    //                     $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
+    //                     if ($list) {
+    //                         $sale->id_list = $list->id;
+    //                     }
+    //                 }
 
-                    $sale->save();
+    //                 $sale->save();
 
-                    $notification               = new Notification();
-                    $notification->name         = 'Fatura N°'.$invoice->id;
-                    $notification->description  = 'Faturas recebida com sucesso!';
-                    $notification->type         = 1;
-                    $notification->user_id      = $invoice->id_seller; 
-                    $notification->save();
+    //                 $notification               = new Notification();
+    //                 $notification->name         = 'Fatura N°'.$invoice->id;
+    //                 $notification->description  = 'Faturas recebida com sucesso!';
+    //                 $notification->type         = 1;
+    //                 $notification->user_id      = $invoice->id_seller; 
+    //                 $notification->save();
 
-                    $seller = User::find($sale->id_seller);
-                    if ($seller && $seller->type <> 4) {
+    //                 $seller = User::find($sale->id_seller);
+    //                 if ($seller && $seller->type <> 4) {
 
-                        $totalSales = Sale::where('id_seller', $seller->id)->where('status', 1)->count();
-                        switch($totalSales) {
-                            case 10:
-                                $seller->level = 2;
-                                $nivel = 'CONSULTOR'; 
-                                break;
-                            case 30:
-                                $seller->level = 3;
-                                $nivel = 'CONSULTOR LÍDER'; 
-                                break;
-                            case 50:
-                                $seller->level = 4;
-                                $nivel = 'REGIONAL'; 
-                                break;
-                            case 100:
-                                $seller->level = 5;
-                                $nivel = 'GERENTE REGIONAL';
-                                break;
-                            case 300:
-                                $seller->level = 7;
-                                $nivel = 'DIRETOR';
-                                break;
-                            case 500:
-                                $seller->level = 8;
-                                $nivel = 'DIRETOR REGIONAL';
-                                break;
-                            case 1000:
-                                $seller->level = 9;
-                                $nivel = 'PRESIDENTE VIP';
-                                break;
-                        }
+    //                     $totalSales = Sale::where('id_seller', $seller->id)->where('status', 1)->count();
+    //                     switch($totalSales) {
+    //                         case 10:
+    //                             $seller->level = 2;
+    //                             $nivel = 'CONSULTOR'; 
+    //                             break;
+    //                         case 30:
+    //                             $seller->level = 3;
+    //                             $nivel = 'CONSULTOR LÍDER'; 
+    //                             break;
+    //                         case 50:
+    //                             $seller->level = 4;
+    //                             $nivel = 'REGIONAL'; 
+    //                             break;
+    //                         case 100:
+    //                             $seller->level = 5;
+    //                             $nivel = 'GERENTE REGIONAL';
+    //                             break;
+    //                         case 300:
+    //                             $seller->level = 7;
+    //                             $nivel = 'DIRETOR';
+    //                             break;
+    //                         case 500:
+    //                             $seller->level = 8;
+    //                             $nivel = 'DIRETOR REGIONAL';
+    //                             break;
+    //                         case 1000:
+    //                             $seller->level = 9;
+    //                             $nivel = 'PRESIDENTE VIP';
+    //                             break;
+    //                     }
 
-                        if (!empty($nivel)) {
-                            $notification               = new Notification();
-                            $notification->name         = 'Novo nível!';
-                            $notification->description  = $seller->name.' Alcançou o nível: '.$nivel;
-                            $notification->type         = 2;
-                            $notification->user_id      = 14; 
-                            $notification->save();
-                        }
+    //                     if (!empty($nivel)) {
+    //                         $notification               = new Notification();
+    //                         $notification->name         = 'Novo nível!';
+    //                         $notification->description  = $seller->name.' Alcançou o nível: '.$nivel;
+    //                         $notification->type         = 2;
+    //                         $notification->user_id      = 14; 
+    //                         $notification->save();
+    //                     }
 
-                        // if ($seller->salesSeller()->where('status', 1)->count() % 10 === 0) {
-                        //     $this->createCoupon($seller, 'Promoção 10 vendas ganha 1 nome!');
-                        // }
+    //                     // if ($seller->salesSeller()->where('status', 1)->count() % 10 === 0) {
+    //                     //     $this->createCoupon($seller, 'Promoção 10 vendas ganha 1 nome!');
+    //                     // }
 
-                        $seller->save();
-                    }
-                }
+    //                     $seller->save();
+    //                 }
+    //             }
 
-                $sales = Sale::where('token_payment', $token)->where('status', 0)->get();
-                if ($sales->isNotEmpty()) {
+    //             $sales = Sale::where('token_payment', $token)->where('status', 0)->get();
+    //             if ($sales->isNotEmpty()) {
 
-                    Sale::whereIn('id', $sales->pluck('id'))
-                        ->update(['status' => 1]);
+    //                 Sale::whereIn('id', $sales->pluck('id'))
+    //                     ->update(['status' => 1]);
                 
-                    return response()->json(['success' => 'success', 'message' => 'Status das vendas atualizado com sucesso!']);
-                }
+    //                 return response()->json(['success' => 'success', 'message' => 'Status das vendas atualizado com sucesso!']);
+    //             }
 
-                $client = User::find($invoice->user_id);
-                if ($client && $invoice->num == 1) {
-                    $this->sendWhatsapp(env('APP_URL').'login-cliente', "Olá, ".$client->name."!\r\n\r\nAgradecemos pelo seu pagamento! \r\n\r\n\r\n Tenha a certeza de que sua situação está em boas mãos. \r\n\r\n\r\n *Nos próximos 30 dias úteis*, nossa equipe especializada acompanhará de perto todo o processo para garantir que seu nome seja limpo o mais rápido possível. \r\n\r\n\r\n Estamos à disposição para qualquer dúvida ou esclarecimento. \r\n\r\n Você pode acompanhar o processo acessando nosso sistema no link abaixo: \r\n\r\n", $client->phone, $seller->api_token_zapapi);
-                } else {
-                    $this->sendWhatsapp(env('APP_URL').'login-cliente', $client->name."!\r\n\r\nAgradecemos por manter o compromisso e realizar o pagamento do boleto, o que garante a continuidade e a validade da garantia do serviço. \r\n\r\n Acesse o Painel do cliente👇", $client->phone, $seller->api_token_zapapi);
-                }
+    //             $client = User::find($invoice->user_id);
+    //             if ($client && $invoice->num == 1) {
+    //                 $this->sendWhatsapp(env('APP_URL').'login-cliente', "Olá, ".$client->name."!\r\n\r\nAgradecemos pelo seu pagamento! \r\n\r\n\r\n Tenha a certeza de que sua situação está em boas mãos. \r\n\r\n\r\n *Nos próximos 30 dias úteis*, nossa equipe especializada acompanhará de perto todo o processo para garantir que seu nome seja limpo o mais rápido possível. \r\n\r\n\r\n Estamos à disposição para qualquer dúvida ou esclarecimento. \r\n\r\n Você pode acompanhar o processo acessando nosso sistema no link abaixo: \r\n\r\n", $client->phone, $seller->api_token_zapapi);
+    //             } else {
+    //                 $this->sendWhatsapp(env('APP_URL').'login-cliente', $client->name."!\r\n\r\nAgradecemos por manter o compromisso e realizar o pagamento do boleto, o que garante a continuidade e a validade da garantia do serviço. \r\n\r\n Acesse o Painel do cliente👇", $client->phone, $seller->api_token_zapapi);
+    //             }
 
-                if ($seller && $invoice->num == 1 && $invoice->type == 3) {
-                    $message =  "Olá, {$seller->name}, Espero que esteja bem! 😊\r\n\r\n"
-                                . "Gostaria de informar que uma nova venda foi realizada com sucesso.🤑💸\r\n\r\n"
-                                . "Cliente: {$client->name}\r\n"
-                                . "Produto/Serviço: {$product->name}\r\n"
-                                . "Valor Total: R$ " . number_format($sale->value, 2, ',', '.') . "\r\n"
-                                . "Data da Venda: " . $sale->created_at->format('d/m/Y H:i') . "\r\n\r\n"
-                                . "Obrigado pelo excelente trabalho!🥇\r\n\r\n";
+    //             if ($seller && $invoice->num == 1 && $invoice->type == 3) {
+    //                 $message =  "Olá, {$seller->name}, Espero que esteja bem! 😊\r\n\r\n"
+    //                             . "Gostaria de informar que uma nova venda foi realizada com sucesso.🤑💸\r\n\r\n"
+    //                             . "Cliente: {$client->name}\r\n"
+    //                             . "Produto/Serviço: {$product->name}\r\n"
+    //                             . "Valor Total: R$ " . number_format($sale->value, 2, ',', '.') . "\r\n"
+    //                             . "Data da Venda: " . $sale->created_at->format('d/m/Y H:i') . "\r\n\r\n"
+    //                             . "Obrigado pelo excelente trabalho!🥇\r\n\r\n";
 
-                    $this->sendWhatsapp("", $message, $seller->phone, $seller->api_token_zapapi);
-                }
+    //                 $this->sendWhatsapp("", $message, $seller->phone, $seller->api_token_zapapi);
+    //             }
 
-                if ($seller && $invoice->num != 1 && $invoice->type == 3 && $invoice->commission > 0) {
-                    $message =  "Olá, {$seller->name}, Espero que esteja bem! 😊\r\n\r\n"
-                                . "Gostaria de informar que uma nova COMISSÃO FOI RECEBIDA com sucesso.🤑💸\r\n\r\n"
-                                . "Cliente: {$client->name}\r\n"
-                                . "Produto/Serviço: {$product->name}\r\n"
-                                . "Fatura N° {$invoice->num}\r\n"
-                                . "Valor apróximado: R$ " . number_format($invoice->commission, 2, ',', '.') . "\r\n"
-                                . "Data da Venda: " . $sale->created_at->format('d/m/Y H:i') . "\r\n\r\n"
-                                . "Obrigado pelo excelente trabalho!🥇\r\n\r\n";
+    //             if ($seller && $invoice->num != 1 && $invoice->type == 3 && $invoice->commission > 0) {
+    //                 $message =  "Olá, {$seller->name}, Espero que esteja bem! 😊\r\n\r\n"
+    //                             . "Gostaria de informar que uma nova COMISSÃO FOI RECEBIDA com sucesso.🤑💸\r\n\r\n"
+    //                             . "Cliente: {$client->name}\r\n"
+    //                             . "Produto/Serviço: {$product->name}\r\n"
+    //                             . "Fatura N° {$invoice->num}\r\n"
+    //                             . "Valor apróximado: R$ " . number_format($invoice->commission, 2, ',', '.') . "\r\n"
+    //                             . "Data da Venda: " . $sale->created_at->format('d/m/Y H:i') . "\r\n\r\n"
+    //                             . "Obrigado pelo excelente trabalho!🥇\r\n\r\n";
 
-                    $this->sendWhatsapp("", $message, $seller->phone, $seller->api_token_zapapi);
-                }
+    //                 $this->sendWhatsapp("", $message, $seller->phone, $seller->api_token_zapapi);
+    //             }
                 
-                return response()->json(['status' => 'success', 'message' => 'Operação Finalizada!']);
-            }
+    //             return response()->json(['status' => 'success', 'message' => 'Operação Finalizada!']);
+    //         }
             
-            return response()->json(['status' => 'success', 'message' => 'Nenhum Fatura/Venda encontrada!']);
-        }
+    //         return response()->json(['status' => 'success', 'message' => 'Nenhum Fatura/Venda encontrada!']);
+    //     }
 
-        if($jsonData['event'] === 'PAYMENT_OVERDUE') {
+    //     if($jsonData['event'] === 'PAYMENT_OVERDUE') {
 
-            $token = $jsonData['payment']['id'];
-            $invoice = Invoice::where('token_payment', $token)->where('status', 0)->first();
-            if($invoice) {
+    //         $token = $jsonData['payment']['id'];
+    //         $invoice = Invoice::where('token_payment', $token)->where('status', 0)->first();
+    //         if($invoice) {
 
-                if(($invoice->type == 2 || $invoice->type == 3) && $invoice->num > 1) {
-                    switch ($invoice->notification_number) {
-                        case 1:
-                            $value      = $invoice->value - ($invoice->value * 0.10);
-                            $commission = $invoice->commission - ($invoice->commission * 0.15);
-                            $dueDate    = Carbon::now()->addDays(7);
-                            $wallet     = $invoice->sale->seller->wallet ?? null;
+    //             if(($invoice->type == 2 || $invoice->type == 3) && $invoice->num > 1) {
+    //                 switch ($invoice->notification_number) {
+    //                     case 1:
+    //                         $value      = $invoice->value - ($invoice->value * 0.10);
+    //                         $commission = $invoice->commission - ($invoice->commission * 0.15);
+    //                         $dueDate    = Carbon::now()->addDays(7);
+    //                         $wallet     = $invoice->sale->seller->wallet ?? null;
 
-                            $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
-                            if($charge) {
+    //                         $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
+    //                         if($charge) {
 
-                                $invoice->due_date               = $dueDate;
-                                $invoice->value                  = $value;
-                                $invoice->commission             = $commission;
-                                $invoice->url_payment            = $charge['invoiceUrl'];
-                                $invoice->token_payment          = $charge['id'];
-                                $invoice->notification_number    += 1;
-                                $invoice->save(); 
+    //                             $invoice->due_date               = $dueDate;
+    //                             $invoice->value                  = $value;
+    //                             $invoice->commission             = $commission;
+    //                             $invoice->url_payment            = $charge['invoiceUrl'];
+    //                             $invoice->token_payment          = $charge['id'];
+    //                             $invoice->notification_number    += 1;
+    //                             $invoice->save(); 
 
-                                $dueDateFormatted = Carbon::parse($dueDate)->format('d/m/Y');
-                                $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
-                                    . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 10% se o pagamento for feito até {$dueDateFormatted}.\r\n"
-                                    . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n";
+    //                             $dueDateFormatted = Carbon::parse($dueDate)->format('d/m/Y');
+    //                             $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
+    //                                 . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 10% se o pagamento for feito até {$dueDateFormatted}.\r\n"
+    //                                 . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n";
 
-                                $this->sendWhatsapp(
-                                    $charge['invoiceUrl'],
-                                    $message,
-                                    $invoice->user->phone,
-                                    $invoice->sale->seller->api_token_zapapi
-                                );
-                            }
-                            break;
-                        case 2:
-                            $value      = $invoice->value - ($invoice->value * 0.10);
-                            $commission = $invoice->commission - ($invoice->commission * 0.15);
-                            $dueDate    = Carbon::now()->addDays(7);
-                            $wallet     = $invoice->sale->seller->wallet ?? null;
+    //                             $this->sendWhatsapp(
+    //                                 $charge['invoiceUrl'],
+    //                                 $message,
+    //                                 $invoice->user->phone,
+    //                                 $invoice->sale->seller->api_token_zapapi
+    //                             );
+    //                         }
+    //                         break;
+    //                     case 2:
+    //                         $value      = $invoice->value - ($invoice->value * 0.10);
+    //                         $commission = $invoice->commission - ($invoice->commission * 0.15);
+    //                         $dueDate    = Carbon::now()->addDays(7);
+    //                         $wallet     = $invoice->sale->seller->wallet ?? null;
 
-                            $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
-                            if($charge) {
+    //                         $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
+    //                         if($charge) {
 
-                                $invoice->due_date               = $dueDate;
-                                $invoice->value                  = $value;
-                                $invoice->commission             = $commission;
-                                $invoice->url_payment            = $charge['invoiceUrl'];
-                                $invoice->token_payment          = $charge['id'];
-                                $invoice->notification_number    += 1;
-                                $invoice->save(); 
+    //                             $invoice->due_date               = $dueDate;
+    //                             $invoice->value                  = $value;
+    //                             $invoice->commission             = $commission;
+    //                             $invoice->url_payment            = $charge['invoiceUrl'];
+    //                             $invoice->token_payment          = $charge['id'];
+    //                             $invoice->notification_number    += 1;
+    //                             $invoice->save(); 
 
-                                $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
-                                $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
-                                    . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 20% se o pagamento for feito até {$dueDateFormatted}.\r\n"
-                                    . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n";
+    //                             $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
+    //                             $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
+    //                                 . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 20% se o pagamento for feito até {$dueDateFormatted}.\r\n"
+    //                                 . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n";
 
-                                $this->sendWhatsapp(
-                                    $charge['invoiceUrl'],
-                                    $message,
-                                    $invoice->user->phone,
-                                    $invoice->sale->seller->api_token_zapapi
-                                );
-                            }
-                            break;     
-                        case 3:
-                            $value      = $invoice->value - ($invoice->value * 0.10);
-                            $commission = $invoice->commission - ($invoice->commission * 0.15);
-                            $dueDate    = Carbon::now()->addDays(7);
-                            $wallet     = $invoice->sale->seller->wallet ?? null;
+    //                             $this->sendWhatsapp(
+    //                                 $charge['invoiceUrl'],
+    //                                 $message,
+    //                                 $invoice->user->phone,
+    //                                 $invoice->sale->seller->api_token_zapapi
+    //                             );
+    //                         }
+    //                         break;     
+    //                     case 3:
+    //                         $value      = $invoice->value - ($invoice->value * 0.10);
+    //                         $commission = $invoice->commission - ($invoice->commission * 0.15);
+    //                         $dueDate    = Carbon::now()->addDays(7);
+    //                         $wallet     = $invoice->sale->seller->wallet ?? null;
 
-                            $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
-                            if($charge) {
+    //                         $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
+    //                         if($charge) {
 
-                                $invoice->due_date               = $dueDate;
-                                $invoice->value                  = $value;
-                                $invoice->commission             = $commission;
-                                $invoice->url_payment            = $charge['invoiceUrl'];
-                                $invoice->token_payment          = $charge['id'];
-                                $invoice->notification_number    += 1;
-                                $invoice->save(); 
+    //                             $invoice->due_date               = $dueDate;
+    //                             $invoice->value                  = $value;
+    //                             $invoice->commission             = $commission;
+    //                             $invoice->url_payment            = $charge['invoiceUrl'];
+    //                             $invoice->token_payment          = $charge['id'];
+    //                             $invoice->notification_number    += 1;
+    //                             $invoice->save(); 
 
-                                $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
-                                $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
-                                    . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 30% se o pagamento for feito até {$dueDateFormatted}.\r\n"
-                                    . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n";
+    //                             $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
+    //                             $message =  "Olá, {$invoice->user->name}!\r\n\r\n"
+    //                                 . "Sua fatura {$invoice->num} está atrasada. Oferecemos um desconto de 30% se o pagamento for feito até {$dueDateFormatted}.\r\n"
+    //                                 . "*Após essa data, a multa será aplicada e a garantia será perdida.*\r\n\r\n";
 
-                                $this->sendWhatsapp(
-                                    $charge['invoiceUrl'],
-                                    $message,
-                                    $invoice->user->phone,
-                                    $invoice->sale->seller->api_token_zapapi
-                                );
-                            }
-                            break;
-                        case 4:
-                            $value      = $invoice->value - ($invoice->value * 0.20);
-                            $commission = $invoice->commission - ($invoice->commission * 0.20);
-                            $dueDate    = Carbon::now()->addDays(7);
-                            $wallet     = $invoice->sale->seller->wallet ?? null;
+    //                             $this->sendWhatsapp(
+    //                                 $charge['invoiceUrl'],
+    //                                 $message,
+    //                                 $invoice->user->phone,
+    //                                 $invoice->sale->seller->api_token_zapapi
+    //                             );
+    //                         }
+    //                         break;
+    //                     case 4:
+    //                         $value      = $invoice->value - ($invoice->value * 0.20);
+    //                         $commission = $invoice->commission - ($invoice->commission * 0.20);
+    //                         $dueDate    = Carbon::now()->addDays(7);
+    //                         $wallet     = $invoice->sale->seller->wallet ?? null;
 
-                            $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
-                            if($charge) {
+    //                         $charge = $this->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
+    //                         if($charge) {
 
-                                $invoice->due_date               = $dueDate;
-                                $invoice->value                  = $value;
-                                $invoice->commission             = $commission;
-                                $invoice->url_payment            = $charge['invoiceUrl'];
-                                $invoice->token_payment          = $charge['id'];
-                                $invoice->notification_number    += 1;
-                                $invoice->save(); 
+    //                             $invoice->due_date               = $dueDate;
+    //                             $invoice->value                  = $value;
+    //                             $invoice->commission             = $commission;
+    //                             $invoice->url_payment            = $charge['invoiceUrl'];
+    //                             $invoice->token_payment          = $charge['id'];
+    //                             $invoice->notification_number    += 1;
+    //                             $invoice->save(); 
 
-                                $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
-                                $message =  "Assunto: Urgente: Fatura Atrasada \r\n\r\n Olá, {$invoice->user->name}!\r\n\r\n"
-                                    . "Sua fatura {$invoice->num} está gravemente atrasada. Oferecemos um desconto de 50% se o pagamento for feito até {$dueDateFormatted}.\r\n"
-                                    . "*Após essa data, a multa será aplicada e a garantia do produto será cancelada, o que pode resultar em custos extras e prejuízos adicionais.*\r\n\r\n"
-                                    . "Além disso, seu nome voltará a ficar sujo e toda a boa reputação que trabalhamos para recuperar para você será perdida. Não deixe essa oportunidade passar e evite impactos negativos em sua situação financeira e reputacional. \r\n\r\n\r\n";
+    //                             $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
+    //                             $message =  "Assunto: Urgente: Fatura Atrasada \r\n\r\n Olá, {$invoice->user->name}!\r\n\r\n"
+    //                                 . "Sua fatura {$invoice->num} está gravemente atrasada. Oferecemos um desconto de 50% se o pagamento for feito até {$dueDateFormatted}.\r\n"
+    //                                 . "*Após essa data, a multa será aplicada e a garantia do produto será cancelada, o que pode resultar em custos extras e prejuízos adicionais.*\r\n\r\n"
+    //                                 . "Além disso, seu nome voltará a ficar sujo e toda a boa reputação que trabalhamos para recuperar para você será perdida. Não deixe essa oportunidade passar e evite impactos negativos em sua situação financeira e reputacional. \r\n\r\n\r\n";
 
-                                $this->sendWhatsapp(
-                                    $charge['invoiceUrl'],
-                                    $message,
-                                    $invoice->user->phone,
-                                    $invoice->sale->seller->api_token_zapapi
-                                );
-                            }
-                            break;
-                        default:
-                            return response()->json(['status' => 'success', 'message' => 'Notificação de vencimento gerada!']);
-                            break;
-                    }
-                }
+    //                             $this->sendWhatsapp(
+    //                                 $charge['invoiceUrl'],
+    //                                 $message,
+    //                                 $invoice->user->phone,
+    //                                 $invoice->sale->seller->api_token_zapapi
+    //                             );
+    //                         }
+    //                         break;
+    //                     default:
+    //                         return response()->json(['status' => 'success', 'message' => 'Notificação de vencimento gerada!']);
+    //                         break;
+    //                 }
+    //             }
 
-                return response()->json(['status' => 'success', 'message' => 'Não é cobrança de Produto!']);
-            }
+    //             return response()->json(['status' => 'success', 'message' => 'Não é cobrança de Produto!']);
+    //         }
 
-            return response()->json(['status' => 'success', 'message' => 'Nenhum Fatura encontrada!']);
-        }
+    //         return response()->json(['status' => 'success', 'message' => 'Nenhum Fatura encontrada!']);
+    //     }
 
-        return response()->json(['status' => 'success', 'message' => 'Webhook não utilizado!']);
-    }
+    //     return response()->json(['status' => 'success', 'message' => 'Webhook não utilizado!']);
+    // }
 
-    public function addDiscount($id, $value, $dueDate, $commission = null, $wallet = null) {
+    public function updateCharge($id, $dueDate) {
         
         $client = new Client();
         
@@ -683,25 +498,10 @@ class AssasController extends Controller {
                 'User-Agent'   => env('APP_NAME')
             ],
             'json' => [
-                'value'       => number_format($value, 2, '.', ''),
                 'dueDate'     => $dueDate,
-                'description' => 'Acordo de cobrança vencida',
             ],
             'verify' => false
         ];
-        
-        if(env('APP_ENV') <> 'local') {
-            if ($commission > 0) {
-                if (!isset($options['json']['split'])) {
-                    $options['json']['split'] = [];
-                }
-        
-                $options['json']['split'][] = [
-                    'walletId'        => $wallet,
-                    'totalFixedValue' => number_format($commission, 2, '.', '')
-                ];
-            }
-        }
     
         try {
 
@@ -718,8 +518,7 @@ class AssasController extends Controller {
     
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $responseBody = $e->getResponse()->getBody()->getContents();
-            $error = json_decode($responseBody, true);
-
+            Log::error("Erro AssasController updateCharge: " . json_decode($responseBody, true));
             return false;
         } catch (\Exception $e) {    
             return false;
@@ -728,275 +527,275 @@ class AssasController extends Controller {
         return false;
     }    
 
-    public function myDocuments() {
-        try {
+    // public function myDocuments() {
+    //     try {
             
-            $user = Auth::user();
+    //         $user = Auth::user();
     
-            if (empty($user->api_key)) {
-                return [];
-            }
+    //         if (empty($user->api_key)) {
+    //             return [];
+    //         }
     
-            $client = new Client();
-            $options = [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'access_token' => $user->api_key,
-                    'User-Agent'   => env('APP_NAME')
-                ],
-                'verify' => false
-            ];
+    //         $client = new Client();
+    //         $options = [
+    //             'headers' => [
+    //                 'Content-Type' => 'application/json',
+    //                 'access_token' => $user->api_key,
+    //                 'User-Agent'   => env('APP_NAME')
+    //             ],
+    //             'verify' => false
+    //         ];
     
-            $response = $client->get(env('API_URL_ASSAS') . 'v3/myAccount/documents', $options);
-            $body = (string) $response->getBody();
+    //         $response = $client->get(env('API_URL_ASSAS') . 'v3/myAccount/documents', $options);
+    //         $body = (string) $response->getBody();
     
-            if ($response->getStatusCode() === 200) {
-                $data = json_decode($body, true);
+    //         if ($response->getStatusCode() === 200) {
+    //             $data = json_decode($body, true);
     
-                return $data['data'] ?? [];
-            }
-        } catch (\Exception $e) {
-            return [];
-        }
+    //             return $data['data'] ?? [];
+    //         }
+    //     } catch (\Exception $e) {
+    //         return [];
+    //     }
     
-        return [];
-    }    
+    //     return [];
+    // }    
 
-    public function receivable($startDate = null, $finishDate = null, $offset = 0) {
-        try {
+    // public function receivable($startDate = null, $finishDate = null, $offset = 0) {
+    //     try {
 
-            $client     = new Client();
-            $user       = Auth::user();
-            $startDate  = $startDate  ?? now()->toDateString();
-            $finishDate = $finishDate ?? now()->toDateString();
+    //         $client     = new Client();
+    //         $user       = Auth::user();
+    //         $startDate  = $startDate  ?? now()->toDateString();
+    //         $finishDate = $finishDate ?? now()->toDateString();
     
-            $response = $client->request('GET',  env('API_URL_ASSAS') . "v3/financialTransactions?limit=100&startDate={$startDate}&finishDate={$finishDate}&offset={$offset}&order=asc", [
-                'headers' => [
-                    'accept'        => 'application/json',
-                    'access_token'  => $user->api_key,
-                    'User-Agent'    => env('APP_NAME')
-                ],
-                'verify' => env('APP_ENV') == 'local' ? false : true,
-            ]);
+    //         $response = $client->request('GET',  env('API_URL_ASSAS') . "v3/financialTransactions?limit=100&startDate={$startDate}&finishDate={$finishDate}&offset={$offset}&order=asc", [
+    //             'headers' => [
+    //                 'accept'        => 'application/json',
+    //                 'access_token'  => $user->api_key,
+    //                 'User-Agent'    => env('APP_NAME')
+    //             ],
+    //             'verify' => env('APP_ENV') == 'local' ? false : true,
+    //         ]);
 
-            $body = (string) $response->getBody();
-            if ($response->getStatusCode() === 200) {
-                $data = json_decode($body, true);
-                return [
-                    'data'    => $data['data'],
-                    'hasMore' => $data['hasMore'],
-                    'offset'  => $offset
-                ];
-            } else {
-                return [
-                    'data'    => [],
-                    'hasMore' => false,
-                    'offset'  => $offset
-                ];
-            }
-        } catch (\Exception $e) {
-            Log::error('Erro ao consultar Extrato '.$user->name.': ' . $e->getMessage());
-            return [
-                'data'    => [],
-                'hasMore' => false,
-                'offset'  => $offset
-            ];
-        }
-    }
+    //         $body = (string) $response->getBody();
+    //         if ($response->getStatusCode() === 200) {
+    //             $data = json_decode($body, true);
+    //             return [
+    //                 'data'    => $data['data'],
+    //                 'hasMore' => $data['hasMore'],
+    //                 'offset'  => $offset
+    //             ];
+    //         } else {
+    //             return [
+    //                 'data'    => [],
+    //                 'hasMore' => false,
+    //                 'offset'  => $offset
+    //             ];
+    //         }
+    //     } catch (\Exception $e) {
+    //         Log::error('Erro ao consultar Extrato '.$user->name.': ' . $e->getMessage());
+    //         return [
+    //             'data'    => [],
+    //             'hasMore' => false,
+    //             'offset'  => $offset
+    //         ];
+    //     }
+    // }
 
-    public function balance($id = null) {
-        try {
-            $client = new Client();
+    // public function balance($id = null) {
+    //     try {
+    //         $client = new Client();
 
-            $user = $id ? User::find($id) : Auth::user();
+    //         $user = $id ? User::find($id) : Auth::user();
 
-            if (!$user) {
-                throw new \Exception('Usuário não encontrado.');
-            }
+    //         if (!$user) {
+    //             throw new \Exception('Usuário não encontrado.');
+    //         }
 
-            $response = $client->request('GET', env('API_URL_ASSAS') . 'v3/finance/balance', [
-                'headers' => [
-                    'accept'       => 'application/json',
-                    'access_token' => $user->api_key,
-                    'User-Agent'   => env('APP_NAME'),
-                ],
-                'verify' => env('APP_ENV') == 'local' ? false : true,
-            ]);
+    //         $response = $client->request('GET', env('API_URL_ASSAS') . 'v3/finance/balance', [
+    //             'headers' => [
+    //                 'accept'       => 'application/json',
+    //                 'access_token' => $user->api_key,
+    //                 'User-Agent'   => env('APP_NAME'),
+    //             ],
+    //             'verify' => env('APP_ENV') == 'local' ? false : true,
+    //         ]);
 
-            if ($response->getStatusCode() === 200) {
-                $data = json_decode((string) $response->getBody(), true);
-                return $data['balance'] ?? 0;
-            }
+    //         if ($response->getStatusCode() === 200) {
+    //             $data = json_decode((string) $response->getBody(), true);
+    //             return $data['balance'] ?? 0;
+    //         }
 
-            return false;
-        } catch (\Throwable $e) {
-            // Log::error('Erro ao buscar saldo de '.$user->name.': ' . $e->getMessage());
-            return false;
-        }
-    }
+    //         return false;
+    //     } catch (\Throwable $e) {
+    //         // Log::error('Erro ao buscar saldo de '.$user->name.': ' . $e->getMessage());
+    //         return false;
+    //     }
+    // }
 
-    public function statistics() {
-        try {
-            $client = new Client();
-            $user = Auth::user();
+    // public function statistics() {
+    //     try {
+    //         $client = new Client();
+    //         $user = Auth::user();
 
-            if (!$user) {
-                throw new \Exception('Usuário não autenticado.');
-            }
+    //         if (!$user) {
+    //             throw new \Exception('Usuário não autenticado.');
+    //         }
 
-            $response = $client->request('GET', env('API_URL_ASSAS') . 'v3/finance/split/statistics', [
-                'headers' => [
-                    'accept'       => 'application/json',
-                    'access_token' => $user->api_key,
-                    'User-Agent'   => env('APP_NAME')
-                ],
-                'verify' => env('APP_ENV') == 'local' ? false : true,
-            ]);
+    //         $response = $client->request('GET', env('API_URL_ASSAS') . 'v3/finance/split/statistics', [
+    //             'headers' => [
+    //                 'accept'       => 'application/json',
+    //                 'access_token' => $user->api_key,
+    //                 'User-Agent'   => env('APP_NAME')
+    //             ],
+    //             'verify' => env('APP_ENV') == 'local' ? false : true,
+    //         ]);
 
-            if ($response->getStatusCode() === 200) {
-                $data = json_decode((string) $response->getBody(), true);
-                return $data['income'] ?? 0;
-            }
+    //         if ($response->getStatusCode() === 200) {
+    //             $data = json_decode((string) $response->getBody(), true);
+    //             return $data['income'] ?? 0;
+    //         }
 
-            return false;
-        } catch (\Throwable $e) {
-            // Log::error('Erro ao buscar estatísticas financeiras de '.$user->name.': ' . $e->getMessage());
-            return false;
-        }
-    }
+    //         return false;
+    //     } catch (\Throwable $e) {
+    //         // Log::error('Erro ao buscar estatísticas financeiras de '.$user->name.': ' . $e->getMessage());
+    //         return false;
+    //     }
+    // }
 
-    public function accumulated() {
-        try {
-            $client = new Client();
-            $user = Auth::user();
-            $startDate = $user->created_at->toDateString();
-            $finishDate = now()->toDateString();
+    // public function accumulated() {
+    //     try {
+    //         $client = new Client();
+    //         $user = Auth::user();
+    //         $startDate = $user->created_at->toDateString();
+    //         $finishDate = now()->toDateString();
     
-            $response = $client->request('GET',  env('API_URL_ASSAS') . "v3/financialTransactions?startDate={$startDate}&finishDate={$finishDate}&order=desc", [
-                'headers' => [
-                    'accept'        => 'application/json',
-                    'access_token'  => $user->api_key,
-                    'User-Agent'    => env('APP_NAME')
-                ],
-                'verify' => env('APP_ENV') == 'local' ? false : true,
-            ]);
+    //         $response = $client->request('GET',  env('API_URL_ASSAS') . "v3/financialTransactions?startDate={$startDate}&finishDate={$finishDate}&order=desc", [
+    //             'headers' => [
+    //                 'accept'        => 'application/json',
+    //                 'access_token'  => $user->api_key,
+    //                 'User-Agent'    => env('APP_NAME')
+    //             ],
+    //             'verify' => env('APP_ENV') == 'local' ? false : true,
+    //         ]);
     
-            if ($response->getStatusCode() === 200) {
-                $body = (string) $response->getBody();
-                $data = json_decode($body, true);
-                $filteredData = array_filter($data['data'], function ($item) {
-                    return $item['type'] === 'TRANSFER';
-                });
+    //         if ($response->getStatusCode() === 200) {
+    //             $body = (string) $response->getBody();
+    //             $data = json_decode($body, true);
+    //             $filteredData = array_filter($data['data'], function ($item) {
+    //                 return $item['type'] === 'TRANSFER';
+    //             });
     
-                $totalValue = array_sum(array_column($filteredData, 'value'));
+    //             $totalValue = array_sum(array_column($filteredData, 'value'));
     
-                return abs($totalValue);
-            } else {
-                return 0;
-            }
-        } catch (\Exception $e) {
-            return 0;
-        }
-    }
+    //             return abs($totalValue);
+    //         } else {
+    //             return 0;
+    //         }
+    //     } catch (\Exception $e) {
+    //         return 0;
+    //     }
+    // }
 
-    public function webhookSing(Request $request) {
+    // public function webhookSing(Request $request) {
 
-        $jsonData = $request->getContent();
-        $data = json_decode($jsonData, true);
-        if (isset($data['token']) && isset($data['event_type'])) {
+    //     $jsonData = $request->getContent();
+    //     $data = json_decode($jsonData, true);
+    //     if (isset($data['token']) && isset($data['event_type'])) {
             
-            if($data['event_type'] === 'doc_signed') {
-                $token = $data['token'];
+    //         if($data['event_type'] === 'doc_signed') {
+    //             $token = $data['token'];
 
-                $sale = Sale::where('token_contract', $token)->first();
-                if ($sale) {
+    //             $sale = Sale::where('token_contract', $token)->first();
+    //             if ($sale) {
 
-                    $sale->status_contract = 1;
-                    if($sale->save()) {
-                        return response()->json(['message' => 'Contrato assinado!'], 200);
-                    }
+    //                 $sale->status_contract = 1;
+    //                 if($sale->save()) {
+    //                     return response()->json(['message' => 'Contrato assinado!'], 200);
+    //                 }
 
-                    return response()->json(['message' => 'Não foi possível atualizar a Venda!'], 200);
-                }
-            }
+    //                 return response()->json(['message' => 'Não foi possível atualizar a Venda!'], 200);
+    //             }
+    //         }
 
-            return response()->json(['message' => 'Nenhuma operação finalizada!'], 200);
-        } else {
+    //         return response()->json(['message' => 'Nenhuma operação finalizada!'], 200);
+    //     } else {
             
-            return response()->json(['error' => 'Token e Event não localizados!'], 200);
-        }
+    //         return response()->json(['error' => 'Token e Event não localizados!'], 200);
+    //     }
 
-        return response()->json(['error' => 'Webhook não utilizado!'], 200);
-    }
+    //     return response()->json(['error' => 'Webhook não utilizado!'], 200);
+    // }
 
-    public function withdrawSend($key, $value, $type) {
+    // public function withdrawSend($key, $value, $type) {
 
-        $client = new Client();
+    //     $client = new Client();
         
-        $user = Auth::user();
-        try {
-            $response = $client->request('POST', env('API_URL_ASSAS').'v3/transfers', [
-                'headers' => [
-                    'accept'       => 'application/json',
-                    'Content-Type' => 'application/json',
-                    'access_token' => $user->api_key,
-                    'User-Agent'   => env('APP_NAME')
-                ],
-                'json' => [
-                    'value' => $value,
-                    'operationType' => 'PIX',
-                    'pixAddressKey' => $key,
-                    'pixAddressKeyType' => $type,
-                    'description' => 'Saque '.env('APP_NAME'),
-                ],
-                'verify'  => false,
-            ]);
+    //     $user = Auth::user();
+    //     try {
+    //         $response = $client->request('POST', env('API_URL_ASSAS').'v3/transfers', [
+    //             'headers' => [
+    //                 'accept'       => 'application/json',
+    //                 'Content-Type' => 'application/json',
+    //                 'access_token' => $user->api_key,
+    //                 'User-Agent'   => env('APP_NAME')
+    //             ],
+    //             'json' => [
+    //                 'value' => $value,
+    //                 'operationType' => 'PIX',
+    //                 'pixAddressKey' => $key,
+    //                 'pixAddressKeyType' => $type,
+    //                 'description' => 'Saque '.env('APP_NAME'),
+    //             ],
+    //             'verify'  => false,
+    //         ]);
     
-            $body = $response->getBody()->getContents();
-            $decodedBody = json_decode($body, true);
+    //         $body = $response->getBody()->getContents();
+    //         $decodedBody = json_decode($body, true);
     
-            if ($decodedBody['status'] === 'PENDING') {
-                return ['success' => true, 'message' => 'Saque agendado com sucesso'];
-            } else {
-                return ['success' => false, 'message' => 'Situação do Saque: ' . $decodedBody['status']];
-            }
-        } catch (\GuzzleHttp\Exception\RequestException $e) {
-            $response = $e->getResponse();
-            $body = $response->getBody()->getContents();
-            $decodedBody = json_decode($body, true);
+    //         if ($decodedBody['status'] === 'PENDING') {
+    //             return ['success' => true, 'message' => 'Saque agendado com sucesso'];
+    //         } else {
+    //             return ['success' => false, 'message' => 'Situação do Saque: ' . $decodedBody['status']];
+    //         }
+    //     } catch (\GuzzleHttp\Exception\RequestException $e) {
+    //         $response = $e->getResponse();
+    //         $body = $response->getBody()->getContents();
+    //         $decodedBody = json_decode($body, true);
     
-            return ['success' => false, 'message' => $decodedBody['errors'][0]['description']];
-        }
-    }
+    //         return ['success' => false, 'message' => $decodedBody['errors'][0]['description']];
+    //     }
+    // }
 
-    public function extract() {
-        try {
+    // public function extract() {
+    //     try {
 
-            $client = new Client();
-            $user = Auth::user();
-            $startDate = $user->created_at->toDateString();
-            $finishDate = now()->toDateString();
+    //         $client = new Client();
+    //         $user = Auth::user();
+    //         $startDate = $user->created_at->toDateString();
+    //         $finishDate = now()->toDateString();
     
-            $response = $client->request('GET', env('API_URL_ASSAS') . "v3/financialTransactions?startDate={$startDate}&finishDate={$finishDate}&order=desc", [
-                'headers' => [
-                    'accept'       => 'application/json',
-                    'access_token' => $user->api_key,
-                    'User-Agent'   => env('APP_NAME')
-                ],
-                'verify' => env('APP_ENV') == 'local' ? false : true,
-            ]);
+    //         $response = $client->request('GET', env('API_URL_ASSAS') . "v3/financialTransactions?startDate={$startDate}&finishDate={$finishDate}&order=desc", [
+    //             'headers' => [
+    //                 'accept'       => 'application/json',
+    //                 'access_token' => $user->api_key,
+    //                 'User-Agent'   => env('APP_NAME')
+    //             ],
+    //             'verify' => env('APP_ENV') == 'local' ? false : true,
+    //         ]);
     
-            if ($response->getStatusCode() !== 200) {
-                return [];
-            }
+    //         if ($response->getStatusCode() !== 200) {
+    //             return [];
+    //         }
     
-            return json_decode((string) $response->getBody(), true)['data'] ?? [];
+    //         return json_decode((string) $response->getBody(), true)['data'] ?? [];
     
-        } catch (\Exception $e) {
-            // Log::error('Erro ao buscar extrato de '.$user->name.': ' . $e->getMessage());
-            return [];
-        }
-    }
+    //     } catch (\Exception $e) {
+    //         // Log::error('Erro ao buscar extrato de '.$user->name.': ' . $e->getMessage());
+    //         return [];
+    //     }
+    // }
 
     public function cancelInvoice($token) {
         try {
@@ -1025,298 +824,298 @@ class AssasController extends Controller {
         }
     }
 
-    public function payMonthly($id) {
-        try {
-            $invoice = Invoice::find($id);
-            if (!$invoice || $invoice->status == 1) {
-                return redirect()->back()->with('error', 'Não é possível pagar essa Fatura com saldo!');
-            }
+    // public function payMonthly($id) {
+    //     try {
+    //         $invoice = Invoice::find($id);
+    //         if (!$invoice || $invoice->status == 1) {
+    //             return redirect()->back()->with('error', 'Não é possível pagar essa Fatura com saldo!');
+    //         }
     
-            $user = User::find($invoice->user_id);
-            if (!$user) {
-                return redirect()->back()->with('info', 'Dados não localizados!');
-            }
+    //         $user = User::find($invoice->user_id);
+    //         if (!$user) {
+    //             return redirect()->back()->with('info', 'Dados não localizados!');
+    //         }
     
-            $balance = $this->balance();
-            if ($balance !== false && $balance < $invoice->value) {
-                return redirect()->back()->with('info', 'Não há saldo disponível!');
-            }
+    //         $balance = $this->balance();
+    //         if ($balance !== false && $balance < $invoice->value) {
+    //             return redirect()->back()->with('info', 'Não há saldo disponível!');
+    //         }
     
-            $client = new Client();
-            $response = $client->request('GET', env('API_URL_ASSAS') . "v3/payments/{$invoice->token_payment}/pixQrCode", [
-                'headers' => [
-                    'accept'       => 'application/json',
-                    'access_token' => $user->api_key,
-                    'User-Agent'   => env('APP_NAME')
-                ],
-                'verify' => env('APP_ENV') == 'local' ? false : true,
-            ]);
+    //         $client = new Client();
+    //         $response = $client->request('GET', env('API_URL_ASSAS') . "v3/payments/{$invoice->token_payment}/pixQrCode", [
+    //             'headers' => [
+    //                 'accept'       => 'application/json',
+    //                 'access_token' => $user->api_key,
+    //                 'User-Agent'   => env('APP_NAME')
+    //             ],
+    //             'verify' => env('APP_ENV') == 'local' ? false : true,
+    //         ]);
     
-            if ($response->getStatusCode() !== 200) {
-                return redirect()->back()->with('error', 'Não foi possível pagar com o saldo!');
-            }
+    //         if ($response->getStatusCode() !== 200) {
+    //             return redirect()->back()->with('error', 'Não foi possível pagar com o saldo!');
+    //         }
     
-            $data = json_decode((string) $response->getBody(), true);
-            $payqrcode = $this->payQrCode($data['payload'], $invoice->value, $invoice->description);
+    //         $data = json_decode((string) $response->getBody(), true);
+    //         $payqrcode = $this->payQrCode($data['payload'], $invoice->value, $invoice->description);
     
-            $statusMessages = [
-                'AWAITING_BALANCE_VALIDATION' => 'Saldo em análise! Aguarde alguns segundos.',
-                'AWAITING_INSTANT_PAYMENT_ACCOUNT_BALANCE' => 'Transação em análise! Aguarde alguns segundos.',
-                'AWAITING_CRITICAL_ACTION_AUTHORIZATION' => 'Transação aguardando autorização!',
-                'AWAITING_CHECKOUT_RISK_ANALYSIS_REQUEST' => 'Transação aguardando análise!',
-                'AWAITING_CASH_IN_RISK_ANALYSIS_REQUEST' => 'Transação aguardando análise!',
-                'SCHEDULED' => 'Transação agendada com sucesso!',
-                'AWAITING_REQUEST' => 'Transação aguardando análise!',
-                'REQUESTED' => 'Transação solicitada!',
-                'DONE' => 'Transação realizada com sucesso!',
-                'REFUSED' => 'Transação recusada!',
-                'CANCELLED' => 'Transação cancelada!',
-            ];
+    //         $statusMessages = [
+    //             'AWAITING_BALANCE_VALIDATION' => 'Saldo em análise! Aguarde alguns segundos.',
+    //             'AWAITING_INSTANT_PAYMENT_ACCOUNT_BALANCE' => 'Transação em análise! Aguarde alguns segundos.',
+    //             'AWAITING_CRITICAL_ACTION_AUTHORIZATION' => 'Transação aguardando autorização!',
+    //             'AWAITING_CHECKOUT_RISK_ANALYSIS_REQUEST' => 'Transação aguardando análise!',
+    //             'AWAITING_CASH_IN_RISK_ANALYSIS_REQUEST' => 'Transação aguardando análise!',
+    //             'SCHEDULED' => 'Transação agendada com sucesso!',
+    //             'AWAITING_REQUEST' => 'Transação aguardando análise!',
+    //             'REQUESTED' => 'Transação solicitada!',
+    //             'DONE' => 'Transação realizada com sucesso!',
+    //             'REFUSED' => 'Transação recusada!',
+    //             'CANCELLED' => 'Transação cancelada!',
+    //         ];
     
-            return redirect()->back()->with($payqrcode === 'DONE' ? 'success' : 'info', $statusMessages[$payqrcode] ?? 'Transação em análise!');
+    //         return redirect()->back()->with($payqrcode === 'DONE' ? 'success' : 'info', $statusMessages[$payqrcode] ?? 'Transação em análise!');
     
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Ocorreu um erro inesperado! ' . $e->getMessage());
-        }
-    }    
+    //     } catch (\Exception $e) {
+    //         return redirect()->back()->with('error', 'Ocorreu um erro inesperado! ' . $e->getMessage());
+    //     }
+    // }    
 
-    private function payQrCode($payload, $value, $description, $date = null) {
-        try {
-            $client = new Client();
+    // private function payQrCode($payload, $value, $description, $date = null) {
+    //     try {
+    //         $client = new Client();
 
-            $options = [
-                'headers' => [
-                    'Content-Type'  => 'application/json',
-                    'access_token'  => env('API_TOKEN_ASSAS'),
-                    'User-Agent'    => env('APP_NAME')
-                ],
-                'json' => [
-                    'qrCode' => [
-                        'payload' => $payload
-                    ],
-                    'value'        => number_format($value, 2, '.', ''),
-                    'description'  => $description,
-                    'scheduleDate' => $date ?? now(),
-                ],
-                'verify' => false
-            ];
+    //         $options = [
+    //             'headers' => [
+    //                 'Content-Type'  => 'application/json',
+    //                 'access_token'  => env('API_TOKEN_ASSAS'),
+    //                 'User-Agent'    => env('APP_NAME')
+    //             ],
+    //             'json' => [
+    //                 'qrCode' => [
+    //                     'payload' => $payload
+    //                 ],
+    //                 'value'        => number_format($value, 2, '.', ''),
+    //                 'description'  => $description,
+    //                 'scheduleDate' => $date ?? now(),
+    //             ],
+    //             'verify' => false
+    //         ];
 
-            $response = $client->post(env('API_URL_ASSAS') . 'v3/pix/qrCodes/pay', $options);
-            $body = (string) $response->getBody();
+    //         $response = $client->post(env('API_URL_ASSAS') . 'v3/pix/qrCodes/pay', $options);
+    //         $body = (string) $response->getBody();
 
-            if ($response->getStatusCode() === 200) {
-                $data = json_decode($body, true);
-                return $data;
-            }
+    //         if ($response->getStatusCode() === 200) {
+    //             $data = json_decode($body, true);
+    //             return $data;
+    //         }
 
-            return false;
-        } catch (\Throwable $e) {
-            Log::error('Erro ao criar QR Code de pagamento: ' . $e->getMessage());
-            return false;
-        }
-    }
+    //         return false;
+    //     } catch (\Throwable $e) {
+    //         Log::error('Erro ao criar QR Code de pagamento: ' . $e->getMessage());
+    //         return false;
+    //     }
+    // }
 
-    public function createPayment(Request $request) {
+    // public function createPayment(Request $request) {
 
-        DB::beginTransaction();
+    //     DB::beginTransaction();
 
-        try {
+    //     try {
             
-            $user       = $this->validateUser($request->customer);
-            $filiate    = $this->validateFiliate($user);
+    //         $user       = $this->validateUser($request->customer);
+    //         $filiate    = $this->validateFiliate($user);
 
-            $sales      = $this->getSales($request['ids']);
-            $saleIds    = $sales->pluck('id')->toArray();
-            $totalValue = $this->calculateTotalValue($sales, $user); 
-            $commission = ($user->fixed_cost - $filiate->fixed_cost) * $sales->count();
+    //         $sales      = $this->getSales($request['ids']);
+    //         $saleIds    = $sales->pluck('id')->toArray();
+    //         $totalValue = $this->calculateTotalValue($sales, $user); 
+    //         $commission = ($user->fixed_cost - $filiate->fixed_cost) * $sales->count();
 
-            $charge = $this->createCharge($user->customer, 'PIX', $totalValue, 'Fatura referente às vendas N° - '.implode(', ', $saleIds), now()->addDay(), 1, null, null, $filiate, $commission);
-            if (!$charge || empty($charge['id'])) {
-                return $this->jsonError('Erro ao criar fatura!', 500);
-            }
+    //         $charge = $this->createCharge($user->customer, 'PIX', $totalValue, 'Fatura referente às vendas N° - '.implode(', ', $saleIds), now()->addDay(), 1, null, null, $filiate, $commission);
+    //         if (!$charge || empty($charge['id'])) {
+    //             return $this->jsonError('Erro ao criar fatura!', 500);
+    //         }
 
-            $this->createInvoice($charge, $user, $totalValue, 'Fatura referente às vendas N° - '.implode(', ', $saleIds), $commission);
+    //         $this->createInvoice($charge, $user, $totalValue, 'Fatura referente às vendas N° - '.implode(', ', $saleIds), $commission);
 
-            Sale::whereIn('id', $request['ids'])->update(['token_payment' => $charge['id']]);
-            DB::commit();
+    //         Sale::whereIn('id', $request['ids'])->update(['token_payment' => $charge['id']]);
+    //         DB::commit();
 
-            return $this->jsonSuccess('Fatura criada com sucesso!', [
-                'invoiceUrl' => $charge['invoiceUrl'],
-            ]);
+    //         return $this->jsonSuccess('Fatura criada com sucesso!', [
+    //             'invoiceUrl' => $charge['invoiceUrl'],
+    //         ]);
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return $this->jsonError('Erro no processo: ' . $e->getMessage(), 500);
-        }
-    }
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return $this->jsonError('Erro no processo: ' . $e->getMessage(), 500);
+    //     }
+    // }
 
-    public function accountStatus($api_key) {
-        try {
-            $client = new Client();
+    // public function accountStatus($api_key) {
+    //     try {
+    //         $client = new Client();
             
-            $options = [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'access_token' => $api_key,
-                    'User-Agent'   => env('APP_NAME')
-                ],
-                'verify' => false
-            ];
+    //         $options = [
+    //             'headers' => [
+    //                 'Content-Type' => 'application/json',
+    //                 'access_token' => $api_key,
+    //                 'User-Agent'   => env('APP_NAME')
+    //             ],
+    //             'verify' => false
+    //         ];
     
-            $response = $client->get(env('API_URL_ASSAS') . 'v3/myAccount/status/', $options);
-            $body = (string) $response->getBody();
+    //         $response = $client->get(env('API_URL_ASSAS') . 'v3/myAccount/status/', $options);
+    //         $body = (string) $response->getBody();
     
-            if ($response->getStatusCode() === 200) {
-                return json_decode($body, true);
-            } else {
-                return false;
-            }
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            return false;
-        }
-    }
+    //         if ($response->getStatusCode() === 200) {
+    //             return json_decode($body, true);
+    //         } else {
+    //             return false;
+    //         }
+    //     } catch (\GuzzleHttp\Exception\ClientException $e) {
+    //         return false;
+    //     }
+    // }
 
-    private function validateUser($customer) {
-        $user = User::where('customer', $customer)->first();
-        if (!$user || empty($user->customer)) {
-            throw new \Exception('Verifique seus dados e tente novamente');
-        }
-        return $user;
-    }
+    // private function validateUser($customer) {
+    //     $user = User::where('customer', $customer)->first();
+    //     if (!$user || empty($user->customer)) {
+    //         throw new \Exception('Verifique seus dados e tente novamente');
+    //     }
+    //     return $user;
+    // }
 
-    private function validateFiliate($user) {
-        if (!$user->filiate) {
-            return null;
-        }
+    // private function validateFiliate($user) {
+    //     if (!$user->filiate) {
+    //         return null;
+    //     }
 
-        $filiate = User::find($user->filiate);
-        if (!$filiate) {
-            throw new \Exception('Verifique seus dados e tente novamente');
-        }
+    //     $filiate = User::find($user->filiate);
+    //     if (!$filiate) {
+    //         throw new \Exception('Verifique seus dados e tente novamente');
+    //     }
 
-        return $filiate;
-    }
+    //     return $filiate;
+    // }
 
-    private function getSales($ids) {
-        $sales = Sale::whereIn('id', $ids)->where('status', 0)->with('product')->get();
-        if ($sales->isEmpty()) {
-            throw new \Exception('Nenhuma venda encontrada.');
-        }
-        return $sales;
-    }
+    // private function getSales($ids) {
+    //     $sales = Sale::whereIn('id', $ids)->where('status', 0)->with('product')->get();
+    //     if ($sales->isEmpty()) {
+    //         throw new \Exception('Nenhuma venda encontrada.');
+    //     }
+    //     return $sales;
+    // }
 
-    private function calculateTotalValue($sales, $user) {
+    // private function calculateTotalValue($sales, $user) {
         
-        $totalValue = 0;
-        foreach ($sales as $sale) {
-            if ($sale->product) {
-                $totalValue += $user->fixed_cost > 0
-                    ? $user->fixed_cost
-                    : $sale->product->value_cost;
-            }
-        }
+    //     $totalValue = 0;
+    //     foreach ($sales as $sale) {
+    //         if ($sale->product) {
+    //             $totalValue += $user->fixed_cost > 0
+    //                 ? $user->fixed_cost
+    //                 : $sale->product->value_cost;
+    //         }
+    //     }
 
-        if ($totalValue <= 0) {
-            throw new \Exception('Valor total inválido!');
-        }
+    //     if ($totalValue <= 0) {
+    //         throw new \Exception('Valor total inválido!');
+    //     }
 
-        return $totalValue;
-    }
+    //     return $totalValue;
+    // }
 
-    private function createInvoice($charge, $user, $totalValue, $description, $commission) {
+    // private function createInvoice($charge, $user, $totalValue, $description, $commission) {
 
-        $invoice                     = new Invoice();
-        $invoice->name               = $description;
-        $invoice->description        = $description;
-        $invoice->user_id            = $user->id;
-        $invoice->id_product         = 0;
-        $invoice->value              = $totalValue;
-        $invoice->commission         = 0;
-        $invoice->commission_filiate = $commission;
-        $invoice->status             = 0;
-        $invoice->type               = 2;
-        $invoice->num                = 1;
-        $invoice->due_date           = now()->addDay(2);
-        $invoice->url_payment        = $charge['invoiceUrl'];
-        $invoice->token_payment      = $charge['id'];
-        $invoice->save();
-    }
+    //     $invoice                     = new Invoice();
+    //     $invoice->name               = $description;
+    //     $invoice->description        = $description;
+    //     $invoice->user_id            = $user->id;
+    //     $invoice->id_product         = 0;
+    //     $invoice->value              = $totalValue;
+    //     $invoice->commission         = 0;
+    //     $invoice->commission_filiate = $commission;
+    //     $invoice->status             = 0;
+    //     $invoice->type               = 2;
+    //     $invoice->num                = 1;
+    //     $invoice->due_date           = now()->addDay(2);
+    //     $invoice->url_payment        = $charge['invoiceUrl'];
+    //     $invoice->token_payment      = $charge['id'];
+    //     $invoice->save();
+    // }
 
-    private function jsonSuccess($message, $data = []) {
-        return response()->json(array_merge(['success' => true, 'message' => $message], $data));
-    }
+    // private function jsonSuccess($message, $data = []) {
+    //     return response()->json(array_merge(['success' => true, 'message' => $message], $data));
+    // }
 
-    private function jsonError($message, $code) {
-        return response()->json(['success' => false, 'message' => $message], $code);
-    }
+    // private function jsonError($message, $code) {
+    //     return response()->json(['success' => false, 'message' => $message], $code);
+    // }
 
-    private function sendInvoice($url_payment, $id, $message = null, $token = null) {
+    // private function sendInvoice($url_payment, $id, $message = null, $token = null) {
 
-        $user = User::find($id);
-        if ($user) {
+    //     $user = User::find($id);
+    //     if ($user) {
 
-            $client = new Client();
+    //         $client = new Client();
 
-            $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
-            try {
+    //         $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
+    //         try {
 
-                $response = $client->post($url, [
-                    'headers' => [
-                        'Content-Type'  => 'application/json',
-                        'Accept'        => 'application/json',
-                        'Client-Token'  => 'Fabe25dbd69e54f34931e1c5f0dda8c5bS',
-                    ],
-                    'json' => [
-                        'phone'           => '55' . $user->phone,
-                        'message'         => $message ?? "Prezado(a) ".$user->name.", estamos enviando o link para pagamento da sua contratação aos serviços da nossa assessoria.  \r\n\r\n\r\n FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳 \r\n",
-                        'image'           => env('APP_URL_LOGO'),
-                        'linkUrl'         => $url_payment,
-                        'title'           => 'Pagamento de Fatura',
-                        'linkDescription' => 'Link para Pagamento Digital',
-                    ],
-                    'verify' => false
-                ]);
+    //             $response = $client->post($url, [
+    //                 'headers' => [
+    //                     'Content-Type'  => 'application/json',
+    //                     'Accept'        => 'application/json',
+    //                     'Client-Token'  => 'Fabe25dbd69e54f34931e1c5f0dda8c5bS',
+    //                 ],
+    //                 'json' => [
+    //                     'phone'           => '55' . $user->phone,
+    //                     'message'         => $message ?? "Prezado(a) ".$user->name.", estamos enviando o link para pagamento da sua contratação aos serviços da nossa assessoria.  \r\n\r\n\r\n FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳 \r\n",
+    //                     'image'           => env('APP_URL_LOGO'),
+    //                     'linkUrl'         => $url_payment,
+    //                     'title'           => 'Pagamento de Fatura',
+    //                     'linkDescription' => 'Link para Pagamento Digital',
+    //                 ],
+    //                 'verify' => false
+    //             ]);
 
-                return true;
-            } catch (\Exception $e) {
-                Log::error('Ao enviar notificação ao cliente Controller AssasController: '. $e->getMessage());
-                return false;
-            }
-        }
+    //             return true;
+    //         } catch (\Exception $e) {
+    //             Log::error('Ao enviar notificação ao cliente Controller AssasController: '. $e->getMessage());
+    //             return false;
+    //         }
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
-    private function sendWhatsapp($link, $message, $phone, $token = null) {
+    // private function sendWhatsapp($link, $message, $phone, $token = null) {
 
-        $client = new Client();
-        $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
+    //     $client = new Client();
+    //     $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
     
-        try {
-            $response = $client->post($url, [
-                'headers' => [
-                    'Content-Type'  => 'application/json',
-                    'Accept'        => 'application/json',
-                    'Client-Token'  => 'Fabe25dbd69e54f34931e1c5f0dda8c5bS',
-                ],
-                'json' => [
-                    'phone'           => '55' . $phone,
-                    'message'         => $message,
-                    'image'           => env('APP_URL_LOGO'),
-                    'linkUrl'         => $link,
-                    'title'           => 'Assinatura de Documento',
-                    'linkDescription' => 'Link para Assinatura Digital',
-                ],
-                'verify' => false
-            ]);
+    //     try {
+    //         $response = $client->post($url, [
+    //             'headers' => [
+    //                 'Content-Type'  => 'application/json',
+    //                 'Accept'        => 'application/json',
+    //                 'Client-Token'  => 'Fabe25dbd69e54f34931e1c5f0dda8c5bS',
+    //             ],
+    //             'json' => [
+    //                 'phone'           => '55' . $phone,
+    //                 'message'         => $message,
+    //                 'image'           => env('APP_URL_LOGO'),
+    //                 'linkUrl'         => $link,
+    //                 'title'           => 'Assinatura de Documento',
+    //                 'linkDescription' => 'Link para Assinatura Digital',
+    //             ],
+    //             'verify' => false
+    //         ]);
     
-            if ($response->getStatusCode() == 200) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
+    //         if ($response->getStatusCode() == 200) {
+    //             return true;
+    //         } else {
+    //             return false;
+    //         }
+    //     } catch (\Exception $e) {
+    //         return false;
+    //     }
+    // }
 }

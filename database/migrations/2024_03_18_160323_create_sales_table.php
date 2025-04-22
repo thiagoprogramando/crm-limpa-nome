@@ -9,34 +9,22 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-
-            $table->unsignedBigInteger('id_product');
-            $table->foreign('id_product')->references('id')->on('product');
-
-            $table->unsignedBigInteger('id_list');
-            $table->foreign('id_list')->references('id')->on('list');
-
-            $table->unsignedBigInteger('id_client');
-            $table->foreign('id_client')->references('id')->on('users');
-
-            $table->unsignedBigInteger('id_seller');
-            $table->foreign('id_seller')->references('id')->on('users');
-
+            $table->string('uuid')->unique();
+            $table->unsignedBigInteger('product_id');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            $table->unsignedBigInteger('list_id')->nullable();
+            $table->foreign('list_id')->references('id')->on('lists')->onDelete('cascade');
+            $table->unsignedBigInteger('client_id');
+            $table->foreign('client_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('seller_id');
+            $table->foreign('seller_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('payment_token')->nullable();
-            $table->string('payment_method');
-            $table->tinyInteger('payment_installments')->default(1);
-
-            $table->decimal('value', 10, 2)->default(0);
-            $table->decimal('value_total', 10, 2)->default(0);
-            $table->decimal('commission', 10, 2)->default(0);
-            $table->decimal('commission_filiate', 10, 2)->default(0);
-            
+            $table->string('payment_method')->nullable();
+            $table->tinyInteger('payment_installments')->nullable();
             $table->longText('contract_url')->nullable();
             $table->longText('contract_sign')->nullable();
-
             $table->date('guarantee')->nullable();
             $table->string('label')->nullable();
-
             $table->tinyInteger('status')->default(2);
             $table->tinyInteger('type')->default(1);
             $table->timestamps();

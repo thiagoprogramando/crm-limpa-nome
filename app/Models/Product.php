@@ -31,7 +31,7 @@ class Product extends Model {
     ];
 
     public function sales() {
-        return $this->hasMany(Sale::class, 'id_product');
+        return $this->hasMany(Sale::class, 'product_id');
     }
 
     public function totalSale() {

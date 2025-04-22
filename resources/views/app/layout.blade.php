@@ -171,12 +171,11 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link {{ Route::currentRouteName() == 'manager-sale' || Route::currentRouteName() == 'invoice-default' || Route::currentRouteName() == 'coupons' ? '' : 'collapsed' }}" data-bs-target="#forms-sale" data-bs-toggle="collapse" href="#">
+                    <a class="nav-link {{ Route::currentRouteName() == 'manager-sale' || Route::currentRouteName() == 'coupons' ? '' : 'collapsed' }}" data-bs-target="#forms-sale" data-bs-toggle="collapse" href="#">
                         <i class="bi bi-bag"></i><span>Vendas</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul id="forms-sale" class="nav-content collapse {{ Route::currentRouteName() == 'manager-sale' || Route::currentRouteName() == 'invoice-default' || Route::currentRouteName() == 'coupons' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
+                    <ul id="forms-sale" class="nav-content collapse {{ Route::currentRouteName() == 'manager-sale' || Route::currentRouteName() == 'coupons' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
                         <li> <a href="{{ route('manager-sale') }}"> <i class="bi bi-circle"></i><span>Vendas</span> </a> </li>
-                        <li> <a href="{{ route('invoice-default') }}"> <i class="bi bi-circle"></i><span>Inadimplência</span> </a> </li>
                         <li><a href="{{ route('list-coupons') }}"> <i class="bi bi-circle"></i><span>Cupons</span> </a></li>
                     </ul>
                 </li>

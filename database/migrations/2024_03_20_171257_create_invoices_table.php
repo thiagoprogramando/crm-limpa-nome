@@ -9,6 +9,7 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
+            $table->string('uuid')->unique();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('product_id')->nullable();
@@ -22,10 +23,10 @@ return new class extends Migration {
             $table->string('payment_url')->nullable();
             $table->date('due_date');
             $table->decimal('value', 10, 2)->default(0);
-            $table->decimal('commission', 10, 2)->default(0);
-            $table->decimal('commission_filiate', 10, 2)->default(0);
+            $table->decimal('commission_seller', 10, 2)->default(0);
+            $table->decimal('commission_sponsor', 10, 2)->default(0);
             $table->tinyInteger('status')->default(0);
-            $table->tinyInteger('type');
+            $table->tinyInteger('type')->default(3);
             $table->timestamps();
             $table->softDeletes();
         });
