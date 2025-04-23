@@ -525,41 +525,7 @@ class AssasController extends Controller {
         }
   
         return false;
-    }    
-
-    // public function myDocuments() {
-    //     try {
-            
-    //         $user = Auth::user();
-    
-    //         if (empty($user->api_key)) {
-    //             return [];
-    //         }
-    
-    //         $client = new Client();
-    //         $options = [
-    //             'headers' => [
-    //                 'Content-Type' => 'application/json',
-    //                 'access_token' => $user->api_key,
-    //                 'User-Agent'   => env('APP_NAME')
-    //             ],
-    //             'verify' => false
-    //         ];
-    
-    //         $response = $client->get(env('API_URL_ASSAS') . 'v3/myAccount/documents', $options);
-    //         $body = (string) $response->getBody();
-    
-    //         if ($response->getStatusCode() === 200) {
-    //             $data = json_decode($body, true);
-    
-    //             return $data['data'] ?? [];
-    //         }
-    //     } catch (\Exception $e) {
-    //         return [];
-    //     }
-    
-    //     return [];
-    // }    
+    }
 
     // public function receivable($startDate = null, $finishDate = null, $offset = 0) {
     //     try {

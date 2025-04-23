@@ -21,16 +21,7 @@ use Illuminate\Support\Facades\Storage;
 class UserController extends Controller {
     
     public function profile() {
-
-        if (Auth::user()->status == 1 ) {
-            return view('app.User.profile');
-        }
-
-        $documents   = new AssasController();
-        $mydocuments = $documents->myDocuments();
-        return view('app.User.profile', [
-            'mydocuments' => $mydocuments
-        ]);
+        return view('app.User.profile');
     }
 
     public function updateProfile(Request $request) {
