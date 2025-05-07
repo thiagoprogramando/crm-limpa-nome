@@ -43,7 +43,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['checkMonthly'])->group(function () {
 
-        Route::get('/app', [AppController::class, 'handleApp'])->name('app');
+        Route::get('/app', [AppController::class, 'app'])->name('app');
 
         // ========================== Users =============================
             //Sales
@@ -54,6 +54,11 @@ Route::middleware(['auth'])->group(function () {
             Route::post('deleted-sale', [SaleController::class, 'deletedSale'])->name('deleted-sale');
             
             Route::get('reprotocol-sale/{id}', [SaleController::class, 'reprotocolSale'])->name('reprotocol-sale');
+                //Coupons
+                Route::get('/list-coupons', [CouponController::class, 'coupons'])->name('list-coupons');
+                Route::post('created-coupon', [CouponController::class, 'created'])->name('created-coupon');
+                Route::post('deleted-coupon', [CouponController::class, 'deleted'])->name('deleted-coupon');
+                Route::post('add-coupon', [CouponController::class, 'addCoupon'])->name('add-coupon');
 
             //Invoices
             Route::get('/view-invoice/{id}', [InvoiceController::class, 'index'])->name('view-invoice');
@@ -64,9 +69,7 @@ Route::middleware(['auth'])->group(function () {
             //Contracts
             Route::get('/send-contract/{id}', [ContractController::class, 'createContract'])->name('send-contract');
             Route::get('/send-default-whatsapp/{id}', [DefaultController::class, 'sendWhatsapp'])->name('send-default-whatsapp');
-            //Coupons
-            Route::get('/list-coupons', [CouponController::class, 'listCoupons'])->name('list-coupons');
-            Route::post('add-coupon', [CouponController::class, 'addCoupon'])->name('add-coupon');
+            
             
             //User
                 Route::get('/profile', [UserController::class, 'profile'])->name('profile');
@@ -99,10 +102,6 @@ Route::middleware(['auth'])->group(function () {
             //Sales
             Route::get('/manager-sale', [SaleController::class, 'managerSale'])->name('manager-sale');
             Route::post('updated-sale', [SaleController::class, 'updatedSale'])->name('updated-sale');
-            
-            // Coupons
-            Route::post('created-coupon', [CouponController::class, 'createdCoupon'])->name('created-coupon');
-            Route::post('deleted-coupon', [CouponController::class, 'deletedCoupon'])->name('deleted-coupon');
 
             //Users
             Route::get('/list-user/{type}', [UserController::class, 'listuser'])->name('list-user');

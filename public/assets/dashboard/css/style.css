@@ -804,6 +804,10 @@ h6 {
   padding-bottom: 10px;
 }
 
+.dashboard canvas {
+  max-height: 80px !important;
+}
+
 .dashboard .info-card h6 {
   font-size: 22px;
   color: #012970;
@@ -813,7 +817,7 @@ h6 {
 }
 
 .dashboard .info-card p {
-  font-size: 18px;
+  font-size: 14px;
   color: #012970;
   font-weight: 700;
   margin: 0;
@@ -823,8 +827,8 @@ h6 {
 .dashboard .card-icon {
   font-size: 32px;
   line-height: 0;
-  width: 64px;
-  height: 64px;
+  width: 44px;
+  height: 44px;
   flex-shrink: 0;
   flex-grow: 0;
 }

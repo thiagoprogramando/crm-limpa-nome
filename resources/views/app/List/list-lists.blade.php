@@ -91,11 +91,6 @@
                                     <th class="text-center" scope="col">Início</th>
                                     <th class="text-center" scope="col">Encerramento</th>
                                     <th class="text-center" scope="col">Status</th>
-                                    <th class="text-center" scope="col">Serasa</th>
-                                    <th class="text-center" scope="col">SPC</th>
-                                    <th class="text-center" scope="col">Boa Vista</th>
-                                    <th class="text-center" scope="col">QUOD</th>
-                                    <th class="text-center" scope="col">CENPROT</th>
                                     <th class="text-center" scope="col">Opções</th>
                                 </tr>
                             </thead>
@@ -110,11 +105,6 @@
                                         <td class="text-center">{{ \Carbon\Carbon::parse($list->start)->format('d/m/Y H:i') }}</td>
                                         <td class="text-center">{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y H:i') }}</td>
                                         <td class="text-center">{{ $list->statusLabel() }}</td>
-                                        <td class="text-center">{{ $list->statusLabelSerasa() }}</td>
-                                        <td class="text-center">{{ $list->statusLabelSpc() }}</td>
-                                        <td class="text-center">{{ $list->statusLabelBoaVista() }}</td>
-                                        <td class="text-center">{{ $list->statusLabelQuod() }}</td>
-                                        <td class="text-center">{{ $list->statusLabelCenprot() }}</td>
                                         <td class="text-center">
                                             <form action="{{ route('deleted-list') }}" method="POST" class="delete btn-group">
                                                 @csrf
@@ -123,7 +113,7 @@
                                                     <a href="{{ route('view-list', ['id' => $list->id]) }}" class="btn btn-warning text-light"><i class="bi bi-pencil-square"></i></a>
                                                     <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
                                                 @endif
-                                                <a href="{{ route('excel-list', ['id' => $list->id]) }}" class="btn btn-success text-light"><i class="bi bi-file-earmark-excel"></i></a>
+                                                <a href="{{ route('list-excel', ['id' => $list->id]) }}" class="btn btn-success text-light"><i class="bi bi-file-earmark-excel"></i></a>
                                             </form>
                                         </td>
                                     </tr>

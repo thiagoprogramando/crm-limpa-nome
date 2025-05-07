@@ -18,16 +18,16 @@
 
             <div class="btn-group mb-3" role="group">
                 @if (Auth::user()->type == 1)
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerModal">Cadastrar</button>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#registerModal">Cadastrar</button>
                 @endif
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
-                <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
+                <button type="button" id="gerarExcel" class="btn btn-sm btn-outline-primary">Excel</button>
             </div>
 
             <div class="modal fade" id="registerModal" tabindex="-1">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form action="{{ route('create-coupon') }}" method="POST">
+                        <form action="{{ route('created-coupon') }}" method="POST">
                             @csrf
                             <div class="modal-header">
                                 <h5 class="modal-title">Detalhes:</h5>
@@ -35,45 +35,34 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row">
-                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                    <div class="col-7 col-md-8 col-lg-8 mb-2">
                                         <div class="form-floating">
                                             <input type="text" name="name" class="form-control" id="floatingName" placeholder="Informe o Nome:">
                                             <label for="floatingName">Código:</label>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                    <div class="col-5 col-md-4 col-lg-4 mb-2">
+                                        <div class="form-floating">
+                                            <input type="number" name="qtd" class="form-control" id="floatingQtd" placeholder="Quantidade:">
+                                            <label for="floatingQtd">Quantidade:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-12 col-lg-12 mb-2">
                                         <div class="form-floating">
                                             <input type="text" name="description" class="form-control" id="floatingDescription" placeholder="Descrição:">
                                             <label for="floatingDescription">Descrição:</label>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                    <div class="col-7 col-md-6 col-lg-6 mb-2">
                                         <div class="form-floating">
                                             <input type="date" name="expiry_date" class="form-control" id="floatingExpiry_date" placeholder="Data de Expiração:">
                                             <label for="floatingExpiry_date">Data de Expiração:</label>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
-                                        <div class="form-floating">
-                                            <select name="id_user" class="form-select" id="floatingSeller">
-                                                <option selected="" value="">Usuário:</option>
-                                                @foreach ($users as $user)
-                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>  
-                                                @endforeach
-                                            </select>
-                                            <label for="floatingSeller">Usuários</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                    <div class="col-5 col-md-6 col-lg-6 mb-2">
                                         <div class="form-floating">
                                             <input type="number" name="percentage" class="form-control" id="floatingPercentage" placeholder="Porcentagem (%):">
                                             <label for="floatingPercentage">Porcentagem (%):</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
-                                        <div class="form-floating">
-                                            <input type="number" name="qtd" class="form-control" id="floatingQtd" placeholder="Quantidade:">
-                                            <label for="floatingQtd">Quantidade:</label>
                                         </div>
                                     </div>
                                 </div>
@@ -90,38 +79,25 @@
             <div class="modal fade" id="filterModal" tabindex="-1">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form action="{{ route('coupons') }}" method="GET">
+                        <form action="{{ route('list-coupons') }}" method="GET">
                             <div class="modal-header">
                                 <h5 class="modal-title">Filtrar dados da pesquisa</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="row">
-                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                    <div class="col-12 col-md-7 col-lg-7 mb-2">
                                         <div class="form-floating">
                                             <input type="text" name="name" class="form-control" id="floatingName" placeholder="Informe o Nome:">
                                             <label for="floatingName">Código:</label>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                    <div class="col-12 col-md-5 col-lg-5 mb-2">
                                         <div class="form-floating">
                                             <input type="date" name="expiry_date" class="form-control" id="floatingExpiry_date" placeholder="Data de Expiração:">
                                             <label for="floatingExpiry_date">Data de Expiração:</label>
                                         </div>
                                     </div>
-                                    @if (Auth::user()->type == 1)
-                                        <div class="col-12 col-md-6 col-lg-6 mb-1">
-                                            <div class="form-floating">
-                                                <select name="id_user" class="form-select" id="floatingSeller">
-                                                    <option selected="" value="">Usuário:</option>
-                                                    @foreach ($users as $user)
-                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>  
-                                                    @endforeach
-                                                </select>
-                                                <label for="floatingSeller">Usuários</label>
-                                            </div>
-                                        </div>
-                                    @endif
                                 </div>
                             </div>
                             <div class="modal-footer btn-group">
@@ -133,20 +109,17 @@
                 </div>
             </div>
 
-            <div class="card p-2">
-                <div class="card-body">
-                    <h5 class="card-title">Cupons</h5>
-                    
+            <div class="card">
+                <div class="card-body m-0 p-0">
                     <div class="table-responsive">
                         <table class="table table-hover" id="table">
                             <thead>
                                 <tr>
                                     <th scope="col">N°</th>
-                                    <th scope="col">Código</th>
-                                    <th scope="col">Descrição</th>
-                                    <th class="text-center" scope="col">Desconto (%)</th>
-                                    <th class="text-center" scope="col">Qtd</th>
-                                    <th class="text-center" scope="col">Opções</th>
+                                    <th>Código</th>
+                                    <th>Descrição</th>
+                                    <th class="text-center">(%) / Qtd</th>
+                                    <th class="text-center">Opções</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -155,20 +128,22 @@
                                         <th scope="row">{{ $coupon->id }}</th>
                                         <td>
                                             {{ $coupon->name }} <br>
-                                            <span class="badge bg-dark">Usuário: @if($coupon->user) {{ $coupon->user->name }} @else Sem associação @endif</span>
+                                            <span class="badge bg-dark">Usuário: @if($coupon->user) {{ $coupon->user->name }} @else N/A @endif</span>
                                         </th>
                                         <td>
                                             {{ substr($coupon->description, 0, 40) }} <br>
-                                            <span class="badge bg-primary">Expiração: @if($coupon->expiry_date) {{ \Carbon\Carbon::parse($coupon->expiry_date)->format('d/m/Y') }} @else --- @endif</span>
+                                            <span class="badge bg-primary">Expiração: @if($coupon->expiry_date) {{ \Carbon\Carbon::parse($coupon->expiry_date)->format('d/m/Y') }} @else N/A @endif</span>
                                         </td>
-                                        <td class="text-center">{{ number_format($coupon->percentage, 2, ',', '.') }}%</td>
-                                        <td class="text-center">{{ $coupon->qtd }}</td>
                                         <td class="text-center">
-                                            <form action="{{ route('delete-coupon') }}" method="POST" class="delete">
+                                            {{ number_format($coupon->percentage, 2, ',', '.') }}% <br>
+                                            <span class="badge bg-primary"> {{ $coupon->qtd }} </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <form action="" method="POST" class="delete">
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $coupon->id }}"> 
-                                                <div class="btn-group" role="group" aria-label="Basic outlined example">
-                                                    <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
+                                                <div class="btn-group" role="group">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
                                                 </div>
                                             </form>
                                         </td>
@@ -199,7 +174,7 @@
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "{{ route('delete-coupon') }}";
+                window.location.href = "";
             }
         });
     }

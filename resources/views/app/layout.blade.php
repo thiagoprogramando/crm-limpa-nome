@@ -181,10 +181,11 @@
                 </li>
                 
                 <li class="nav-heading">Gestão de Pessoas</li>
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="{{ route('list-network') }}"> <i class="bi bi-person-lines-fill"></i> <span>Minha Rede</span> </a>
-                </li>
-           
+                @if (Auth::user()->type == 1 || Auth::user()->type == 99)
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" href="{{ route('list-network') }}"> <i class="bi bi-person-lines-fill"></i> <span>Minha Rede</span> </a>
+                    </li>
+                @endif
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="{{ route('list-client') }}"> <i class="bi bi-file-earmark-person"></i> <span>Clientes</span> </a>
                 </li>
@@ -318,16 +319,7 @@
             @endif
 
             document.addEventListener('DOMContentLoaded', function () {
-
-                const phone         = document.getElementById('phone');
-                const cpfcnpj       = document.getElementById('cpfcnpj');
-                const money         = document.getElementById('value');
-                const postal_code   = document.getElementById('postal_code');
-
-                if (phone && phone.value) mascaraTelefone(phone);
-                if (cpfcnpj && cpfcnpj.value) mascaraCpfCnpj(cpfcnpj);
-                if (money && money.value) mascaraReal(money);
-                if (postal_code && postal_code.value) mascaraCEP(postal_code);
+                applyMasks(document);
                 
                 const deleteForms = document.querySelectorAll('form.delete');
                 deleteForms.forEach(form => {
@@ -350,6 +342,12 @@
                         });
                     });
                 });
+
+                function applyMasks(context) {
+                    context.querySelectorAll('.money').forEach(el => el.value && mascaraReal(el));
+                    context.querySelectorAll('.phone').forEach(el => el.value && mascaraTelefone(el));
+                    context.querySelectorAll('.cpfcnpj').forEach(el => el.value && mascaraCpfCnpj(el));
+                }
                 
                 var links = document.querySelectorAll('.confirm');
                 links.forEach(function(link) {

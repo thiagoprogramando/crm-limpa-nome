@@ -142,8 +142,8 @@ class SaleController extends Controller {
         }
 
         $sale = $this->createdSale($seller, $client, $product, $list, $request->payment_method, $request->payment_installments, $request->installments);
-        if ($sale) {
-            return redirect()->back()->with('success', 'Venda cadastrada com sucesso!'); 
+        if (!empty($sale['uuid'])) {
+            return redirect()->route('view-sale', ['uuid' => $sale['uuid']])->with('success', 'Venda cadastrada com sucesso!'); 
         }
 
         return redirect()->back()->with('error', 'Não foi possível incluir a venda, verifique os dados e tente novamente!'); 
@@ -243,7 +243,9 @@ class SaleController extends Controller {
             }
     
             DB::commit();
-            return true;
+            return [
+                'uuid' => $sale->uuid,
+            ];
     
         } catch (\Throwable $e) {
             DB::rollback();

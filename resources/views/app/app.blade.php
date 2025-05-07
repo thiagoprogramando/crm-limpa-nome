@@ -13,6 +13,7 @@
     
     <section class="section dashboard">
         <div class="row">
+            
             <div class="col-sm-12 col-md-12 col-lg-12">
                 <div id="carouselExampleControls" class="carousel slide mb-2" data-bs-ride="carousel">
                     <div class="carousel-inner">
@@ -31,8 +32,9 @@
                     </button>
                 </div>
             </div>
-            <div class="col-sm-12 col-md-12 col-lg-12">
-                <div class="row">
+
+            <div class="col-sm-12 col-md-8 col-lg-7">
+                <div class="row align-items-start">
                     @if (Auth::user()->status === 2)
                         <div class="col-12">
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -42,43 +44,41 @@
                             </div>
                         </div>
                     @endif
-
-                    <div class="col-sm-12 col-md-4 col-lg-4">
+                    <div class="col-sm-12 col-md-6 col-lg-4">
                         <div class="card info-card clock-card">
                             <div class="card-body">
-                                <h5 class="card-title">T. Vendas (N°)</h5>
+                                <h5 class="card-title">Vendas (Geral)</h5>
 
                                 <div class="d-flex align-items-center">
                                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                         <i class="bi bi-cart"></i>
                                     </div>
                                     <div class="ps-3">
-                                        <h6>{{ $sales }}</h6>
+                                        <h6>{{ Auth::user()->sales->count() }}</h6>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="col-sm-12 col-md-4 col-lg-4">
+                    <div class="col-sm-12 col-md-6 col-lg-4">
                         <a href="{{ route('manager-sale') }}?created_at={{ now()->format('Y-m-d') }}&status=1">
                             <div class="card info-card clock-card">
                                 <div class="card-body">
-                                    <h5 class="card-title">T. Vendas (Hoje)</h5>
+                                    <h5 class="card-title">Vendas (Hoje)</h5>
 
                                     <div class="d-flex align-items-center">
                                         <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #ff8400; color:#fff;">
                                             <i class="bi bi-cart-check-fill"></i>
                                         </div>
                                         <div class="ps-3">
-                                            <h6>{{ $salesDay }}</h6>
-                                        </div>
+                                            <h6>{{ Auth::user()->sales->where('created_at', '>=', \Carbon\Carbon::today())->count() }}</h6>
+                                        </div>                                        
                                     </div>
                                 </div>
                             </div>
                         </a>
                     </div>
-                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                         <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">Graduação</h5>
@@ -87,13 +87,9 @@
                                         <i class="bi bi-award"></i>
                                     </div>
                                     <div class="ps-3">
-                                        <p>{{ Auth::user()->levelLabel() }}</p>
+                                        <p>{{ Auth::user()->getGraduation()->level }}</p>
                                         <div class="progress">
-                                            <div class="progress-bar" role="progressbar" 
-                                                style="width: {{ Auth::user()->getGraduation()->progress }}%" 
-                                                aria-valuenow="{{ Auth::user()->getGraduation()->progress }}" 
-                                                aria-valuemin="0" 
-                                                aria-valuemax="{{ Auth::user()->getGraduation()->maxSales }}">
+                                            <div class="progress-bar" role="progressbar" style="width: {{ Auth::user()->getGraduation()->progress }}%" aria-valuenow="{{ Auth::user()->getGraduation()->progress }}" aria-valuemin="0" aria-valuemax="{{ Auth::user()->getGraduation()->maxSales }}">
                                             </div>
                                             <small>{{ Auth::user()->getGraduation()->progress }}%</small>
                                         </div>
@@ -102,43 +98,41 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="col-sm-12 col-md-4 col-lg-4">
+                    <div class="col-sm-12 col-md-6 col-lg-4">
                         <div class="card info-card clock-card">
                             <div class="card-body">
-                                <h5 class="card-title">T. Faturamento (R$)</h5>
+                                <h5 class="card-title">Geral (R$)</h5>
                                 <div class="d-flex align-items-center">
                                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #559eff; color:#fff;">
                                     <i class="bi bi-currency-dollar"></i>
                                     </div>
                                     <div class="ps-3">
-                                        <h6>{{ number_format($invoicing, 2, ',', '.') }}</h6>
+                                        <h6>{{ number_format(Auth::user()->sales->flatMap(function ($sale) { return $sale->invoices; })->sum('value'), 2, ',', '.') }}</h6>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="col-sm-12 col-md-4 col-lg-4">
+                    <div class="col-sm-12 col-md-6 col-lg-4">
                         <div class="card info-card clock-card">
                             <div class="card-body">
-                                <h5 class="card-title">T. Faturamento (R$ Hoje)</h5>
+                                <h5 class="card-title">Hoje (R$)</h5>
                                 <div class="d-flex align-items-center">
                                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #00FF9C; color:#fff;">
                                     <i class="ri-money-dollar-circle-line"></i>
                                     </div>
                                     <div class="ps-3">
-                                        <h6>{{ number_format($invoicingDay, 2, ',', '.') }}</h6>
+                                        <h6>{{ number_format(Auth::user()->sales->where('created_at', '>=', \Carbon\Carbon::today())->flatMap(function ($sale) { return $sale->invoices; })->sum('value'), 2, ',', '.') }}</h6>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                         <div class="card info-card clock-card">
                             <div class="card-body">
-                                <h5 class="card-title">Próxima Lista @if($list) <span>{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</span> @else --- @endif</h5>
+                                <h5 class="card-title">Próxima Lista</h5>
                                 <div class="d-flex align-items-center">
                                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                         <i class="bi bi-clock-history"></i>
@@ -150,66 +144,47 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-                        <div class="card info-card clock-card">
-                            <div class="card-body p-2">
-                                <canvas id="pieChart"></canvas>
-                                <script>
-                                    @php
-                                        $labels = array_keys($consultant);
-                                        $values = array_values($consultant);
-                                    @endphp
-                                    document.addEventListener("DOMContentLoaded", () => {
-                                        const ctx = document.querySelector('#pieChart');
-                                        new Chart(ctx, {
-                                            type: 'pie',
-                                            data: {
-                                                labels: @json($labels),
-                                                datasets: [{
-                                                    data: @json($values),
-                                                    backgroundColor: [
-                                                        'rgb(255, 99, 132)',
-                                                        'rgb(54, 162, 235)',
-                                                        'rgb(255, 205, 86)',
-                                                        'rgb(75, 192, 192)'
-                                                    ],
-                                                    hoverOffset: 4
-                                                }]
-                                            },
-                                            options: {
-                                                plugins: {
-                                                    legend: {
-                                                        display: false
-                                                    }
-                                                }
-                                            }
-                                        });
-                                    });
-                                </script>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-                        <div class="card info-card clock-card">
-                            <div class="card-body">
-                                <h5 class="card-title">Ativos/Inativos</h5>
-                                <div class="d-flex align-items-center">
-                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-person-lines-fill"></i>
-                                    </div>
-                                    <div class="ps-3">
-                                        <p>
-                                            Ativos : {{ $actives }} <br>
-                                            Inativo: {{ $inactives }} <br>
-                                        </p>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-4 col-lg-5">
+                @if (Auth::user()->type == 1 || Auth::user()->type == 99)
+                    <div class="row align-items-start">
+                        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                            <div class="card info-card clock-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Assinantes</h5>
+                                    <div class="d-flex align-items-center">
+                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-person-lines-fill"></i>
+                                        </div>
+                                        <div class="ps-3">
+                                            <p>
+                                                Ativos : {{ $subscribers['actives'] }} <br>
+                                                Inativo: {{ $subscribers['inactives'] }} <br>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                @else
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="card info-card clock-card">
+                            <div class="card-body">
+                                <h5 class="card-title">Próxima Lista</h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-clock-history"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6>{{ $remainingTime }}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
        
@@ -231,7 +206,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($users as $key => $user)
+                                    {{-- @foreach ($users as $key => $user)
                                         <tr>
                                             <td scope="row" class="d-flex justify-content-center">
                                                 @switch($loop->iteration)
@@ -263,7 +238,7 @@
                                             <td class="text-success">R$ {{ number_format($user->saleTotal(), 2, ',', '.') }}</td>
                                             <td>{{ $user->levelLabel() }}</td>
                                         </tr>
-                                    @endforeach
+                                    @endforeach --}}
                                 </tbody>
                             </table>
                         </div>
@@ -287,7 +262,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($networks as $key => $network)
+                                    {{-- @foreach ($networks as $key => $network)
                                         <tr>
                                             <td scope="row" class="d-flex justify-content-center">
                                                 @if($network->photo)
@@ -312,11 +287,11 @@
                                             </th>
                                             <td class="text-center">{{ \Carbon\Carbon::parse($network->created_at)->format('d/m/Y') }}</th>
                                         </tr>
-                                    @endforeach
+                                    @endforeach --}}
                                 </tbody>
                             </table>
                             <div class="text-center">
-                                {{ $networks->links() }}
+                                {{-- {{ $networks->links() }} --}}
                             </div>
                         </div>
                     </div>

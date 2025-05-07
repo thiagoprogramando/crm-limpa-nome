@@ -275,7 +275,7 @@ class UserController extends Controller {
 
     public function listClient(Request $request) {
 
-        $query = User::orderBy('name', 'desc')->where('filiate', Auth::id())->where('type', '=', '3');
+        $query = User::orderBy('name', 'desc')->where('sponsor_id', Auth::id())->where('type', 3);
 
         if (!empty($request->name)) {
             $query->where('name', 'like', '%' . $request->name . '%');
@@ -293,9 +293,9 @@ class UserController extends Controller {
             $query->where('created_at', $request->created_at);
         }
 
-        $users = $query->get();
-
-        return view('app.User.list-client', ['users' => $users]);
+        return view('app.User.list-clients', [
+            'users' => $query->paginate(30),
+        ]);
     }
 
     public function deleteUser(Request $request) {

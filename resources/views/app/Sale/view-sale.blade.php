@@ -72,7 +72,7 @@
                             <div class="col-12 col-sm-12 col-md-7 col-lg-7 row">
                                 <div class="col-12 col-sm-12 col-md-12 col-lg-12">
                                     <p class="card-title m-0 p-0">Dados de Pagamento</p>
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createdModal">Adicionar Cobrança</button>
+                                    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createdModal">Adicionar Cobrança</button>
 
                                     <div class="modal fade" id="createdModal" tabindex="-1">
                                         <div class="modal-dialog">

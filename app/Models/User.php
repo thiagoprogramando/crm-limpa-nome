@@ -58,51 +58,112 @@ class User extends Authenticatable {
         'company_email'
     ];
 
+    public function maskedName() {
+        
+        if (!$this->name) {
+            return '';
+        }
+    
+        $nameParts = explode(' ', $this->name);
+        return $nameParts[0];
+    }
+
+    public function cpfcnpjLabel() {
+
+        $cpfCnpj = preg_replace('/[^0-9]/', '', $this->cpfcnpj);
+        if (strlen($cpfCnpj) === 11) {
+            return preg_replace("/(\d{3})(\d{3})(\d{3})(\d{2})/", "$1.$2.$3-$4", $cpfCnpj);
+        } elseif (strlen($cpfCnpj) === 14) {
+            return preg_replace("/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/", "$1.$2.$3/$4-$5", $cpfCnpj);
+        }
+
+        return $cpfCnpj;
+    }
+
     public function sponsor() {
         return $this->belongsTo(User::class, 'sponsor_id')->withTrashed();
     }
 
-    public function salesClient() {
-        return $this->hasMany(Sale::class, 'id_client');
-    }
-
-    public function salesSeller() {
-        return $this->hasMany(Sale::class, 'id_seller');
+    public function sales() {
+        return $this->hasMany(Sale::class, 'seller_id')->where('status', 1);
     }
 
     public function invoices() {
         return $this->hasMany(Invoice::class, 'user_id')->orderBy('status', 'asc');
     }
 
-    public function lastPendingInvoiceTypeOne() {
+    // public function lastPendingInvoiceTypeOne() {
 
-        $lastPendingInvoice = $this->invoices()
-            ->where('type', 1)
-            ->orderBy('created_at', 'desc')
-            ->first();
+    //     $lastPendingInvoice = $this->invoices()
+    //         ->where('type', 1)
+    //         ->orderBy('created_at', 'desc')
+    //         ->first();
 
-        return $lastPendingInvoice 
-            ? $lastPendingInvoice->created_at->format('d/m/Y H:i:s') 
-            : '---';
-    }
+    //     return $lastPendingInvoice 
+    //         ? $lastPendingInvoice->created_at->format('d/m/Y H:i:s') 
+    //         : '---';
+    // }
 
-    public function lastPendingInvoiceTypeOneUrl() {
+    // public function lastPendingInvoiceTypeOneUrl() {
 
-        $lastPendingInvoice = $this->invoices()
-            ->where('type', 1)
-            ->orderBy('created_at', 'desc')
-            ->first();
+    //     $lastPendingInvoice = $this->invoices()
+    //         ->where('type', 1)
+    //         ->orderBy('created_at', 'desc')
+    //         ->first();
 
-        return $lastPendingInvoice 
-            ? $lastPendingInvoice->url_payment
-            : '---';
-    }
+    //     return $lastPendingInvoice 
+    //         ? $lastPendingInvoice->url_payment
+    //         : '---';
+    // }
 
-    public function months() {
-        return $this->hasMany(Invoice::class, 'user_id')
-                ->where('type', 1)
-                ->where('status', 1)
-                ->count();
+    // public function months() {
+    //     return $this->hasMany(Invoice::class, 'user_id')
+    //             ->where('type', 1)
+    //             ->where('status', 1)
+    //             ->count();
+    // }
+
+    // public function saleTotal() {
+
+    //     $id = $this->id;
+    //     return Sale::where('seller_id', $id)->where('status', 1)->sum('value');
+    // }
+
+    // public function saleCount() {
+
+    //     $id = $this->id;
+    //     return Sale::where('seller_id', $id)->where('status', 1)->count();
+    // }
+
+    // public function commissionTotal() {
+
+    //     $id = $this->id;
+    //     return Sale::where('seller_id', $id)->where('status', 1)->sum('commission');
+    // }
+
+    // public function commissionTotalParent() {
+
+    //     $id = $this->id;
+    //     return Sale::where('seller_id', $id)->where('status', 1)->sum('commission_filiate');
+    // }
+
+    public function statusLabel() {
+
+        switch ($this->status) {
+            case 1:
+                return 'Ativo e Associado';
+                break;
+            case 2:
+                return 'Pendente de Documentos';
+                break; 
+            case 3:
+                return 'Pendente de Associação';
+                break; 
+            default:
+                return 'Não Operacional';
+                break;    
+            return $this->method;
+        }
     }
 
     public function levelLabel() {
@@ -139,111 +200,43 @@ class User extends Authenticatable {
         }
     }
 
-    public function saleTotal() {
-
-        $id = $this->id;
-        return Sale::where('id_seller', $id)->where('status', 1)->sum('value');
-    }
-
-    public function saleCount() {
-
-        $id = $this->id;
-        return Sale::where('id_seller', $id)->where('status', 1)->count();
-    }
-
-    public function commissionTotal() {
-
-        $id = $this->id;
-        return Sale::where('id_seller', $id)->where('status', 1)->sum('commission');
-    }
-
-    public function commissionTotalParent() {
-
-        $id = $this->id;
-        return Sale::where('id_seller', $id)->where('status', 1)->sum('commission_filiate');
-    }
-
-    public function statusLabel() {
-
-        switch ($this->status) {
-            case 1:
-                return 'Ativo e Associado';
-                break;
-            case 2:
-                return 'Pendente de Documentos';
-                break; 
-            case 3:
-                return 'Pendente de Associação';
-                break; 
-            case 4:
-                return 'Pendente de Dados';
-                break;         
-            return $this->method;
-        }
-    }
-
     public function getGraduation() {
-        $saleTotal = $this->saleCount();
-
+        $saleTotal = $this->sales->count();
+    
         $levels = [
-            'Consultor' => 2,
-            'Consultor Líder' => 10,
-            'Regional' => 50,
-            'Gerente Regional' => 100,
+            'CONSULTOR'         => 2,
+            'CONSULTOR LÍDER'   => 10,
+            'REGIONAL'          => 50,
+            'GERENTE REGIONAL'  => 100,
+            'DIRETOR'           => 300,
+            'DIRETOR REGIONAL'  => 500,
+            'PRESIDENTE VIP'    => 1000,
         ];
-
-        $nivel = 'Gerente Regional';
-        $maxSalesAtual = end($levels);
-        $progressAtual = 100;
-
+    
+        $level = 'INICIANTE';
+        $maxSalesAtual = 0;
+        $proximoMax = null;
+    
         foreach ($levels as $key => $maxSales) {
-            if ($saleTotal < $maxSales) {
-                $nivel = $key;
+            if ($saleTotal >= $maxSales) {
+                $level = $key;
                 $maxSalesAtual = $maxSales;
-                $progressAtual = min(100, ($saleTotal / $maxSales) * 100);
+            } else {
+                $proximoMax = $maxSales;
                 break;
             }
         }
-
+    
+        $progressAtual = $proximoMax
+            ? min(100, ($saleTotal / $proximoMax) * 100)
+            : 100;
+    
         return (object) [
-            'nivel' => $nivel,
-            'progress' => $progressAtual,
-            'maxSales' => $maxSalesAtual,
+            'level'     => $level,
+            'progress'  => $progressAtual,
+            'maxSales'  => $proximoMax ?? $maxSalesAtual,
         ];
-    }
-
-    public function cpfcnpjLabel() {
-        $cpfCnpj = $this->cpfcnpj;
-
-        $cpfCnpj = preg_replace('/[^0-9]/', '', $cpfCnpj);
-
-        if (strlen($cpfCnpj) === 11) {
-            return preg_replace("/(\d{3})(\d{3})(\d{3})(\d{2})/", "$1.$2.$3-$4", $cpfCnpj);
-        } elseif (strlen($cpfCnpj) === 14) {
-            return preg_replace("/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/", "$1.$2.$3/$4-$5", $cpfCnpj);
-        }
-
-        return $cpfCnpj;
-    }
-
-    public function indicator() {
-        
-        if ($this->filiate !== null) {
-            
-            $affiliate = User::find($this->filiate);
-            return $affiliate ? $affiliate->name : "---";
-        }
-
-        return "---";
-    }
-
-    public function parent() {
-        return $this->belongsTo(User::class, 'filiate');
-    }
-
-    public function afiliates() {
-        return $this->hasMany(User::class, 'filiate', 'id');
-    }
+    }    
 
     public function timeMonthly() {
        
@@ -257,20 +250,6 @@ class User extends Authenticatable {
         }
 
         return 0;
-    }
-
-    public function maskedName() {
-        
-        if (!$this->name) {
-            return '';
-        }
-    
-        $nameParts = explode(' ', $this->name);
-        return $nameParts[0];
-    }  
-    
-    public function address() {
-        $this->address.', '.$this->num.' '.$this->city.'/'.$this->state.' - '.$this->postal_code;
     }
 
     public function balance() {
@@ -306,18 +285,7 @@ class User extends Authenticatable {
     protected function casts(): array {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
-    }
-
-    protected static function boot() {
-
-        parent::boot();
-
-        static::deleting(function ($user) {
-            $user->salesClient()->delete();
-            $user->salesSeller()->delete();
-            $user->invoices()->delete();
-        });
     }
 }

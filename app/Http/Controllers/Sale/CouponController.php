@@ -25,10 +25,6 @@ class CouponController extends Controller {
             $query->whereDate('expiry_date', $request->expiry_date);
         }
 
-        if (!empty($request->id_user)) {
-            $query->where('id_user', $request->id_user);
-        }
-
         if (empty($request->id_user) && Auth::user()->type !== 1) {
             $query->where('id_user', Auth::user()->id);
         }
@@ -40,54 +36,24 @@ class CouponController extends Controller {
         ]);
     }
 
-    public function createCoupon(Request $request) {
+    public function created(Request $request) {
 
         $couponName = $this->generateCouponName($request->name);
-
-        if(!empty($request->id_user)) {
-            $user = User::find($request->id_user);
-            if (!$user) {
-                return redirect()->back()->with('error', 'Usuário não localizado!');
-            }
-        }
 
         $coupon                 = new Coupon();
         $coupon->name           = $couponName;
         $coupon->description    = $request->description ?? $couponName;
         $coupon->expiry_date    = $request->expiry_date;
-        $coupon->id_user        = $request->id_user;
         $coupon->percentage     = $request->percentage;
         $coupon->qtd            = $request->qtd;
         if($coupon->save()) {
-
-            if($user) {
-
-                $expiryDate = \Carbon\Carbon::parse($request->expiry_date);
-                $message =  "*Surpresa Especial para Você! 🎁* \r\n\r\n"
-                            . "Como forma de agradecimento por ser um cliente incrível, preparamos um *cupom de {$request->percentage}% de desconto* para você aproveitar na sua próxima fatura! \r\n\r\n"
-                            . "Código do cupom: *{$couponName}* \r\n"
-                            . "Validade: *{$expiryDate->format('d/m/Y')}*\r\n\r\n"
-                            . "Não deixe essa oportunidade passar! Use o código na sua fatura e aproveite para economizar. \r\n"
-                            . "Agradecemos por fazer parte da nossa jornada! \r\n\r\n";
-
-                $assas = new AssasController();
-                $assas->sendWhatsapp('', $message, $user->phone, $user->api_token_zapapi);
-            }
-
             return redirect()->back()->with('success', 'CUPOM cadastrado com sucesso!');
         }
 
         return redirect()->back()->with('error', 'Não foi possível cadastrar o CUPOM!');
     }
 
-    private function generateCouponName(string $name): string {
-
-        $baseName = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $name));
-        $existingCouponsCount = Coupon::where('name', 'like', "{$baseName}%")->count();
-        return $existingCouponsCount > 0 ? "{$baseName}".($existingCouponsCount + 1) : $baseName;
-    }
-
-    public function deleteCoupon(Request $request) {
+    public function deleted(Request $request) {
 
         $coupon = Coupon::find($request->id);
         if ($coupon && $coupon->delete()) {
@@ -101,11 +67,11 @@ class CouponController extends Controller {
 
         $coupon = Coupon::where('name', $request->name)->first();
         if (!$coupon) {
-            return redirect()->back()->with('info', 'Nenhum CUPOM encontrado!');
+            return redirect()->back()->with('info', 'Código inválido!');
         }
 
         if($coupon->qtd < 1) {
-            return redirect()->back()->with('info', 'CUPOM esgotado!');
+            return redirect()->back()->with('info', 'CUPOM já foi  utilizado!');
         }
 
         if(!empty($coupon->expiry_date) && $coupon->expiry_date < now()) {
@@ -130,18 +96,15 @@ class CouponController extends Controller {
                 }
             }
     
-            $value      = $invoice->value * (1 - $coupon->percentage / 100);
-            $commission = $invoice->commission * (1 - ($coupon->percentage + 5) / 100);
-            $dueDate    = $invoice->due_date;
-            $wallet     = $invoice->sale->seller->wallet;
+            $value   = $invoice->value * (1 - $coupon->percentage / 100);
+            $dueDate = $invoice->due_date;
            
-            $charge = $assas->addDiscount($invoice->token_payment, $value, $dueDate, $commission, $wallet);
+            $charge = $assas->updateCharge($invoice->token_payment, $dueDate, $value);
             if ($charge) {
     
-                $invoice->url_payment   = $charge['invoiceUrl'];
-                $invoice->token_payment = $charge['id'];
+                $invoice->payment_url   = $charge['invoiceUrl'];
+                $invoice->payment_token = $charge['id'];
                 $invoice->value         = $value;
-                $invoice->commission    = $commission;
                 if ($invoice->save()) {
     
                     $coupon->qtd -= 1;
@@ -154,31 +117,13 @@ class CouponController extends Controller {
             return redirect()->back()->with('error', 'Não foi possível aplicar o CUPOM!');
         }
 
-        $sale = Sale::find($request->sale_id);
-        if ($sale) {
-
-            if ($coupon->percentage == 100) {
-                $sale->status   = 1;
-                $sale->type     = 3;
-                if($sale->save()) {
-
-                    $coupon->qtd -= 1;
-                    $coupon->save();
-                    return redirect()->back()->with('success', 'CUPOM aplicado com sucesso!');
-                }
-            }
-
-            $sale->value_total      = $sale->value_total * (1 - $coupon->percentage / 100);
-            $sale->commission       = $sale->commission * (1 - ($coupon->percentage + 5) / 100);
-            $sale->token_payment    = null;
-            if ($sale->save()) {
-                $coupon->qtd -= 1;
-                $coupon->save();
-
-                return redirect()->back()->with('success', 'CUPOM aplicado com sucesso!');
-            }
-        }
-
         return redirect()->back()->with('error', 'Não foi possível aplicar o CUPOM!');
+    }
+
+    private function generateCouponName(string $name): string {
+
+        $baseName = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $name));
+        $existingCouponsCount = Coupon::where('name', 'like', "{$baseName}%")->count();
+        return $existingCouponsCount > 0 ? "{$baseName}".($existingCouponsCount + 1) : $baseName;
     }
 }

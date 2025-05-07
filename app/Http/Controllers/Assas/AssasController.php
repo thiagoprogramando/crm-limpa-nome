@@ -487,7 +487,7 @@ class AssasController extends Controller {
     //     return response()->json(['status' => 'success', 'message' => 'Webhook não utilizado!']);
     // }
 
-    public function updateCharge($id, $dueDate) {
+    public function updateCharge($id, $dueDate, $value = null) {
         
         $client = new Client();
         

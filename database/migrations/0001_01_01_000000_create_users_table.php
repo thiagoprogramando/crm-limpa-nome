@@ -12,8 +12,7 @@ return new class extends Migration {
             $table->string('uuid')->unique();
             $table->unsignedBigInteger('sponsor_id')->nullable();
             $table->foreign('sponsor_id')->references('id')->on('users')->onDelete('set null');
-            $table->unsignedBigInteger('association_id')->nullable();
-            $table->foreign('association_id')->references('id')->on('users')->onDelete('set null');
+            $table->string('association_id')->nullable();
             $table->string('photo')->nullable();
             $table->string('name');
             $table->string('email')->nullable();
