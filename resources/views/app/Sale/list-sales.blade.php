@@ -29,13 +29,12 @@
             <div class="btn-group mb-3" role="group">
                 <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
                 <button type="button" id="toggle-select" class="btn btn-sm btn-outline-primary">Selecionar</button>
-                <a href="{{ route('manager-sale', array_merge(request()->query(), ['type' => 'excel'])) }}" class="btn btn-sm btn-outline-primary">Excel</a>
             </div>
 
             <div class="modal fade" id="filterModal" tabindex="-1">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form action="{{ route('manager-sale') }}" method="GET">
+                        <form action="{{ route('list-sales') }}" method="GET">
                             <div class="modal-header">
                                 <h5 class="modal-title">Filtrar dados da pesquisa</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

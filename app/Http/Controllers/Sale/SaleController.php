@@ -254,7 +254,7 @@ class SaleController extends Controller {
         }
     }
 
-    public function managerSale(Request $request) {
+    public function listSale(Request $request) {
         
         $query = Sale::orderBy('created_at', 'desc');
     
@@ -300,14 +300,9 @@ class SaleController extends Controller {
         if (!empty($request->label)) {
             $query->where('label', 'LIKE', '%'.$request->label.'%');
         }
-
-        if (!empty($request->type) && $request->type == 'excel') {
-            return Excel::download(new SalesExport($query->get()), 'Vendas.xlsx');
-        }
     
-        $sales      = $query->paginate(100);
-        return view('app.Sale.manager-sale', [
-            'sales'     => $sales,
+        return view('app.Sale.list-sales', [
+            'sales'     => $query->paginate(100),
         ]);
     }
 

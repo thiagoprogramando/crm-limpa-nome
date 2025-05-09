@@ -13,28 +13,15 @@
 </div>
 
 <section class="section dashboard">
-    <div class="row">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="row align-items-start">
+        <div class="col-12 col-sm-12 col-md-7 col-lg-7">
             <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Assinaturas {{ date('Y') }}</h5>
-                    <div id="lineChart"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="card p-2">
-                <div class="card-body">
-                    <h5 class="card-title">Ativos/Inativos</h5>
-                    
+                <div class="card-body m-0 p-0">
                     <div class="table-responsive">
                         <table class="table table-hover" id="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">N°</th>
-                                    <th scope="col">Nome</th>
-                                    <th scope="col">Situação</th>
+                                    <th scope="col">Parceiro</th>
                                     <th class="text-center" scope="col">Última Mens</th>
                                     <th class="text-center" scope="col">Opções</th>
                                 </tr>
@@ -42,11 +29,9 @@
                             <tbody>
                                 @foreach ($users as $user)
                                     <tr>
-                                        <th scope="row">{{ $user->id }}</th>
                                         <td>
                                             {{ implode(' ', array_slice(explode(' ', $user->name), 0, 2)) }}
                                         </td>
-                                        <td>{{ $user->statusLabel() }}</td>
                                         <td class="text-center">
                                             <a href="{{ $user->lastPendingInvoiceTypeOneUrl() }}" target="_blank">
                                                 {{ $user->lastPendingInvoiceTypeOne() }}
@@ -56,8 +41,8 @@
                                             <form action="{{ route('delete-user') }}" method="POST" class="delete btn-group">
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $user->id }}">
-                                                <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
-                                                <a href="{{ route('send-active', ['id' => $user->id]) }}" class="btn btn-success text-light"><i class="bi bi-whatsapp"></i></a>
+                                                <button type="submit" class="btn btn-sm btn-outline-danger text-light"><i class="bi bi-trash"></i></button>
+                                                <a href="https://wa.me/{{ $user->phone }}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-whatsapp"></i></a>
                                             </form>
                                         </td>
                                     </tr>
@@ -68,6 +53,15 @@
                     <div class="text-center">
                         {{ $users->appends(request()->query())->links() }}
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-12 col-md-5 col-lg-5">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Assinaturas {{ date('Y') }}</h5>
+                    <div id="lineChart"></div>
                 </div>
             </div>
         </div>

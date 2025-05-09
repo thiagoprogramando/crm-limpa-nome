@@ -3,65 +3,89 @@
 namespace App\Http\Controllers\Access;
 
 use App\Http\Controllers\Controller;
-
+use App\Mail\Forgout;
 use App\Models\Code;
 use App\Models\User;
-
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-
-use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ForgoutController extends Controller {
     
-    public function forgout($code = null) {
+    public function forgout($token = null) {
 
-        return view('forgout', ['code' => $code]);
+        return view('forgout', [
+            'token' => $token
+        ]);
     }
 
     public function forgoutPassword(Request $request) {
 
-        if($request->password != $request->repeat_password) {
-            return redirect()->back()->with('info', 'Senhas não coincidem!');
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|exists:users,email',
+        ], [
+            'email.required' => 'O campo e-mail é obrigatório.',
+            'email.email' => 'Informe um e-mail válido.',
+            'email.exists' => 'Email não encontrado! Verifique os dados e tente novamente.',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $code = Code::where('code', $request->code)->first();
-        if(!$code) {
-            return redirect()->back()->with('error', 'Código inválido!');
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return redirect()->back()->withErrors('error', 'Email não encontrado! Verifique os dados e tente novamente.');
         }
 
-        $code->status = 1;
-        $code->save();
+        $token = str_shuffle(Str::upper(Str::random(3)) . str_pad(mt_rand(0, 999), 3, '0', STR_PAD_LEFT));
+        DB::table('password_reset_tokens')->updateOrInsert(
+            [
+                'email' => $user->email
+            ],
+            [
+                'token'         => $token,
+                'created_at'    => Carbon::now(),
+            ]
+        );
+        
+        Mail::to($user->email, $user->name)->send(new Forgout([
+            'fromName'  => 'Thiago César',
+            'fromEmail' => 'suporte@expressoftwareclub.com',
+            'toName'    => $user->name,
+            'toEmail'   => $user->email,
+            'token'     => $token,  
+        ]));
 
-        $user = User::find($code->user_id);
-        if(!$user) {
-            return redirect()->back()->with('error', 'Dados do usuário não encontrados!');
+        return redirect()->back()->with('success', 'Verifique sua caixa de E-mail, enviamos às instruções para você!');
+    }
+
+    public function recoveryPassword(Request $request, $token) {
+
+        $token = DB::table('password_reset_tokens')->where('token', $token)->first();
+        if (!$token) {
+            return redirect()->back()->withErrors(['token' => 'Código inválido! Verifique os dados e tente novamente.']);
+        }
+
+        $user = User::where('email', $token->email)->first();
+        if (!$user) {
+            return redirect()->back()->withErrors(['email' => 'E-mail não válido! Verifique os dados e tente novamente.']);
+        }
+
+        if ($request->password !== $request->password_confirmed) {
+            return redirect()->back()->withErrors(['password' => 'As senhas não conferem!']);
         }
 
         $user->password = bcrypt($request->password);
-        if($user->save()) {
-            return redirect()->route('login')->with('success', 'Senha atualizada com sucesso!');
-        }
-    }
-
-    public function sendCodePassword(Request $request) {
-
-        $user = User::where('cpfcnpj', preg_replace('/\D/', '', $request->cpfcnpj))->first();
-        if($user) {
-
-            $code          = new Code();
-            $code->code    = $this->generateCode();
-            $code->id_user = $user->id;
-
-            if($code->save()) {
-                // if($this->sendCode($user->phone, $code->code)) {
-                //     return redirect()->route('forgout', ['code' => 1])->with('success', 'Verifique seu Whatsapp, enviamos o código de redefinição!');
-                // }
-
-                return redirect()->back()->with('error', 'Não foi possível enviar o código, tente novamente!');
-            }
+        if ($user->save()) {
+            DB::table('password_reset_tokens')->where('email', $token->email)->delete();
+            return redirect()->route('login')->with('success', 'Senha alterada com sucesso! Você já pode acessar sua conta.');
         }
 
-        return redirect()->back()->with('error', 'CPF ou CNPJ não pertece a nenhuma conta associada!');
+        return redirect()->route('forgout')->withErrors(['general' => 'Não foi possível alterar a senha! Verifique os dados e tente novamente.']);	
     }
 
     private function generateCode() {
@@ -75,30 +99,4 @@ class ForgoutController extends Controller {
     
         return $code;
     }  
-    
-    // private function sendCode($phone, $code) {
-
-    //     $client = new Client();
-
-    //     $url = env('API_TOKEN_EVOLUTION').'080723487B44-4F6D-B89F-FF69F96F81F5';
-    //     try {
-
-    //         $response = $client->post($url, [
-    //             'headers' => [
-    //                 'Content-Type'  => 'application/json',
-    //                 'Accept'        => 'application/json',
-    //                 'Client-Token'  => 'Fabe25dbd69e54f34931e1c5f0dda8c5bS',
-    //             ],
-    //             'json' => [
-    //                 'number'  => '55' . $phone,
-    //                 'text'    => "Prezado(a) parceiro, segue seu *código* de redefinição: ".$code."\r\n",
-    //             ],
-    //             'verify' => false
-    //         ]);
-
-    //         return true;
-    //     } catch (\Exception $e) {
-    //         return false;
-    //     }
-    // }
 }

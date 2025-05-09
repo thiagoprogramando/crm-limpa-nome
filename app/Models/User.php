@@ -65,7 +65,7 @@ class User extends Authenticatable {
         }
     
         $nameParts = explode(' ', $this->name);
-        return $nameParts[0];
+        return $nameParts[0].' '.$nameParts[1];
     }
 
     public function cpfcnpjLabel() {
@@ -91,61 +91,6 @@ class User extends Authenticatable {
     public function invoices() {
         return $this->hasMany(Invoice::class, 'user_id')->orderBy('status', 'asc');
     }
-
-    // public function lastPendingInvoiceTypeOne() {
-
-    //     $lastPendingInvoice = $this->invoices()
-    //         ->where('type', 1)
-    //         ->orderBy('created_at', 'desc')
-    //         ->first();
-
-    //     return $lastPendingInvoice 
-    //         ? $lastPendingInvoice->created_at->format('d/m/Y H:i:s') 
-    //         : '---';
-    // }
-
-    // public function lastPendingInvoiceTypeOneUrl() {
-
-    //     $lastPendingInvoice = $this->invoices()
-    //         ->where('type', 1)
-    //         ->orderBy('created_at', 'desc')
-    //         ->first();
-
-    //     return $lastPendingInvoice 
-    //         ? $lastPendingInvoice->url_payment
-    //         : '---';
-    // }
-
-    // public function months() {
-    //     return $this->hasMany(Invoice::class, 'user_id')
-    //             ->where('type', 1)
-    //             ->where('status', 1)
-    //             ->count();
-    // }
-
-    // public function saleTotal() {
-
-    //     $id = $this->id;
-    //     return Sale::where('seller_id', $id)->where('status', 1)->sum('value');
-    // }
-
-    // public function saleCount() {
-
-    //     $id = $this->id;
-    //     return Sale::where('seller_id', $id)->where('status', 1)->count();
-    // }
-
-    // public function commissionTotal() {
-
-    //     $id = $this->id;
-    //     return Sale::where('seller_id', $id)->where('status', 1)->sum('commission');
-    // }
-
-    // public function commissionTotalParent() {
-
-    //     $id = $this->id;
-    //     return Sale::where('seller_id', $id)->where('status', 1)->sum('commission_filiate');
-    // }
 
     public function statusLabel() {
 
@@ -275,6 +220,13 @@ class User extends Authenticatable {
             Log::error('Erro ao buscar saldo de '.$this->name.': ' . $e->getMessage());
             return false;
         }
+    }
+
+    public function months() {
+        return $this->hasMany(Invoice::class, 'user_id')
+                ->where('type', 1)
+                ->where('status', 1)
+                ->count();
     }
 
     protected $hidden = [

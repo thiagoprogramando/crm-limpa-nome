@@ -16,9 +16,9 @@
             <div class="col-12">
 
                 <div class="btn-group mb-3" role="group">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
-                    <a href="javascript:void(0)" id="copyUrlBtn" class="btn btn-outline-primary">Cadastrar</a>
-                    <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
+                    <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary" id="copyUrlBtn">Cadastrar</a>
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="gerarExcel">Excel</button>
                 </div>
 
                 <div class="modal fade" id="filterModal" tabindex="-1">
@@ -66,192 +66,137 @@
                     </div>
                 </div>
 
-                <div class="card p-2">
-                    <div class="card-body">
+                <div class="card">
+                    <div class="card-body m-0 p-0">
+                        <div class="accordion" id="accordionExample">
+                            @foreach ($users as $user)
+                            
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingOne">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $user->id }}" aria-expanded="false" aria-controls="collapse{{ $user->id }}">
+                                            #{{ $user->id }} - {{ $user->name }}
+                                        </button>
+                                    </h2>
+                                    <div id="collapse{{ $user->id }}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample" style="">
+                                        <div class="accordion-body">
+                                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link active" id="home-tab{{ $user->id }}" data-bs-toggle="tab" data-bs-target="#home{{ $user->id }}" type="button" role="tab" aria-controls="home" aria-selected="true"><i class="bi bi-person-lines-fill"></i> Dados</button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="profile-tab{{ $user->id }}" data-bs-toggle="tab" data-bs-target="#profile{{ $user->id }}" type="button" role="tab" aria-controls="profile" aria-selected="false" tabindex="-1"><i class="bi bi-bank"></i> Faturas</button>
+                                                </li>
+                                            </ul>
 
-                        <ul class="nav nav-tabs" id="myTab" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Minha Rede</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false" tabindex="-1">Ranking</button>
-                            </li>
-                        </ul>
-
-                        <div class="tab-content pt-2" id="myTabContent">
-                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                <div class="table-responsive">
-                                    <table class="table table-hover" id="table">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col" class="text-center">°</th>
-                                                <th scope="col">Nome</th>
-                                                <th class="text-center" scope="col">T. Vendas (Geral)</th>
-                                                <th class="text-center" scope="col">T. Comissão (Vendedor)</th>
-                                                <th class="text-center" scope="col">T. Comissão (Patrocinador)</th>
-                                                <th class="text-center" scope="col">Opções</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($users as $key => $user)
-                                                <tr>
-                                                    <td scope="row" class="d-flex justify-content-center">
-                                                        @if($user->photo)
-                                                            <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
-                                                        @else
-                                                            <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
-                                                        @endif
-                                                    </td>
-                                                    <td>{{ $user->name }} <br>
-                                                        <span class="badge bg-dark">{{ $user->statusLabel() }}</span>
-                                                    </td>
-                                                    <td class="text-center">R$ {{ number_format($user->saleTotal(), 2, ',', '.') }}</td>
-                                                    <td class="text-center">R$ {{ number_format($user->commissionTotal(), 2, ',', '.') }}</td>
-                                                    <td class="text-center">R$ {{ number_format($user->commissionTotalParent(), 2, ',', '.') }}</td>
-                                                    <td class="text-center">
-                                                        <form action="{{ route('delete-user') }}" method="POST" class="delete btn-group">
-                                                            @csrf
+                                            <div class="tab-content pt-2" id="myTabContent">
+                                                <div class="tab-pane fade show active" id="home{{ $user->id }}" role="tabpanel" aria-labelledby="home-tab{{ $user->id }}">
+                                                    <form action="{{ route('update-user') }}" method="POST" id="userForm">
+                                                        @csrf
+                                                        <div class="row align-items-start">
                                                             <input type="hidden" name="id" value="{{ $user->id }}">
-                                                            <button type="button" class="btn btn-warning text-light" data-bs-toggle="modal" data-bs-target="#updateModal{{ $user->id }}"><i class="bi bi-arrow-up-right-circle"></i></button>
-                                                            @if (Auth::user()->type == 1)
-                                                                <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
-                                                            @endif
-                                                        </form>
-                                                    </td>
-                                                </tr>
-        
-                                                <div class="modal fade" id="updateModal{{ $user->id }}" tabindex="-1">
-                                                    <div class="modal-dialog">
-                                                        <div class="modal-content">
-                                                            <form action="{{ route('update-user') }}" method="POST">
-                                                                @csrf
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title">Editar dados</h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <div class="row">
-        
-                                                                        <input type="hidden" name="id" value="{{ $user->id }}">
-                                                                        
-                                                                        <div class="col-12 col-md-7 col-lg-7 mb-1">
-                                                                            <div class="form-floating">
-                                                                                <input type="text" name="name" class="form-control" id="floatingName" placeholder="Nome:" value="{{ $user->name }}">
-                                                                                <label for="floatingName">Nome:</label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-12 col-md-5 col-lg-5 mb-1">
-                                                                            <div class="form-floating">
-                                                                                <input type="text" name="fixed_cost" class="form-control" id="fixed_cost" placeholder="Custo Fixo (R$):" oninput="mascaraReal(this)" value="{{ $user->fixed_cost }}">
-                                                                                <label for="fixed_cost">Custo (Min R$ {{Auth::user()->fixed_cost}}):</label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-12 col-md-12 col-lg-12 mb-1">
-                                                                            <div class="form-floating">
-                                                                                <input type="email" name="email" class="form-control" id="floatingEmail" placeholder="Email:" value="{{ $user->email }}">
-                                                                                <label for="floatingEmail">Email:</label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-12 col-md-6 col-lg-6 mb-1">
-                                                                            <div class="form-floating">
-                                                                                <input type="text" name="cpfcnpj" class="form-control" id="floatingCpfCnpj" placeholder="CPF/CNPJ:" oninput="mascaraCpfCnpj(this)" value="{{ $user->cpfcnpj }}">
-                                                                                <label for="floatingCpfCnpj">CPF/CNPJ:</label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-12 col-md-6 col-lg-6 mb-1">
-                                                                            <div class="form-floating">
-                                                                                <input type="date" name="birth_date" class="form-control" id="floatingBirthDate" placeholder="Data Nascimento:" value="{{ $user->birth_date }}">
-                                                                                <label for="floatingBirthDate">Data Nascimento:</label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-12 col-md-6 col-lg-6 mb-1">
-                                                                            <div class="form-floating">
-                                                                                <select name="type" class="form-select" id="floatingType">
-                                                                                    <option selected value="{{ $user->type }}">Tipos:</option>
-                                                                                    <option value="2" @selected($user->type == 2)>Consultor</option>
-                                                                                    <option value="3" @selected($user->type == 3)>Cliente</option>
-                                                                                </select>
-                                                                                <label for="floatingType">Permissões de Usuário</label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-12 col-md-6 col-lg-6 mb-1">
-                                                                            <div class="form-floating">
-                                                                                <select name="white_label_network" class="form-select" id="floatingNetwork">
-                                                                                    <option selected value="{{ $user->white_label_network }}">Opções:</option>
-                                                                                    <option value="1" @selected($user->white_label_network == 1)>Liberar</option>
-                                                                                    <option value="2" @selected($user->white_label_network == 2)>Bloquear</option>
-                                                                                </select>
-                                                                                <label for="floatingNetwork">Permissões de Rede</label>
-                                                                            </div>
-                                                                        </div>
+                                                            <div class="col-12 col-sm-12 col-md-8 col-lg-8 row">
+                                                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                    <div class="form-floating">
+                                                                        <input type="text" name="name" class="form-control" id="floatingName" placeholder="Nome:" value="{{ $user->name }}">
+                                                                        <label for="floatingName">Nome:</label>
                                                                     </div>
                                                                 </div>
-                                                                <div class="modal-footer btn-group">
-                                                                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
-                                                                    <button type="submit" class="btn btn-primary">Atualizar</button>
+                                                                <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                                                    <div class="form-floating">
+                                                                        <input type="email" name="email" class="form-control" id="floatingEmail" placeholder="Email:" value="{{ $user->email }}">
+                                                                        <label for="floatingEmail">Email:</label>
+                                                                    </div>
                                                                 </div>
-                                                            </form>
+                                                                <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                                                    <div class="form-floating">
+                                                                        <input type="text" name="phone" class="form-control phone" id="floatingPhone" placeholder="Whatsapp:" oninput="mascaraTelefone(this)" value="{{ $user->phone }}">
+                                                                        <label for="floatingPhone">Whatsapp:</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                                                    <div class="form-floating">
+                                                                        <input type="text" name="cpfcnpj" class="form-control cpfcnpj" id="floatingCpfCnpj" placeholder="CPF/CNPJ:" oninput="mascaraCpfCnpj(this)" value="{{ $user->cpfcnpj }}">
+                                                                        <label for="floatingCpfCnpj">CPF/CNPJ:</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                                                    <div class="form-floating">
+                                                                        <input type="date" name="birth_date" class="form-control" id="floatingBirthDate" placeholder="Data Nascimento:" value="{{ $user->birth_date }}">
+                                                                        <label for="floatingBirthDate">Data Nascimento:</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12 offset-md-6 col-md-6 offset-lg-6 col-lg-6 mb-2 d-grid gap-2">
+                                                                    <div class="btn-group">
+                                                                        <button type="button" id="deleteUserBtn" class="btn btn-sm btn-outline-danger">Excluir </button>
+                                                                        <button type="submit" id="updateUserBtn" class="btn btn-sm btn-outline-primary">Atualizar </button>
+                                                                        <a href="https://wa.me/{{ $user->phone }}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-whatsapp"></i></a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                           
+                                                            <div class="col-12 col-sm-12 col-md-4 col-lg-4 row">
+                                                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                    <div class="form-floating">
+                                                                        <input type="text" class="form-control" id="faturamentoTotal" placeholder="Faturamente Total:" value="R$ {{ number_format($user->invoices->where('status', 1)->sum('value'), 2, ',', '.') }}" disabled>
+                                                                        <label for="faturamentoTotal">Faturamente Total:</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                    <div class="form-floating">
+                                                                        <input type="text" class="form-control" id="ComissãoTotal" placeholder="Comissão Total:" value="R$ {{ number_format($user->invoices->where('status', 1)->sum('commission_seller'), 2, ',', '.') }}" disabled>
+                                                                        <label for="ComissãoTotal">Comissão Total:</label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
+                                                    </form>
+                                                </div>
+                                                <div class="tab-pane fade" id="profile{{ $user->id }}" role="tabpanel" aria-labelledby="profile-tab{{ $user->id }}">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-sm">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th scope="col">Fatura</th>
+                                                                    <th scope="col">Valor</th>
+                                                                    <th scope="col">Vencimento</th>
+                                                                    <th scope="col" class="text-center">Opções</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach ($user->invoices as $invoice)
+                                                                    <tr>
+                                                                        <td>
+                                                                            {{ $invoice->name }} <br>
+                                                                            <span class="badge {{ $invoice->status == 1 ? 'bg-success' : 'bg-primary' }}">{{ $invoice->statusLabel() }}</span>
+                                                                        </td>
+                                                                        <td>R$ {{ number_format($invoice->value, 2, ',', '.') }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y') }}</td>
+                                                                        <td class="text-center">
+                                                                            <div class="btn-group">
+                                                                                @if(!empty($user->wallet))
+                                                                                    <a href="{{ route('payMonthly', ['id' => $invoice->id]) }}" class="btn btn-sm btn-outline-success"> Pagar </a>
+                                                                                @endif
+                                                                                <a href="{{ $invoice->url_payment }}" target="_blank" class="btn btn-sm btn-outline-primary"> Acessar </a>
+                                                                                @if($invoice->status <> 1 )
+                                                                                    <a href="" class="btn btn-sm btn-outline-danger confirm"> Excluir </a>
+                                                                                @endif
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
                                                     </div>
                                                 </div>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="text-center">
-                                    {{ $users->appends(request()->query())->links() }}
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                                <div class="table-responsive">
-                                    <table class="table table" id="table">
-                                        <thead>
-                                            <tr class="tr-primary">
-                                                <th scope="col" class="text-center">°</th>
-                                                <th scope="col">Vendedor</th>
-                                                <th scope="col" class="text-center">Estado</th>
-                                                <th scope="col">Faturamento</th>
-                                                <th scope="col">Graduação</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($usersForRanking as $key => $rank)
-                                                <tr>
-                                                    <td scope="row" class="d-flex justify-content-center">
-                                                        @switch($loop->iteration)
-                                                            @case(1)
-                                                                <i class="bi bi-award" style="color: #fcef87;"></i>
-                                                                @break
-                                                            @case(2)
-                                                                <i class="bi bi-award" style="color: #4f4f4f;"></i>
-                                                                @break
-                                                            @case(3)
-                                                                <i class="bi bi-award" style="color: #ea7e12;"></i>
-                                                                @break
-                                                            @default
-                                                                <i class="bi bi-award" style="color: #C0C0C0;"></i>
-                                                                @break  
-                                                        @endswitch
-                                                        @if($rank->photo)
-                                                            <img src="{{ asset('storage/' . $rank->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
-                                                        @else
-                                                            <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
-                                                        @endif
-                                                    </td>
-                                                    @if ($rank->name == Auth::user()->name)
-                                                        <td>{{ $rank->name }}</td>
-                                                    @else
-                                                        <td>{{ $rank->maskedName() }}</td>
-                                                    @endif
-                                                    <td class="text-center">{{ $rank->state }}</th>
-                                                    <td>R$ {{ number_format($rank->saleTotal(), 2, ',', '.') }}</td>
-                                                    <td>{{ $rank->levelLabel() }}</td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                            @endforeach
+                        </div>
+                                
+                        <div class="text-center">
+                            {{ $users->appends(request()->query())->links() }}
                         </div>
                     </div>
                 </div>

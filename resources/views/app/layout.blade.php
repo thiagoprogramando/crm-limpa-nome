@@ -8,23 +8,23 @@
         <meta content="" name="description">
         <meta content="" name="keywords">
 
-        <link href="{{ asset('assets/dashboard/img/favicon.png') }}" rel="icon">
+        <link href="{{ asset('assets/img/favicon.png') }}" rel="icon">
 
         <link href="https://fonts.gstatic.com" rel="preconnect">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
 
-        <link href="{{ asset('assets/dashboard/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/dashboard/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/dashboard/vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/dashboard/vendor/quill/quill.snow.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/dashboard/vendor/quill/quill.bubble.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/dashboard/vendor/remixicon/remixicon.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/dashboard/vendor/simple-datatables/style.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/dashboard/css/style.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/vendor/quill/quill.snow.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/vendor/quill/quill.bubble.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/vendor/remixicon/remixicon.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/vendor/simple-datatables/style.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
 
-        <script src="{{ asset('assets/dashboard/js/chart.js')}}"></script>
-        <script src="{{ asset('assets/dashboard/js/sweetalert.js')}}"></script>
-        <script src="{{ asset('assets/dashboard/js/jquery.js') }}"></script>
+        <script src="{{ asset('assets/js/chart.js')}}"></script>
+        <script src="{{ asset('assets/js/sweetalert.js')}}"></script>
+        <script src="{{ asset('assets/js/jquery.js') }}"></script>
     </head>
 
     <body>
@@ -32,24 +32,13 @@
         <header id="header" class="header fixed-top d-flex align-items-center">
             <div class="d-flex align-items-center justify-content-between">
                 <a href="{{ route('app') }}" class="logo d-flex align-items-center">
-                    <img src="{{ asset('assets/dashboard/img/logo.png') }}">
+                    <img src="{{ asset('assets/img/logo.png') }}">
                 </a>
                 <i class="bi bi-list toggle-sidebar-btn text-white"></i>
             </div>
 
-            {{-- <div class="search-bar">
-                <form class="search-form d-flex align-items-center" method="GET" action="{{ route('search') }}">
-                    <input type="text" name="search" placeholder="Pesquisar" title="Pesquisar">
-                    <button type="submit" title="Search"><i class="bi bi-search"></i></button>
-                </form>
-            </div> --}}
-
             <nav class="header-nav ms-auto">
                 <ul class="d-flex align-items-center">
-
-                    {{-- <li class="nav-item d-block d-lg-none">
-                        <a class="nav-link nav-icon search-bar-toggle " href="#"><i class="bi bi-search text-white"></i></a>
-                    </li> --}}
 
                     <li class="nav-item">
                         <a class="nav-link nav-icon" href="#">
@@ -69,7 +58,7 @@
                             <li><hr class="dropdown-divider"></li>
 
                             @foreach ($notifications as $notification)
-                                <a href="{{ route('view-notification', ['id' => $notification->id]) }}">
+                                <a href="#">
                                     <li class="notification-item">
                                         @if($notification->type == 1)
                                             <i class="bi bi-check-circle text-success"></i>
@@ -90,25 +79,20 @@
                         </ul>
                     </li>
 
-                    @php
-                        $nameParts = explode(' ', Auth::user()->name);
-                        $firstName = $nameParts[0];
-                        $lastName = isset($nameParts[1]) ? $nameParts[1] : '';
-                    @endphp
                     <li class="nav-item dropdown pe-3">
                         <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
                             @if(Auth::user()->photo)
                                 <img src="{{ asset('storage/' . Auth::user()->photo) }}" alt="Foto de Perfil" class="rounded-circle">
                             @else
-                                <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle">
+                                <img src="{{ asset('assets/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle">
                             @endif
                             
-                            <span class="dropdown-toggle text-white ps-2 d-none d-sm-block">{{ $firstName }}</span>
+                            <span class="dropdown-toggle text-white ps-2 d-none d-sm-block">{{ Auth::user()->maskedName() }}</span>
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                             <li class="dropdown-header">
-                                <h6>{{ $firstName }} {{ $lastName }}</h6>
+                                <h6>{{ Auth::user()->maskedName() }}</h6>
                                 <span>{{ Auth::user()->levelLabel() }}</span>
                             </li>
                             <li> <hr class="dropdown-divider"> </li>
@@ -116,12 +100,6 @@
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('profile') }}">
                                     <i class="bi bi-person"></i>
                                     <span>Perfil</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" href="{{ route('Integrate-wallet') }}">
-                                    <i class="bi bi-wallet2"></i>
-                                    <span>Carteira Digital</span>
                                 </a>
                             </li>
                             <li> <hr class="dropdown-divider"> </li>
@@ -171,11 +149,11 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link {{ Route::currentRouteName() == 'manager-sale' || Route::currentRouteName() == 'coupons' ? '' : 'collapsed' }}" data-bs-target="#forms-sale" data-bs-toggle="collapse" href="#">
+                    <a class="nav-link {{ Route::currentRouteName() == 'list-sales' || Route::currentRouteName() == 'coupons' ? '' : 'collapsed' }}" data-bs-target="#forms-sale" data-bs-toggle="collapse" href="#">
                         <i class="bi bi-bag"></i><span>Vendas</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul id="forms-sale" class="nav-content collapse {{ Route::currentRouteName() == 'manager-sale' || Route::currentRouteName() == 'coupons' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
-                        <li> <a href="{{ route('manager-sale') }}"> <i class="bi bi-circle"></i><span>Vendas</span> </a> </li>
+                    <ul id="forms-sale" class="nav-content collapse {{ Route::currentRouteName() == 'list-sales' || Route::currentRouteName() == 'coupons' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
+                        <li> <a href="{{ route('list-sales') }}"> <i class="bi bi-circle"></i><span>Vendas</span> </a> </li>
                         <li><a href="{{ route('list-coupons') }}"> <i class="bi bi-circle"></i><span>Cupons</span> </a></li>
                     </ul>
                 </li>
@@ -185,29 +163,22 @@
                     <li class="nav-item">
                         <a class="nav-link collapsed" href="{{ route('list-network') }}"> <i class="bi bi-person-lines-fill"></i> <span>Minha Rede</span> </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ Route::currentRouteName() == 'list-active' ? '' : 'collapsed' }}" data-bs-target="#forms-actvie" data-bs-toggle="collapse" href="#">
+                            <i class="bi bi-person-bounding-box"></i><span>Atividade</span><i class="bi bi-chevron-down ms-auto"></i>
+                        </a>
+                        <ul id="forms-actvie" class="nav-content collapse {{ Route::currentRouteName() == 'list-active' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
+                            <li> <a href="{{ route('list-active', ['status' => 1]) }}"><i class="bi bi-circle"></i><span>Ativos</span></a> </li>
+                            <li> <a href="{{ route('list-active', ['status' => 2]) }}"><i class="bi bi-circle"></i><span>Inativos</span></a> </li>
+                        </ul>
+                    </li>
                 @endif
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="{{ route('list-client') }}"> <i class="bi bi-file-earmark-person"></i> <span>Clientes</span> </a>
                 </li>
 
-                @if (Auth::user()->white_label_contract == 1)
-                    <li class="nav-heading">Customização</li>
-                    <li class="nav-item">
-                        <a class="nav-link collapsed" data-bs-target="#forms-integration" data-bs-toggle="collapse" href="#">
-                            <i class="ri-braces-line"></i><span>Integrações</span><i class="bi bi-chevron-down ms-auto"></i>
-                        </a>
-                        <ul id="forms-integration" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                            @if (Auth::user()->white_label_contract == 1)
-                                <li> 
-                                    <a href="{{ route('profile-white-label') }}"><i class="bi bi-circle"></i><span>Contrato</span></a>
-                                </li>
-                            @endif
-                        </ul>
-                    </li>
-                @endif
-
                 @if (Auth::user()->type !== 4)
-                    <li class="nav-heading">Financeiro</li>
+                    <li class="nav-heading">Gestão Financeira</li>
                     <li class="nav-item">
                         <a class="nav-link collapsed" href="{{ route('wallet') }}"> <i class="bi bi-wallet2"></i> <span>Carteira</span> </a>
                     </li>
@@ -224,6 +195,15 @@
 
                 <li class="nav-heading">Outros</li>
                 <li class="nav-item">
+                    <a class="nav-link collapsed" data-bs-target="#forms-apis" data-bs-toggle="collapse" href="#">
+                        <i class="bx bxl-codepen"></i><span>Integrações</span><i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <ul id="forms-apis" class="nav-content collapse" data-bs-parent="#sidebar-nav">  
+                        <li><a href="{{ route('Integrate-wallet') }}"><i class="bi bi-circle"></i><span>Banco Assas</span></a></li>
+                        <li><a href="#"> <i class="bi bi-circle"></i><span>Banco Cora</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link {{ Route::currentRouteName() == 'trash-users' || Route::currentRouteName() == 'trash-sales' ? '' : 'collapsed' }}" data-bs-target="#forms-trash" data-bs-toggle="collapse" href="#">
                         <i class="bi bi-archive"></i><span>Lixeira</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
@@ -234,7 +214,7 @@
                 </li>
                 
                 @if (Auth::user()->type == 1)
-                    <li class="nav-heading">Gestão</li>
+                    <li class="nav-heading">Gestão Geral</li>
                     <li class="nav-item">
                         <a class="nav-link collapsed" href="{{ route('list-lists') }}"> <i class="bi bi-list-check"></i> <span>Listas</span> </a>
                     </li>
@@ -254,16 +234,6 @@
                             <li> <a href="{{ route('list-user', ['type' => 3]) }}"><i class="bi bi-circle"></i><span>Clientes</span></a> </li>
                             <li> <a href="{{ route('list-user', ['type' => 2]) }}"><i class="bi bi-circle"></i><span>Consultores</span></a>
                             <li> <a href="{{ route('list-user', ['type' => 4]) }}"><i class="bi bi-circle"></i><span>Consultor Interno</span></a> </li>
-                        </ul>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link {{ Route::currentRouteName() == 'list-active' ? '' : 'collapsed' }}" data-bs-target="#forms-actvie" data-bs-toggle="collapse" href="#">
-                            <i class="bi bi-person-bounding-box"></i><span>Atividade</span><i class="bi bi-chevron-down ms-auto"></i>
-                        </a>
-                        <ul id="forms-actvie" class="nav-content collapse {{ Route::currentRouteName() == 'list-active' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
-                            <li> <a href="{{ route('list-active', ['status' => 1]) }}"><i class="bi bi-circle"></i><span>Ativos</span></a> </li>
-                            <li> <a href="{{ route('list-active', ['status' => 2]) }}"><i class="bi bi-circle"></i><span>Inativos</span></a> </li>
                         </ul>
                     </li>
                 @endif
@@ -286,10 +256,9 @@
 
         <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-        <script src="{{ asset('assets/dashboard/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-        <script src="{{ asset('assets/dashboard/js/main.js') }}"></script>
-        <script src="{{ asset('assets/dashboard/js/mask.js') }}"></script>
-        <script src="{{ asset('assets/dashboard/js/excel.js') }}"></script>
+        <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ asset('assets/js/main.js') }}"></script>
+        <script src="{{ asset('assets/js/mask.js') }}"></script>
         <script>
             @if(session('error'))
                 Swal.fire({
@@ -320,11 +289,8 @@
 
             document.addEventListener('DOMContentLoaded', function () {
                 applyMasks(document);
-                
-                const deleteForms = document.querySelectorAll('form.delete');
-                deleteForms.forEach(form => {
+                document.querySelectorAll('form.delete').forEach(form => {
                     form.addEventListener('submit', function (event) {
-                        
                         event.preventDefault();
                         Swal.fire({
                             title: 'Tem certeza?',
@@ -343,76 +309,42 @@
                     });
                 });
 
-                function applyMasks(context) {
-                    context.querySelectorAll('.money').forEach(el => el.value && mascaraReal(el));
-                    context.querySelectorAll('.phone').forEach(el => el.value && mascaraTelefone(el));
-                    context.querySelectorAll('.cpfcnpj').forEach(el => el.value && mascaraCpfCnpj(el));
-                }
-                
-                var links = document.querySelectorAll('.confirm');
-                links.forEach(function(link) {
-                    link.addEventListener('click', function(event) {
-
-                        event.preventDefault();
-                        var message = this.getAttribute('data-message') || 'Tem certeza?';
-                        
-                        Swal.fire({
-                            title: 'Tem certeza?',
-                            text: 'Você realmente deseja executar esta ação?',
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonText: 'Sim',
-                            confirmButtonColor: '#008000',
-                            cancelButtonText: 'Não',
-                            cancelButtonColor: '#FF0000',
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = link.href;
-                            }
-                        });
+                document.querySelectorAll('input[type="file"]').forEach(input => {
+                    input.addEventListener("change", function() {
+                        this.closest("form").submit();
                     });
                 });
-
-                let inputs = document.querySelectorAll('input[type="text"][oninput="mascaraReal(this)"]');
-                inputs.forEach(function(input) {
-                    mascaraReal(input);
-                });
             });
 
-            $('#gerarExcel').click(function() {
-
-                var tabela = document.getElementById('table');
-                var wb = XLSX.utils.table_to_book(tabela, {
-                    sheet: 'Sheet 1'
-                });
-                var wbout = XLSX.write(wb, {
-                    bookType: 'xlsx',
-                    type: 'binary'
-                });
-
-                function s2ab(s) {
-                    var buf = new ArrayBuffer(s.length);
-                    var view = new Uint8Array(buf);
-                    for (var i = 0; i < s.length; i++) {
-                        view[i] = s.charCodeAt(i) & 0xFF;
-                    }
-                    return buf;
-                }
-
-                var blob = new Blob([s2ab(wbout)], {
-                    type: 'application/octet-stream'
-                });
-                var url = URL.createObjectURL(blob);
-                var a = document.createElement('a');
-                a.href = url;
-                a.download = 'tabela.xlsx';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                setTimeout(function() {
-                    URL.revokeObjectURL(url);
-                }, 100);
+            $(document).on('shown.bs.modal', '.modal', function () {
+                applyMasks(this);
             });
+
+            function applyMasks(context) {
+                context.querySelectorAll('.money').forEach(el => el.value && maskValue(el));
+                context.querySelectorAll('.performance').forEach(el => el.value && maskPerformance(el));
+                context.querySelectorAll('.phone').forEach(el => el.value && maskPhone(el));
+                context.querySelectorAll('.cpfcnpj').forEach(el => el.value && maskCpfCnpj(el));
+                context.querySelectorAll('.address').forEach(el => el.value && consultAddress(el));
+            }
+
+            function onClip(text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    Swal.fire({
+                        title: 'Sucesso!',
+                        text: 'Link copiado',
+                        icon: 'success',
+                        timer: 5000
+                    });
+                }).catch(err => {
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: 'Link não copiado, tente novamente!',
+                        icon: 'error',
+                        timer: 5000
+                    });
+                });
+            }
         </script>
     </body>
 </html>

@@ -18,7 +18,7 @@
                 <div id="carouselExampleControls" class="carousel slide mb-2" data-bs-ride="carousel">
                     <div class="carousel-inner">
                         <div class="carousel-item carousel-item-next carousel-item-start">
-                            <img style="max-height: 300px !important;" src="{{ asset('assets/dashboard/img/marketing/nome_10_um_cupom.png') }}" class="d-block w-100" alt="Envie dez nomes e ganhe um!">
+                            <img style="max-height: 300px !important;" src="{{ asset('assets/img/marketing/nome_10_um_cupom.png') }}" class="d-block w-100" alt="Envie dez nomes e ganhe um!">
                         </div>
                     </div>
 
@@ -61,7 +61,7 @@
                         </div>
                     </div>
                     <div class="col-sm-12 col-md-6 col-lg-4">
-                        <a href="{{ route('manager-sale') }}?created_at={{ now()->format('Y-m-d') }}&status=1">
+                        <a href="{{ route('list-sales') }}?created_at={{ now()->format('Y-m-d') }}&status=1">
                             <div class="card info-card clock-card">
                                 <div class="card-body">
                                     <h5 class="card-title">Vendas (Hoje)</h5>

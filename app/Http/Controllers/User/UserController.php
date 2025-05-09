@@ -189,59 +189,7 @@ class UserController extends Controller {
 
     public function listuser(Request $request, $type) {
 
-        $query = User::query()
-            ->where('type', $type)
-            ->orderBy('name', 'desc');
-
-        $query->when($request->name, fn($q, $name) => $q->where('name', 'like', "%{$name}%"));
-        $query->when($request->email, fn($q, $email) => $q->where('email', 'like', "%{$email}%"));
-        $query->when($request->cpfcnpj, fn($q, $cpfcnpj) => $q->where('cpfcnpj', $cpfcnpj));
-
-        $query->when($request->created_at_start, function ($q, $start) {
-            $q->where('created_at', '>=', Carbon::parse($start)->startOfDay());
-        });
-
-        $query->when($request->created_at_end, function ($q, $end) {
-            $q->where('created_at', '<=', Carbon::parse($end)->endOfDay());
-        });
-
-
-        $users = $query->paginate(30);
-        $users->setCollection(
-            $users->getCollection()->map(function ($user) {
-                $user->commission_total = $user->commissionTotal();
-                return $user;
-            })->sortByDesc('commission_total')
-        );
-
-        $users->getCollection()->transform(function ($user) {
-            $user->commission_total = $user->commissionTotal();
-            return $user;
-        });
-
-        $currentYear = now()->year;
-        $usersByMonth = User::where('type', $type)
-            ->whereYear('created_at', $currentYear)
-            ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
-            ->groupBy('month')
-            ->orderBy('month')
-            ->pluck('total', 'month')
-            ->toArray();
-        $months = array_replace(array_fill(1, 12, 0), $usersByMonth);
-
-        return view('app.User.list-users', [
-            'users'     => $users, 
-            'type'      => $type,
-            'usersData' => array_values($months)
-        ]);
-    }
-
-    public function listNetwork(Request $request) {
-
-        $query = User::query()
-            ->orderBy('name', 'asc')
-            ->where('filiate', Auth::id())
-            ->where('type', '!=', 3);
+        $query = User::query()->orderBy('name', 'asc')->where('type', $type);
 
         if ($request->filled('name')) {
             $query->where('name', 'like', '%' . $request->name . '%');
@@ -259,17 +207,34 @@ class UserController extends Controller {
             $query->whereDate('created_at', $request->created_at);
         }
 
-        $usersForRanking = User::where('filiate', Auth::user()->id)->whereIn('type', [2, 5, 6, 7])->get();
-    
-        $sortedUsers = $usersForRanking->sortByDesc(function($user) {
-            return $user->saleTotal();
-        });
-    
-        $usersForRanking = $sortedUsers->take(10);
+        return view('app.User.list-users', [
+            'users'     => $query->paginate(30), 
+            'type'      => $type,
+        ]);
+    }
+
+    public function listNetwork(Request $request) {
+
+        $query = User::query()->orderBy('name', 'asc')->where('sponsor_id', Auth::id())->where('type', '!=', 3);
+
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+
+        if ($request->filled('email')) {
+            $query->where('email', $request->email);
+        }
+
+        if ($request->filled('cpfcnpj')) {
+            $query->where('cpfcnpj', $request->cpfcnpj);
+        }
+
+        if ($request->filled('created_at')) {
+            $query->whereDate('created_at', $request->created_at);
+        }
 
         return view('app.User.list-network', [
-            'users'             => $query->paginate(30),
-            'usersForRanking'   => $usersForRanking
+            'users' => $query->paginate(30),
         ]);
     }
 
@@ -298,56 +263,12 @@ class UserController extends Controller {
         ]);
     }
 
-    public function deleteUser(Request $request) {
-
-        $user = User::find($request->id);
-        if ($user && $user->delete()) {
-            return redirect()->back()->with('success', 'Usuário excluído com sucesso!');
-        }
-
-        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
-    }
-
-    public function viewNotification($id) {
-
-        $notification = Notification::find($id);
-        if ($notification && $notification->delete()) {
-            return redirect()->back();
-        }
-
-        return redirect()->back()->with('error', 'Ops! Notificação não encontrada.');
-    }
-
     public function listActive($status = null) {
-
-        if (!in_array($status, [1, 2])) {
-            return redirect()->back()->with('error', 'Dados não encontrados para a pesquisa!');
-        }
-
-        $dateLimit = Carbon::now()->subDays(30);
-        if ($status == 1) {
-            $query = User::where('type', 2)->whereHas('invoices', function ($query) use ($dateLimit) {
-                $query->where('type', 1)
-                      ->where('status', 1)
-                      ->whereDate('due_date', '>=', $dateLimit);
-            });
-        } elseif ($status == 2) {
-            $query = User::where('type', 2)->where(function ($query) use ($dateLimit) {
-                $query->whereDoesntHave('invoices', function ($subQuery) {
-                    $subQuery->where('type', 1);
-                })
-                ->orWhereHas('invoices', function ($subQuery) use ($dateLimit) {
-                    $subQuery->where('type', 1)
-                             ->where('status', '!=', 1)
-                             ->whereDate('due_date', '>=', $dateLimit);
-                });
-            });
-        }
-
-        $currentYear = Carbon::now()->year;
+        
+        $users = User::query()->where('type', 2)->where('status', $status)->orderBy('name', 'asc');
 
         $invoices = Invoice::where('type', 1)->where('status', $status)
-            ->whereYear('created_at', $currentYear)
+            ->whereYear('created_at', Carbon::now()->year)
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
             ->groupBy('month')
             ->orderBy('month')
@@ -357,35 +278,21 @@ class UserController extends Controller {
         foreach ($invoices as $month => $total) {
             $months[$month] = $total;
         }
+        
         return view('app.User.list-actives', [
-            'users'         => $query->orderBy('name', 'asc')->paginate(30),
+            'users'         => $users->paginate(30),
             'invoicesData'  => array_values($months)
         ]);
     }
 
-    public function sendActive($id) {
+    public function deleteUser(Request $request) {
 
-        $user = User::find($id);
-        if($user) {
-
-            $message =  "Olá, {$user->name},\r\n\r\n"
-                        . "Sua conta em nossa plataforma ainda não foi ativada. Para continuar a ganhar comissões e aproveitar nossos benefícios, ative sua conta até ". Carbon::now()->addDays(30)->format('d/m/Y') ." \r\n\r\n"
-                        . "*Instruções para ativação:*\r\n\r\n"
-                        . "Acesse: ".env('APP_URL')."\r\n"
-                        . "Faça login com seu e-mail e CPF. \r\n"
-                        . "Complete a ativação \r\n"
-                        . "Após a data limite, o acesso será desativado permanentemente. \r\n\r\n"
-                        . "Precisa de ajuda? Estamos aqui para você!\r\n\r\n";
-            $this->sendWhatsapp(
-                env('APP_URL'),
-                $message,
-                $user->phone,
-                $user->api_token_zapapi
-            );
-
-            return redirect()->back()->with('success', 'mensagem enviada com sucesso!');
+        $user = User::find($request->id);
+        if ($user && $user->delete()) {
+            return redirect()->back()->with('success', 'Usuário excluído com sucesso!');
         }
 
+        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
     }
 
     private function sendWhatsapp($link, $message, $phone, $token = null) {
