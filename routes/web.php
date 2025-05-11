@@ -37,7 +37,7 @@ Route::get('/forgout/{token?}', [ForgoutController::class, 'forgout'])->name('fo
 Route::post('forgout-password', [ForgoutController::class, 'forgoutPassword'])->name('forgout-password');
 Route::post('recovery-password/{token}', [ForgoutController::class, 'recoveryPassword'])->name('recovery-password');
 
-Route::get('/view-contract/{id}', [ContractController::class, 'view'])->name('view-contract');
+Route::get('/view-contract/{id}', [ContractController::class, 'viewContract'])->name('view-contract');
 
 Route::middleware(['auth'])->group(function () {
 

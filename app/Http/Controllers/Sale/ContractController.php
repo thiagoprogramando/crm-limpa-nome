@@ -27,52 +27,22 @@ class ContractController extends Controller {
             return redirect()->back()->with('info', 'Não foi possível localizar os dados da venda! Tente novamente mais tarde.');
         }
 
-        if (empty($sale->user->name) || empty($sale->user->cpfcnpj) || empty($sale->user->birth_date)) {
+        if (empty($sale->client->name) || empty($sale->client->cpfcnpj) || empty($sale->client->birth_date)) {
             return redirect()->back()->with('info', 'Cliente não está com os dados completos/ou é uma Venda Direta Associação!');
         }
 
-        $message = "{$sale->user->name}, segue seu contrato de adesão ao serviço de limpa nome com nossa assessoria.\r\n\r\n".
-                    "ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼\r\n".
-                    " ⚠ Salva o contato se não tiver aparecendo o link.\r\n";
+        // $message = "Olá, {$sale->user->name}! \r\n Segue seu contrato de contratação ao Serviço/Produto ".$sale->product->name.".\r\n\r\n".
+        //             "ASSINAR O CONTRATO CLICANDO NO LINK 👇🏼✍🏼\r\n\r\n".
+        //             "⚠ Salva o contato se não tiver aparecendo o link.\r\n";
 
-        if ($this->sendWhatsapp(env('APP_URL').'view-contract/'.$sale->id, $message, $sale->user->phone, $sale->seller->api_token_zapapi)) {
-            return redirect()->back()->with('success', 'Contrato enviado para o Cliente!');
-        }
+        // if ($this->sendWhatsapp(env('APP_URL').'view-contract/'.$sale->id, $message, $sale->user->phone, $sale->seller->api_token_zapapi)) {
+        //     return redirect()->back()->with('success', 'Contrato enviado para o Cliente!');
+        // }
         
-        return redirect()->back()->with('info', 'Não foi possível enviar o Contrato, tente novamente mais tarde!');
+        return redirect()->back()->with('success', 'Contrato emitido com sucesso!');
     }
 
-    private function sendWhatsapp($link, $message, $phone, $token = null) {
-
-        $client = new Client();
-
-        $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
-        try {
-
-            $response = $client->post($url, [
-                'headers' => [
-                    'Content-Type'  => 'application/json',
-                    'Accept'        => 'application/json',
-                    'Client-Token'  => 'Fabe25dbd69e54f34931e1c5f0dda8c5bS',
-                ],
-                'json' => [
-                    'phone'           => '55' . $phone,
-                    'message'         => $message,
-                    'image'           => env('APP_URL_LOGO'),
-                    'linkUrl'         => $link,
-                    'title'           => 'Assinatura de Documento',
-                    'linkDescription' => 'Link para Assinatura Digital',
-                ],
-                'verify' => false
-            ]);
-
-            return true;
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
-
-    public function previewContract($saleId)  {
+    public function viewContract($saleId)  {
 
         $sale = Sale::with(['product', 'user', 'seller'])->find($saleId);
         if (!$sale) {

@@ -118,7 +118,7 @@
         <aside id="sidebar" class="sidebar">
             <ul class="sidebar-nav" id="sidebar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('app') }}"> <i class="bi bi-grid"></i> <span>Escritório</span> </a>
+                    <a class="nav-link" href="{{ route('app') }}"> <i class="bi bi-grid"></i> <span>Dashboard</span> </a>
                 </li>
 
                 <li class="nav-item">
@@ -128,22 +128,11 @@
                 <li class="nav-heading">Gestão de Vendas</li>
                 <li class="nav-item">
                     <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-briefcase"></i><span>Enviar Contrato (Cliente)</span><i class="bi bi-chevron-down ms-auto"></i>
+                        <i class="bi bi-briefcase"></i><span>Enviar Nome</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
                     <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                         @foreach($business as $busines)
                             <li><a href="{{ route('create-sale', ['product' => $busines->id]) }}"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
-                        @endforeach
-                    </ul>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link collapsed" data-bs-target="#forms-upload" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-cloud-upload"></i><span>Enviar Nome (Associação)</span><i class="bi bi-chevron-down ms-auto"></i>
-                    </a>
-                    <ul id="forms-upload" class="nav-content collapse " data-bs-parent="#sidebar-upload">
-                        @foreach($business as $busines)
-                            <li><a href=""> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
                         @endforeach
                     </ul>
                 </li>
@@ -161,11 +150,11 @@
                 <li class="nav-heading">Gestão de Pessoas</li>
                 @if (Auth::user()->type == 1 || Auth::user()->type == 99)
                     <li class="nav-item">
-                        <a class="nav-link collapsed" href="{{ route('list-network') }}"> <i class="bi bi-person-lines-fill"></i> <span>Minha Rede</span> </a>
+                        <a class="nav-link collapsed" href="{{ route('list-network') }}"> <i class="bi bi-person-lines-fill"></i> <span>Parceiros</span> </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ Route::currentRouteName() == 'list-active' ? '' : 'collapsed' }}" data-bs-target="#forms-actvie" data-bs-toggle="collapse" href="#">
-                            <i class="bi bi-person-bounding-box"></i><span>Atividade</span><i class="bi bi-chevron-down ms-auto"></i>
+                            <i class="bi bi-person-bounding-box"></i><span>Assinantes</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
                         <ul id="forms-actvie" class="nav-content collapse {{ Route::currentRouteName() == 'list-active' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
                             <li> <a href="{{ route('list-active', ['status' => 1]) }}"><i class="bi bi-circle"></i><span>Ativos</span></a> </li>
@@ -332,14 +321,14 @@
                 navigator.clipboard.writeText(text).then(() => {
                     Swal.fire({
                         title: 'Sucesso!',
-                        text: 'Link copiado',
+                        text: 'Copiado',
                         icon: 'success',
                         timer: 5000
                     });
                 }).catch(err => {
                     Swal.fire({
                         title: 'Erro!',
-                        text: 'Link não copiado, tente novamente!',
+                        text: 'Nada copiado, tente novamente!',
                         icon: 'error',
                         timer: 5000
                     });

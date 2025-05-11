@@ -9,7 +9,7 @@ class Coupon extends Model {
     protected $table = 'coupons';
 
     protected $fillable = [
-        'id_user',
+        'user_id',
         'name',
         'description',
         'percentage',
@@ -18,6 +18,6 @@ class Coupon extends Model {
     ];
 
     public function user() {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

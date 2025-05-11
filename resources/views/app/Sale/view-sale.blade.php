@@ -5,7 +5,7 @@
         <h1>Venda: {{ $sale->client->name }}</h1>
         <nav>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('app') }}">Escritório</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('app') }}">Dashboard</a></li>
                 <li class="breadcrumb-item active">Venda: {{ $sale->client->name }}</li>
             </ol>
         </nav>

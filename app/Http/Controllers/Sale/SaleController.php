@@ -220,7 +220,6 @@ class SaleController extends Controller {
                 }
     
                 $payment = $assas->createCharge($client->customer, $paymentMethod, $value, $dueDate, 'Fatura '.$key.' para venda N° '.$sale->id, $commissions);
-    
                 if (!$payment || !isset($payment['id'], $payment['invoiceUrl'])) {
                     throw new \Exception("Erro ao gera dados de pagamento para nova venda na parcela {$key}");
                 }
@@ -336,101 +335,105 @@ class SaleController extends Controller {
         return redirect()->back()->with('error', 'Não foi possível alterar os dados da venda!');
     }
 
-    // public function deleteSale(Request $request) {
+    public function deletedSale(Request $request) {
 
-    //     $sale = Sale::find($request->id);
-    //     if (!$sale) {
-    //         return redirect()->back()->with('error', 'Não encontramos dados da venda!');
-    //     }
+        $sale = Sale::where('uuid', $request->uuid)->first();
+        if (!$sale) {
+            return redirect()->back()->with('error', 'Venda não encontrada!');
+        }
 
-    //     $invoices = Invoice::where('id_sale', $sale->id)->get();
-    //     foreach ($invoices as $invoice) {
+        if ($sale->status == 1) {
+            return redirect()->back()->with('info', 'Venda já confirmada, não é possível excluir!');
+        }
+
+        $invoices = Invoice::where('sale_id', $sale->id)->get();
+        foreach ($invoices as $invoice) {
            
-    //         $assasController = new AssasController();
-    //         if($invoice->status <> 1) {
-    //             $assasController->cancelInvoice($invoice->token_payment);
-    //         }
+            $assasController = new AssasController();
+            if($invoice->status <> 1) {
+                $assasController->cancelInvoice($invoice->payment_token);
+            }
             
-    //         $invoice->delete();
-    //     }
+            $invoice->delete();
+        }
 
-    //     if ($sale->delete()) {
-    //         return redirect()->back()->with('success', 'Venda e Faturas excluídas com sucesso!');
-    //     }
+        if ($sale->delete()) {
+            return redirect()->back()->with('success', 'Venda e Faturas canceladas com sucesso!');
+        }
         
-    //     return redirect()->back()->with('error', 'Não foi possível excluir a venda!');
-    // }
+        return redirect()->back()->with('error', 'Não foi possível excluir a venda!');
+    }
 
-    // public function reprotocolSale($id) {
+    public function reprotocolSale($id) {
 
-    //     $sale = Sale::find($id);
-    //     if (!$sale) {
-    //         return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');   
-    //     }
+        $sale = Sale::find($id);
+        if (!$sale) {
+            return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');   
+        }
 
-    //     if ($sale->status <> 1) {
-    //         return redirect()->back()->with('info', 'Venda não foi confirmada!');   
-    //     }
+        if ($sale->status <> 1) {
+            return redirect()->back()->with('info', 'Venda não foi confirmada!');   
+        }
 
-    //     $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
-    //     if (!$list) {
-    //         return redirect()->back()->with('error', 'Não há uma lista disponível para reprotocolar a venda!');
-    //     }
+        $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
+        if (!$list) {
+            return redirect()->back()->with('error', 'Não há uma lista disponível para reprotocolar a venda!');
+        }
 
-    //     if (Auth::user()->type !== 1) {
-    //         $invoices = Invoice::where('id_sale', $sale->id)->get();
-    //         $tomorrow = now()->addDay();
-    //         foreach ($invoices as $invoice) {
-    //             if ($invoice->due_date <= $tomorrow && $invoice->status == 0) {
-    //                 return redirect()->back()->with('error', 'Existem faturas vencidas associadas a Venda!');
-    //             }
-    //         }
-    //     }
+        if (Auth::user()->type !== 1) {
+            $invoices = Invoice::where('id_sale', $sale->id)->get();
+            $tomorrow = now()->addDay();
+            foreach ($invoices as $invoice) {
+                if ($invoice->due_date <= $tomorrow && $invoice->status == 0) {
+                    return redirect()->back()->with('error', 'Existem faturas vencidas associadas a Venda!');
+                }
+            }
+        }
         
-    //     $sale->id_list = $sale->label !== null 
-    //                     ? $sale->id_list 
-    //                     : $list->id;
+        $sale->id_list = $sale->label !== null 
+                        ? $sale->id_list 
+                        : $list->id;
 
-    //     $sale->label = str_contains($sale->label, 'REPROTOCOLADO -') 
-    //                 ? null 
-    //                 : 'REPROTOCOLADO - ' . now()->format('d/m/Y');
+        $sale->label = str_contains($sale->label, 'REPROTOCOLADO -') 
+                    ? null 
+                    : 'REPROTOCOLADO - ' . now()->format('d/m/Y');
 
-    //     if ($sale->save()) {
+        if ($sale->save()) {
 
-    //         if ($sale->label !== null) {
-    //             $clientName     = $sale->user->name;
-    //             $phone          = $sale->user->phone;
-    //             $sellerApiToken = $sale->seller->api_token_zapapi;
+            if ($sale->label !== null) {
+                $clientName     = $sale->user->name;
+                $phone          = $sale->user->phone;
+                $sellerApiToken = $sale->seller->api_token_zapapi;
             
-    //             $message = "*Assunto: Reprotocolamento de Processo Judicial*\r\n\r\n" .
-    //                        "{$clientName},\r\n\r\n" .
-    //                        "Gostaríamos de informar que o *seu processo* foi *reprotocolado com sucesso.*\r\n\r\n" .
-    //                        "A partir de agora, será necessário *aguardar o prazo estimado de 20 a 30 dias*, " .
-    //                        "conforme estipulado pelos trâmites judiciais, para a análise e andamento do seu caso.\r\n\r\n" .
-    //                        "Estamos acompanhando de perto o andamento do processo e *entraremos em contato assim que houver novidades.*\r\n\r\n" .
-    //                        "Agradecemos sua paciência e estamos à disposição para esclarecer qualquer dúvida.";
+                $message = "*Assunto: Reprotocolamento de Processo Judicial*\r\n\r\n" .
+                           "{$clientName},\r\n\r\n" .
+                           "Gostaríamos de informar que o *seu processo* foi *reprotocolado com sucesso.*\r\n\r\n" .
+                           "A partir de agora, será necessário *aguardar o prazo estimado de 20 a 30 dias*, " .
+                           "conforme estipulado pelos trâmites judiciais, para a análise e andamento do seu caso.\r\n\r\n" .
+                           "Estamos acompanhando de perto o andamento do processo e *entraremos em contato assim que houver novidades.*\r\n\r\n" .
+                           "Agradecemos sua paciência e estamos à disposição para esclarecer qualquer dúvida.";
             
-    //             $this->sendWhatsapp(env('APP_URL') . 'login-cliente', $message, $phone, $sellerApiToken);
-    //             return redirect()->back()->with('success', 'Processo reprotocolado!');
-    //         } else {
-    //             $clientName     = $sale->user->name;
-    //             $phone          = $sale->user->phone;
-    //             $sellerApiToken = $sale->seller->api_token_zapapi;
+                $this->sendWhatsapp(env('APP_URL') . 'login-cliente', $message, $phone, $sellerApiToken);
+                return redirect()->back()->with('success', 'Processo reprotocolado!');
+            } else {
+                $clientName     = $sale->user->name;
+                $phone          = $sale->user->phone;
+                $sellerApiToken = $sale->seller->api_token_zapapi;
             
-    //             $message = "*Assunto: Conclusão do Processo Judicial*\r\n\r\n" .
-    //                        "{$clientName},\r\n\r\n" .
-    //                        "É com satisfação que informamos que o *seu processo foi concluído com sucesso!*\r\n\r\n" .
-    //                        "Agradecemos pela confiança em nosso trabalho.";
+                $message = "*Assunto: Conclusão do Processo Judicial*\r\n\r\n" .
+                           "{$clientName},\r\n\r\n" .
+                           "É com satisfação que informamos que o *seu processo foi concluído com sucesso!*\r\n\r\n" .
+                           "Agradecemos pela confiança em nosso trabalho.";
             
-    //             $this->sendWhatsapp(env('APP_URL') . 'login-cliente', $message, $phone, $sellerApiToken);
-    //             return redirect()->back()->with('success', 'Processo concluído!');
-    //         }            
+                $this->sendWhatsapp(env('APP_URL') . 'login-cliente', $message, $phone, $sellerApiToken);
+                return redirect()->back()->with('success', 'Processo concluído!');
+            }            
 
-    //         return redirect()->back()->with('success', 'Venda alterada com sucesso!');
-    //     }
+            return redirect()->back()->with('success', 'Venda alterada com sucesso!');
+        }
 
-    //     return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');
-    // }
+        return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');
+    }
 
     
 

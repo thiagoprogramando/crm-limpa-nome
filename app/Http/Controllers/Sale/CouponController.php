@@ -30,9 +30,8 @@ class CouponController extends Controller {
         }
 
         $coupons = $query->paginate(30);
-        return view('app.Sale.coupon', [
-            'coupons' => $coupons,
-            'users'   => User::orderBy('name', 'asc')->get()
+        return view('app.Sale.list-coupons', [
+            'coupons' => $coupons
         ]);
     }
 
@@ -41,6 +40,7 @@ class CouponController extends Controller {
         $couponName = $this->generateCouponName($request->name);
 
         $coupon                 = new Coupon();
+        $coupon->user_id        = $request->user_id ?? null;
         $coupon->name           = $couponName;
         $coupon->description    = $request->description ?? $couponName;
         $coupon->expiry_date    = $request->expiry_date;

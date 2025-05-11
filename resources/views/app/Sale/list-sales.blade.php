@@ -16,7 +16,7 @@
     <h1>Gestão de Vendas</h1>
     <nav>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('app') }}">Escritório</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('app') }}">Dashboard</a></li>
             <li class="breadcrumb-item active">Gestão de Vendas</li>
         </ol>
     </nav>
@@ -41,65 +41,37 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row">
-                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                    <div class="col-12 col-md-12 col-lg-12 mb-2">
                                         <div class="form-floating">
                                             <input type="text" name="name" class="form-control" id="floatingName" placeholder="Informe o Nome:">
                                             <label for="floatingName">Cliente:</label>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                    <div class="col-12 col-md-6 col-lg-6 mb-2">
                                         <div class="form-floating">
                                             <input type="date" name="created_at" class="form-control" id="floatingCreated_at" placeholder="Informe a data:">
                                             <label for="floatingCreated_at">Data:</label>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                    <div class="col-12 col-md-6 col-lg-6 mb-2">
                                         <div class="form-floating">
-                                            <input type="number" name="id" class="form-control" id="floatingId" placeholder="ID:">
-                                            <label for="floatingId">ID</label>
-                                        </div>
-                                    </div>
-                                    {{-- <div class="col-12 col-md-12 col-lg-12 mb-1">
-                                        <div class="form-floating">
-                                            <select name="id_list" class="form-select" id="floatinglist">
-                                                <option selected="" value="">Listas:</option>
-                                                @foreach ($lists as $list)
-                                                    <option value="{{ $list->id }}">{{ $list->name }}</option>  
-                                                @endforeach
-                                            </select>
-                                            <label for="floatinglist">Listas</label>
-                                        </div>
-                                    </div> --}}
-                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
-                                        <div class="form-floating">
-                                            <select name="status" class="form-select" id="floatingStatus">
-                                                <option selected value="">Opções:</option>
+                                            <select name="status" class="form-select" id="status">
+                                                <option selected value="">Escolha uma opção:</option>
                                                 <option value="0">Pendente</option>
                                                 <option value="1">Pagamento confirmado</option>
                                             </select>
-                                            <label for="floatingStatus">Status</label>
+                                            <label for="status">Status</label>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                    <div class="col-12 col-md-12 col-lg-12 mb-2">
                                         <div class="form-floating">
-                                            <select name="label" class="form-select" id="floatingLabel">
-                                                <option selected value="">Opções:</option>
+                                            <select name="label" class="form-select" id="label">
+                                                <option selected value="">Escolha uma opção:</option>
                                                 <option value="REPROTOCOLADO">Reprotocolado</option>
                                             </select>
-                                            <label for="floatingLabel">Label</label>
+                                            <label for="label">Tags</label>
                                         </div>
                                     </div>
-                                    {{-- <div class="col-12 col-md-12 col-lg-12 mb-1">
-                                        <div class="form-floating">
-                                            <select name="id_seller" class="form-select" id="floatingSeller">
-                                                <option selected="" value="">Consultores:</option>
-                                                @foreach ($sellers as $seller)
-                                                    <option value="{{ $seller->id }}">{{ $seller->name }}</option>  
-                                                @endforeach
-                                            </select>
-                                            <label for="floatingSeller">Consultor</label>
-                                        </div>
-                                    </div> --}}
                                 </div>
                             </div>
                             <div class="modal-footer btn-group">
@@ -119,7 +91,7 @@
                             <button id="aproved-all" class="btn btn-sm btn-primary">Aprovar Todos</button>
                         @endif
                         <button id="create-payment" class="btn btn-sm btn-outline-primary">Gerar Pagamento</button>
-                        <button id="quanty-name" class="btn btn-sm btn-outline-primary">Nomes: </button>
+                        <button id="quanty-name" class="btn btn-sm btn-outline-primary">Selecionados: </button>
                     </div>
                     
                     <div class="table-responsive">
@@ -138,7 +110,7 @@
                                 @foreach ($sales as $sale)
                                     <tr>
                                         <td title="{{ $sale->client->name }}">
-                                            <input type="checkbox" class="row-checkbox" value="{{ $sale->id }}">
+                                            <input type="checkbox" class="row-checkbox" value="{{ $sale->id }}"> {{ $sale->id }} -
                                             {{ implode(' ', array_slice(explode(' ', $sale->client->name), 0, 2)) }} <br>
                                             <span class="badge bg-dark">CPF/CNPJ: {{ $sale->client->cpfcnpjLabel() }}</span>
                                         </td>
@@ -166,20 +138,22 @@
                                             </div>                     
                                         </td>
                                         <td class="text-center">
-                                            @if (empty($sale->contract_sign))
-                                                <a title="Gerar Contrato" href="{{ route('send-contract', ['id' => $sale->id]) }}" class="btn btn-sm btn-outline-primary"><i class="ri-file-edit-line"></i> Gerar Contrato</a>
-                                            @else
+                                            @isset($sale->url_contract)
                                                 {{ $sale->statusContractLabel() }} <br>
-                                                @isset($sale->url_contract)
-                                                    <span class="badge bg-primary">
-                                                        <a title="Contrato" href="{{ env('APP_URL').'preview-contract/'.$sale->id }}" target="_blank" class="text-white">Acessar</a>
+                                                <span class="badge bg-primary">
+                                                    <a title="Contrato" href="{{ env('APP_URL').'view-contract/'.$sale->id }}" target="_blank" class="text-white">Acessar</a>
+                                                </span>
+                                                @if (empty($sale->contract_sign))
+                                                    <span class="badge bg-warning">
+                                                        <a title="Reenviar Contrato" href="{{ route('send-contract', ['id' => $sale->id]) }}" class="text-white"><i class="ri-file-edit-line"></i>Copiar URL</a>
                                                     </span>
-                                                    @if (!empty($sale->contract_sign))
-                                                        <span class="badge bg-warning">
-                                                            <a title="Reenviar Contrato" href="{{ route('send-contract', ['id' => $sale->id]) }}" class="text-white"><i class="ri-file-edit-line"></i> Reenviar Contrato</a>
-                                                        </span>
-                                                    @endif
-                                                @endisset
+                                                @endif
+                                            @endisset
+
+                                            @if(!$sale->url_contract)
+                                                    <span class="badge bg-danger">
+                                                        Indisponível
+                                                    </span>
                                             @endif
                                         </td>
                                         <td class="text-center">

@@ -44,12 +44,17 @@ class AppController extends Controller {
             'DIRETOR REGIONAL'  => User::where('type', 2)->where('level', 8)->where('sponsor_id', Auth::user()->id)->count(),
             'PRESIDENTE VIP'    => User::where('type', 2)->where('level', 9)->where('sponsor_id', Auth::user()->id)->count(),
         ];
-    
+
+        $rankings = User::where('type', 2)->withCount('sales')->orderBy('sales_count', 'desc')->paginate(10);
+        $networks = User::where('type', 2)->where('sponsor_id', Auth::user()->id)->orderBy('created_at', 'desc')->paginate(10);
+
         return view('app.app', [
             'list'          => $list,
             'remainingTime' => $remainingTime,
             'subscribers'   => $subscribers,
             'types'         => $types,
+            'rankings'      => $rankings,
+            'networks'      => $networks,
         ]);
     }
 }

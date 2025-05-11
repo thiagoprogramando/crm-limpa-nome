@@ -6,7 +6,7 @@
     <h1>Carteira Digital: Dados</h1>
     <nav>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('app') }}">Escritório</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('app') }}">Dashboard</a></li>
             <li class="breadcrumb-item active">Carteira Digital: Dados</li>
         </ol>
     </nav>

@@ -5,7 +5,7 @@
         <h1>Gestão de Clientes</h1>
         <nav>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('app') }}">Escritório</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('app') }}">Dashboard</a></li>
                 <li class="breadcrumb-item active">Gestão de Clientes</li>
             </ol>
         </nav>
@@ -169,7 +169,7 @@
                                                                                     <i class="bi bi-arrow-up-right-circle"></i> Acessar Fatura
                                                                                 </a>
                                                                                 @if($invoice->status <> 1 )
-                                                                                    <a href="{{ route('delete-invoice', ['id' => $invoice->id]) }}" class="btn btn-danger text-light confirm">
+                                                                                    <a href="{{ route('deleted-invoice', ['id' => $invoice->id]) }}" class="btn btn-danger text-light confirm">
                                                                                         <i class="bi bi-trash"></i>
                                                                                     </a>
                                                                                 @endif

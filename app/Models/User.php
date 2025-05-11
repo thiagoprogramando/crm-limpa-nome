@@ -229,6 +229,30 @@ class User extends Authenticatable {
                 ->count();
     }
 
+    public function lastPendingInvoiceTypeOne() {
+
+        $lastPendingInvoice = $this->invoices()
+            ->where('type', 1)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        return $lastPendingInvoice 
+            ? $lastPendingInvoice->created_at->format('d/m/Y H:i:s') 
+            : '---';
+    }
+
+    public function lastPendingInvoiceTypeOneUrl() {
+
+        $lastPendingInvoice = $this->invoices()
+            ->where('type', 1)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        return $lastPendingInvoice 
+            ? $lastPendingInvoice->url_payment
+            : '---';
+    }
+
     protected $hidden = [
         'password',
         'remember_token',

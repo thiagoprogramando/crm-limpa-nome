@@ -5,7 +5,7 @@
         <h1>Recebíveis</h1>
         <nav>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('app') }}">Escritório</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('app') }}">Dashboard</a></li>
                 <li class="breadcrumb-item active">Extrato de Recebíveis</li>
             </ol>
         </nav>

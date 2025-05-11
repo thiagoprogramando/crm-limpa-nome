@@ -6,7 +6,7 @@
     <h1>Listas de Vendas</h1>
     <nav>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('app') }}">Escritório</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('app') }}">Dashboard</a></li>
             <li class="breadcrumb-item active">Listas de Vendas</li>
         </ol>
     </nav>

@@ -9,8 +9,8 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('coupons', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_user')->nullable();
-            $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('name')->unique();
             $table->longText('description')->nullable();
             $table->decimal('percentage', 5, 2);

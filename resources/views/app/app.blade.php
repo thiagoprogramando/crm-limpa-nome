@@ -1,12 +1,12 @@
 @extends('app.layout')
-@section('title') Escritório @endsection
+@section('title') Dashboard @endsection
 @section('conteudo')
     <div class="pagetitle">
-        <h1>Escritório</h1>
+        <h1>Dashboard</h1>
         <nav>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('app') }}">Escritório</a></li>
-                <li class="breadcrumb-item active">Escritório</li>
+                <li class="breadcrumb-item"><a href="{{ route('app') }}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Dashboard</li>
             </ol>
         </nav>
     </div>
@@ -33,7 +33,7 @@
                 </div>
             </div>
 
-            <div class="col-sm-12 col-md-8 col-lg-7">
+            <div class="col-sm-12 col-md-12 col-lg-7">
                 <div class="row align-items-start">
                     @if (Auth::user()->status === 2)
                         <div class="col-12">
@@ -144,9 +144,58 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-12 col-sm-12 col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Ranking <span>| Os 10 melhores Vendedores.</span></h5>
+                                
+                                <div class="table-responsive">
+                                    <table class="table table" id="table">
+                                        <thead>
+                                            <tr class="table-primary">
+                                                <th scope="col" class="text-center">°</th>
+                                                <th scope="col">Consultor</th>
+                                                <th scope="col" class="text-center">Vendas</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($rankings as $key => $user)
+                                                <tr>
+                                                    <td scope="row" class="d-flex justify-content-center">
+                                                        @switch($loop->iteration)
+                                                            @case(1)
+                                                                <i class="bi bi-award" style="color: #fcef87;"></i>
+                                                                @break
+                                                            @case(2)
+                                                                <i class="bi bi-award" style="color: #4f4f4f;"></i>
+                                                                @break
+                                                            @case(3)
+                                                                <i class="bi bi-award" style="color: #ea7e12;"></i>
+                                                                @break
+                                                            @default
+                                                                <i class="bi bi-award" style="color: #C0C0C0;"></i>
+                                                                @break  
+                                                        @endswitch
+                                                        @if($user->photo)
+                                                            <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
+                                                        @else
+                                                            <img src="{{ asset('assets/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ $user->maskedName() }}</td>
+                                                    <td class="text-success text-center">{{ $user->sales->count() }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-sm-12 col-md-4 col-lg-5">
+            <div class="col-sm-12 col-md-12 col-lg-5">
                 @if (Auth::user()->type == 1 || Auth::user()->type == 99)
                     <div class="row align-items-start">
                         <div class="col-12 col-sm-12 col-md-12 col-lg-12">
@@ -168,134 +217,55 @@
                             </div>
                         </div>
                     </div>
-                @else
-                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
-                        <div class="card info-card clock-card">
+                
+                    <div class="col-12 col-sm-12 col-lg-12">
+                        <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Próxima Lista</h5>
-                                <div class="d-flex align-items-center">
-                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-clock-history"></i>
-                                    </div>
-                                    <div class="ps-3">
-                                        <h6>{{ $remainingTime }}</h6>
+                                <h5 class="card-title">Parceiros <span>| Últimos Associados</span></h5>
+                                
+                                <div class="table-responsive">
+                                    <table class="table table" id="table">
+                                        <thead>
+                                            <tr class="table-primary">
+                                                <th scope="col" class="text-center">°</th>
+                                                <th scope="col">Consultor</th>
+                                                <th scope="col" class="text-center">Status</th>
+                                                <th scope="col" class="text-center">Cadastro</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($networks as $key => $network)
+                                                <tr>
+                                                    <td scope="row" class="d-flex justify-content-center">
+                                                        @if($network->photo)
+                                                            <img src="{{ asset('storage/' . $network->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
+                                                        @else
+                                                            <img src="{{ asset('assets/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        {{ $network->maskedName() }}
+                                                    </td>
+                                                    <td class="text-center">
+                                                        @if ($network->status == 1)
+                                                            Ativo
+                                                        @else
+                                                            Pendente
+                                                        @endif
+                                                    </th>
+                                                    <td class="text-center">{{ \Carbon\Carbon::parse($network->created_at)->format('d/m/Y') }}</th>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                    <div class="text-center">
+                                        {{ $networks->links() }}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 @endif
-            </div>
-        </div>
-       
-        <div class="row">
-            <div class="col-12 col-sm-6 col-lg-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Ranking <span>| Os 10 melhores faturamentos.</span></h5>
-                        
-                        <div class="table-responsive">
-                            <table class="table table" id="table">
-                                <thead>
-                                    <tr class="table-primary">
-                                        <th scope="col" class="text-center">°</th>
-                                        <th scope="col">Consultor</th>
-                                        <th scope="col" class="text-center">Estado</th>
-                                        <th scope="col">Faturamento</th>
-                                        <th scope="col">Graduação</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{-- @foreach ($users as $key => $user)
-                                        <tr>
-                                            <td scope="row" class="d-flex justify-content-center">
-                                                @switch($loop->iteration)
-                                                    @case(1)
-                                                        <i class="bi bi-award" style="color: #fcef87;"></i>
-                                                        @break
-                                                    @case(2)
-                                                        <i class="bi bi-award" style="color: #4f4f4f;"></i>
-                                                        @break
-                                                    @case(3)
-                                                        <i class="bi bi-award" style="color: #ea7e12;"></i>
-                                                        @break
-                                                    @default
-                                                        <i class="bi bi-award" style="color: #C0C0C0;"></i>
-                                                        @break  
-                                                @endswitch
-                                                @if($user->photo)
-                                                    <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
-                                                @else
-                                                    <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
-                                                @endif
-                                            </td>
-                                            @if ($user->name == Auth::user()->name)
-                                                <td>{{ $user->name }}</td>
-                                            @else
-                                                <td>{{ $user->maskedName() }}</td>
-                                            @endif
-                                            <td class="text-center">{{ $user->state }}</th>
-                                            <td class="text-success">R$ {{ number_format($user->saleTotal(), 2, ',', '.') }}</td>
-                                            <td>{{ $user->levelLabel() }}</td>
-                                        </tr>
-                                    @endforeach --}}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-12 col-sm-6 col-lg-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Rede <span>| Últimos Associados</span></h5>
-                        
-                        <div class="table-responsive">
-                            <table class="table table" id="table">
-                                <thead>
-                                    <tr class="table-primary">
-                                        <th scope="col" class="text-center">°</th>
-                                        <th scope="col">Consultor</th>
-                                        <th scope="col" class="text-center">Status</th>
-                                        <th scope="col" class="text-center">Cadastro</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{-- @foreach ($networks as $key => $network)
-                                        <tr>
-                                            <td scope="row" class="d-flex justify-content-center">
-                                                @if($network->photo)
-                                                    <img src="{{ asset('storage/' . $network->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
-                                                @else
-                                                    <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if ($network->name == Auth::user()->name)
-                                                    {{ $network->name }}
-                                                @else
-                                                    {{ $network->maskedName() }}
-                                                @endif
-                                            </td>
-                                            <td class="text-center">
-                                                @if ($network->status == 1)
-                                                    Ativo
-                                                @else
-                                                    Pendente
-                                                @endif
-                                            </th>
-                                            <td class="text-center">{{ \Carbon\Carbon::parse($network->created_at)->format('d/m/Y') }}</th>
-                                        </tr>
-                                    @endforeach --}}
-                                </tbody>
-                            </table>
-                            <div class="text-center">
-                                {{-- {{ $networks->links() }} --}}
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
