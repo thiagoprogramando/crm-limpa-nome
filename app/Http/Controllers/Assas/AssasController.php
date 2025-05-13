@@ -114,97 +114,64 @@ class AssasController extends Controller {
             return false;
         }
     }
-
-    // public function requestInvoice($sale) {
-        
-    //     $createSalePayment = $this->createSalePayment($sale);
-    //     if ($createSalePayment) {
-    //         return redirect()->back()->with('success', 'Fatura criada para a venda!'); 
-    //     }
-
-    //     return redirect()->back()->with('info', 'Verifique os dados e tente novamente!');
-    // }
     
-    // public function createMonthly($id) {
+    public function createMonthly($id) {
 
-    //     $user = User::find($id);
-    //     if (!$user) {
-    //         return redirect()->route('profile')->with('info', 'Verifique seus dados e tente novamente!');
-    //     }
+        $user = User::find($id);
+        if (!$user) {
+            return ['success' => false, 'message' => 'Você precisa fazer Login para acessar esta área!'];
+        }
        
-    //     $invoice = Invoice::where('user_id', $user->id)->where('type', 1)->where('status', 0)->exists();
-    //     if ($invoice) {
-    //         return redirect()->route('payments')->with('error', 'Você possui uma mensalidade em aberto!');
-    //     }
+        $invoice = Invoice::where('user_id', $user->id)->where('type', 1)->where('status', 0)->exists();
+        if ($invoice) {
+            return ['success' => false, 'message' => 'Você possui pendências de pagamentos!'];
+        }
         
-    //     if ($user->customer == null) {
+        if ($user->customer == null) {
             
-    //         $customer = $this->createCustomer($user->name, $user->cpfcnpj, $user->phone, $user->email);
-    //         if ($customer) {
-    //             $user->customer = $customer;
-    //             $user->save();
-    //         } else {
-    //             return redirect()->route('profile')->with('info', 'Verifique seus dados e tente novamente!');
-    //         }
-    //     }
+            $customer = $this->createCustomer($user->name, $user->cpfcnpj, $user->phone, $user->email);
+            if ($customer) {
+                $user->customer = $customer;
+                $user->save();
+            } else {
+                return ['success' => false, 'message' => 'Verifique seus dados e tente novamente!'];
+            }
+        }
 
-    //     $charge = $this->createCharge($user->customer, 'PIX', '49.99', 'Assinatura -'.env('APP_NAME'), now()->addDay(), null, env('WALLET_HEFESTO'), 20);
-    //     if($charge <> false) {
+        $value = Auth::user()->type == 2 ? env('MONTHLY_AFILIATE') : env('MONTHLY_WHITE_LABEL');
+        $commissions = [
+            [
+                'wallet'        => env('WALLET_EXPRESS'),
+                'fixedValue'    => $value * 0.5,
+            ],
+        ];
 
-    //         $invoice = new Invoice();
-    //         $invoice->name          = 'Mensalidade '.env('APP_NAME');
-    //         $invoice->description   = 'Mensalidade '.env('APP_NAME');
+        $charge = $this->createCharge($user->customer, 'PIX', $value, now()->addDay(), 'Assinatura -'.env('APP_NAME'), $commissions);
+        if($charge <> false) {
 
-    //         $invoice->user_id       = $user->id;
-    //         $invoice->product_id    = 1;
-    //         $invoice->value         = 49.99;
-    //         $invoice->commission    = 20;
-    //         $invoice->status        = 0;
-    //         $invoice->type          = 1;
-    //         $invoice->num           = 1;
-    //         $invoice->due_date      = now()->addDay();
+            $invoice = new Invoice();
+            $invoice->name          = 'Mensalidade '.env('APP_NAME');
+            $invoice->description   = 'Mensalidade '.env('APP_NAME');
 
-    //         $invoice->payment_url   = $charge['invoiceUrl'];
-    //         $invoice->payment_token = $charge['id'];
+            $invoice->user_id       = $user->id;
+            $invoice->product_id    = 1;
+            $invoice->value         = $value;
+            $invoice->commission    = ($value * 0.5);
+            $invoice->status        = 0;
+            $invoice->type          = 1;
+            $invoice->num           = 1;
+            
+            $invoice->due_date      = now()->addDay();
+            $invoice->payment_url   = $charge['invoiceUrl'];
+            $invoice->payment_token = $charge['id'];
 
-    //         if($invoice->save()) {
-    //             return redirect($charge['invoiceUrl']);
-    //         }
-    //     }
+            if($invoice->save()) {
+                return ['success' => true, 'invoice_url' => $charge['invoiceUrl']];
+            }
+        }
 
-    //     return redirect()->back()->with('error', 'Tivemos um pequeno problema, contate o suporte!');
-    // }    
-    
-    // public function createCoupon($parent, $description) {
-
-    //     $couponName = $this->generateCouponName($parent->name);
-
-    //     $coupon                 = new Coupon();
-    //     $coupon->name           = $couponName;
-    //     $coupon->description    = $description;
-    //     $coupon->user_id        = $parent->id;
-    //     $coupon->percentage     = 100;
-    //     $coupon->qtd            = 1;
-    //     if($coupon->save()) {
-    //         $message =  "*Surpresa Especial para Você! 🎁* \r\n\r\n"
-    //                     . "Como forma de agradecimento por ser um parceiro incrível, preparamos um *cupom de {$coupon->percentage}% de desconto* para você aproveitar na sua próxima mensalidade! \r\n\r\n"
-    //                     . "Código do cupom: *{$couponName}* \r\n"
-    //                     . "Não deixe essa oportunidade passar! Use o código na sua fatura e aproveite para economizar. \r\n"
-    //                     . "Agradecemos por fazer parte da nossa jornada! \r\n\r\n";
-
-    //         $assas = new AssasController();
-    //         $assas->sendWhatsapp('', $message, $parent->phone, $parent->api_token_zapapi);
-    //     }
-
-    //     return true;
-    // }
-
-    // private function generateCouponName(string $name): string {
-
-    //     $baseName = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $name));
-    //     $existingCouponsCount = Coupon::where('name', 'like', "{$baseName}%")->count();
-    //     return $existingCouponsCount > 0 ? "{$baseName}".($existingCouponsCount + 1) : $baseName;
-    // }
+        return ['success' => false, 'message' => 'Erro ao gerar cobrança.'];
+    }
 
     // public function webhook(Request $request) {
 

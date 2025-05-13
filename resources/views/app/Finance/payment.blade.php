@@ -6,7 +6,7 @@
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('app') }}">Dashboard</a></li>
-                <li class="breadcrumb-item active">Extrato de Pagamentos</li>
+                <li class="breadcrumb-item active">Pagamentos</li>
             </ol>
         </nav>
     </div>
@@ -16,8 +16,7 @@
             <div class="col-12">
 
                 <div class="btn-group mb-3" role="group">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
-                    <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
                 </div>
 
                 <div class="modal fade" id="filterModal" tabindex="-1">
@@ -63,13 +62,12 @@
                     </div>
                 </div>
 
-                <div class="card p-2">
-                    <div class="card-body">
+                <div class="card">
+                    <div class="card-body p-0 m-0">
                         <div class="table-responsive">
                             <table class="table table-hover" id="table">
                                 <thead>
                                     <tr>
-                                        <th scope="col">#</th>
                                         <th scope="col">Nome</th>
                                         <th class="text-center" scope="col">Valor</th>
                                         <th class="text-center" scope="col">Status</th>
@@ -80,7 +78,6 @@
                                 <tbody>
                                     @foreach ($payments as $payment)
                                         <tr>
-                                            <th scope="row">{{ $payment->id }}</th>
                                             <td>{{ $payment->name }}</td>
                                             <td class="text-center">R$ {{ $payment->value }}</td>
                                             <td class="text-center">{{ $payment->statusLabel() }}</td>
@@ -88,15 +85,15 @@
                                             <td class="text-center">
                                                 <div class="btn-group">
                                                     @if ($payment->type == 1 && $payment->status !== 1)
-                                                        <button type="button" class="btn btn-primary text-light" data-bs-toggle="modal" data-bs-target="#couponModal{{ $payment->id }}"><i class="bi bi-percent" title="Aplicar Cupom"></i>CUPOM</button>
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#couponModal{{ $payment->id }}">Cupom</button>
                                                     @endif
                                                     @if(!empty(Auth::user()->wallet) && $payment->status !== 1)
-                                                        <a href="{{ route('payMonthly', ['id' => $payment->id]) }}" class="btn btn-primary text-light" title="Pagar com saldo">
-                                                            <i class="bi bi-credit-card"></i> Pagar com saldo
+                                                        <a href="{{ route('payMonthly', ['id' => $payment->id]) }}" class="btn btn-sm btn-outline-primary" title="Pagar com saldo">
+                                                            Pagar
                                                         </a>
                                                     @endif
-                                                    <a href="{{ $payment->url_payment }}" target="_blank" class="btn btn-primary text-light" title="Acessar Fatura">
-                                                        <i class="bi bi-arrow-up-right-circle"></i> Acessar
+                                                    <a href="{{ $payment->url_payment }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Acessar Fatura">
+                                                        Acessar
                                                     </a>
                                                 </div>
                                             </td>
@@ -116,15 +113,15 @@
                                                             <div class="row">
                                                                 <div class="col-12 col-md-12 col-lg-12 mb-1">
                                                                     <div class="form-floating">
-                                                                        <input type="text" name="name" class="form-control" id="floatingName" placeholder="Código:">
-                                                                        <label for="floatingName">Código:</label>
+                                                                        <input type="text" name="name" class="form-control" id="name" placeholder="Código:">
+                                                                        <label for="name">Código:</label>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer btn-group">
-                                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                                                            <button type="submit" class="btn btn-success">Adicionar</button>
+                                                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                                            <button type="submit" class="btn btn-primary">Adicionar</button>
                                                         </div>
                                                     </form>
                                                 </div>

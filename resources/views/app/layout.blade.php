@@ -188,8 +188,9 @@
                         <i class="bx bxl-codepen"></i><span>Integrações</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
                     <ul id="forms-apis" class="nav-content collapse" data-bs-parent="#sidebar-nav">  
-                        <li><a href="{{ route('Integrate-wallet') }}"><i class="bi bi-circle"></i><span>Banco Assas</span></a></li>
-                        <li><a href="#"> <i class="bi bi-circle"></i><span>Banco Cora</span></a></li>
+                        <li><a href="{{ route('Integrate-wallet') }}"><i class="bi bi-circle"></i><span>Assas - Conta PF e PJ</span></a></li>
+                        <li><a href="{{ route('Integrate-wallet') }}"> <i class="bi bi-circle"></i><span>Cora - Conta Digital PJ</span></a></li>
+                        <li><a href="{{ route('Integrate-wallet') }}"> <i class="bi bi-circle"></i><span>Mercado Pago</span></a></li>
                     </ul>
                 </li>
                 <li class="nav-item">

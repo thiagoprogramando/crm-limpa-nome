@@ -4,9 +4,7 @@ use App\Http\Middleware\Cache;
 use App\Http\Middleware\CheckAccount;
 use App\Http\Middleware\CheckAdmin;
 use App\Http\Middleware\CheckCache;
-use App\Http\Middleware\CheckUser;
-use App\Http\Middleware\CheckWallet;
-use App\Http\Middleware\Monthly;
+use App\Http\Middleware\CheckMonthly;
 use App\Http\Middleware\ShareProducts;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -26,21 +24,11 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->appendToGroup('checkMonthly', [
-            Monthly::class,
-            CheckCache::class,
-            CheckUser::class
+            CheckMonthly::class,
         ]);
 
         $middleware->appendToGroup('checkAccount', [
             CheckAccount::class,
-            CheckCache::class,
-            CheckUser::class
-        ]);
-
-        $middleware->appendToGroup('checkWallet', [
-            CheckWallet::class,
-            CheckCache::class,
-            CheckUser::class
         ]);
 
         $middleware->appendToGroup('checkAdmin', [

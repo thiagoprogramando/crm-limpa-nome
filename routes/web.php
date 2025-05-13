@@ -41,7 +41,7 @@ Route::get('/view-contract/{id}', [ContractController::class, 'viewContract'])->
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::middleware(['checkMonthly'])->group(function () {
+    Route::middleware(['checkMonthly', 'checkAccount'])->group(function () {
 
         Route::get('/app', [AppController::class, 'app'])->name('app');
 
@@ -71,22 +71,10 @@ Route::middleware(['auth'])->group(function () {
             //Contracts
             Route::get('/send-contract/{id}', [ContractController::class, 'createContract'])->name('send-contract');
             Route::get('/send-default-whatsapp/{id}', [DefaultController::class, 'sendWhatsapp'])->name('send-default-whatsapp');
-            
-            //User
-                Route::get('/profile', [UserController::class, 'profile'])->name('profile');
-                Route::post('update-user', [UserController::class, 'updateProfile'])->name('update-user');
-                Route::post('delete-user', [UserController::class, 'deleteUser'])->name('delete-user');
-                    //Network
-                    Route::get('/list-network', [UserController::class, 'listNetwork'])->name('list-network');
-                    Route::get('/list-client', [UserController::class, 'listClient'])->name('list-client');
-                    Route::get('/list-active/{status}', [UserController::class, 'listActive'])->name('list-active');
 
             // Finance
             Route::get('/wallet', [WalletController::class, 'wallet'])->name('wallet');
             Route::post('withdraw-send', [WalletController::class, 'withdrawSend'])->name('withdraw-send');
-                //Operations
-                Route::get('/payments', [Payment::class, 'payments'])->name('payments');
-                Route::get('/receivable', [Payment::class, 'receivable'])->name('receivable');
 
             //Intagrations
             Route::get('/Integrate-wallet', [WalletController::class, 'IntegrateWallet'])->name('Integrate-wallet');
@@ -123,6 +111,19 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/list-excel/{id}', [ListController::class, 'excelList'])->name('list-excel');
             });
     });
+
+    //User
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+    Route::post('update-user', [UserController::class, 'updateProfile'])->name('update-user');
+    Route::post('delete-user', [UserController::class, 'deleteUser'])->name('delete-user');
+        //Network
+        Route::get('/list-network', [UserController::class, 'listNetwork'])->name('list-network');
+        Route::get('/list-client', [UserController::class, 'listClient'])->name('list-client');
+        Route::get('/list-active/{status}', [UserController::class, 'listActive'])->name('list-active');
+
+    //Operations
+    Route::get('/payments', [Payment::class, 'payments'])->name('payments');
+    Route::get('/receivable', [Payment::class, 'receivable'])->name('receivable');
 
     Route::get('/logout', [Login::class, 'logout'])->name('logout');
 
