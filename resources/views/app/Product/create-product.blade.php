@@ -51,8 +51,6 @@
                                                 <label for="subject_terms">Termos:</label>
                                             </div>
                                         </div>
-
-                                        
                                     </div>
                                     <div class="col-12 col-md-5 col-lg-5">
                                         <div class="form-check">
@@ -108,25 +106,25 @@
 
                                             <div class="col-12 col-md-6 col-lg-6">
                                                 <div class="form-floating mb-2">
-                                                    <input type="text" name="value_cost" class="form-control" id="value_cost" placeholder="Custo:" oninput="mascaraReal(this)">
+                                                    <input type="text" name="value_cost" class="form-control" id="value_cost" placeholder="Custo:" oninput="maskValue(this)">
                                                     <label for="value_cost">Custo:</label>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-md-6 col-lg-6">
                                                 <div class="form-floating mb-2">
-                                                    <input type="text" name="value_rate" class="form-control" id="value_rate" placeholder="Taxas:" oninput="mascaraReal(this)">
+                                                    <input type="text" name="value_rate" class="form-control" id="value_rate" placeholder="Taxas:" oninput="maskValue(this)">
                                                     <label for="value_rate">Taxas:</label>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-md-6 col-lg-6">
                                                 <div class="form-floating mb-2">
-                                                    <input type="text" name="value_min" class="form-control" id="value_min" placeholder="Mín de venda:" oninput="mascaraReal(this)">
+                                                    <input type="text" name="value_min" class="form-control" id="value_min" placeholder="Mín de venda:" oninput="maskValue(this)">
                                                     <label for="value_min">Mín de venda:</label>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-md-6 col-lg-6">
                                                 <div class="form-floating mb-2">
-                                                    <input type="text" name="value_max" class="form-control" id="value_max" placeholder="Máx de venda:" oninput="mascaraReal(this)">
+                                                    <input type="text" name="value_max" class="form-control" id="value_max" placeholder="Máx de venda:" oninput="maskValue(this)">
                                                     <label for="value_max">Máx de venda:</label>
                                                 </div>
                                             </div>

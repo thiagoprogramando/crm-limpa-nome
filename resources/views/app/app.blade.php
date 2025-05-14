@@ -44,7 +44,7 @@
                             </div>
                         </div>
                     @endif
-                    <div class="col-sm-12 col-md-6 col-lg-4">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                         <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">Vendas (Geral)</h5>
@@ -60,7 +60,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-6 col-lg-4">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                         <a href="{{ route('list-sales') }}?created_at={{ now()->format('Y-m-d') }}&status=1">
                             <div class="card info-card clock-card">
                                 <div class="card-body">
@@ -78,7 +78,7 @@
                             </div>
                         </a>
                     </div>
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                         <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">Graduação</h5>
@@ -98,7 +98,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-6 col-lg-4">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                         <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">Geral (R$)</h5>
@@ -113,7 +113,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-6 col-lg-4">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                         <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">Hoje (R$)</h5>
@@ -129,7 +129,7 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                         <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">Próxima Lista</h5>
@@ -195,7 +195,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-12 col-md-12 col-lg-5">
+
+            <div class="col-sm-12 col-md-4 col-lg-5 col-xl-5">
                 @if (Auth::user()->type == 1 || Auth::user()->type == 99)
                     <div class="row align-items-start">
                         <div class="col-12 col-sm-12 col-md-12 col-lg-12">
@@ -217,9 +218,9 @@
                             </div>
                         </div>
                     </div>
-                
-                    <div class="col-12 col-sm-12 col-lg-12">
-                        <div class="card">
+                @else
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                        <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">Parceiros <span>| Últimos Associados</span></h5>
                                 

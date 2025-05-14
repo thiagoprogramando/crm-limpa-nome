@@ -17,7 +17,7 @@
         <div class="col-12">
 
             <div class="btn-group mb-3" role="group">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
             </div>
 
             <div class="modal fade" id="filterModal" tabindex="-1">
@@ -59,15 +59,12 @@
                 </div>
             </div>
 
-            <div class="card p-2">
-                <div class="card-body">
-                    <h5 class="card-title">Vendas</h5>
-                    
+            <div class="card">
+                <div class="card-body p-0 m-0">
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th scope="col">#</th>
                                     <th scope="col">Dados</th>
                                     <th class="text-center" scope="col">Opções</th>
                                 </tr>
@@ -75,9 +72,8 @@
                             <tbody>
                                 @foreach ($users as $user)
                                     <tr>
-                                        <th scope="row"> {{ $user->id }} </th>
                                         <td title="{{ $user->name }}">
-                                            {{ $user->name }} <br>
+                                            {{ $user->maskedName() }} <br>
                                             <span class="badge bg-primary">CPF/CNPJ: {{ $user->cpfcnpjLabel() }}</span>
                                             <span class="badge bg-dark">Email: {{ $user->email }}</span>
                                         </td>
@@ -86,7 +82,7 @@
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $user->id }}"> 
                                                 <div class="btn-group" role="group">
-                                                    <button type="submit" class="btn btn-success text-light"><i class="bi bi-recycle"></i> Recuperar</button>
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary">Recuperar</button>
                                                 </div>
                                             </form>
                                         </td>

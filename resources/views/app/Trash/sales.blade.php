@@ -17,7 +17,7 @@
         <div class="col-12">
 
             <div class="btn-group mb-3" role="group">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
             </div>
 
             <div class="modal fade" id="filterModal" tabindex="-1">
@@ -59,17 +59,13 @@
                 </div>
             </div>
 
-            <div class="card p-2">
-                <div class="card-body">
-                    <h5 class="card-title">Vendas</h5>
-                    
+            <div class="card">
+                <div class="card-body p-0 m-0">
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th scope="col">#</th>
                                     <th scope="col">Cliente</th>
-                                    <th scope="col">Consultor</th>
                                     <th class="text-center" scope="col">Contrato</th>
                                     <th class="text-center" scope="col">Pagamento</th>
                                     <th class="text-center" scope="col">Opções</th>
@@ -78,33 +74,32 @@
                             <tbody>
                                 @foreach ($sales as $sale)
                                     <tr>
-                                        <th scope="row"> {{ $sale->id }} </th>
-                                        <td title="{{ $sale->user->name }}">
-                                            {{ implode(' ', array_slice(explode(' ', $sale->user->name), 0, 2)) }} <br>
-                                            <span class="badge bg-dark">CPF/CNPJ: {{ $sale->user->cpfcnpjLabel() }}</span>
+                                        <td title="{{ $sale->client->name }}">
+                                            {{ implode(' ', array_slice(explode(' ', $sale->client->name), 0, 2)) }} <br>
+                                            <span class="badge bg-dark">CPF/CNPJ: {{ $sale->client->cpfcnpjLabel() }}</span>
                                             @isset($sale->label) 
                                                 <span class="badge bg-primary">
                                                     {{ $sale->label }}
                                                 </span> 
                                             @endisset
                                         </td>
-                                        <td title="{{ $sale->seller->parent->name ?? '---' }}">
-                                            {{ implode(' ', array_slice(explode(' ', $sale->seller->name), 0, 2)) }} <br>
-                                            <span class="badge bg-success">Comissão: R$ {{ number_format($sale->commission, 2, ',', '.') }}</span>
-                                            @if ($sale->seller->filiate == Auth::user()->id)
-                                                <span class="badge bg-success">Comissão Patrocinador: R$ {{ number_format($sale->commission_filiate, 2, ',', '.') }}</span>
-                                            @endif
-                                        </td>
                                         <td class="text-center">
-                                            @if ($sale->payment !== 'ENVIO MANUAL')
+                                            @isset($sale->url_contract)
                                                 {{ $sale->statusContractLabel() }} <br>
-                                                @isset($sale->url_contract)
-                                                    <span class="badge bg-primary">
-                                                        <a title="Contrato" href="{{ $sale->url_contract }}" target="_blank" class="text-white">Acessar</a>
+                                                <span class="badge bg-primary">
+                                                    <a title="Contrato" href="{{ env('APP_URL').'view-contract/'.$sale->id }}" target="_blank" class="text-white">Acessar</a>
+                                                </span>
+                                                @if (empty($sale->contract_sign))
+                                                    <span class="badge bg-warning">
+                                                        <a title="Reenviar Contrato" href="{{ route('send-contract', ['id' => $sale->id]) }}" class="text-white"><i class="ri-file-edit-line"></i>Copiar URL</a>
                                                     </span>
-                                                @endisset
-                                            @else
-                                                <span class="badge bg-danger">Não disponível para vendas com Envio Direto</span>
+                                                @endif
+                                            @endisset
+
+                                            @if(!$sale->url_contract)
+                                                    <span class="badge bg-danger">
+                                                        Indisponível
+                                                    </span>
                                             @endif
                                         </td>
                                         <td class="text-center">
@@ -116,7 +111,7 @@
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $sale->id }}"> 
                                                 <div class="btn-group" role="group">
-                                                    <button type="submit" class="btn btn-success text-light"><i class="bi bi-recycle"></i> Recuperar</button>
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bi bi-recycle"></i> Recuperar</button>
                                                 </div>
                                             </form>
                                         </td>

@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder {
 
@@ -13,6 +14,7 @@ class UserSeeder extends Seeder {
         User::updateOrCreate(
             ['email' => 'admin@expressoftwareclub.com'],
             [
+                'uuid'          => str::uuid(),
                 'name'          => 'Admin',
                 'email'         => 'admin@expressoftwareclub.com',
                 'password'      => Hash::make('Ts201720#'),

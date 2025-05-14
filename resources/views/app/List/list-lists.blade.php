@@ -17,8 +17,7 @@
         <div class="col-12">
 
             <div class="btn-group mb-3" role="group">
-                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#createModal">Nova Lista</button>
-                <button type="button" class="btn btn-outline-primary" id="gerarExcel">Excel</button>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#createModal">Nova Lista</button>
 
                 <div class="modal fade" id="createModal" tabindex="-1">
                     <div class="modal-dialog modal-lg">
@@ -86,7 +85,6 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th scope="col">#</th>
                                     <th scope="col">Lista</th>
                                     <th class="text-center" scope="col">Início</th>
                                     <th class="text-center" scope="col">Encerramento</th>
@@ -97,7 +95,6 @@
                             <tbody>
                                 @foreach ($lists as $list)
                                     <tr>
-                                        <th scope="row">{{ $list->id }}</th>
                                         <td>
                                             {{ $list->name }} <br>
                                             <span class="badge bg-dark"> {{ $list->description }} </span>

@@ -49,13 +49,13 @@
                                     </div>
                                     <div class="col-12 col-sm-12 col-md-6 col-lg-6 mb-2">
                                         <div class="form-floating">
-                                            <input type="text" name="phone" class="form-control phone" id="phone" placeholder="WhatsApp:" value="{{ $user->phone ?? '' }}" oninput="mascaraTelefone(this)" required>
+                                            <input type="text" name="phone" class="form-control phone" id="phone" placeholder="WhatsApp:" value="{{ $user->phone ?? '' }}" oninput="maskPhone(this)" required>
                                             <label for="phone">WhatsApp:</label>
                                         </div>
                                     </div>
                                     <div class="col-12 col-sm-12 col-md-6 col-lg-6 mb-2">
                                         <div class="form-floating">
-                                            <input type="text" name="cpfcnpj" class="form-control cpfcnpj" id="cpfcnpj" placeholder="CPF ou CNPJ:" value="{{ $user->cpfcnpj ?? '' }}" oninput="mascaraCpfCnpj(this)" required>
+                                            <input type="text" name="cpfcnpj" class="form-control cpfcnpj" id="cpfcnpj" placeholder="CPF ou CNPJ:" value="{{ $user->cpfcnpj ?? '' }}" oninput="maskCpfCnpj(this)" required>
                                             <label for="cpfcnpj">CPF ou CNPJ:</label>
                                         </div>
                                     </div>

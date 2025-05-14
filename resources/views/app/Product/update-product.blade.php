@@ -113,19 +113,19 @@
                                             </div>
                                             <div class="col-12 col-md-6 col-lg-6">
                                                 <div class="form-floating mb-2">
-                                                    <input type="text" name="value_rate" class="form-control money" id="value_rate" placeholder="Taxas:" oninput="mascaraReal(this)" value="{{ $product->value_rate }}">
+                                                    <input type="text" name="value_rate" class="form-control money" id="value_rate" placeholder="Taxas:" oninput="maskValue(this)" value="{{ $product->value_rate }}">
                                                     <label for="value_rate">Taxas:</label>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-md-6 col-lg-6">
                                                 <div class="form-floating mb-2">
-                                                    <input type="text" name="value_min" class="form-control money" id="value_min" placeholder="Mín de venda:" oninput="mascaraReal(this)" value="{{ $product->value_min }}">
+                                                    <input type="text" name="value_min" class="form-control money" id="value_min" placeholder="Mín de venda:" oninput="maskValue(this)" value="{{ $product->value_min }}">
                                                     <label for="value_min">Mín de venda:</label>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-md-6 col-lg-6">
                                                 <div class="form-floating mb-2">
-                                                    <input type="text" name="value_max" class="form-control money" id="value_max" placeholder="Máx de venda:" oninput="mascaraReal(this)" value="{{ $product->value_max }}">
+                                                    <input type="text" name="value_max" class="form-control money" id="value_max" placeholder="Máx de venda:" oninput="maskValue(this)" value="{{ $product->value_max }}">
                                                     <label for="value_max">Máx de venda:</label>
                                                 </div>
                                             </div>

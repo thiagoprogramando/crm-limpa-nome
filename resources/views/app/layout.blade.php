@@ -189,8 +189,7 @@
                     </a>
                     <ul id="forms-apis" class="nav-content collapse" data-bs-parent="#sidebar-nav">  
                         <li><a href="{{ route('Integrate-wallet') }}"><i class="bi bi-circle"></i><span>Assas - Conta PF e PJ</span></a></li>
-                        <li><a href="{{ route('Integrate-wallet') }}"> <i class="bi bi-circle"></i><span>Cora - Conta Digital PJ</span></a></li>
-                        <li><a href="{{ route('Integrate-wallet') }}"> <i class="bi bi-circle"></i><span>Mercado Pago</span></a></li>
+                        <li><a href="{{ route('Integrate-wallet') }}"> <i class="bi bi-circle"></i><span>Neon - Conta PF e PJ</span></a></li>
                     </ul>
                 </li>
                 <li class="nav-item">

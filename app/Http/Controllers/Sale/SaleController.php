@@ -5,10 +5,7 @@ namespace App\Http\Controllers\Sale;
 use App\Http\Controllers\Assas\AssasController;
 use App\Http\Controllers\Controller;
 
-use App\Exports\SalesExport;
-
 use App\Models\Invoice;
-use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleList;
@@ -20,10 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 use Carbon\Carbon;
-use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
-use Maatwebsite\Excel\Facades\Excel;
-
 class SaleController extends Controller {
 
     public function viewSale($uuid) {
@@ -128,11 +122,11 @@ class SaleController extends Controller {
             return redirect()->route('logout')->with('error', 'Acesso negado!');
         }
             
-        if ((empty($seller->fixed_cost) || $seller->fixed_cost == 0) && $this->formatarValor($request->installments[1]['value'] ?? 0) < $product->value_min) {
+        if ((empty($seller->fixed_cost) || $seller->fixed_cost == 0) && $this->formatValue($request->installments[1]['value'] ?? 0) < $product->value_min) {
             return redirect()->back()->with('error', 'O valor mín de venda é: R$ '.$product->value_min.'!');
         }
 
-        if (($seller->fixed_cost > 0 )&& ($this->formatarValor($request->installments[1]['value'] ?? 0) < $seller->fixed_cost)) {
+        if (($seller->fixed_cost > 0 )&& ($this->formatValue($request->installments[1]['value'] ?? 0) < $seller->fixed_cost)) {
             return redirect()->back()->with('error', 'O valor mín de venda é: R$ '.$product->value_min.'!');
         }
 
@@ -162,11 +156,11 @@ class SaleController extends Controller {
             $sale->payment_method       = $paymentMethod;
             $sale->payment_installments = $paymentInstallments;
             $sale->save();
-    
+            
             $assas = new AssasController();
     
             foreach ($installments as $key => $installment) {
-                $value    = $this->formatarValor($installment['value']);
+                $value    = $this->formatValue($installment['value']);
                 $dueDate  = $installment['due_date'];
                 $commissions = [];
                 $sponsorCommission = 0;
@@ -272,8 +266,8 @@ class SaleController extends Controller {
             $query->whereDate('created_at', $request->created_at);
         }
     
-        if (!empty($request->value) && $this->formatarValor($request->value) > 0) {
-            $query->where('value', $this->formatarValor($request->value));
+        if (!empty($request->value) && $this->formatValue($request->value) > 0) {
+            $query->where('value', $this->formatValue($request->value));
         }
     
         if (!empty($request->list_id)) {
@@ -364,78 +358,76 @@ class SaleController extends Controller {
         return redirect()->back()->with('error', 'Não foi possível excluir a venda!');
     }
 
-    public function reprotocolSale($id) {
+    // public function reprotocolSale($id) {
 
-        $sale = Sale::find($id);
-        if (!$sale) {
-            return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');   
-        }
+    //     $sale = Sale::find($id);
+    //     if (!$sale) {
+    //         return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');   
+    //     }
 
-        if ($sale->status <> 1) {
-            return redirect()->back()->with('info', 'Venda não foi confirmada!');   
-        }
+    //     if ($sale->status <> 1) {
+    //         return redirect()->back()->with('info', 'Venda não foi confirmada!');   
+    //     }
 
-        $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
-        if (!$list) {
-            return redirect()->back()->with('error', 'Não há uma lista disponível para reprotocolar a venda!');
-        }
+    //     $list = SaleList::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
+    //     if (!$list) {
+    //         return redirect()->back()->with('error', 'Não há uma lista disponível para reprotocolar a venda!');
+    //     }
 
-        if (Auth::user()->type !== 1) {
-            $invoices = Invoice::where('id_sale', $sale->id)->get();
-            $tomorrow = now()->addDay();
-            foreach ($invoices as $invoice) {
-                if ($invoice->due_date <= $tomorrow && $invoice->status == 0) {
-                    return redirect()->back()->with('error', 'Existem faturas vencidas associadas a Venda!');
-                }
-            }
-        }
+    //     if (Auth::user()->type !== 1) {
+    //         $invoices = Invoice::where('sale_id', $sale->id)->get();
+    //         $tomorrow = now()->addDay();
+    //         foreach ($invoices as $invoice) {
+    //             if ($invoice->due_date <= $tomorrow && $invoice->status == 0) {
+    //                 return redirect()->back()->with('error', 'Existem faturas vencidas associadas a Venda!');
+    //             }
+    //         }
+    //     }
         
-        $sale->id_list = $sale->label !== null 
-                        ? $sale->id_list 
-                        : $list->id;
+    //     $sale->list_id = $sale->label !== null 
+    //                     ? $sale->list_id 
+    //                     : $list->id;
 
-        $sale->label = str_contains($sale->label, 'REPROTOCOLADO -') 
-                    ? null 
-                    : 'REPROTOCOLADO - ' . now()->format('d/m/Y');
+    //     $sale->label = str_contains($sale->label, 'REPROTOCOLADO -') 
+    //                 ? null 
+    //                 : 'REPROTOCOLADO - ' . now()->format('d/m/Y');
 
-        if ($sale->save()) {
+    //     if ($sale->save()) {
 
-            if ($sale->label !== null) {
-                $clientName     = $sale->user->name;
-                $phone          = $sale->user->phone;
-                $sellerApiToken = $sale->seller->api_token_zapapi;
+    //         if ($sale->label !== null) {
+    //             $clientName     = $sale->user->name;
+    //             $phone          = $sale->user->phone;
+    //             $sellerApiToken = $sale->seller->api_token_zapapi;
             
-                $message = "*Assunto: Reprotocolamento de Processo Judicial*\r\n\r\n" .
-                           "{$clientName},\r\n\r\n" .
-                           "Gostaríamos de informar que o *seu processo* foi *reprotocolado com sucesso.*\r\n\r\n" .
-                           "A partir de agora, será necessário *aguardar o prazo estimado de 20 a 30 dias*, " .
-                           "conforme estipulado pelos trâmites judiciais, para a análise e andamento do seu caso.\r\n\r\n" .
-                           "Estamos acompanhando de perto o andamento do processo e *entraremos em contato assim que houver novidades.*\r\n\r\n" .
-                           "Agradecemos sua paciência e estamos à disposição para esclarecer qualquer dúvida.";
+    //             $message = "*Assunto: Reprotocolamento de Processo Judicial*\r\n\r\n" .
+    //                        "{$clientName},\r\n\r\n" .
+    //                        "Gostaríamos de informar que o *seu processo* foi *reprotocolado com sucesso.*\r\n\r\n" .
+    //                        "A partir de agora, será necessário *aguardar o prazo estimado de 20 a 30 dias*, " .
+    //                        "conforme estipulado pelos trâmites judiciais, para a análise e andamento do seu caso.\r\n\r\n" .
+    //                        "Estamos acompanhando de perto o andamento do processo e *entraremos em contato assim que houver novidades.*\r\n\r\n" .
+    //                        "Agradecemos sua paciência e estamos à disposição para esclarecer qualquer dúvida.";
             
-                $this->sendWhatsapp(env('APP_URL') . 'login-cliente', $message, $phone, $sellerApiToken);
-                return redirect()->back()->with('success', 'Processo reprotocolado!');
-            } else {
-                $clientName     = $sale->user->name;
-                $phone          = $sale->user->phone;
-                $sellerApiToken = $sale->seller->api_token_zapapi;
+    //             $this->sendWhatsapp(env('APP_URL') . 'login-cliente', $message, $phone, $sellerApiToken);
+    //             return redirect()->back()->with('success', 'Processo reprotocolado!');
+    //         } else {
+    //             $clientName     = $sale->user->name;
+    //             $phone          = $sale->user->phone;
+    //             $sellerApiToken = $sale->seller->api_token_zapapi;
             
-                $message = "*Assunto: Conclusão do Processo Judicial*\r\n\r\n" .
-                           "{$clientName},\r\n\r\n" .
-                           "É com satisfação que informamos que o *seu processo foi concluído com sucesso!*\r\n\r\n" .
-                           "Agradecemos pela confiança em nosso trabalho.";
+    //             $message = "*Assunto: Conclusão do Processo Judicial*\r\n\r\n" .
+    //                        "{$clientName},\r\n\r\n" .
+    //                        "É com satisfação que informamos que o *seu processo foi concluído com sucesso!*\r\n\r\n" .
+    //                        "Agradecemos pela confiança em nosso trabalho.";
             
-                $this->sendWhatsapp(env('APP_URL') . 'login-cliente', $message, $phone, $sellerApiToken);
-                return redirect()->back()->with('success', 'Processo concluído!');
-            }            
+    //             $this->sendWhatsapp(env('APP_URL') . 'login-cliente', $message, $phone, $sellerApiToken);
+    //             return redirect()->back()->with('success', 'Processo concluído!');
+    //         }            
 
-            return redirect()->back()->with('success', 'Venda alterada com sucesso!');
-        }
+    //         return redirect()->back()->with('success', 'Venda alterada com sucesso!');
+    //     }
 
-        return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');
-    }
-
-    
+    //     return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');
+    // }
 
     // public function approvedAll(Request $request) {
 
@@ -501,7 +493,7 @@ class SaleController extends Controller {
     //     }
     // }
 
-    private function formatarValor($valor) {
+    private function formatValue($valor) {
         
         $valor = preg_replace('/[^0-9,]/', '', $valor);
         $valor = str_replace(',', '.', $valor);

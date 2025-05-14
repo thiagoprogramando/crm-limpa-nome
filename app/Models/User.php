@@ -59,14 +59,17 @@ class User extends Authenticatable {
     ];
 
     public function maskedName() {
-        
         if (!$this->name) {
             return '';
         }
     
         $nameParts = explode(' ', $this->name);
-        return $nameParts[0].' '.$nameParts[1];
-    }
+    
+        $first = $nameParts[0] ?? '';
+        $second = $nameParts[1] ?? '';
+    
+        return trim($first . ' ' . $second);
+    }    
 
     public function cpfcnpjLabel() {
 

@@ -15,25 +15,25 @@ class TrashController extends Controller {
         $query = Sale::onlyTrashed()->orderBy('created_at', 'desc');
     
         $currentUser = Auth::user();
-        $affiliateIds = User::where('filiate', $currentUser->id)->pluck('id')->toArray();
+        $affiliateIds = User::where('sponsor_id', $currentUser->id)->pluck('id')->toArray();
         $accessibleUserIds = array_merge([$currentUser->id], $affiliateIds);
     
         if (Auth::user()->type == 1) {
-            if (!empty($request->id_seller)) {
-                $query->where('id_seller', $request->id_seller);
+            if (!empty($request->seller_id)) {
+                $query->where('seller_id', $request->seller_id);
             }
         } else {
-            if (!empty($request->id_seller)) {
-                $query->where('id_seller', $request->id_seller);
+            if (!empty($request->seller_id)) {
+                $query->where('seller_id', $request->seller_id);
             } else {
-                $query->whereIn('id_seller', $accessibleUserIds);
+                $query->whereIn('seller_id', $accessibleUserIds);
             }
         }
 
         if (!empty($request->name)) {
             $users = User::where('name', 'LIKE', '%' . $request->name . '%')->pluck('id')->toArray();
             if (!empty($users)) {
-                $query->whereIn('id_client', $users);
+                $query->whereIn('client_id', $users);
             }
         }
 
@@ -56,7 +56,7 @@ class TrashController extends Controller {
         $query = User::onlyTrashed()->orderBy('name', 'desc');
 
         $currentUser = Auth::user();
-        $affiliateIds = User::where('filiate', $currentUser->id)->pluck('id')->toArray();
+        $affiliateIds = User::where('sponsor_id', $currentUser->id)->pluck('id')->toArray();
         $accessibleUserIds = array_merge([$currentUser->id], $affiliateIds);
         
         if (Auth::user()->type == 1) {
