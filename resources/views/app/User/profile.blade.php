@@ -88,13 +88,13 @@
                                         </div>
                                         <div class="col-12 col-md-6 col-lg-6 mb-2">
                                             <div class="form-floating">
-                                                <input type="text" name="cpfcnpj" value="{{ Auth::user()->cpfcnpj }}" oninput="mascaraCpfCnpj(this)" class="form-control" id="cpfcnpj" placeholder="CPF ou CNPJ:">
+                                                <input type="text" name="cpfcnpj" value="{{ Auth::user()->cpfcnpj }}" oninput="maskCpfCnpj(this)" class="form-control cpfcnpj" id="cpfcnpj" placeholder="CPF ou CNPJ:">
                                                 <label for="cpfcnpj">CPF ou CNPJ:</label>
                                             </div>
                                         </div>
                                         <div class="col-6 col-md-6 col-lg-6 mb-2">
                                             <div class="form-floating">
-                                                <input type="text" name="phone" value="{{ Auth::user()->phone }}" oninput="mascaraTelefone(this)" class="form-control" id="phone" placeholder="Telefone:">
+                                                <input type="text" name="phone" value="{{ Auth::user()->phone }}" oninput="maskPhone(this)" class="form-control" id="phone" placeholder="Telefone:">
                                                 <label for="phone">Telefone:</label>
                                             </div>
                                         </div>
@@ -106,14 +106,14 @@
                                         </div>
                                         <div class="col-6 col-md-6 col-lg-6 mb-2">
                                             <div class="form-floating">
-                                                <input type="text" name="password" class="form-control" id="floatingPassword" placeholder="Senha:">
-                                                <label for="floatingPassword">Nova Senha:</label>
+                                                <input type="text" name="password" class="form-control" id="password" placeholder="Senha:">
+                                                <label for="password">Nova Senha:</label>
                                             </div>
                                         </div>
                                         <div class="col-6 col-md-6 col-lg-6 mb-2">
                                             <div class="form-floating">
-                                                <input type="password" name="Confirmpassword" class="form-control" id="floatingConfirmPassword" placeholder="Confirme a Senha:">
-                                                <label for="floatingConfirmPassword">Confirme a Senha:</label>
+                                                <input type="password" name="confirmpassword" class="form-control" id="confirmPassword" placeholder="Confirme a Senha:">
+                                                <label for="confirmPassword">Confirme a Senha:</label>
                                             </div>
                                         </div>
                                     </div>
@@ -123,7 +123,7 @@
                                     <div class="row">
                                         <div class="col-6 col-md-6 col-lg-6 mb-2">
                                             <div class="form-floating">
-                                                <input type="number" name="postal_code" value="{{ Auth::user()->postal_code }}" onblur="consultaCEP()" class="form-control" id="postal_code" placeholder="CEP:">
+                                                <input type="number" name="postal_code" value="{{ Auth::user()->postal_code }}" onblur="consultAddress()" class="form-control" id="postal_code" placeholder="CEP:">
                                                 <label for="postal_code">CEP:</label>
                                             </div>
                                         </div>
