@@ -28,7 +28,7 @@
 
             <div class="btn-group mb-3" role="group">
                 <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
-                <button type="button" id="toggle-select" class="btn btn-sm btn-outline-primary">Selecionar</button>
+                {{-- <button type="button" id="toggle-select" class="btn btn-sm btn-outline-primary">Selecionar</button> --}}
             </div>
 
             <div class="modal fade" id="filterModal" tabindex="-1">
@@ -86,13 +86,13 @@
             <div class="card">
                 <div class="card-body m-0 p-0">
 
-                    <div id="action-buttons" class="d-none btn-group mb-2 mt-2 p-2">
-                        {{-- @if(Auth::user()->type == 1)
+                     {{-- <div id="action-buttons" class="d-none btn-group mb-2 mt-2 p-2">
+                         @if(Auth::user()->type == 1)
                             <button id="aproved-all" class="btn btn-sm btn-primary">Aprovar Todos</button>
                         @endif
-                        <button id="create-payment" class="btn btn-sm btn-outline-primary">Gerar Pagamento</button> --}}
+                        <button id="create-payment" class="btn btn-sm btn-outline-primary">Gerar Pagamento</button>
                         <button id="quanty-name" class="btn btn-sm btn-outline-primary">Selecionados: </button>
-                    </div>
+                    </div>  --}}
                     
                     <div class="table-responsive">
                         <table class="table table-sm table-hover" id="table">
