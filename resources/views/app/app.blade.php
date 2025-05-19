@@ -15,21 +15,95 @@
         <div class="row">
             
             <div class="col-sm-12 col-md-12 col-lg-12">
-                <div id="carouselExampleControls" class="carousel slide mb-2" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        <div class="carousel-item carousel-item-next carousel-item-start">
-                            <img style="max-height: 300px !important;" src="{{ asset('assets/img/marketing/nome_10_um_cupom.png') }}" class="d-block w-100" alt="Envie dez nomes e ganhe um!">
+
+                @if (Auth::user()->type == 1)
+                    <div class="btn-group mb-3" role="group">
+                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#bannerModal">Novo Banner</button>
+
+                        <div class="modal fade" id="bannerModal" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form action="{{ route('created-banner') }}" method="POST" enctype="multipart/form-data">
+                                        @csrf
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Dados do Banner</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                    <div class="form-floating">
+                                                        <input type="file" name="image" class="form-control" id="image" placeholder="Imagem (Capa 1024px X 768px):">
+                                                        <label for="image">Imagem (Capa 1000px X 300px):</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                    <div class="form-floating">
+                                                        <input type="text" name="link" class="form-control" id="link" placeholder="Link:">
+                                                        <label for="link">Link:</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                                    <div class="form-floating">
+                                                        <input type="text" name="content_banner" class="form-control" id="content_banner" placeholder="Legenda:">
+                                                        <label for="content_banner">Legenda:</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-md-6 col-lg-6">
+                                                    <div class="form-floating mb-2">
+                                                        <select name="access_type" class="form-select" id="access_type">
+                                                            <option value="">Publicar para:</option>
+                                                            <option value="">Todos</option>
+                                                            <option value="1">Administradores</option>
+                                                            <option value="2">Consultores</option>
+                                                            <option value="99">Sócios</option>
+                                                        </select>
+                                                        <label for="access_type">Opções</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer btn-group">
+                                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                            <button type="submit" class="btn btn-primary">Publicar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                @endif
 
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Anterior</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Próximo</span>
-                    </button>
+                <div class="card">
+                    @isset($banners)
+                        <div id="carouselExampleCaptions" class="carousel slide pointer-event" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                @foreach ($banners as $key => $banner)
+                                    <div class="carousel-item @if($key ==0)  active @endif">
+                                        <img src="{{ asset('storage/' . $banner->image) }}" class="d-block w-100 darkened-img" alt="...">
+                                        <div class="carousel-caption d-none d-md-block">
+                                            <p>{{ $banner->content }}</p>
+                                            @if (!empty($banner->link))
+                                                <a href="{{ $banner->link }}" target="_blank" class="btn btn-outline-light">Acessar</a>
+                                            @endif
+                                            @if (Auth::user()->type == 1)
+                                                <a href="{{ route('deleted-banner', ['id' => $banner->id]) }}" class="btn btn-outline-light">Excluir</a>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Anterior</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Próxima</span>
+                            </button>
+                        </div>
+                    @endisset
                 </div>
             </div>
 
@@ -65,9 +139,8 @@
                             <div class="card info-card clock-card">
                                 <div class="card-body">
                                     <h5 class="card-title">Vendas (Hoje)</h5>
-
                                     <div class="d-flex align-items-center">
-                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #ff8400; color:#fff;">
+                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                             <i class="bi bi-cart-check-fill"></i>
                                         </div>
                                         <div class="ps-3">
@@ -103,7 +176,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">Geral (R$)</h5>
                                 <div class="d-flex align-items-center">
-                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #559eff; color:#fff;">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                     <i class="bi bi-currency-dollar"></i>
                                     </div>
                                     <div class="ps-3">
@@ -118,7 +191,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">Hoje (R$)</h5>
                                 <div class="d-flex align-items-center">
-                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #00FF9C; color:#fff;">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                     <i class="ri-money-dollar-circle-line"></i>
                                     </div>
                                     <div class="ps-3">
@@ -196,10 +269,10 @@
                 </div>
             </div>
 
-            <div class="col-sm-12 col-md-4 col-lg-5 col-xl-5">
+            <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5">
                 @if (Auth::user()->type == 1 || Auth::user()->type == 99)
                     <div class="row align-items-start">
-                        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="col-12 col-sm-5 col-md-5 col-lg-12">
                             <div class="card info-card clock-card">
                                 <div class="card-body">
                                     <h5 class="card-title">Assinantes</h5>
@@ -213,6 +286,125 @@
                                                 Inativo: {{ $subscribers['inactives'] }} <br>
                                             </p>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-sm-7 col-md-7 col-lg-12">
+                            <div class="card">
+                                @if (Auth::user()->type == 1)
+                                    <div class="filter">
+                                        <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                            <li class="dropdown-header text-start">
+                                                <h6>Opções</h6>
+                                            </li>
+
+                                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#createModal">Nova Publicação</a></li>
+                                        </ul>
+
+                                        <div class="modal fade" id="createModal" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <form action="{{ route('created-post') }}" method="POST" enctype="multipart/form-data">
+                                                        @csrf
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Dados da Publicação</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="row">
+                                                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                    <div class="form-floating">
+                                                                        <input type="file" name="image" class="form-control" id="image" placeholder="Imagem (Capa 1024px X 768px):">
+                                                                        <label for="image">Imagem (Capa 1024px X 768px):</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                    <div class="form-floating">
+                                                                        <input type="text" name="title" class="form-control" id="title" placeholder="Título:">
+                                                                        <label for="title">Título:</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                                                    <div class="form-floating">
+                                                                        <input type="text" name="tags" class="form-control" id="tag" placeholder="Tags:">
+                                                                        <label for="tag">Tags:</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12 col-md-6 col-lg-6">
+                                                                    <div class="form-floating mb-2">
+                                                                        <select name="access_type" class="form-select" id="access_type">
+                                                                            <option value="">Publicar para:</option>
+                                                                            <option value="">Todos</option>
+                                                                            <option value="1">Administradores</option>
+                                                                            <option value="2">Consultores</option>
+                                                                            <option value="99">Sócios</option>
+                                                                        </select>
+                                                                        <label for="access_type">Opções</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                    <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                        <div id="editor"></div>
+                                                                        <textarea id="content" name="content" style="display:none;"></textarea>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer btn-group">
+                                                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                                            <button type="submit" class="btn btn-primary">Publicar</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <div class="card-body pb-0">
+                                    <h5 class="card-title">Notícias &amp; Atualizações <span>| Recentes</span></h5>
+                                    <div class="news">
+                                        @foreach ($posts as $post)
+                                            <div class="post-item clearfix">
+                                                <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}">
+                                                <h4><a href="#" data-bs-toggle="modal" data-bs-target="#viewModal{{ $post->id }}">{{ $post->title }}</a></h4>
+                                                <p>{{ $post->labelResume() }}</p>
+                                            </div>
+
+                                            <div class="modal fade" id="viewModal{{ $post->id }}" tabindex="-1">
+                                                <div class="modal-dialog modal-lg">
+                                                    <div class="modal-content">
+                                                        <form action="{{ route('deleted-post') }}" method="POST" class="delete">
+                                                            @csrf
+                                                            <input type="hidden" name="id" value="{{ $post->id }}">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Dados da Publicação</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="row">
+                                                                    <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                        {!! $post->labelTags() !!}
+                                                                    </div>
+                                                                    <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                        {!! $post->content !!}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            @if (Auth::user()->type == 1)
+                                                                <div class="modal-footer btn-group">
+                                                                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                                                    <button type="submit" class="btn btn-primary">Excluir</button>
+                                                                </div>
+                                                            @endif
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
@@ -270,4 +462,27 @@
             </div>
         </div>
     </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <script>
+        const quill = new Quill('#editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'align': [] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    ['link', 'blockquote', 'code-block'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'indent': '-1'}, { 'indent': '+1' }]
+                ]
+            }
+        });
+
+        $('form').submit(function() {
+            var content = quill.root.innerHTML;
+            $('#content').val(content);
+        });
+    </script>
 @endsection

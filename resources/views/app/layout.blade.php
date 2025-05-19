@@ -102,6 +102,12 @@
                                     <span>Perfil</span>
                                 </a>
                             </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{{ route('view-terms-of-usability') }}">
+                                    <i class="bi bi-textarea-t"></i>
+                                    <span>Termos e Condições</span>
+                                </a>
+                            </li>
                             <li> <hr class="dropdown-divider"> </li>
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}">
@@ -121,9 +127,9 @@
                     <a class="nav-link" href="{{ route('app') }}"> <i class="bi bi-grid"></i> <span>Dashboard</span> </a>
                 </li>
 
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link collapsed" href="https://servicos.ehmconsultas.com/index.php" target="_blank"> <i class="bi bi-search"></i> <span>Consultas</span> </a>
-                </li>
+                </li> --}}
 
                 <li class="nav-heading">Gestão de Vendas</li>
                 <li class="nav-item">
@@ -168,15 +174,15 @@
 
                 @if (Auth::user()->type !== 4)
                     <li class="nav-heading">Gestão Financeira</li>
-                    <li class="nav-item">
+                    {{-- <li class="nav-item">
                         <a class="nav-link collapsed" href="{{ route('wallet') }}"> <i class="bi bi-wallet2"></i> <span>Carteira</span> </a>
-                    </li>
+                    </li> --}}
                     <li class="nav-item">
                         <a class="nav-link {{ Route::currentRouteName() == 'receivable' || Route::currentRouteName() == 'payments' ? '' : 'collapsed' }}" data-bs-target="#forms-finan" data-bs-toggle="collapse" href="#">
                             <i class="bi bi-bank"></i><span>Meu Dinheiro</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
                         <ul id="forms-finan" class="nav-content collapse {{ Route::currentRouteName() == 'receivable' || Route::currentRouteName() == 'payments' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">  
-                            <li><a href="{{ route('receivable') }}"> <i class="bi bi-circle"></i><span>Recebíveis</span> </a></li>
+                            {{-- <li><a href="{{ route('receivable') }}"> <i class="bi bi-circle"></i><span>Recebíveis</span> </a></li> --}}
                             <li><a href="{{ route('payments') }}"> <i class="bi bi-circle"></i><span>Pagamentos</span> </a></li>
                         </ul>
                     </li>
@@ -188,8 +194,8 @@
                         <i class="bx bxl-codepen"></i><span>Integrações</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
                     <ul id="forms-apis" class="nav-content collapse" data-bs-parent="#sidebar-nav">  
-                        <li><a href="{{ route('Integrate-wallet') }}"><i class="bi bi-circle"></i><span>Assas - Conta PF e PJ</span></a></li>
-                        <li><a href="{{ route('Integrate-wallet') }}"> <i class="bi bi-circle"></i><span>Neon - Conta PF e PJ</span></a></li>
+                        <li><a href="{{ route('integrate-assas-wallet') }}"><i class="bi bi-circle"></i><span>Assas - Conta PF e PJ</span></a></li>
+                        <li><a href="#"> <i class="bi bi-circle"></i><span>Neon - Conta PF e PJ</span></a></li>
                     </ul>
                 </li>
                 <li class="nav-item">
@@ -222,6 +228,7 @@
                             <li> <a href="{{ route('list-user', ['type' => 1]) }}"><i class="bi bi-circle"></i><span>Administradores</span></a> </li>
                             <li> <a href="{{ route('list-user', ['type' => 3]) }}"><i class="bi bi-circle"></i><span>Clientes</span></a> </li>
                             <li> <a href="{{ route('list-user', ['type' => 2]) }}"><i class="bi bi-circle"></i><span>Consultores</span></a>
+                            <li> <a href="{{ route('list-user', ['type' => 99]) }}"><i class="bi bi-circle"></i><span>Sócios</span></a>
                             <li> <a href="{{ route('list-user', ['type' => 4]) }}"><i class="bi bi-circle"></i><span>Consultor Interno</span></a> </li>
                         </ul>
                     </li>
@@ -249,6 +256,20 @@
         <script src="{{ asset('assets/js/main.js') }}"></script>
         <script src="{{ asset('assets/js/mask.js') }}"></script>
         <script>
+            @if ($errors->any())
+                let errorMessages = '';
+                @foreach ($errors->all() as $error)
+                    errorMessages += '{{ $error }}\n';
+                @endforeach
+                
+                Swal.fire({
+                    title: 'Atenção!',
+                    text: errorMessages,
+                    icon: 'info',
+                    timer: 5000,
+                });
+            @endif
+            
             @if(session('error'))
                 Swal.fire({
                     title: 'Erro!',
@@ -295,12 +316,6 @@
                                 form.submit();
                             }
                         });
-                    });
-                });
-
-                document.querySelectorAll('input[type="file"]').forEach(input => {
-                    input.addEventListener("change", function() {
-                        this.closest("form").submit();
                     });
                 });
             });

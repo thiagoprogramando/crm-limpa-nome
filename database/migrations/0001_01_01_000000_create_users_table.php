@@ -13,35 +13,42 @@ return new class extends Migration {
             $table->unsignedBigInteger('sponsor_id')->nullable();
             $table->foreign('sponsor_id')->references('id')->on('users')->onDelete('set null');
             $table->string('association_id')->nullable();
+            
             $table->string('photo')->nullable();
             $table->string('name');
             $table->string('email')->nullable();
-            $table->string('cpfcnpj')->unique();
+            $table->string('cpfcnpj')->nullable();
             $table->date('birth_date')->nullable();
             $table->string('phone')->nullable();
             $table->string('password');
+
             $table->string('postal_code')->nullable();
             $table->string('address')->nullable();
             $table->string('complement')->nullable();
             $table->string('city')->nullable();
             $table->string('state')->nullable();
             $table->string('num')->nullable();
-            $table->integer('level')->nullable()->default('1');
-            $table->integer('status')->nullable()->default('3');
-            $table->decimal('wallet_off', 10, 2)->default(0);
-            $table->longText('wallet')->nullable();
-            $table->longText('wallet_id')->nullable();
-            $table->longText('api_key')->nullable();
-            $table->longText('customer')->nullable();
+            
+     
+            $table->decimal('wallet', 10, 2)->default(0);
+            $table->longText('token_wallet')->nullable();
+            $table->longText('token_key')->nullable();
+
             $table->decimal('fixed_cost', 10, 2)->nullable();
-            $table->integer('type')->nullable()->default(2);
-            $table->integer('white_label_whatsapp')->default(0);
-            $table->integer('white_label_contract')->default(0);
-            $table->integer('white_label_network')->default(0);
+            
+            $table->integer('type')->default(2);
+            $table->integer('level')->default(1);
+            $table->integer('status')->default(2);
+
             $table->string('company_name')->nullable();
             $table->string('company_cpfcnpj')->nullable();
             $table->string('company_address')->nullable();
             $table->string('company_email')->nullable();
+            $table->string('company_phone')->nullable();
+
+            $table->longText('terms_of_usability')->nullable();
+            $table->longText('terms_of_privacy')->nullable();
+
             $table->timestamps();
             $table->softDeletes();
         });

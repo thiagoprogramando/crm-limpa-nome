@@ -29,7 +29,7 @@
             <div class="col-12">
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
                     <i class="bi bi-info-circle me-1"></i>
-                    Você está quase lá! É necessário filiar-se <a href="{{ route('createMonthly', ['id' => Auth::user()->id]) }}"> ao {{ env('APP_NAME') }} clicando aqui!</a>
+                    Você está quase lá! É necessário filiar-se <a href="{{ route('create-monthly') }}"> ao {{ env('APP_NAME') }} clicando aqui!</a>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             </div>
@@ -156,6 +156,46 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                @if (Auth::user()->type == 99)
+                                    <div class="col-12">
+                                        <div class="row">
+                                            <div class="col-6 col-md-7 col-lg-7 mb-2">
+                                                <div class="form-floating">
+                                                    <input type="text" name="company_name" value="{{ Auth::user()->company_name }}" class="form-control" id="company_name" placeholder="Nome Fantasia:">
+                                                    <label for="company_name">Nome Fantasia:</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-6 col-md-5 col-lg-5 mb-2">
+                                                <div class="form-floating">
+                                                    <input type="text" name="company_cpfcnpj" value="{{ Auth::user()->company_cpfcnpj }}" class="form-control cpfcnpj" id="company_cpfcnpj" oninput="maskCpfCnpj(this)" placeholder="CNPJ:">
+                                                    <label for="company_cpfcnpj">CNPJ:</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-7 col-lg-7 mb-2">
+                                                <div class="form-floating">
+                                                    <input type="email" name="company_email" value="{{ Auth::user()->company_email }}" class="form-control" id="company_email" placeholder="E-mail:">
+                                                    <label for="company_email">E-mail:</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-5 col-lg-5 mb-2">
+                                                <div class="form-floating">
+                                                    <input type="text" name="company_phone" value="{{ Auth::user()->company_phone }}" class="form-control" id="company_phone phone" oninput="maskPhone(this)" placeholder="Telefone:">
+                                                    <label for="company_phone">Telefone:</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                <div class="form-floating">
+                                                    <input type="text" name="company_address" value="{{ Auth::user()->company_address }}" class="form-control" id="company_address" placeholder="Endereço:">
+                                                    <label for="company_address">Endereço:</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 d-grid gap-2 mb-2">
+                                                <button type="submit" class="btn btn-primary">Salvar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         </form>
                     </div>
@@ -169,6 +209,14 @@
 <script>
     document.getElementById('change-photo-button').addEventListener('click', function() {
         document.getElementById('photo-input').click();
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('input[type="file"]').forEach(input => {
+            input.addEventListener("change", function() {
+                this.closest("form").submit();
+            });
+        });
     });
 </script>
 @endsection

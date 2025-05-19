@@ -17,9 +17,8 @@
             <div class="col-12">
 
                 <div class="btn-group mb-3" role="group">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
-                    <a href="{{ route('registrer') }}" id="copy-url-btn" class="btn btn-outline-primary">Cadastrar</a>
-                    <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#createModal">Cadastrar</button>
                 </div>
 
                 <div class="modal fade" id="filterModal" tabindex="-1">
@@ -72,6 +71,59 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="modal fade" id="createModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form action="{{ route('created-user', ['type' => $type]) }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="type" value="{{ $type }}">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Dados do Cadastro</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                            <div class="form-floating">
+                                                <input type="text" name="name" class="form-control" id="name" placeholder="Nome:" required>
+                                                <label for="name">Nome:</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-7 col-lg-7 mb-2">
+                                            <div class="form-floating">
+                                                <input type="text" name="email" class="form-control" id="email" placeholder="Email:" required>
+                                                <label for="email">Email:</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-5 col-lg-5 mb-2">
+                                            <div class="form-floating">
+                                                <input type="text" name="cpfcnpj" class="form-control" id="cpfcnpj" placeholder="CPF/CNPJ:" oninput="maskCpfCnpj(this)" required>
+                                                <label for="cpfcnpj">CPF/CNPJ:</label>
+                                            </div>
+                                        </div>
+                                        @if ($type == 99)
+                                            <div class="col-12 col-md-7 col-lg-7 mb-2">
+                                                <div class="form-floating">
+                                                    <input type="text" name="association_id" class="form-control" id="association_id" placeholder="Código Associação:">
+                                                    <label for="association_id">Código Associação:</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-5 col-lg-5 mb-2 d-grid">
+                                                <button type="button" onclick="newCode()" class="btn btn-outline-primary">Gerar</button>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="modal-footer btn-group">
+                                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row">
                     <div class="col-12 col-sm-12 col-md-12 col-lg-12">
                         <div class="card">
@@ -124,13 +176,13 @@
                                                                         </div>
                                                                         <div class="col-12 col-md-6 col-lg-6 mb-2">
                                                                             <div class="form-floating">
-                                                                                <input type="text" name="phone" class="form-control" id="floatingPhone" placeholder="Whatsapp:" oninput="mascaraTelefone(this)" value="{{ $user->phone }}">
+                                                                                <input type="text" name="phone" class="form-control phone" id="floatingPhone" placeholder="Whatsapp:" oninput="maskPhone(this)" value="{{ $user->phone }}">
                                                                                 <label for="floatingPhone">Whatsapp:</label>
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-12 col-md-6 col-lg-6 mb-2">
                                                                             <div class="form-floating">
-                                                                                <input type="text" name="cpfcnpj" class="form-control" id="floatingCpfCnpj" placeholder="CPF/CNPJ:" oninput="mascaraCpfCnpj(this)" value="{{ $user->cpfcnpj }}">
+                                                                                <input type="text" name="cpfcnpj" class="form-control cpfcnpj" id="floatingCpfCnpj" placeholder="CPF/CNPJ:" oninput="maskCpfCnpj(this)" value="{{ $user->cpfcnpj }}">
                                                                                 <label for="floatingCpfCnpj">CPF/CNPJ:</label>
                                                                             </div>
                                                                         </div>
@@ -163,7 +215,7 @@
                                                                                     <option value="2" @selected($user->type == 2)>Consultor</option>
                                                                                     <option value="3" @selected($user->type == 3)>Cliente</option>
                                                                                     <option value="4" @selected($user->type == 4)>Vendendor Interno</option>
-                                                                                    <option value="99" @selected($user->type == 99)>White Label</option>
+                                                                                    <option value="99" @selected($user->type == 99)>Sócio</option>
                                                                                 </select>
                                                                                 <label for="floatingType">Tipo</label>
                                                                             </div>
@@ -217,9 +269,6 @@
                                                                                 <td class="text-center">{{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y') }}</td>
                                                                                 <td class="text-center">
                                                                                     <div class="btn-group">
-                                                                                        @if(!empty($user->wallet))
-                                                                                            <a href="{{ route('payMonthly', ['id' => $invoice->id]) }}" class="btn btn-sm btn-outline-success"> Pagar </a>
-                                                                                        @endif
                                                                                         <a href="{{ $invoice->url_payment }}" target="_blank" class="btn btn-sm btn-outline-primary"> Acessar </a>
                                                                                         @if($invoice->status <> 1 )
                                                                                             <a href="" class="btn btn-sm btn-outline-danger confirm"> Excluir </a>
@@ -249,4 +298,19 @@
             </div>
         </div>
     </section>
+
+    <script>
+        function newCode() {
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const numbers = '0123456789';
+            let code = '';
+
+            for (let i = 0; i < 6; i++) {
+                code += letters.charAt(Math.floor(Math.random() * letters.length));
+                code += numbers.charAt(Math.floor(Math.random() * numbers.length));
+            }
+
+            document.getElementById('association_id').value = code;
+        }
+    </script>
 @endsection

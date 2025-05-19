@@ -17,11 +17,7 @@ class SaleList extends Model {
         'start',
         'end',
         'status',
-        'status_serasa',
-        'status_spc',
-        'status_boa_vista',
-        'status_quod',
-        'status_cenprot',
+        'status_protocol'
     ];
 
     public function statusLabel() {
@@ -35,58 +31,18 @@ class SaleList extends Model {
         }
     }
 
-    public function statusLabelSerasa() {
-        switch ($this->status_serasa) {
+    public function statusProtocolLabel() {
+        switch ($this->status_protocol) {
             case 1:
-                return 'Baixada';
+                return 'Regularizado';
             case 2:
-                return 'Pendente';
+                return 'Protocolado';
+            case 3:
+                return 'Em Processamento';
+            case 4:
+                return 'Em Fase de Finalização';
             default:
-                return 'Pendente';
-        }
-    }
-
-    public function statusLabelSpc() {
-        switch ($this->status_spc) {
-            case 1:
-                return 'Baixada';
-            case 2:
-                return 'Pendente';
-            default:
-                return 'Pendente';
-        }
-    }
-
-    public function statusLabelBoaVista() {
-        switch ($this->status_boa_vista) {
-            case 1:
-                return 'Baixada';
-            case 2:
-                return 'Pendente';
-            default:
-                return 'Pendente';
-        }
-    }
-
-    public function statusLabelQuod() {
-        switch ($this->status_quod) {
-            case 1:
-                return 'Baixada';
-            case 2:
-                return 'Pendente';
-            default:
-                return 'Pendente';
-        }
-    }
-
-    public function statusLabelCenprot() {
-        switch ($this->status_cenprot) {
-            case 1:
-                return 'Baixada';
-            case 2:
-                return 'Pendente';
-            default:
-                return 'Pendente';
+                return 'Período de Captação';
         }
     }
 }

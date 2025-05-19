@@ -6,22 +6,38 @@ use App\Http\Controllers\Assas\AssasController;
 use App\Http\Controllers\Controller;
 
 use App\Models\Invoice;
-use App\Models\Lists;
-use App\Models\Notification;
 use App\Models\Sale;
 use App\Models\User;
 
 use Carbon\Carbon;
 
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class UserController extends Controller {
     
     public function profile() {
         return view('app.User.profile');
+    }
+
+    public function created(Request $request) {
+
+        $user                   = new User();
+        $user->uuid             = Str::uuid();
+        $user->sponsor_id       = Auth::user()->id;
+        $user->association_id   = $request->association_id ??  Auth::user()->association_id;
+        $user->name             = $request->name;
+        $user->email            = $request->email;
+        $user->cpfcnpj          = preg_replace('/\D/', '', $request->cpfcnpj);
+        $user->password         = preg_replace('/\D/', '', $request->cpfcnpj);
+        $user->type             = $request->type;
+        if ($user->save()) {
+            return redirect()->back()->with('success', 'Usuário cadastrado com sucesso! Senha inicial será o CPF/CNPJ associado.'); 
+        }
+
+        return redirect()->back()->with('error', 'Não foi possível cadastrar o Usuário, verifique os dados e tente novamente!'); 
     }
 
     public function updateProfile(Request $request) {
@@ -95,19 +111,10 @@ class UserController extends Controller {
             }
 
             $user->password = bcrypt($request->password);
-            $this->alertPassword($user->id);
         }
 
         if (!empty($request->type)) {
             $user->type = $request->type;
-        }
-
-        if (!empty($request->white_label_network)) {
-            $user->white_label_network = $request->white_label_network;
-        }
-
-        if (!empty($request->white_label_contract)) {
-            $user->white_label_contract = $request->white_label_contract;
         }
 
         if (!empty($request->company_name)) {
@@ -118,26 +125,16 @@ class UserController extends Controller {
             $user->company_cpfcnpj = $request->company_cpfcnpj;
         }
 
+        if (!empty($request->company_phone)) {
+            $user->company_phone = $request->company_phone;
+        }
+
         if (!empty($request->company_address)) {
             $user->company_address = $request->company_address;
         }
 
         if (!empty($request->company_email)) {
             $user->company_email = $request->company_email;
-        }
-
-        if (!empty($request->api_key)) {
-            $status = $this->accountStatus($request->api_key);
-            if (is_array($status) && (isset($status['general']) && ($status['general'] == 'APPROVED' || $status['general'] == 'AWAITING_APPROVA'))) {
-                $user->api_key = $request->api_key;
-                $user->status  = 1;
-            } else {
-                return redirect()->back()->with('info', 'Tokens não válidados! Aguarde aprovação da sua carteira/ou entre em contato com o suporte.');
-            }
-
-            if (!empty($request->wallet)) {
-                $user->wallet = $request->wallet;
-            }
         }
 
         if (!empty($request->photo)) {
@@ -157,34 +154,14 @@ class UserController extends Controller {
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
     }
 
-    private function accountStatus($api_key) {
+    public function deleteUser(Request $request) {
 
-        $assas = new AssasController();
-        $accountStatus = $assas->accountStatus($api_key);
-
-        return $accountStatus;
-    }
-
-    private function alertPassword($id) {
-
-        $user = User::find($id);
-        if (!$user) {
-            return false;
+        $user = User::find($request->id);
+        if ($user && $user->delete()) {
+            return redirect()->back()->with('success', 'Usuário excluído com sucesso!');
         }
-        
-        $message =  "Olá, {$user->name},\r\n\r\n"
-                        . "Foi feito uma redefinição de senha na sua conta! \r\n\r\n"
-                        . "*Caso não reconheça essa ação, entre em contato com nosso suporte imediatamente.*\r\n\r\n"
-                        . "Acesse: ".env('APP_URL')."\r\n"
-                        . "Faça login com seu *E-mail* e *Senha*. \r\n\r\n"
-                        . "Precisa de ajuda? Estamos aqui para você!\r\n\r\n";
-            $this->sendWhatsapp(
-                env('APP_URL'),
-                $message,
-                $user->phone
-            );
 
-            return redirect()->back()->with('success', 'mensagem enviada com sucesso!');
+        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
     }
 
     public function listuser(Request $request, $type) {
@@ -265,7 +242,7 @@ class UserController extends Controller {
 
     public function listActive($status = null) {
         
-        $users = User::query()->where('type', 2)->where('status', $status)->orderBy('name', 'asc');
+        $users = User::query()->whereIn('type', [2, 99])->where('status', $status)->orderBy('name', 'asc');
 
         $invoices = Invoice::where('type', 1)->where('status', $status)
             ->whereYear('created_at', Carbon::now()->year)
@@ -283,49 +260,6 @@ class UserController extends Controller {
             'users'         => $users->paginate(30),
             'invoicesData'  => array_values($months)
         ]);
-    }
-
-    public function deleteUser(Request $request) {
-
-        $user = User::find($request->id);
-        if ($user && $user->delete()) {
-            return redirect()->back()->with('success', 'Usuário excluído com sucesso!');
-        }
-
-        return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
-    }
-
-    private function sendWhatsapp($link, $message, $phone, $token = null) {
-
-        $client = new Client();
-        $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
-    
-        try {
-            $response = $client->post($url, [
-                'headers' => [
-                    'Content-Type'  => 'application/json',
-                    'Accept'        => 'application/json',
-                    'Client-Token'  => 'Fabe25dbd69e54f34931e1c5f0dda8c5bS',
-                ],
-                'json' => [
-                    'phone'           => '55' . $phone,
-                    'message'         => $message,
-                    'image'           => env('APP_URL_LOGO'),
-                    'linkUrl'         => $link,
-                    'title'           => 'Assinatura de Documento',
-                    'linkDescription' => 'Link para Assinatura Digital',
-                ],
-                'verify' => false
-            ]);
-    
-            if ($response->getStatusCode() == 200) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (\Exception $e) {
-            return false;
-        }
     }
     
     private function formatarValor($valor) {

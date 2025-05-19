@@ -89,7 +89,7 @@
                                                     <option selected="">Opções:</option>
                                                     <option value="PIX">Pix</option>
                                                     <option value="BOLETO">Boleto</option>
-                                                    <option value="CREDIT_CARD">Cartão de Crédito</option>
+                                                    {{-- <option value="CREDIT_CARD">Cartão de Crédito</option> --}}
                                                 </select>
                                                 <label for="payment_method">Forma de Pagamento</label>
                                             </div>
@@ -104,14 +104,14 @@
                                         </div>
                                         <div class="col-7 col-sm-7 col-md-5 col-lg-5 mb-2">
                                             <div class="form-floating">
-                                                <input type="text" name="installments[1][value]" class="form-control" id="floatingValue" placeholder="Valor da venda (Mín R$ {{ Auth::user()->fixed_cost }}):" oninput="mascaraReal(this)" required>
-                                                <label for="floatingValue" id="floatingValueLabel">Entrada (Mín R$ {{ $product->value_min }}):</label>
+                                                <input type="text" name="installments[1][value]" class="form-control" id="installments[1][value]" placeholder="Valor da venda (Mín R$ {{ Auth::user()->fixed_cost }}):" oninput="maskValue(this)" required>
+                                                <label for="installments[1][value]">Entrada (Mín R$ {{ $product->value_min }}):</label>
                                             </div>
                                         </div>
                                         <div class="col-5 col-sm-5 col-md-4 col-lg-4 mb-2">
                                             <div class="form-floating">
-                                                <input type="date" name="installments[1][due_date]" class="form-control" id="floatingdueDate" placeholder="Vencimento:">
-                                                <label for="floatingdueDate">Vencimento:</label>
+                                                <input type="date" name="installments[1][due_date]" class="form-control" id="installments[1][due_date]" placeholder="Vencimento:">
+                                                <label for="installments[1][due_date]">Vencimento:</label>
                                             </div>
                                         </div>
                                         <div id="installmentsContainer" class="row m-0 p-0 mb-2">
@@ -198,7 +198,7 @@
                     const inputGroup = `
                         <div class="col-7 col-sm-7 col-md-5 col-lg-5 mb-2">
                             <div class="form-floating">
-                                <input type="text" name="installments[${i}][value]" class="form-control" placeholder="Parcela N° ${i}" oninput="mascaraReal(this)" required>
+                                <input type="text" name="installments[${i}][value]" class="form-control" placeholder="Parcela N° ${i}" oninput="maskValue(this)" required>
                                 <label>Parcela N° ${i}</label>
                             </div>
                         </div>

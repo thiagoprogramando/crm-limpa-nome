@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Controllers\Assas\AssasController;
+use App\Http\Controllers\Gateway\AssasController;
 use App\Models\Invoice;
 use Closure;
 use Illuminate\Http\Request;

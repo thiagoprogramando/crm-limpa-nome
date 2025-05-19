@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Sale;
 
-use App\Http\Controllers\Assas\AssasController;
+use App\Http\Controllers\Gateway\AssasController;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\Sale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class InvoiceController extends Controller {
     
@@ -38,10 +39,10 @@ class InvoiceController extends Controller {
 
         $assasController = new AssasController();
 
-        if (empty($sale->client->customer)) {
-            $customer = $assasController->createCustomer($sale->client->name, $sale->client->cpfcnpj, $sale->client->phone, $sale->client->email);
-        } else {
-            $customer = $sale->client->customer;
+       
+        $customer = $assasController->createCustomer($sale->client->name, $sale->client->cpfcnpj, $sale->client->phone, $sale->client->email);
+        if (!$customer) {
+            return redirect()->back()->with('info', 'Verifique os dados do cliente e tente novamente!');
         }
 
         $percent            = $this->formatarValor($request->value) * 0.05;
@@ -67,6 +68,7 @@ class InvoiceController extends Controller {
         if ($assasInvoice <> false) {
 
             $invoice                = new Invoice();
+            $invoice->uuid          = Str::uuid();;
             $invoice->user_id       = $sale->client_id;
             $invoice->product_id    = $product->id;
             $invoice->sale_id       = $sale->id;

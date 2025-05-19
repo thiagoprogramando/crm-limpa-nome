@@ -13,12 +13,8 @@ return new class extends Migration {
             $table->longText('description')->nullable();
             $table->dateTime('start');
             $table->dateTime('end');
-            $table->tinyInteger('status');
-            $table->tinyInteger('status_serasa')->default(0);
-            $table->tinyInteger('status_spc')->default(0);
-            $table->tinyInteger('status_boa_vista')->default(0);
-            $table->tinyInteger('status_quod')->default(0);
-            $table->tinyInteger('status_cenprot')->default(0);
+            $table->tinyInteger('status')->default(1);
+            $table->tinyInteger('status_protocol')->default(4);
             $table->timestamps();
         });
     }

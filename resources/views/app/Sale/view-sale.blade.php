@@ -95,14 +95,14 @@
                                                                         <option selected="">Opções:</option>
                                                                         <option value="PIX">Pix</option>
                                                                         <option value="BOLETO">Boleto</option>
-                                                                        <option value="CREDIT_CARD">Cartão de Crédito</option>
+                                                                        {{-- <option value="CREDIT_CARD">Cartão de Crédito</option> --}}
                                                                     </select>
                                                                     <label for="payment_method">Forma de Pagamento</label>
                                                                 </div>
                                                             </div>
                                                             <div class="col-12 col-md-6 col-lg-6 mb-1">
                                                                 <div class="form-floating">
-                                                                    <input type="text" name="value" class="form-control" id="value" placeholder="Valor:" oninput="mascaraReal(this)" required>
+                                                                    <input type="text" name="value" class="form-control" id="value" placeholder="Valor:" oninput="maskValue(this)" required>
                                                                     <label for="value">Valor:</label>
                                                                 </div>
                                                             </div>

@@ -31,82 +31,47 @@
                                 </div>
                             </div>
 
-                            <div class="col-12 col-sm-12 col-md-7 col-lg-7 row">
-                                <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                    <div class="form-floating">
-                                        <select name="status_serasa" class="form-select" id="floatingStatus">
-                                            <option selected value="{{ $list->status_serasa }}">Opções:</option>
-                                            <option value="Baixado" @selected($list->status_serasa == 'Baixado')>Baixado</option>
-                                            <option value="Em Andamento" @selected($list->status_serasa == 'Em Andamento')>Em Andamento</option>
-                                        </select>
-                                        <label for="floatingStatus">Status Serasa:</label>
+                            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                                <div class="row">
+                                    <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                        <div class="form-floating">
+                                            <select name="status_protocol" class="form-select" id="status_protocol">
+                                                <option selected value="{{ $list->status_protocol }}">Status (Protocolo):</option>
+                                                <option value="1" @selected($list->status_protocol == 1)>Regularizado</option>
+                                                <option value="2" @selected($list->status_protocol == 2)>Protocolado</option>
+                                                <option value="3" @selected($list->status_protocol == 3)>Em Processamento</option>
+                                                <option value="4" @selected($list->status_protocol == 4)>Em Fase de Finalização</option>
+                                                <option value="0" @selected($list->status_protocol == 0)>Período de Captação</option>
+                                            </select>
+                                            <label for="status_protocol">Status (Protocolo)</label>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                    <div class="form-floating">
-                                        <select name="status_spc" class="form-select" id="floatingSPC">
-                                            <option selected value="{{ $list->status_spc }}">Opções:</option>
-                                            <option value="Baixado" @selected($list->status_spc == 'Baixado')>Baixado</option>
-                                            <option value="Em Andamento" @selected($list->status_spc == 'Em Andamento')>Em Andamento</option>
-                                        </select>
-                                        <label for="floatingSPC">Status SPC:</label>
+                                    <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                        <div class="form-floating">
+                                            <select name="status" class="form-select" id="status">
+                                                <option selected value="{{ $list->status }}">Status (Lista):</option>
+                                                <option value="1" @selected($list->status == 1)>Ativa</option>
+                                                <option value="2" @selected($list->status == 2)>Inativa</option>
+                                            </select>
+                                            <label for="status">Status (Lista)</label>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                    <div class="form-floating">
-                                        <select name="status_boa_vista" class="form-select" id="floatingStatus">
-                                            <option selected value="{{ $list->status_boa_vista }}">Opções:</option>
-                                            <option value="Baixado" @selected($list->status_boa_vista == 'Baixado')>Baixado</option>
-                                            <option value="Em Andamento" @selected($list->status_boa_vista == 'Em Andamento')>Em Andamento</option>
-                                        </select>
-                                        <label for="floatingStatus">Status Boa Vista:</label>
+                                    <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                        <div class="form-floating mb-2">
+                                            <input type="datetime-local" name="date_start" class="form-control" id="floatingDateStart" placeholder="Data de início:" value="{{ $list->start }}">
+                                            <label for="floatingDateStart">Data de início:</label>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                    <div class="form-floating">
-                                        <select name="status_quod" class="form-select" id="floatingStatus">
-                                            <option selected value="{{ $list->status_quod }}">Opções:</option>
-                                            <option value="Baixado" @selected($list->status_quod == 'Baixado')>Baixado</option>
-                                            <option value="Em Andamento" @selected($list->status_quod == 'Em Andamento')>Em Andamento</option>
-                                        </select>
-                                        <label for="floatingStatus">Status QUOD:</label>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                    <div class="form-floating">
-                                        <select name="status_cenprot" class="form-select" id="floatingStatus">
-                                            <option selected value="{{ $list->status_cenprot }}">Opções:</option>
-                                            <option value="Baixado" @selected($list->status_cenprot == 'Baixado')>Baixado</option>
-                                            <option value="Em Andamento" @selected($list->status_cenprot == 'Em Andamento')>Em Andamento</option>
-                                        </select>
-                                        <label for="floatingStatus">Status CENPROT:</label>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                    <div class="form-floating">
-                                        <select name="status" class="form-select" id="floatingStatus">
-                                            <option selected value="{{ $list->status }}">Indique qual status:</option>
-                                            <option value="1" @selected($list->status == 1)>Ativa (Quando estiver dentro do relógio)</option>
-                                            <option value="2" @selected($list->status == 2)>Inativa</option>
-                                        </select>
-                                        <label for="floatingStatus">Status Lista</label>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                    <div class="form-floating mb-2">
-                                        <input type="datetime-local" name="date_start" class="form-control" id="floatingDateStart" placeholder="Data de início:" value="{{ $list->start }}">
-                                        <label for="floatingDateStart">Data de início:</label>
-                                    </div>
-                                </div>
 
-                                <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                    <div class="form-floating mb-2">
-                                        <input type="datetime-local" name="date_end" class="form-control" id="floatingDateend" placeholder="Data de encerramento:" value="{{ $list->end }}">
-                                        <label for="floatingDateend">Data de encerramento:</label>
+                                    <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                        <div class="form-floating mb-2">
+                                            <input type="datetime-local" name="date_end" class="form-control" id="floatingDateend" placeholder="Data de encerramento:" value="{{ $list->end }}">
+                                            <label for="floatingDateend">Data de encerramento:</label>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-12 col-md-4 col-lg-4 mb-1">
-                                    <button type="submit" class="btn btn-primary w-100">Salvar</button>
+                                    <div class="col-12 offset-md-6 col-md-6 offset-lg-6 col-lg-6 mb-2 d-grid">
+                                        <button type="submit" class="btn btn-primary">Salvar</button>
+                                    </div>
                                 </div>
                             </div>
                         </form>

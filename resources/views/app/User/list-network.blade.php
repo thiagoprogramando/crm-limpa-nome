@@ -17,8 +17,49 @@
 
                 <div class="btn-group mb-3" role="group">
                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
-                    <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary" id="copyUrlBtn">Cadastrar</a>
-                    <button type="button" class="btn btn-sm btn-outline-primary" id="gerarExcel">Excel</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#createModal">Cadastrar</button>
+                </div>
+
+                <div class="modal fade" id="createModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form action="{{ route('created-user') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="type" value="2">
+                                <input type="hidden" name="associtiation_id" value="{{ Auth::user()->associtiation_id }}">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Dados do Cadastro</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                            <div class="form-floating">
+                                                <input type="text" name="name" class="form-control" id="name" placeholder="Nome:" required>
+                                                <label for="name">Nome:</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-7 col-lg-7 mb-2">
+                                            <div class="form-floating">
+                                                <input type="text" name="email" class="form-control" id="email" placeholder="Email:" required>
+                                                <label for="email">Email:</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-5 col-lg-5 mb-2">
+                                            <div class="form-floating">
+                                                <input type="text" name="cpfcnpj" class="form-control" id="cpfcnpj" placeholder="CPF/CNPJ:" oninput="maskCpfCnpj(this)" required>
+                                                <label for="cpfcnpj">CPF/CNPJ:</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer btn-group">
+                                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="modal fade" id="filterModal" tabindex="-1">
@@ -173,9 +214,6 @@
                                                                         <td>{{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y') }}</td>
                                                                         <td class="text-center">
                                                                             <div class="btn-group">
-                                                                                @if(!empty($user->wallet))
-                                                                                    <a href="{{ route('payMonthly', ['id' => $invoice->id]) }}" class="btn btn-sm btn-outline-success"> Pagar </a>
-                                                                                @endif
                                                                                 <a href="{{ $invoice->url_payment }}" target="_blank" class="btn btn-sm btn-outline-primary"> Acessar </a>
                                                                                 @if($invoice->status <> 1 )
                                                                                     <a href="" class="btn btn-sm btn-outline-danger confirm"> Excluir </a>

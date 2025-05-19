@@ -3,11 +3,14 @@
 use App\Http\Controllers\Access\ForgoutController;
 use App\Http\Controllers\Access\Login;
 use App\Http\Controllers\Access\Registrer;
+use App\Http\Controllers\Access\TermsUsabilityContract;
 use App\Http\Controllers\AppController;
-use App\Http\Controllers\Assas\AssasController;
+use App\Http\Controllers\Gateway\AssasController;
 use App\Http\Controllers\Client\AppController as ClientAppController;
 use App\Http\Controllers\Client\LoginController;
 use App\Http\Controllers\Faq\FaqController;
+use App\Http\Controllers\Media\BannerController;
+use App\Http\Controllers\Media\PostController;
 use App\Http\Controllers\Payment\Payment;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Sale\ContractController;
@@ -43,9 +46,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['checkMonthly', 'checkAccount'])->group(function () {
 
-        Route::get('/app', [AppController::class, 'app'])->name('app');
-
-        // ========================== Users =============================
+        Route::middleware(['checkWallet'])->group(function () {
             //Sales
             Route::get('/list-sales', [SaleController::class, 'listSale'])->name('list-sales');
             Route::get('/view-sale/{uuid}', [SaleController::class, 'viewSale'])->name('view-sale');
@@ -56,28 +57,23 @@ Route::middleware(['auth'])->group(function () {
             Route::post('deleted-sale', [SaleController::class, 'deletedSale'])->name('deleted-sale');
             Route::get('reprotocol-sale/{id}', [SaleController::class, 'reprotocolSale'])->name('reprotocol-sale');
 
-                //Coupons
-                Route::get('/list-coupons', [CouponController::class, 'coupons'])->name('list-coupons');
-                Route::post('created-coupon', [CouponController::class, 'created'])->name('created-coupon');
-                Route::post('deleted-coupon', [CouponController::class, 'deleted'])->name('deleted-coupon');
-                Route::post('add-coupon', [CouponController::class, 'addCoupon'])->name('add-coupon');
-
             //Invoices
             Route::get('/view-invoice/{id}', [InvoiceController::class, 'index'])->name('view-invoice');
             Route::post('created-invoice', [InvoiceController::class, 'createdInvoice'])->name('created-invoice');
             Route::post('updated-invoice', [InvoiceController::class, 'updatedInvoice'])->name('updated-invoice');
             Route::post('/deleted-invoice', [InvoiceController::class, 'deletedInvoice'])->name('deleted-invoice');
 
-            //Contracts
-            Route::get('/send-contract/{id}', [ContractController::class, 'createContract'])->name('send-contract');
-            Route::get('/send-default-whatsapp/{id}', [DefaultController::class, 'sendWhatsapp'])->name('send-default-whatsapp');
+            //Users
+            Route::post('created-user', [UserController::class, 'created'])->name('created-user');
+        });
 
-            // Finance
-            Route::get('/wallet', [WalletController::class, 'wallet'])->name('wallet');
-            Route::post('withdraw-send', [WalletController::class, 'withdrawSend'])->name('withdraw-send');
+        Route::get('/app', [AppController::class, 'app'])->name('app');
 
-            //Intagrations
-            Route::get('/Integrate-wallet', [WalletController::class, 'IntegrateWallet'])->name('Integrate-wallet');
+            //Coupons
+            Route::get('/list-coupons', [CouponController::class, 'coupons'])->name('list-coupons');
+            Route::post('created-coupon', [CouponController::class, 'created'])->name('created-coupon');
+            Route::post('deleted-coupon', [CouponController::class, 'deleted'])->name('deleted-coupon');
+            Route::post('add-coupon', [CouponController::class, 'addCoupon'])->name('add-coupon');
 
             //Lixeira
             Route::get('/trash-sales', [TrashController::class, 'trashSales'])->name('trash-sales');
@@ -86,9 +82,9 @@ Route::middleware(['auth'])->group(function () {
             Route::post('user-recover', [RecoverController::class, 'recoverUser'])->name('user-recover');
 
             //Gateway
-            Route::get('/createMonthly/{id}', [AssasController::class, 'createMonthly'])->name('createMonthly');
-            Route::get('/payMonthly/{id}', [AssasController::class, 'payMonthly'])->name('payMonthly');
-            Route::get('/request-invoices/{id}', [AssasController::class, 'requestInvoice'])->name('request-invoices');
+            Route::get('/integrate-assas-wallet', [AssasController::class, 'IntegrateWallet'])->name('integrate-assas-wallet');
+            Route::post('/send-assas-token', [AssasController::class, 'IntegrateToken'])->name('send-assas-token');
+            Route::get('/create-monthly', [AssasController::class, 'createMonthly'])->name('create-monthly');
 
             Route::middleware(['checkAdmin'])->group(function () {
                 //Users
@@ -109,8 +105,17 @@ Route::middleware(['auth'])->group(function () {
                 Route::post('updated-list', [ListController::class, 'updatedList'])->name('updated-list');
                 Route::post('deleted-list', [ListController::class, 'deletedList'])->name('deleted-list');
                 Route::get('/list-excel/{id}', [ListController::class, 'excelList'])->name('list-excel');
+
+                //Media
+                Route::post('created-post', [PostController::class, 'created'])->name('created-post');
+                Route::post('deleted-post', [PostController::class, 'deleted'])->name('deleted-post');
+                Route::post('created-banner', [BannerController::class, 'created'])->name('created-banner');
+                Route::get('deleted-banner/{id}', [BannerController::class, 'deleted'])->name('deleted-banner');
             });
     });
+
+    //Terms
+    Route::get('/view-terms-of-usability', [TermsUsabilityContract::class, 'index'])->name('view-terms-of-usability');
 
     //User
     Route::get('/profile', [UserController::class, 'profile'])->name('profile');
@@ -123,7 +128,7 @@ Route::middleware(['auth'])->group(function () {
 
     //Operations
     Route::get('/payments', [Payment::class, 'payments'])->name('payments');
-    Route::get('/receivable', [Payment::class, 'receivable'])->name('receivable');
+    // Route::get('/receivable', [Payment::class, 'receivable'])->name('receivable');
 
     Route::get('/logout', [Login::class, 'logout'])->name('logout');
 

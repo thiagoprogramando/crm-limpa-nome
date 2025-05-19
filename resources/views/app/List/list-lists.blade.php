@@ -89,6 +89,7 @@
                                     <th class="text-center" scope="col">Início</th>
                                     <th class="text-center" scope="col">Encerramento</th>
                                     <th class="text-center" scope="col">Status</th>
+                                    <th class="text-center" scope="col">Status Protocolo</th>
                                     <th class="text-center" scope="col">Opções</th>
                                 </tr>
                             </thead>
@@ -102,15 +103,16 @@
                                         <td class="text-center">{{ \Carbon\Carbon::parse($list->start)->format('d/m/Y H:i') }}</td>
                                         <td class="text-center">{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y H:i') }}</td>
                                         <td class="text-center">{{ $list->statusLabel() }}</td>
+                                        <td class="text-center">{{ $list->statusProtocolLabel() }}</td>
                                         <td class="text-center">
                                             <form action="{{ route('deleted-list') }}" method="POST" class="delete btn-group">
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $list->id }}">
                                                 @if (Auth::user()->type == 1)
-                                                    <a href="{{ route('view-list', ['id' => $list->id]) }}" class="btn btn-warning text-light"><i class="bi bi-pencil-square"></i></a>
-                                                    <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+                                                    <a href="{{ route('view-list', ['id' => $list->id]) }}" class="btn btn-sm btn-outline-primary">Editar</a>
                                                 @endif
-                                                <a href="{{ route('list-excel', ['id' => $list->id]) }}" class="btn btn-success text-light"><i class="bi bi-file-earmark-excel"></i></a>
+                                                <a href="{{ route('list-excel', ['id' => $list->id]) }}" class="btn btn-sm btn-outline-primary">Excel</a>
                                             </form>
                                         </td>
                                     </tr>

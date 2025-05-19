@@ -381,7 +381,7 @@ h6 {
   z-index: 997;
   height: 60px;
   box-shadow: 0px 2px 20px rgba(1, 41, 112, 0.1);
-  background-color: #000F3E;
+  background-color: #050004;
   color: #fff;
   padding-left: 20px;
   /* Toggle Sidebar Button */
@@ -850,7 +850,7 @@ h6 {
 
 .dashboard .clock-card .card-icon {
   color: #f6f6fe;
-  background: #000F3E;
+  background: #050004;
 }
 
 .dashboard .wallet-card .card-icon {
@@ -1265,10 +1265,15 @@ h6 {
 }
 
 table thead tr th {
-  background-color: #000F3E !important;
+  background-color: #050004 !important;
   color: #fff !important;
 }
 
 canvas {
   max-height: 130px;
 }
+
+.darkened-img {
+    filter: brightness(0.5);
+}
+

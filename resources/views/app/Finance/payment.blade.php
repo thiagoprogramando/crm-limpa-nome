@@ -87,12 +87,7 @@
                                                     @if ($payment->type == 1 && $payment->status !== 1)
                                                         <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#couponModal{{ $payment->id }}">Cupom</button>
                                                     @endif
-                                                    @if(!empty(Auth::user()->wallet) && $payment->status !== 1)
-                                                        <a href="{{ route('payMonthly', ['id' => $payment->id]) }}" class="btn btn-sm btn-outline-primary" title="Pagar com saldo">
-                                                            Pagar
-                                                        </a>
-                                                    @endif
-                                                    <a href="{{ $payment->url_payment }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Acessar Fatura">
+                                                    <a href="{{ $payment->payment_url }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Acessar Fatura">
                                                         Acessar
                                                     </a>
                                                 </div>

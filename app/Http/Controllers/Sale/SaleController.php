@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Sale;
 
-use App\Http\Controllers\Assas\AssasController;
+use App\Http\Controllers\Gateway\AssasController;
 use App\Http\Controllers\Controller;
 
 use App\Models\Invoice;
@@ -54,7 +54,7 @@ class SaleController extends Controller {
 
     public function createdClientSale(Request $request) {
 
-        $user = $this->createdUser($request->name, $request->email, $request->cpfcnpj, $request->birth_date, $request->phone, Auth::user()->id, Auth::user()->fixed_cost);
+        $user = $this->createdUser($request->name, $request->email, $request->cpfcnpj, $request->birth_date, $request->phone, Auth::user()->id, Auth::user()->fixed_cost, Auth::user()->association_id);
         if ($user !== false) {
             return redirect()->route('create-sale', [
                 'product' => $request->product_id,
@@ -65,7 +65,7 @@ class SaleController extends Controller {
         return redirect()->back()->with('info', 'Não foi possível incluir o cliente, verifique os dados e tente novamente!');
     }
 
-    private function createdUser($name, $email, $cpfcnpj, $birth_date, $phone, $sponsor = null, $cost = null) {
+    private function createdUser($name, $email, $cpfcnpj, $birth_date, $phone, $sponsor = null, $cost = null, $association_id = null) {
         
         $cpfcnpj    = preg_replace('/\D/', '', $cpfcnpj);
         $email      = preg_replace('/[^\w\d\.\@\-\_]/', '', $email);
@@ -80,6 +80,7 @@ class SaleController extends Controller {
             }
         } else {
             $user = new User([
+                'uuid'          => str::uuid(),
                 'cpfcnpj'       => $cpfcnpj,
                 'password'      => bcrypt($cpfcnpj),
                 'type'          => 3,
@@ -87,19 +88,19 @@ class SaleController extends Controller {
         }
         
         $user->fill([
-            'name'       => $name,
-            'email'      => $email,
-            'birth_date' => $birth_date,
-            'phone'      => $phone,
-            'sponsor_id' => $sponsor,
-            'fixed_cost' => $cost,
+            'name'            => $name,
+            'email'           => $email,
+            'birth_date'      => $birth_date,
+            'phone'           => $phone,
+            'sponsor_id'      => $sponsor,
+            'association_id'  => $association_id,
+            'fixed_cost'      => $cost,
         ]);
 
-        if (empty($user->customer)) {
-            $customer = $assas->createCustomer($name, $cpfcnpj, $phone, $email);
-            if ($customer === false) {
-                return false;
-            }
+        
+        $customer = $assas->createCustomer($name, $cpfcnpj, $phone, $email);
+        if ($customer === false) {
+            return false;
         }
 
         return $user->save() ? $user : false;
@@ -115,6 +116,12 @@ class SaleController extends Controller {
         $client = User::find($request->client_id);
         if (!$client) {
             return redirect()->back()->with('error', 'Cliente não disponível!');
+        }
+
+        $assas = new AssasController();
+        $customer = $assas->createCustomer($client->name, $client->cpfcnpj, $client->phone, $client->email);
+        if ($customer === false) {
+            return false;
         }
 
         $seller = User::find($request->seller_id);
@@ -135,7 +142,7 @@ class SaleController extends Controller {
             return redirect()->back()->with('error', 'Não é possível lançar Vendas no momento, tente novamente mais tarde!');
         }
 
-        $sale = $this->createdSale($seller, $client, $product, $list, $request->payment_method, $request->payment_installments, $request->installments);
+        $sale = $this->createdSale($customer, $seller, $client, $product, $list, $request->payment_method, $request->payment_installments, $request->installments);
         if (!empty($sale['uuid'])) {
             return redirect()->route('view-sale', ['uuid' => $sale['uuid']])->with('success', 'Venda cadastrada com sucesso!'); 
         }
@@ -143,7 +150,8 @@ class SaleController extends Controller {
         return redirect()->back()->with('error', 'Não foi possível incluir a venda, verifique os dados e tente novamente!'); 
     }
 
-    private function createdSale($seller, $client, $product, $list, $paymentMethod, $paymentInstallments, $installments) {
+    private function createdSale($customer, $seller, $client, $product, $list, $paymentMethod, $paymentInstallments, $installments) {
+        
         DB::beginTransaction();
     
         try {
@@ -167,29 +175,29 @@ class SaleController extends Controller {
                 $totalCommission = 0;
     
                 if ($key == 1) {
-                    $fixedCost = $seller->fixed_cost;
-                    $totalCommission = max($value - $fixedCost, 0);
+                    $fixedCost          = $seller->fixed_cost ?? $product->value_cost;
+                    $totalCommission    = max($value - $fixedCost, 0);
+
+                    $commissions[] = [
+                        'wallet'     => env('WALLET_EXPRESS'),
+                        'fixedValue' => $fixedCost,
+                    ];
     
                     $sponsor = $seller->sponsor;
                     if ($sponsor) {
                         $sponsorCommission = max($fixedCost - $sponsor->fixed_cost, 0);
                         if ($sponsorCommission > 0) {
                             $commissions[] = [
-                                'wallet'     => $sponsor->wallet,
+                                'wallet'     => $sponsor->token_wallet,
                                 'fixedValue' => $sponsorCommission,
                             ];
-                            $totalCommission -= $sponsorCommission;
                         }
                     }
     
                     if ($totalCommission > 0) {
                         $commissions[] = [
-                            'wallet'     => $seller->wallet,
-                            'fixedValue' => number_format($totalCommission - 1, 2, '.', ''),
-                        ];
-                        $commissions[] = [
-                            'wallet'     => env('WALLET_EXPRESS'),
-                            'fixedValue' => number_format(1, 2, '.', ''),
+                            'wallet'     => $seller->token_wallet,
+                            'fixedValue' => number_format($totalCommission, 2, '.', ''),
                         ];
                     }
                 } else {
@@ -197,28 +205,18 @@ class SaleController extends Controller {
                     $totalCommission = $value - $percent;
     
                     $commissions[] = [
-                        'wallet'     => $seller->wallet,
+                        'wallet'     => $seller->token_wallet,
                         'fixedValue' => number_format($totalCommission, 2, '.', ''),
                     ];
-                    $commissions[] = [
-                        'wallet'     => env('WALLET_EXPRESS'),
-                        'fixedValue' => number_format(1, 2, '.', ''),
-                    ];
-                    $g7Value = $percent - 1;
-                    if ($g7Value > 0) {
-                        $commissions[] = [
-                            'wallet'     => env('WALLET_G7'),
-                            'fixedValue' => number_format($g7Value, 2, '.', ''),
-                        ];
-                    }
                 }
     
-                $payment = $assas->createCharge($client->customer, $paymentMethod, $value, $dueDate, 'Fatura '.$key.' para venda N° '.$sale->id, $commissions);
+                $payment = $assas->createCharge($customer, $paymentMethod, $value, $dueDate, 'Fatura '.$key.' para venda N° '.$sale->id, $commissions);
                 if (!$payment || !isset($payment['id'], $payment['invoiceUrl'])) {
                     throw new \Exception("Erro ao gera dados de pagamento para nova venda na parcela {$key}");
                 }
     
                 $invoice = new Invoice();
+                $invoice->uuid                = str::uuid();
                 $invoice->product_id          = $product->id;
                 $invoice->user_id             = $client->id;
                 $invoice->sale_id             = $sale->id;
@@ -358,140 +356,43 @@ class SaleController extends Controller {
         return redirect()->back()->with('error', 'Não foi possível excluir a venda!');
     }
 
-    // public function reprotocolSale($id) {
+    public function reprotocolSale($id) {
 
-    //     $sale = Sale::find($id);
-    //     if (!$sale) {
-    //         return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');   
-    //     }
+        $sale = Sale::find($id);
+        if (!$sale) {
+            return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');   
+        }
 
-    //     if ($sale->status <> 1) {
-    //         return redirect()->back()->with('info', 'Venda não foi confirmada!');   
-    //     }
+        if ($sale->status <> 1) {
+            return redirect()->back()->with('info', 'Venda não foi confirmada!');   
+        }
 
-    //     $list = SaleList::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
-    //     if (!$list) {
-    //         return redirect()->back()->with('error', 'Não há uma lista disponível para reprotocolar a venda!');
-    //     }
-
-    //     if (Auth::user()->type !== 1) {
-    //         $invoices = Invoice::where('sale_id', $sale->id)->get();
-    //         $tomorrow = now()->addDay();
-    //         foreach ($invoices as $invoice) {
-    //             if ($invoice->due_date <= $tomorrow && $invoice->status == 0) {
-    //                 return redirect()->back()->with('error', 'Existem faturas vencidas associadas a Venda!');
-    //             }
-    //         }
-    //     }
+        $list = SaleList::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
+        if (!$list) {
+            return redirect()->back()->with('error', 'Não há uma lista disponível para reprotocolar a venda!');
+        }
         
-    //     $sale->list_id = $sale->label !== null 
-    //                     ? $sale->list_id 
-    //                     : $list->id;
+        $sale->list_id = $sale->label !== null 
+                        ? $sale->list_id 
+                        : $list->id;
 
-    //     $sale->label = str_contains($sale->label, 'REPROTOCOLADO -') 
-    //                 ? null 
-    //                 : 'REPROTOCOLADO - ' . now()->format('d/m/Y');
+        $sale->label = str_contains($sale->label, 'REPROTOCOLADO -') 
+                    ? null 
+                    : 'REPROTOCOLADO - ' . now()->format('d/m/Y');
 
-    //     if ($sale->save()) {
+        if ($sale->save()) {
 
-    //         if ($sale->label !== null) {
-    //             $clientName     = $sale->user->name;
-    //             $phone          = $sale->user->phone;
-    //             $sellerApiToken = $sale->seller->api_token_zapapi;
-            
-    //             $message = "*Assunto: Reprotocolamento de Processo Judicial*\r\n\r\n" .
-    //                        "{$clientName},\r\n\r\n" .
-    //                        "Gostaríamos de informar que o *seu processo* foi *reprotocolado com sucesso.*\r\n\r\n" .
-    //                        "A partir de agora, será necessário *aguardar o prazo estimado de 20 a 30 dias*, " .
-    //                        "conforme estipulado pelos trâmites judiciais, para a análise e andamento do seu caso.\r\n\r\n" .
-    //                        "Estamos acompanhando de perto o andamento do processo e *entraremos em contato assim que houver novidades.*\r\n\r\n" .
-    //                        "Agradecemos sua paciência e estamos à disposição para esclarecer qualquer dúvida.";
-            
-    //             $this->sendWhatsapp(env('APP_URL') . 'login-cliente', $message, $phone, $sellerApiToken);
-    //             return redirect()->back()->with('success', 'Processo reprotocolado!');
-    //         } else {
-    //             $clientName     = $sale->user->name;
-    //             $phone          = $sale->user->phone;
-    //             $sellerApiToken = $sale->seller->api_token_zapapi;
-            
-    //             $message = "*Assunto: Conclusão do Processo Judicial*\r\n\r\n" .
-    //                        "{$clientName},\r\n\r\n" .
-    //                        "É com satisfação que informamos que o *seu processo foi concluído com sucesso!*\r\n\r\n" .
-    //                        "Agradecemos pela confiança em nosso trabalho.";
-            
-    //             $this->sendWhatsapp(env('APP_URL') . 'login-cliente', $message, $phone, $sellerApiToken);
-    //             return redirect()->back()->with('success', 'Processo concluído!');
-    //         }            
+            if ($sale->label !== null) {
+                return redirect()->back()->with('success', 'Processo reprotocolado!');
+            } else {
+                return redirect()->back()->with('success', 'Processo concluído!');
+            }            
 
-    //         return redirect()->back()->with('success', 'Venda alterada com sucesso!');
-    //     }
+            return redirect()->back()->with('success', 'Venda alterada com sucesso!');
+        }
 
-    //     return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');
-    // }
-
-    // public function approvedAll(Request $request) {
-
-    //     try {
-            
-    //         $sales = Sale::whereIn('id', $request['ids'])->get();
-    //         if ($sales->isEmpty()) {
-    //             return response()->json([
-    //                 'status' => 'error',
-    //                 'message' => 'Nenhuma venda encontrada!',
-    //             ], 404);
-    //         }
-    
-    //         foreach ($sales as $sale) {
-    //             $sale->status = 1;
-    //             $sale->save();
-    //         }
-    
-    //         return response()->json([
-    //             'success'       => true,
-    //             'status'        => 'success',
-    //             'message'       => 'Vendas aprovadas com sucesso!',
-    //             'approved_ids'  => $sales->pluck('id')
-    //         ], 200);
-    
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'success'   => false,
-    //             'status'    => 'error',
-    //             'message'   => 'Ocorreu um erro ao aprovar as vendas!',
-    //             'details'   => $e->getMessage(),
-    //         ], 500);
-    //     }
-    // }
-
-    // private function sendWhatsapp($link, $message, $phone, $token = null) {
-
-    //     $client = new Client();
-
-    //     $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
-    //     try {
-
-    //         $response = $client->post($url, [
-    //             'headers' => [
-    //                 'Content-Type'  => 'application/json',
-    //                 'Accept'        => 'application/json',
-    //                 'Client-Token'  => 'Fabe25dbd69e54f34931e1c5f0dda8c5bS',
-    //             ],
-    //             'json' => [
-    //                 'phone'           => '55' . $phone,
-    //                 'message'         => $message,
-    //                 'image'           => env('APP_URL_LOGO'),
-    //                 'linkUrl'         => $link,
-    //                 'title'           => 'Assinatura de Documento',
-    //                 'linkDescription' => 'Link para Assinatura Digital',
-    //             ],
-    //             'verify' => false
-    //         ]);
-
-    //         return true;
-    //     } catch (\Exception $e) {
-    //         return false;
-    //     }
-    // }
+        return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');
+    }
 
     private function formatValue($valor) {
         

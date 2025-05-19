@@ -160,11 +160,6 @@
                                                                         <td>{{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y') }}</td>
                                                                         <td class="text-center">
                                                                             <div class="btn-group">
-                                                                                @if(!empty($user->wallet))
-                                                                                    <a href="{{ route('payMonthly', ['id' => $invoice->id]) }}" class="btn btn-success text-light">
-                                                                                        <i class="bi bi-credit-card"></i> Pagar com saldo
-                                                                                    </a>
-                                                                                @endif
                                                                                 <a href="{{ $invoice->url_payment }}" target="_blank" class="btn btn-primary text-light">
                                                                                     <i class="bi bi-arrow-up-right-circle"></i> Acessar Fatura
                                                                                 </a>

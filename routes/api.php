@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Access\TermsUsabilityContract;
 use App\Http\Controllers\Assas\AssasController;
 use App\Http\Controllers\Sale\ContractController;
 use App\Http\Controllers\Sale\SaleController;
@@ -13,3 +14,4 @@ Route::post('approved-all', [SaleController::class, 'approvedAll'])->name('appro
 Route::post('create-payment', [AssasController::class, 'createPayment'])->name('create-payment');
 
 Route::post('sign-sale', [ContractController::class, 'signSale'])->name('sign-sale');
+Route::post('sign-terms', [TermsUsabilityContract::class, 'signTerms'])->name('sign-terms');

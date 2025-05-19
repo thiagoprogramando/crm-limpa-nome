@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banner;
+use App\Models\Post;
 use App\Models\Sale;
 use App\Models\SaleList;
 use App\Models\User;
@@ -30,12 +32,12 @@ class AppController extends Controller {
         }
 
         $subscribers = [
-            'actives'   => User::where('status', 1)->where('type', 2)->where('association_id', Auth::user()->association_id)->count(),
-            'inactives' => User::where('status', 3)->where('type', 2)->where('association_id', Auth::user()->association_id)->count(),
+            'actives'   => User::where('status', 1)->where('type', 2)->where('sponsor_id', Auth::user()->sponsor_id)->count(),
+            'inactives' => User::where('status', 2)->where('type', 2)->where('sponsor_id', Auth::user()->sponsor_id)->count(),
         ];
 
         $types = [
-            'CONSULTOR'         => User::where('type', 2)->whereIn('level', [1, 2])->where('sponsor_id', Auth::user()->id)->count(),
+            'CONSULTOR'         => User::where('type', 2)->where('level', 2)->where('sponsor_id', Auth::user()->id)->count(),
             'CONSULTOR LIDER'   => User::where('type', 2)->where('level', 3)->where('sponsor_id', Auth::user()->id)->count(),
             'REGIONAL'          => User::where('type', 2)->where('level', 4)->where('sponsor_id', Auth::user()->id)->count(),
             'GERENTE REGIONAL'  => User::where('type', 2)->where('level', 5)->where('sponsor_id', Auth::user()->id)->count(),
@@ -47,6 +49,26 @@ class AppController extends Controller {
 
         $rankings = User::where('type', 2)->withCount('sales')->orderBy('sales_count', 'desc')->paginate(10);
         $networks = User::where('type', 2)->where('sponsor_id', Auth::user()->id)->orderBy('created_at', 'desc')->paginate(10);
+        
+        $userType = Auth::user()->type;
+        
+        $posts = Post::when($userType != 1, function ($query) use ($userType) {
+                $query->where(function ($q) use ($userType) {
+                    $q->where('access_type', $userType)
+                    ->orWhereNull('access_type');
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
+
+        $banners = Banner::when($userType != 1, function ($query) use ($userType) {
+                $query->where(function ($q) use ($userType) {
+                    $q->where('access_type', $userType)
+                    ->orWhereNull('access_type');
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return view('app.app', [
             'list'          => $list,
@@ -55,6 +77,8 @@ class AppController extends Controller {
             'types'         => $types,
             'rankings'      => $rankings,
             'networks'      => $networks,
+            'posts'         => $posts,
+            'banners'       => $banners
         ]);
     }
 }

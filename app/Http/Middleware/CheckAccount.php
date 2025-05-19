@@ -25,7 +25,7 @@ class CheckAccount {
 
             $months = Invoice::where('user_id', $user->id)->where('status', 0)->where('type', 1)->count();
             if($months >= 1) {
-                return redirect()->back()->with('info', 'Você precisa renovar sua Assinatura!');
+                return redirect()->route('payments')->with('info', 'Você precisa renovar sua Assinatura!');
             }
         }
 

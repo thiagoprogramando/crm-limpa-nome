@@ -122,38 +122,30 @@
                                         </td>
                                         <td>
                                             <div class="text-start">
-                                                <span class="badge bg-{{ $sale->protocolLabel()['color'] }}" title=" {{ $sale->protocolLabel()['title'] }}">
-                                                    {{ $sale->list->name }} <br> {{ $sale->protocolLabel()['label'] }}
+                                                <span class="badge bg-primary" title="{{ $sale->list->name }}">
+                                                    {{ $sale->list->name }} <br> {{ $sale->list->statusProtocolLabel() }}
                                                 </span>
                                                 @isset($sale->label) 
-                                                    <span class="badge bg-primary">
+                                                    <span class="badge bg-warning">
                                                         {{ $sale->label }}
                                                     </span> 
                                                 @endisset
                                                 @isset($sale->guarantee)
-                                                    <span class="badge bg-primary">
+                                                    <span class="badge bg-success">
                                                         Garantia: {{ \Carbon\Carbon::parse($sale->guarantee)->format('d/m/Y') }}
                                                     </span>
                                                 @endisset
                                             </div>                     
                                         </td>
                                         <td class="text-center">
-                                            @isset($sale->url_contract)
-                                                {{ $sale->statusContractLabel() }} <br>
-                                                <span class="badge bg-primary">
+                                            @if ( $sale->statusContractLabel() == 'Assinado')
+                                                <span class="badge bg-success">
                                                     <a title="Contrato" href="{{ env('APP_URL').'view-contract/'.$sale->id }}" target="_blank" class="text-white">Acessar</a>
                                                 </span>
-                                                @if (empty($sale->contract_sign))
-                                                    <span class="badge bg-warning">
-                                                        <a title="Reenviar Contrato" href="{{ route('send-contract', ['id' => $sale->id]) }}" class="text-white"><i class="ri-file-edit-line"></i>Copiar URL</a>
-                                                    </span>
-                                                @endif
-                                            @endisset
-
-                                            @if(!$sale->url_contract)
-                                                    <span class="badge bg-danger">
-                                                        Indisponível
-                                                    </span>
+                                            @else
+                                                <span class="badge bg-warning" title="Copiar URL" onclick="onClip('{{ env('APP_URL') }}view-contract/{{ $sale->id }}')">
+                                                    <i class="ri-file-edit-line"></i> Copiar Link do Contrato
+                                                </span>
                                             @endif
                                         </td>
                                         <td class="text-center">

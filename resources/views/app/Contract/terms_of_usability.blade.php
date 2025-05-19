@@ -47,40 +47,60 @@
     <body>
 
         <div class="container mt-5 mb-5 p-5">
-            {!! $contractContent  !!}
+            @if (Auth::user()->terms_of_usability)
+                {!! Auth::user()->terms_of_usability !!}
+            @else
+                <h1>Contrato de Adesão e Uso do Sistema – Vendedores Parceiros</h1>
+                <p><strong>PARTES:</strong></p>
+                <p>
+                    De um lado, a empresa <strong>{{ env('COMPANY_NAME') }}</strong>, inscrita no CNPJ sob nº <strong>{{ env('COMPANY_CPFCNPJ') }}</strong>, com sede na <strong>{{ env('COMPANY_ADDRESS') }}</strong>, e-mail <strong>{{ env('COMPANY_EMAIL') }}</strong>, doravante denominada <strong>“CONTRATANTE” ou “CRM”</strong>;
+                </p>
+                <p>
+                    E de outro, <strong>{{ Auth::user()->company_name }}</strong>, portador do CPF/CNPJ nº <strong>{{ Auth::user()->company_cpfcnpj }}</strong>, residente e domiciliado na <strong>{{ Auth::user()->company_address }}</strong>, email <strong>{{ Auth::user()->company_email }}</strong>, doravante denominado <strong>“VENDEDOR PARCEIRO” ou “USUÁRIO”</strong>.
+                </p>
 
-            <div class="table-respondive mb-5">
-                <p>Anexo I</p>
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">Parcela</th>
-                            <th class="text-center" scope="col">Valor</th>
-                            <th class="text-center" scope="col">Vencimento</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($invoices as $invoice)
-                            <tr>
-                                <th scope="row">{{ $invoice->description }}</th>
-                                <td class="text-center">R$ {{ number_format($invoice->value, 2, ',', '.') }}</td>
-                                <td class="text-center">{{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y') }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                <p>
+                    As partes acima identificadas resolvem firmar o presente <strong>Contrato de Adesão e Uso de Sistema</strong>, que se regerá pelas cláusulas e condições seguintes:
+                </p>
 
-            @if (!empty($sale->sign_contract))
-                <div class="container text-center mt-3 mb-5">
-                    <img src="{{ $sale->sign_contract }}" alt="Assinatura" style="max-width: 100%; height: auto;">
-                    <br>
-                    <small>Assinatura {{ $sale->user->name }}</small>
-                </div>
+                <h2>1. Objeto</h2>
+                <p>1.1. O presente contrato tem por objeto a <strong>adesão e uso do sistema CRM</strong> desenvolvido pela CONTRATANTE, voltado à gestão de vendas de serviços de negociação de dívidas (popularmente conhecido como “Limpa Nome”), por meio de plataforma própria.</p>
+                <p>1.2. Será de total responsabilidade da CONTRATANTE <strong>atribuir ou adicionar novos produtos</strong>, assim como gerenciar o uso/seguro dos mesmos.</p>
+
+                <h2>2. Natureza da Relação</h2>
+                <p>2.1. O presente contrato é de <strong>adesão e prestação de serviço de sistema</strong>, não estabelecendo vínculo empregatício, representação comercial, sociedade ou franquia entre as partes.</p>
+
+                <h2>3. Garantia dos Produtos</h2>
+                <p>3.1. Os produtos e serviços ofertados através do sistema possuem <strong>garantia de 3 (três) meses</strong>, a contar da data da venda, podendo este prazo ser ampliado pela CONTRATANTE, a seu exclusivo critério.</p>
+
+                <h2>4. Prazo Mínimo de Uso</h2>
+                <p>4.1. O VENDEDOR PARCEIRO compromete-se a <strong>utilizar o sistema por um prazo mínimo de 6 (seis) meses</strong>, a contar da data de ativação da sua conta no CRM.</p>
+
+                <h2>5. Regras de Comercialização</h2>
+                <p>5.1. O não cumprimento das <strong>condições contratuais dos produtos ofertados</strong>, especialmente as cláusulas de elegibilidade, prazos e documentos exigidos, <strong>invalida a venda</strong> realizada pelo VENDEDOR PARCEIRO.</p>
+                <p>5.2. O VENDEDOR PARCEIRO é integralmente responsável pelas <strong>informações prestadas aos clientes finais</strong>, devendo seguir fielmente as diretrizes e orientações fornecidas dentro do CRM.</p>
+
+                <h2>6. Responsabilidade por Serviços e Estornos</h2>
+                <p>6.1. A CONTRATANTE compromete-se a <strong>estornar os valores recebidos dos clientes finais</strong>, em caso de <strong>não entrega ou não execução dos serviços contratados</strong>, <strong>excetuando-se os valores pagos a título de assinatura</strong> ou uso do sistema pelo VENDEDOR PARCEIRO, que <strong>não são reembolsáveis</strong>.</p>
+
+                <h2>7. Limitação de Responsabilidade</h2>
+                <p>7.1. A CONTRATANTE atua <strong>exclusivamente como fornecedora de tecnologia de gestão e intermediação</strong>, não sendo responsável pela comercialização direta dos serviços ou pela atuação dos VENDEDOR PARCEIROS junto ao público.</p>
+
+                <h2>8. Rescisão</h2>
+                <p>8.1. O presente contrato poderá ser rescindido a qualquer tempo por qualquer das partes, mediante notificação por escrito, respeitado o <strong>prazo mínimo de 6 (seis) meses</strong> de uso.</p>
+                <p>8.2. A CONTRATANTE reserva-se o direito de <strong>suspender ou encerrar</strong> o acesso do VENDEDOR PARCEIRO em caso de descumprimento de qualquer cláusula deste contrato.</p>
+
+                <h2>9. Disposições Gerais</h2>
+                <p>9.1. Este contrato é regido pelas leis brasileiras e qualquer controvérsia será dirimida no foro da comarca de <strong>Natal/RN</strong>, com exclusão de qualquer outro, por mais privilegiado que seja.</p>
+
+                <p><strong>Declaro que li, compreendi e aceito integralmente os termos deste contrato.</strong></p>
+                <p>__________________________________________</p>
+                <p><strong>VENDEDOR PARCEIRO:</strong> {{ Auth::user()->company_name }}</p>
+                <p><strong>Data:</strong> {{ now()->format('d/m/Y') }}</p>
             @endif
         </div>
         
-        @if (empty($sale->sign_contract))
+        @if (empty(Auth::user()->terms_of_usability))
             <button id="floatingButton" class="floating-button btn btn-primary">
                 <i class="ri-add-line"></i> Assinar Contrato
             </button>
@@ -152,14 +172,13 @@
 
                 function resizeCanvas() {
                     var modalBody = document.querySelector('.modal-body');
-                    var width = modalBody.clientWidth - 40; // Mantém uma margem
-                    canvas.width = width > 400 ? 400 : width; // Limita a 400px
+                    var width = modalBody.clientWidth - 40;
+                    canvas.width = width > 400 ? 400 : width;
                     canvas.height = 200;
                     ctx.fillStyle = "white";
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                 }
 
-                // Abre o modal e ajusta o canvas
                 document.getElementById('floatingButton').addEventListener('click', function () {
                     var modal = new bootstrap.Modal(document.getElementById('signatureModal'));
                     modal.show();
@@ -167,7 +186,6 @@
 
                 document.getElementById('signatureModal').addEventListener('shown.bs.modal', resizeCanvas);
 
-                // Captura eventos de toque e mouse
                 function startDrawing(e) {
                     isDrawing = true;
                     [lastX, lastY] = [e.offsetX, e.offsetY];
@@ -189,13 +207,11 @@
                     isDrawing = false;
                 }
 
-                // Eventos para mouse
                 canvas.addEventListener("mousedown", startDrawing);
                 canvas.addEventListener("mousemove", draw);
                 canvas.addEventListener("mouseup", stopDrawing);
                 canvas.addEventListener("mouseout", stopDrawing);
 
-                // Eventos para touchscreen
                 canvas.addEventListener("touchstart", function (e) {
                     var touch = e.touches[0];
                     var rect = canvas.getBoundingClientRect();
@@ -220,14 +236,13 @@
                     ctx.stroke();
                     [lastX, lastY] = [x, y];
 
-                    e.preventDefault(); // Evita rolagem ao tocar
+                    e.preventDefault();
                 });
 
                 canvas.addEventListener("touchend", function () {
                     isDrawing = false;
                 });
 
-                // Botão Limpar
                 document.getElementById('clearSignature').addEventListener('click', function () {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                 });
@@ -244,16 +259,19 @@
                     }
 
                     var signatureData = canvas.toDataURL("image/png");
-                    var saleId = "{{ $sale->id }}";
+                    var userUuid = "{{ Auth::user()->uuid }}";
+                    var contractHtml = document.querySelector('.container.mt-5.mb-5.p-5').innerHTML;
 
-                    fetch("/api/sign-sale", {
+                    fetch("/api/sign-terms", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
                         },
                         body: JSON.stringify({
-                            id: saleId,
-                            sign: signatureData
+                            uuid    : userUuid,
+                            sign    : signatureData,
+                            term    : 'terms_of_usability',
+                            html    : contractHtml
                         })
                     })
                     .then(response => response.json())
@@ -265,7 +283,7 @@
                                 icon: 'success',
                                 confirmButtonText: 'OK'
                             }).then(() => {
-                                window.location.reload();
+                                window.location.href = '/app';
                             });
                         } else {
                             Swal.fire({

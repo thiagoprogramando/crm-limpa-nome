@@ -18,6 +18,7 @@ class User extends Authenticatable {
     use HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
+        'uuid',
         'sponsor_id',
         'association_id',
 
@@ -36,26 +37,24 @@ class User extends Authenticatable {
         'state',
         'num',
 
-        'level',
-        'status',
-
-        'wallet_off',
         'wallet',
-        'wallet_id',
-        'api_key',
-        'customer',
+        'token_wallet',
+        'token_key',
 
         'fixed_cost',
+        
         'type',
-       
-        'white_label_whatsapp',
-        'white_label_contract',
-        'white_label_network',
+        'level',
+        'status',
 
         'company_name',
         'company_cpfcnpj',
         'company_address',
-        'company_email'
+        'company_email',
+        'company_phone',
+
+        'terms_of_usability',
+        'terms_of_privacy',
     ];
 
     public function maskedName() {
@@ -207,7 +206,7 @@ class User extends Authenticatable {
             $response = $client->request('GET', env('API_URL_ASSAS') . 'v3/finance/balance', [
                 'headers' => [
                     'accept'       => 'application/json',
-                    'access_token' => $this->api_key,
+                    'access_token' => $this->token_key,
                     'User-Agent'   => env('APP_NAME'),
                 ],
                 'verify' => false,

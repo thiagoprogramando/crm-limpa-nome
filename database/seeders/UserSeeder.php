@@ -17,7 +17,7 @@ class UserSeeder extends Seeder {
                 'uuid'          => str::uuid(),
                 'name'          => 'Admin',
                 'email'         => 'admin@expressoftwareclub.com',
-                'password'      => Hash::make('Ts201720#'),
+                'password'      => Hash::make('123456#'),
                 'type'          => 99,
                 'cpfcnpj'       => '50210237000175',
                 'created_at'    => now(),

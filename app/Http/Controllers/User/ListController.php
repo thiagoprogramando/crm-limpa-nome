@@ -47,11 +47,11 @@ class ListController extends Controller {
         }
     
         $list = new SaleList();
-        $list->name         = $request->name;
-        $list->description  = $request->description;
-        $list->start        = $startDate;
-        $list->end          = $endDate;
-        $list->status       = $request->status;
+        $list->name             = $request->name;
+        $list->description      = $request->description;
+        $list->start            = $startDate;
+        $list->end              = $endDate;
+        $list->status           = $request->status;
     
         if($list->save()) {
             return redirect()->route('list-lists')->with('success', 'Lista cadastrada com sucesso!');
@@ -95,20 +95,8 @@ class ListController extends Controller {
             if ($request->status) {
                 $list->status = $request->status;
             }
-            if ($request->has('status_serasa')) {
-                $list->status_serasa = $request->status_serasa;
-            }
-            if ($request->has('status_spc')) {
-                $list->status_spc = $request->status_spc;
-            }
-            if ($request->has('status_boa_vista')) {
-                $list->status_boa_vista = $request->status_boa_vista;
-            }
-            if ($request->has('status_quod')) {
-                $list->status_quod = $request->status_quod;
-            }
-            if ($request->has('status_cenprot')) {
-                $list->status_cenprot = $request->status_cenprot;
+            if ($request->has('status_protocol')) {
+                $list->status_protocol = $request->status_protocol;
             }
 
             if ($list->save()) {
