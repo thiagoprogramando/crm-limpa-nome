@@ -87,10 +87,10 @@
                 <div class="card-body m-0 p-0">
 
                     <div id="action-buttons" class="d-none btn-group mb-2 mt-2 p-2">
-                        @if(Auth::user()->type == 1)
+                        {{-- @if(Auth::user()->type == 1)
                             <button id="aproved-all" class="btn btn-sm btn-primary">Aprovar Todos</button>
                         @endif
-                        <button id="create-payment" class="btn btn-sm btn-outline-primary">Gerar Pagamento</button>
+                        <button id="create-payment" class="btn btn-sm btn-outline-primary">Gerar Pagamento</button> --}}
                         <button id="quanty-name" class="btn btn-sm btn-outline-primary">Selecionados: </button>
                     </div>
                     
