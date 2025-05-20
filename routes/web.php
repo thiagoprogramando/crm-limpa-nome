@@ -51,7 +51,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/send-assas-token', [AssasController::class, 'IntegrateToken'])->name('send-assas-token');
     
 
-    Route::middleware(['checkWallet'])->group(function () {
+    Route::middleware(['checkMonthly', 'checkWallet'])->group(function () {
 
             //Sales
             Route::get('/list-sales', [SaleController::class, 'listSale'])->name('list-sales');
