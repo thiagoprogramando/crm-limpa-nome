@@ -106,7 +106,7 @@ class UserController extends Controller {
 
         if (!empty($request->password)) {
 
-            if ($request->password !== $request->Confirmpassword) {
+            if ($request->password !== $request->confirmpassword) {
                 return redirect()->back()->with('info', 'Senhas não coincidem!');
             }
 
