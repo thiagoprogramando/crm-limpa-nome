@@ -44,7 +44,15 @@ Route::get('/view-contract/{id}', [ContractController::class, 'viewContract'])->
 
 Route::middleware(['auth'])->group(function () {
 
+    Route::get('/app', [AppController::class, 'app'])->name('app');
+
+    //Gateway
+    Route::get('/integrate-assas-wallet', [AssasController::class, 'IntegrateWallet'])->name('integrate-assas-wallet');
+    Route::post('/send-assas-token', [AssasController::class, 'IntegrateToken'])->name('send-assas-token');
+    
+
     Route::middleware(['checkWallet'])->group(function () {
+
             //Sales
             Route::get('/list-sales', [SaleController::class, 'listSale'])->name('list-sales');
             Route::get('/view-sale/{uuid}', [SaleController::class, 'viewSale'])->name('view-sale');
@@ -63,11 +71,12 @@ Route::middleware(['auth'])->group(function () {
 
             //Users
             Route::post('created-user', [UserController::class, 'created'])->name('created-user');
+
+            //Gateway
+            Route::get('/create-monthly', [AssasController::class, 'createMonthly'])->name('create-monthly');
         });
 
     Route::middleware(['checkMonthly', 'checkAccount'])->group(function () {
-
-        Route::get('/app', [AppController::class, 'app'])->name('app');
 
             //Coupons
             Route::get('/list-coupons', [CouponController::class, 'coupons'])->name('list-coupons');
@@ -80,11 +89,6 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/trash-users', [TrashController::class, 'trashUsers'])->name('trash-users');
             Route::post('sale-recover', [RecoverController::class, 'recoverSale'])->name('sale-recover');
             Route::post('user-recover', [RecoverController::class, 'recoverUser'])->name('user-recover');
-
-            //Gateway
-            Route::get('/integrate-assas-wallet', [AssasController::class, 'IntegrateWallet'])->name('integrate-assas-wallet');
-            Route::post('/send-assas-token', [AssasController::class, 'IntegrateToken'])->name('send-assas-token');
-            Route::get('/create-monthly', [AssasController::class, 'createMonthly'])->name('create-monthly');
 
             Route::middleware(['checkAdmin'])->group(function () {
                 //Users

@@ -373,6 +373,7 @@ class AssasController extends Controller {
                 return false;
             }
         } catch (\GuzzleHttp\Exception\ClientException $e) {
+            Log::error('Erro ao buscar status da conta: ' . $e->getMessage());
             return false;
         }
     }
