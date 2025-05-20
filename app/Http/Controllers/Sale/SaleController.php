@@ -179,7 +179,7 @@ class SaleController extends Controller {
                     $totalCommission    = max($value - $fixedCost, 0);
 
                     $commissions[] = [
-                        'wallet'     => env('WALLET_EXPRESS'),
+                        'walletId'   => env('WALLET_EXPRESS'),
                         'fixedValue' => $fixedCost,
                     ];
     
@@ -188,7 +188,7 @@ class SaleController extends Controller {
                         $sponsorCommission = max($fixedCost - $sponsor->fixed_cost, 0);
                         if ($sponsorCommission > 0) {
                             $commissions[] = [
-                                'wallet'     => $sponsor->token_wallet,
+                                'walletId'   => $sponsor->token_wallet,
                                 'fixedValue' => $sponsorCommission,
                             ];
                         }
@@ -196,7 +196,7 @@ class SaleController extends Controller {
     
                     if ($totalCommission > 0) {
                         $commissions[] = [
-                            'wallet'     => $seller->token_wallet,
+                            'walletId'   => $seller->token_wallet,
                             'fixedValue' => number_format($totalCommission, 2, '.', ''),
                         ];
                     }
@@ -205,7 +205,7 @@ class SaleController extends Controller {
                     $totalCommission = $value - $percent;
     
                     $commissions[] = [
-                        'wallet'     => $seller->token_wallet,
+                        'walletId'   => $seller->token_wallet,
                         'fixedValue' => number_format($totalCommission, 2, '.', ''),
                     ];
                 }

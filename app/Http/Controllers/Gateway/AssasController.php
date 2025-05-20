@@ -126,7 +126,7 @@ class AssasController extends Controller {
         $value = Auth::user()->type == 2 ? env('MONTHLY_AFILIATE') : env('MONTHLY_WHITE_LABEL');
         $commissions = [
             [
-                'wallet'        => env('WALLET_EXPRESS'),
+                'walletId'      => env('WALLET_EXPRESS'),
                 'fixedValue'    => Auth::user()->type == 2 ? ($value - ($value * 0.10)) : $value,
             ],
         ];
