@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Access\TermsUsabilityContract;
-use App\Http\Controllers\Assas\AssasController;
+use App\Http\Controllers\Gateway\AssasController;
 use App\Http\Controllers\Sale\ContractController;
 use App\Http\Controllers\Sale\SaleController;
 
