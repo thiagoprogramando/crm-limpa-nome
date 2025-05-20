@@ -176,7 +176,7 @@ class SaleController extends Controller {
     
                 if ($key == 1) {
                     $fixedCost          = $seller->fixed_cost ?? $product->value_cost;
-                    $totalCommission    = max($value - $fixedCost, 0);
+                    $totalCommission    = max($value - $fixedCost - 2, 0);
 
                     $commissions[] = [
                         'walletId'   => env('WALLET_EXPRESS'),
@@ -202,7 +202,7 @@ class SaleController extends Controller {
                     }
                 } else {
                     $percent = $value * 0.05;
-                    $totalCommission = $value - $percent;
+                    $totalCommission = ($value - $percent - 2);
     
                     $commissions[] = [
                         'walletId'   => $seller->token_wallet,
