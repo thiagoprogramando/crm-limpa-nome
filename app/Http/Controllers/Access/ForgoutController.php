@@ -53,7 +53,7 @@ class ForgoutController extends Controller {
         );
         
         Mail::to($user->email, $user->name)->send(new Forgout([
-            'fromName'  => 'Thiago César',
+            'fromName'  => 'Express Software',
             'fromEmail' => 'suporte@expressoftwareclub.com',
             'toName'    => $user->name,
             'toEmail'   => $user->email,
