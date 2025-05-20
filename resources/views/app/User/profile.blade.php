@@ -25,7 +25,7 @@
             </div>
         @endif
 
-        @if (Auth::user()->status == 3 && Auth::user()->months() == 0)
+        @if (Auth::user()->months() == 0)
             <div class="col-12">
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
                     <i class="bi bi-info-circle me-1"></i>

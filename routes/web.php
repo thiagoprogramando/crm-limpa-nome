@@ -44,9 +44,7 @@ Route::get('/view-contract/{id}', [ContractController::class, 'viewContract'])->
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::middleware(['checkMonthly', 'checkAccount'])->group(function () {
-
-        Route::middleware(['checkWallet'])->group(function () {
+    Route::middleware(['checkWallet'])->group(function () {
             //Sales
             Route::get('/list-sales', [SaleController::class, 'listSale'])->name('list-sales');
             Route::get('/view-sale/{uuid}', [SaleController::class, 'viewSale'])->name('view-sale');
@@ -66,6 +64,8 @@ Route::middleware(['auth'])->group(function () {
             //Users
             Route::post('created-user', [UserController::class, 'created'])->name('created-user');
         });
+
+    Route::middleware(['checkMonthly', 'checkAccount'])->group(function () {
 
         Route::get('/app', [AppController::class, 'app'])->name('app');
 

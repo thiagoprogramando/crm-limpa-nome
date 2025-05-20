@@ -42,7 +42,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->appendToGroup('checkWallet', [
             CheckCache::class,
-            CheckWallet::class
+            CheckWallet::class,
+            CheckMonthly::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
