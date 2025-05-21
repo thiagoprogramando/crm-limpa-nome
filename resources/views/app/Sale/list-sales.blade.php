@@ -99,7 +99,7 @@
                             <thead>
                                 <tr>
                                     <th scope="col">Cliente</th>
-                                    <th scope="col">Cliente</th>
+                                    <th scope="col">Consultor</th>
                                     <th>Produto</th>
                                     <th>Detalhes</th>
                                     <th class="text-center">Contrato</th>
