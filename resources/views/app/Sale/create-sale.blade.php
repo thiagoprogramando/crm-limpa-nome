@@ -19,9 +19,6 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-justified" type="button" role="tab" aria-controls="profile" aria-selected="false" tabindex="-1">Enviar nome</button>
                     </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-justified" type="button" role="tab" aria-controls="home" aria-selected="true">Saiba Mais</button>
-                    </li>
                 </ul>
 
                 <div class="tab-content pt-2" id="myTabjustifiedContent">
@@ -123,26 +120,6 @@
                                     </div>
                                 </form>
                             @endif
-                        </div>
-                    </div>
-
-                    <div class="tab-pane fade" id="home-justified" role="tabpanel" aria-labelledby="home-tab">
-                        <div class="row p-3">
-                            <div class="col-12 col-sm-12 col-md-4 col-lg-4 text-center">
-                                <iframe class="embed-responsive-item w-100 h-100" src="https://www.youtube.com/embed/i55n31X-2LQ?si=ffJgVnnpEBDvKaOm" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                            </div>
-                            <div class="col-12 col-sm-12 col-md-8 col-lg-8">
-                                <p class="card-title">Como Gerar uma Venda para o Cliente Final pelo Seu Painel?</p>
-                                <p>
-                                    Preencha os dados necessários no painel para iniciar a venda. 
-                                    <b>
-                                        O cliente receberá automaticamente a prévia do contrato e o link de pagamento (valor referente a entrada).
-                                    </b> 
-                                    Após a confirmação do pagamento, você receberá  sua comissão, que poderá ser 
-                                    solicitada imediatamente para saque, de forma instantânea. <br><br>
-                                    <b class="text-danger">Atenção:</b> Vendas no cartão de crédito tem prazo de saque maiores, <a href="">saiba mais</a>
-                                </p>
-                            </div>
                         </div>
                     </div>
                 </div>
