@@ -134,8 +134,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                        <a href="{{ route('list-sales') }}?created_at={{ now()->format('Y-m-d') }}&status=1">
+                    <div class="col-12 col-md-6">
+                        <a href="{{ route('list-sales', ['created_at' => now()->format('Y-m-d'), 'status' => 1]) }}">
                             <div class="card info-card clock-card">
                                 <div class="card-body">
                                     <h5 class="card-title">Vendas (Hoje)</h5>
@@ -144,8 +144,10 @@
                                             <i class="bi bi-cart-check-fill"></i>
                                         </div>
                                         <div class="ps-3">
-                                            <h6>{{ Auth::user()->sales->where('created_at', '>=', \Carbon\Carbon::today())->count() }}</h6>
-                                        </div>                                        
+                                            <h6>
+                                                {{ Auth::user()->sales->where('created_at', '>=', \Carbon\Carbon::today())->where('status', 1)->count() }}
+                                            </h6>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -83,7 +83,7 @@ class Sale extends Model {
 
     public function statusContractLabel() {
 
-        if (empty($this->sign_contract)) {
+        if (empty($this->contract_sign)) {
             return 'Pendente de Assinatura';
         }
 

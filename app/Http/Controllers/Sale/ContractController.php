@@ -67,15 +67,24 @@ class ContractController extends Controller {
         ]);
     }
 
-    public function signTerms(Request $request) {
+    public function signSale(Request $request) {
 
         $sale = Sale::find($request->id);
         if (!$sale) {
             return response()->json(['success' => false, 'message' => 'Contrato não encontrado na base de dados!'], 403, [], JSON_UNESCAPED_UNICODE);
         }
 
-        $sale->sign_contract    = $request->sign;
-        $sale->status_contract  = 1;
+        $signatureImage = $request->sign;
+        $signatureBlock = '
+            <div class="container text-center mt-3 mb-5">
+                <img src="' . $signatureImage . '" alt="Assinatura" style="max-width: 100%; height: auto;">
+                <br>
+                <small>Assinatura ' . e($sale->client->name) . '</small>
+            </div>
+        ';
+
+        $sale->contract_url     = $request->html . $signatureBlock;
+        $sale->contract_sign    = $signatureImage;
         if ($sale->save()) {
             return response()->json(['success' => true, 'message' => 'Contrato Assinado com sucesso!'], 200, [], JSON_UNESCAPED_UNICODE);
         }

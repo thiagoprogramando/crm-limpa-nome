@@ -107,7 +107,7 @@
                                         </div>
                                         <div class="col-5 col-sm-5 col-md-4 col-lg-4 mb-2">
                                             <div class="form-floating">
-                                                <input type="date" name="installments[1][due_date]" class="form-control" id="installments[1][due_date]" placeholder="Vencimento:">
+                                                <input type="date" name="installments[1][due_date]" class="form-control" id="installments[1][due_date]" placeholder="Vencimento:" required>
                                                 <label for="installments[1][due_date]">Vencimento:</label>
                                             </div>
                                         </div>

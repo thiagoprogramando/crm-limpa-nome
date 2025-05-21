@@ -99,6 +99,7 @@
                             <thead>
                                 <tr>
                                     <th scope="col">Cliente</th>
+                                    <th scope="col">Cliente</th>
                                     <th>Produto</th>
                                     <th>Detalhes</th>
                                     <th class="text-center">Contrato</th>
@@ -113,6 +114,10 @@
                                             <input type="checkbox" class="row-checkbox" value="{{ $sale->id }}"> {{ $sale->id }} -
                                             {{ implode(' ', array_slice(explode(' ', $sale->client->name), 0, 2)) }} <br>
                                             <span class="badge bg-dark">CPF/CNPJ: {{ $sale->client->cpfcnpjLabel() }}</span>
+                                        </td>
+                                        <td title="{{ $sale->seller->name }}">
+                                            {{ implode(' ', array_slice(explode(' ', $sale->seller->name), 0, 2)) }} <br>
+                                            <span class="badge bg-dark">{{ $sale->seller->email }}</span>
                                         </td>
                                         <td>
                                             <p class="m-0 p-0">

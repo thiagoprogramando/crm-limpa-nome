@@ -31,10 +31,16 @@ class AppController extends Controller {
             $remainingTime = sprintf('%dd %dh', $totalDays, $remainingHours);
         }
 
+        $baseQuery = User::where('type', 2);
+        if (Auth::user()->type != 1) {
+            $baseQuery = $baseQuery->where('sponsor_id', Auth::user()->sponsor_id);
+        }
+
         $subscribers = [
-            'actives'   => User::where('status', 1)->where('type', 2)->where('sponsor_id', Auth::user()->sponsor_id)->count(),
-            'inactives' => User::where('status', 2)->where('type', 2)->where('sponsor_id', Auth::user()->sponsor_id)->count(),
+            'actives'       => (clone $baseQuery)->where('status', 1)->count(),
+            'inactives'     => (clone $baseQuery)->where('status', 2)->count(),
         ];
+
 
         $types = [
             'CONSULTOR'         => User::where('type', 2)->where('level', 2)->where('sponsor_id', Auth::user()->id)->count(),
