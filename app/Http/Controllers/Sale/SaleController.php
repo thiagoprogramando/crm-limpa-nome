@@ -184,7 +184,7 @@ class SaleController extends Controller {
                     ];
     
                     $sponsor = $seller->sponsor;
-                    if ($sponsor && $seller->id !== $sponsor->id) {
+                    if ($sponsor && $seller->type !== 99) {
                         $sponsorCommission = max($fixedCost - $sponsor->fixed_cost, 0);
                         if ($sponsorCommission > 0) {
                             $commissions[] = [
@@ -194,7 +194,7 @@ class SaleController extends Controller {
                         }
                     }
     
-                    if ($totalCommission > 0) {
+                    if ($totalCommission > 0 && $seller->type !== 99) {
                         $commissions[] = [
                             'walletId'   => $seller->token_wallet,
                             'fixedValue' => number_format($totalCommission, 2, '.', ''),
@@ -203,11 +203,13 @@ class SaleController extends Controller {
                 } else {
                     $percent = $value * 0.05;
                     $totalCommission = ($value - $percent - 5);
-    
-                    $commissions[] = [
-                        'walletId'   => $seller->token_wallet,
-                        'fixedValue' => number_format($totalCommission, 2, '.', ''),
-                    ];
+                    
+                    if ($totalCommission > 0 && $seller->type !== 99) {
+                        $commissions[] = [
+                            'walletId'   => $seller->token_wallet,
+                            'fixedValue' => number_format($totalCommission, 2, '.', ''),
+                        ];
+                    }
                 }
     
                 $payment = $assas->createCharge($customer, $paymentMethod, $value, $dueDate, 'Fatura '.$key.' para venda N° '.$sale->id, $commissions);
