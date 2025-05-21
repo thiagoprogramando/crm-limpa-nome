@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Gateway;
 use App\Http\Controllers\Controller;
 
 use App\Models\Invoice;
-use App\Models\Lists;
 use App\Models\Notification;
 use App\Models\Product;
 use App\Models\Sale;
@@ -127,7 +126,7 @@ class AssasController extends Controller {
         $commissions = [
             [
                 'walletId'      => env('WALLET_EXPRESS'),
-                'fixedValue'    => Auth::user()->type == 2 ? (($value - 2) - ($value * 0.10)) : ($value - 2),
+                'fixedValue'    => Auth::user()->type == 2 ? (($value - 5) - ($value * 0.10)) : ($value - 5),
             ],
         ];
 

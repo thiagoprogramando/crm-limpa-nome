@@ -30,6 +30,7 @@ class UserController extends Controller {
         $user->association_id   = $request->association_id ??  Auth::user()->association_id;
         $user->name             = $request->name;
         $user->email            = $request->email;
+        $user->fixed_cost       = $this->formatValue($request->fixed_cost);
         $user->cpfcnpj          = preg_replace('/\D/', '', $request->cpfcnpj);
         $user->password         = preg_replace('/\D/', '', $request->cpfcnpj);
         $user->type             = $request->type;
@@ -93,11 +94,20 @@ class UserController extends Controller {
 
         if (!empty($request->fixed_cost)) {
 
-            if (($this->formatarValor($request->fixed_cost) < Auth::user()->fixed_cost) && Auth::user()->type !== 1) {
+            if ($this->formatValue($request->fixed_cost) < Auth::user()->fixed_cost) {
+                return redirect()->back()->with('info', 'O valor Mín para custo é: R$ ' .Auth::user()->fixed_cost);
+            }
+
+            $user->fixed_cost = $this->formatValue($request->fixed_cost);
+        }
+
+        if (!empty($request->fixed_cost)) {
+
+            if (($this->formatValue($request->fixed_cost) < Auth::user()->fixed_cost) && Auth::user()->type !== 1) {
                 return redirect()->back()->with('info', 'O valor mín para custo é R$ '.Auth::user()->fixed_cost);
             }
 
-            $user->fixed_cost = $this->formatarValor($request->fixed_cost);
+            $user->fixed_cost = $this->formatValue($request->fixed_cost);
         }
         
         if (!empty($request->level)) {
@@ -262,7 +272,7 @@ class UserController extends Controller {
         ]);
     }
     
-    private function formatarValor($valor) {
+    private function formatValue($valor) {
         
         $valor = preg_replace('/[^0-9,]/', '', $valor);
         $valor = str_replace(',', '.', $valor);

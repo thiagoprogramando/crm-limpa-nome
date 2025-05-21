@@ -184,7 +184,7 @@ class SaleController extends Controller {
                     ];
     
                     $sponsor = $seller->sponsor;
-                    if ($sponsor) {
+                    if ($sponsor && $seller->id !== $sponsor->id) {
                         $sponsorCommission = max($fixedCost - $sponsor->fixed_cost, 0);
                         if ($sponsorCommission > 0) {
                             $commissions[] = [
@@ -202,7 +202,7 @@ class SaleController extends Controller {
                     }
                 } else {
                     $percent = $value * 0.05;
-                    $totalCommission = ($value - $percent - 2);
+                    $totalCommission = ($value - $percent - 5);
     
                     $commissions[] = [
                         'walletId'   => $seller->token_wallet,

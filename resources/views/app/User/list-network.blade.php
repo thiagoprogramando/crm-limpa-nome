@@ -178,6 +178,12 @@
                                                             <div class="col-12 col-sm-12 col-md-4 col-lg-4 row">
                                                                 <div class="col-12 col-md-12 col-lg-12 mb-2">
                                                                     <div class="form-floating">
+                                                                        <input type="text" class="form-control money" name="fixed_cost" id="fixed_cost" placeholder="Custo (Mín: {{ Auth::user()->fixed_cost }}):" value="{{ $user->fixed_cost }}" oninput="maskValue(this)">
+                                                                        <label for="fixed_cost">Custo (Mín: {{ Auth::user()->fixed_cost }}):</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                    <div class="form-floating">
                                                                         <input type="text" class="form-control" id="faturamentoTotal" placeholder="Faturamente Total:" value="R$ {{ number_format($user->invoices->where('status', 1)->sum('value'), 2, ',', '.') }}" disabled>
                                                                         <label for="faturamentoTotal">Faturamente Total:</label>
                                                                     </div>
