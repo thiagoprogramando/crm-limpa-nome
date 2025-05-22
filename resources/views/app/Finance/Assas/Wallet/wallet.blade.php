@@ -65,7 +65,7 @@
                             </div>
                             <div class="modal-footer btn-group">
                                 <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
-                                <button type="button" class="btn btn-primary" id="submitBtn">Solicitar</button>
+                                <button type="button" class="btn btn-primary" id="submitBtn">Enviar</button>
                             </div>
                         </form>
                     </div>

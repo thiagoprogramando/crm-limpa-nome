@@ -11,6 +11,7 @@ use App\Models\Sale;
 use App\Models\User;
 use App\Models\Coupon;
 use App\Models\SaleList;
+use App\Models\WebHook;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -61,6 +62,73 @@ class AssasController extends Controller {
             }
         } catch (\Exception $e) {
             Log::error('Erro ao Gerar Fatura (Controller AssasController) de '.$customer.': ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function updateCharge($id, $dueDate, $value = null) {
+        
+        $client = new Client();
+        
+        $options = [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'access_token' => Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor()->token_key,
+                'User-Agent'   => env('APP_NAME')
+            ],
+            'json' => [
+                'dueDate'     => $dueDate,
+            ],
+            'verify' => false
+        ];
+    
+        try {
+
+            $response = $client->put(env('API_URL_ASSAS') . 'v3/payments/' . $id, $options);
+            $body = (string) $response->getBody();
+
+            if ($response->getStatusCode() === 200) {
+                $data = json_decode($body, true);
+                return [
+                    'id'         => $data['id'],
+                    'invoiceUrl' => $data['invoiceUrl'],
+                ];
+            }
+    
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $responseBody = $e->getResponse()->getBody()->getContents();
+            Log::error("Erro AssasController updateCharge: " . json_decode($responseBody, true));
+            return false;
+        } catch (\Exception $e) {    
+            return false;
+        }
+  
+        return false;
+    }
+
+    public function cancelCharge($token) {
+        try {
+            $client = new Client();
+            $options = [
+                'headers' => [
+                    'Content-Type'  => 'application/json',
+                    'access_token'  => Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor()->token_key,
+                    'User-Agent'    => env('APP_NAME')
+                ],
+                'verify' => false
+            ];
+
+            $response = $client->delete(env('API_URL_ASSAS') . 'v3/payments/' . $token, $options);
+
+            if ($response->getStatusCode() === 200) {
+                $data = json_decode((string) $response->getBody(), true);
+
+                return isset($data['deleted']) && $data['deleted'] === true;
+            }
+
+            return false;
+        } catch (\Throwable $e) {
+            Log::error('Erro ao cancelar fatura (Token: ' . $token . '): ' . $e->getMessage());
             return false;
         }
     }
@@ -157,6 +225,234 @@ class AssasController extends Controller {
         return redirect()->route('payments')->with('info', 'Falha ao gerar Assinatura, verifique seus dados e tente novamente!');
     }
 
+    public function balance($id = null) {
+
+        $user = $id ? User::find($id) : Auth::user();
+
+        $status = $this->accountStatus($user->token_key);
+        if (is_array($status) && (isset($status['general']) && ($status['general'] == 'APPROVED' || $status['general'] == 'AWAITING_APPROVA'))) {
+            try {
+
+                $client = new Client();
+                if (!$user) {
+                    throw new \Exception('Usuário não encontrado.');
+                }
+
+                $response = $client->request('GET', env('API_URL_ASSAS') . 'v3/finance/balance', [
+                    'headers' => [
+                        'accept'       => 'application/json',
+                        'access_token' => $user->token_key,
+                        'User-Agent'   => env('APP_NAME'),
+                    ],
+                    'verify' => env('APP_ENV') == 'local' ? false : true,
+                ]);
+
+                if ($response->getStatusCode() === 200) {
+                    $data = json_decode((string) $response->getBody(), true);
+                    return $data['balance'] ?? 0;
+                }
+
+                return false;
+            } catch (\Throwable $e) {
+                Log::error('Erro ao buscar saldo de '.$user->name.': ' . $e->getMessage());
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public function createdWebhook (Request $request) {
+
+        if (Auth::check() && (Auth::user()->type == 99 || Auth::user()->type == 1)) {
+            try {
+                $client = new Client();
+                $options = [
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'accept'       => 'application/json',
+                        'access_token' => Auth::user()->token_key,
+                        'User-Agent'   => env('APP_NAME')
+                    ],
+                    'json' => [
+                        'name'          => $request->name,
+                        'url'           => $request->url,
+                        'email'         => env('MAIL_USERNAME'),
+                        'enabled'       => true,
+                        'interrupted'   => false,
+                        'apiVersion'    => 3,
+                        'sendType'      => 'SEQUENTIALLY',
+                        'events'        => [
+                            'PAYMENT_CONFIRMED', 'PAYMENT_RECEIVED', 'PAYMENT_OVERDUE', 'PAYMENT_DELETED', 'PAYMENT_SPLIT_CANCELLED'
+                        ]
+                    ],
+                    'verify' => false
+                ];
+        
+                $response = $client->post(env('API_URL_ASSAS') . 'v3/webhooks', $options);
+                $body = (string) $response->getBody();
+                $data = json_decode($body, true);
+        
+                if ($response->getStatusCode() === 200) {
+                    $webhook                = new WebHook();
+                    $webhook->user_id       = Auth::user()->id;
+                    $webhook->uuid          = $data['id'];
+                    $webhook->name          = $data['name'];
+                    $webhook->url           = $data['url'];
+                    $webhook->email         = $data['email'];
+                    $webhook->enabled       = $data['enabled'] == false ? 0 : 1;
+                    $webhook->interrupted   = $data['interrupted'] == false ? 0 : 1;
+                    $webhook->apiVersion    = $data['apiVersion'];
+                    $webhook->sendType      = $data['sendType'];
+                    if ($webhook->save()) {
+                        return redirect()->back()->with('success', 'WebHook criado sucesso!');
+                    }
+
+                    return redirect()->back()->with('info', 'WebHook criado no Banco, mas não foi possível criar na plataforma!');
+                } else {
+                    Log::error("Erro na criação de WebHook no AssasController: " . json_encode($data));
+                    return redirect()->back()->with('info', 'Falha ao tentar criar Novo WebHook: ' .json_encode($data));
+                }
+        
+            } catch (RequestException $e) {
+                Log::error("Erro na criação de WebHook no AssasController: " . $e->getMessage());
+                return redirect()->back()->with('info', 'Erro na criação de WebHook: ' .$e->getMessage());
+            } catch (\Exception $e) {
+                Log::error("Erro na criação de WebHook no AssasController: " . $e->getMessage());
+                return redirect()->back()->with('info', 'Erro na criação de WebHook: ' .$e->getMessage());
+            }
+        } else {
+            return redirect()->route('logout')->with('info', 'Faça Login para ter acesso aos módulos!');
+        }
+    }
+
+    public function updatedWebhook (Request $request) {
+        if (Auth::check() && (Auth::user()->type == 99 || Auth::user()->type == 1)) {
+            try {
+                $client = new Client();
+                $options = [
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'accept'       => 'application/json',
+                        'access_token' => Auth::user()->token_key,
+                        'User-Agent'   => env('APP_NAME')
+                    ],
+                    'json' => [
+                        'enabled'       => true,
+                        'interrupted'   => false,
+                    ],
+                    'verify' => false
+                ];
+        
+                $response = $client->post(env('API_URL_ASSAS') . 'v3/webhooks'.$request->uuid, $options);
+                $body = (string) $response->getBody();
+                $data = json_decode($body, true);
+        
+                if ($response->getStatusCode() === 200) {
+                    return redirect()->back()->with('success', 'WebHook atualizado sucesso!');
+                } else {
+                    Log::error("Erro na atualização de WebHook no AssasController: " . json_encode($data));
+                    return redirect()->back()->with('info', 'Falha ao tentar atualizar WebHook: ' .json_encode($data));
+                }
+        
+            } catch (RequestException $e) {
+                Log::error("Erro na atualização de WebHook no AssasController: " . $e->getMessage());
+                return redirect()->back()->with('info', 'Erro na atualização de WebHook: ' .$e->getMessage());
+            } catch (\Exception $e) {
+                Log::error("Erro na atualização de WebHook no AssasController: " . $e->getMessage());
+                return redirect()->back()->with('info', 'Erro na atualização de WebHook: ' .$e->getMessage());
+            }
+        }
+    }
+
+    public function webhookStatus($id) {
+        try {
+            $client = new Client();
+            
+            $options = [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'access_token' => Auth::user()->token_key,
+                    'User-Agent'   => env('APP_NAME')
+                ],
+                'verify' => false
+            ];
+    
+            $response = $client->get(env('API_URL_ASSAS') . 'v3/webhooks/' . $id, $options);
+            $body = (string) $response->getBody();
+    
+            if ($response->getStatusCode() === 200) {
+                return json_decode($body, true);
+            } else {
+                Log::error('Erro ao buscar status do webhook');
+                return "Sem informações";
+            }
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            Log::error('Erro ao buscar status do webhook: ' . $e->getMessage());
+            return "Sem informações";
+        }
+    }
+
+    public function IntegrateWallet() {
+
+        $webhooks = WebHook::where('user_id', Auth::user()->id)->get();
+        return view('app.Finance.Assas.Wallet.integrate-wallet', [
+            'webhooks' => $webhooks
+        ]);
+    }
+
+    public function IntegrateToken(Request $request) {
+
+        if (empty($request->token_key) && empty($request->token_wallet)) {
+            return redirect()->back()->with('info', 'Informe os dados necessários para integração!'); 
+        }
+
+        $user = User::where('id', $request->id)->first();
+        if (!$user) {
+            return redirect()->route('logout')->with('info', 'Faça Login para acessar os módulos do sistema!'); 
+        }
+
+        $status = $this->accountStatus($request->token_key);
+        if (is_array($status) && (isset($status['general']) && ($status['general'] == 'APPROVED' || $status['general'] == 'AWAITING_APPROVA'))) {
+            $user->token_wallet = $request->token_wallet;
+            $user->token_key    = $request->token_key;
+            $user->status       = 1;
+
+            if ($user->save()) {
+                return redirect()->back()->with('success', 'Tokens válidados com sucesso!');
+            }
+        } 
+
+        return redirect()->back()->with('info', 'Tokens não válidados! Aguarde aprovação da sua carteira/ou entre em contato com o suporte do banco!');
+    }
+
+    private function accountStatus($token_key) {
+        try {
+            $client = new Client();
+            
+            $options = [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'access_token' => $token_key,
+                    'User-Agent'   => env('APP_NAME')
+                ],
+                'verify' => false
+            ];
+    
+            $response = $client->get(env('API_URL_ASSAS') . 'v3/myAccount/status/', $options);
+            $body = (string) $response->getBody();
+    
+            if ($response->getStatusCode() === 200) {
+                return json_decode($body, true);
+            } else {
+                return false;
+            }
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            Log::error('Erro ao buscar status da conta: ' . $e->getMessage());
+            return false;
+        }
+    }
+
     public function webhook(Request $request) {
 
         $data = $request->json()->all();
@@ -250,155 +546,5 @@ class AssasController extends Controller {
         }
 
         return response()->json(['status' => 'success', 'message' => 'Operation completed successfully.']);
-    }
-
-    public function updateCharge($id, $dueDate, $value = null) {
-        
-        $client = new Client();
-        
-        $options = [
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'access_token' => Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor()->token_key,
-                'User-Agent'   => env('APP_NAME')
-            ],
-            'json' => [
-                'dueDate'     => $dueDate,
-            ],
-            'verify' => false
-        ];
-    
-        try {
-
-            $response = $client->put(env('API_URL_ASSAS') . 'v3/payments/' . $id, $options);
-            $body = (string) $response->getBody();
-
-            if ($response->getStatusCode() === 200) {
-                $data = json_decode($body, true);
-                return [
-                    'id'         => $data['id'],
-                    'invoiceUrl' => $data['invoiceUrl'],
-                ];
-            }
-    
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            $responseBody = $e->getResponse()->getBody()->getContents();
-            Log::error("Erro AssasController updateCharge: " . json_decode($responseBody, true));
-            return false;
-        } catch (\Exception $e) {    
-            return false;
-        }
-  
-        return false;
-    }
-
-    public function balance($id = null) {
-        try {
-            $client = new Client();
-
-            $user = $id ? User::find($id) : Auth::user();
-
-            if (!$user) {
-                throw new \Exception('Usuário não encontrado.');
-            }
-
-            $response = $client->request('GET', env('API_URL_ASSAS') . 'v3/finance/balance', [
-                'headers' => [
-                    'accept'       => 'application/json',
-                    'access_token' => $user->token_key,
-                    'User-Agent'   => env('APP_NAME'),
-                ],
-                'verify' => env('APP_ENV') == 'local' ? false : true,
-            ]);
-
-            if ($response->getStatusCode() === 200) {
-                $data = json_decode((string) $response->getBody(), true);
-                return $data['balance'] ?? 0;
-            }
-
-            return false;
-        } catch (\Throwable $e) {
-            Log::error('Erro ao buscar saldo de '.$user->name.': ' . $e->getMessage());
-            return false;
-        }
-    }
-
-    public function cancelInvoice($token) {
-        try {
-            $client = new Client();
-            $options = [
-                'headers' => [
-                    'Content-Type'  => 'application/json',
-                    'access_token'  => Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor()->token_key,
-                    'User-Agent'    => env('APP_NAME')
-                ],
-                'verify' => false
-            ];
-
-            $response = $client->delete(env('API_URL_ASSAS') . 'v3/payments/' . $token, $options);
-
-            if ($response->getStatusCode() === 200) {
-                $data = json_decode((string) $response->getBody(), true);
-
-                return isset($data['deleted']) && $data['deleted'] === true;
-            }
-
-            return false;
-        } catch (\Throwable $e) {
-            Log::error('Erro ao cancelar fatura (Token: ' . $token . '): ' . $e->getMessage());
-            return false;
-        }
-    }
-
-    public function accountStatus($token_key) {
-        try {
-            $client = new Client();
-            
-            $options = [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'access_token' => $token_key,
-                    'User-Agent'   => env('APP_NAME')
-                ],
-                'verify' => false
-            ];
-    
-            $response = $client->get(env('API_URL_ASSAS') . 'v3/myAccount/status/', $options);
-            $body = (string) $response->getBody();
-    
-            if ($response->getStatusCode() === 200) {
-                return json_decode($body, true);
-            } else {
-                return false;
-            }
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            Log::error('Erro ao buscar status da conta: ' . $e->getMessage());
-            return false;
-        }
-    }
-
-    public function IntegrateWallet() {
-        return view('app.Finance.Wallet.Integrate-wallet');
-    }
-
-    public function IntegrateToken(Request $request) {
-
-        if (empty($request->token_key) && empty($request->token_wallet)) {
-            return redirect()->back()->with('info', 'Informe os dados necessários para integração!'); 
-        }
-
-        $user = User::where('id', $request->id)->first();
-        if (!$user) {
-            return redirect()->route('logout')->with('info', 'Faça Login para acessar os módulos do sistema!'); 
-        }
-
-        $status = $this->accountStatus($request->token_key);
-        if (is_array($status) && (isset($status['general']) && ($status['general'] == 'APPROVED' || $status['general'] == 'AWAITING_APPROVA'))) {
-            $user->token_wallet = $request->token_wallet;
-            $user->token_key    = $request->token_key;
-            $user->status       = 1;
-        } 
-
-        return redirect()->back()->with('info', 'Tokens não válidados! Aguarde aprovação da sua carteira/ou entre em contato com o suporte do banco!');
     }
 }

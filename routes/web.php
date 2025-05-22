@@ -74,6 +74,8 @@ Route::middleware(['auth'])->group(function () {
 
             //Gateway
             Route::get('/create-monthly', [AssasController::class, 'createMonthly'])->name('create-monthly');
+            Route::post('/created-webhook', [AssasController::class, 'createdWebhook'])->name('created-webhook');
+            Route::post('/updated-webhook', [AssasController::class, 'updatedWebhook'])->name('updated-webhook');
         });
 
     Route::middleware(['checkMonthly', 'checkAccount'])->group(function () {

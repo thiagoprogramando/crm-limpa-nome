@@ -345,7 +345,7 @@ class SaleController extends Controller {
            
             $assasController = new AssasController();
             if($invoice->status <> 1) {
-                $assasController->cancelInvoice($invoice->payment_token);
+                $assasController->cancelCharge($invoice->payment_token);
             }
             
             $invoice->delete();
