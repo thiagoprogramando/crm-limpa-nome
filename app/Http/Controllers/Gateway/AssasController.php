@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class AssasController extends Controller {
@@ -133,7 +134,7 @@ class AssasController extends Controller {
         }
     }
 
-    public function createCustomer($name, $cpfcnpj, $mobilePhone, $email) {
+    public function createCustomer($name, $cpfcnpj) {
 
         try {
             $client = new Client();
@@ -141,14 +142,12 @@ class AssasController extends Controller {
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'accept'       => 'application/json',
-                    'access_token' => Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor()->token_key,
+                    'access_token' => (Auth::user()->type == 99 || Auth::user()->type == 1) ? Auth::user()->token_key : Auth::user()->sponsor()->token_key,
                     'User-Agent'   => env('APP_NAME')
                 ],
                 'json' => [
                     'name'        => $name,
                     'cpfCnpj'     => $cpfcnpj,
-                    'mobilePhone' => $mobilePhone,
-                    'email'       => $email,
                 ],
                 'verify' => false
             ];
@@ -193,10 +192,16 @@ class AssasController extends Controller {
         $value = Auth::user()->type == 2 ? env('MONTHLY_AFILIATE') : env('MONTHLY_WHITE_LABEL');
         $commissions = [
             [
-                'walletId'      => env('WALLET_EXPRESS'),
-                'fixedValue'    => Auth::user()->type == 2 ? (($value - 5) - ($value * 0.10)) : ($value - 5),
+                'walletId'        => env('WALLET_EXPRESS'),
+                'percentualValue' => env('WALLET_EXPRESS_PERCENTAGE'),
             ],
         ];
+        if (!empty(env('WALLET_SOCIO'))) {
+            $commissions[] = [
+                'walletId'        => env('WALLET_SOCIO'),
+                'percentualValue' => env('WALLET_SOCIO_PERCENTAGE'),
+            ];
+        }
 
         $charge = $this->createCharge($customer, 'PIX', $value, now()->addDay(), 'Assinatura -'.env('APP_NAME'), $commissions);
         if($charge <> false) {
@@ -393,6 +398,15 @@ class AssasController extends Controller {
         }
     }
 
+    public function wallet() {
+
+        $extracts     = $this->extract();
+        return view('app.Finance.Assas.Wallet.wallet', [
+            'balance'   => $this->balance() ?? 0, 
+            'extracts'  => $extracts ?? [], 
+        ]);
+    }
+
     public function IntegrateWallet() {
 
         $webhooks = WebHook::where('user_id', Auth::user()->id)->get();
@@ -424,6 +438,81 @@ class AssasController extends Controller {
         } 
 
         return redirect()->back()->with('info', 'Tokens não válidados! Aguarde aprovação da sua carteira/ou entre em contato com o suporte do banco!');
+    }
+
+    public function extract() {
+        try {
+
+            $client     = new Client();
+            $startDate  = now()->toDateString();
+            $finishDate = now()->toDateString();
+    
+            $response = $client->request('GET', env('API_URL_ASSAS') . "v3/financialTransactions?startDate={$startDate}&finishDate={$finishDate}&order=desc", [
+                'headers' => [
+                    'accept'       => 'application/json',
+                    'access_token' => Auth::user()->token_key,
+                    'User-Agent'   => env('APP_NAME')
+                ],
+                'verify' => false,
+            ]);
+    
+            if ($response->getStatusCode() !== 200) {
+                return [];
+            }
+    
+            return json_decode((string) $response->getBody(), true)['data'] ?? [];
+    
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    public function withdrawSend(Request $request) {
+
+        $password = $request->password;    
+        if (Hash::check($password, Auth::user()->password)) {
+
+            if(empty($request->key) || empty($request->value) || empty($request->type)) {
+                return redirect()->back()->with('error', 'Dados incompletos!');
+            }
+    
+            $client = new Client();
+            try {
+                $response = $client->request('POST', env('API_URL_ASSAS').'v3/transfers', [
+                    'headers' => [
+                        'accept'       => 'application/json',
+                        'Content-Type' => 'application/json',
+                        'access_token' => Auth::user()->token_key,
+                        'User-Agent'   => env('APP_NAME')
+                    ],
+                    'json' => [
+                        'value'             => $this->formatValue($request->value),
+                        'operationType'     => 'PIX',
+                        'pixAddressKey'     => $request->key,
+                        'pixAddressKeyType' => $request->type,
+                        'description' => 'Saque '.env('APP_NAME'),
+                    ],
+                    'verify'  => false,
+                ]);
+        
+                $body = $response->getBody()->getContents();
+                $decodedBody = json_decode($body, true);
+        
+                if ($decodedBody['status'] === 'PENDING') {
+                    return ['success' => true, 'message' => 'Saque agendado com sucesso'];
+                } else {
+                    return ['success' => false, 'message' => 'Situação do Saque: ' . $decodedBody['status']];
+                }
+            } catch (\GuzzleHttp\Exception\RequestException $e) {
+                $response = $e->getResponse();
+                $body = $response->getBody()->getContents();
+                $decodedBody = json_decode($body, true);
+        
+                return ['success' => false, 'message' => $decodedBody['errors'][0]['description']];
+            }
+        }
+
+        return redirect()->back()->with('error', 'Senha inválida!');
     }
 
     private function accountStatus($token_key) {
@@ -546,5 +635,13 @@ class AssasController extends Controller {
         }
 
         return response()->json(['status' => 'success', 'message' => 'Operation completed successfully.']);
+    }
+
+    private function formatValue($valor) {
+        
+        $valor = preg_replace('/[^0-9,.]/', '', $valor);
+        $valor = str_replace(['.', ','], '', $valor);
+
+        return number_format(floatval($valor) / 100, 2, '.', '');
     }
 }

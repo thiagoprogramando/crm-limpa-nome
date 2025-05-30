@@ -174,15 +174,12 @@
 
                 @if (Auth::user()->type !== 4)
                     <li class="nav-heading">Gestão Financeira</li>
-                    {{-- <li class="nav-item">
-                        <a class="nav-link collapsed" href="{{ route('wallet') }}"> <i class="bi bi-wallet2"></i> <span>Carteira</span> </a>
-                    </li> --}}
                     <li class="nav-item">
                         <a class="nav-link {{ Route::currentRouteName() == 'receivable' || Route::currentRouteName() == 'payments' ? '' : 'collapsed' }}" data-bs-target="#forms-finan" data-bs-toggle="collapse" href="#">
                             <i class="bi bi-bank"></i><span>Meu Dinheiro</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
                         <ul id="forms-finan" class="nav-content collapse {{ Route::currentRouteName() == 'receivable' || Route::currentRouteName() == 'payments' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">  
-                            {{-- <li><a href="{{ route('receivable') }}"> <i class="bi bi-circle"></i><span>Recebíveis</span> </a></li> --}}
+                            <li><a href="{{ route('wallet') }}"> <i class="bi bi-wallet2"></i><span>Carteira Digital</span> </a></li>
                             <li><a href="{{ route('payments') }}"> <i class="bi bi-circle"></i><span>Pagamentos</span> </a></li>
                         </ul>
                     </li>

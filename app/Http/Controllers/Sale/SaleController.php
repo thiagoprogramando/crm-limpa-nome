@@ -55,21 +55,25 @@ class SaleController extends Controller {
     public function createdClientSale(Request $request) {
 
         $user = $this->createdUser($request->name, $request->email, $request->cpfcnpj, $request->birth_date, $request->phone, Auth::user()->id, Auth::user()->fixed_cost, Auth::user()->association_id);
-        if ($user !== false) {
-            return redirect()->route('create-sale', [
-                'product' => $request->product_id,
-                'user'    => $user->id
-                ])->with('success', 'Cliente incluído com sucesso!');
+        if ($user['status'] === true) {
+            return redirect()->route('create-sale', ['product' => $request->product_id, 'user'    => $user['id'] ])->with('success', 'Cliente incluído com sucesso!');
         }
 
-        return redirect()->back()->with('info', 'Não foi possível incluir o cliente, verifique os dados e tente novamente!');
+        return redirect()->back()->with('info', 'Não foi possível incluir o cliente! '.$user['message']);
     }
 
-    private function createdUser($name, $email, $cpfcnpj, $birth_date, $phone, $sponsor = null, $cost = null, $association_id = null) {
+    private function createdUser($name, $email = null, $cpfcnpj, $birth_date, $phone = null, $sponsor = null, $cost = null, $association_id = null) {
         
         $cpfcnpj    = preg_replace('/\D/', '', $cpfcnpj);
         $email      = preg_replace('/[^\w\d\.\@\-\_]/', '', $email);
         $phone      = preg_replace('/\D/', '', $phone);
+
+        if (str_word_count(trim($name)) < 2) {
+            return [
+                'status'  => false,
+                'message' => 'Informar Nome Completo!'
+            ];
+        }
 
         $assas = new AssasController();
     
@@ -98,12 +102,25 @@ class SaleController extends Controller {
         ]);
 
         
-        $customer = $assas->createCustomer($name, $cpfcnpj, $phone, $email);
+        $customer = $assas->createCustomer($name, $cpfcnpj);
         if ($customer === false) {
-            return false;
+            return [
+                'status'  => false,
+                'message' => 'Verfique os dados do Cliente e tente novamente!'
+            ];
         }
 
-        return $user->save() ? $user : false;
+        if ($user->save()) {
+            return [
+                'status'  => true,
+                'id'      => $user->id
+            ];
+        }
+
+        return [
+                'status'  => false,
+                'message' => 'Verfique os dados do Cliente e tente novamente!'
+            ];
     }
 
     public function createdPaymentSale(Request $request) {

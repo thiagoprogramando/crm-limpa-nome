@@ -40,13 +40,13 @@
                                     </div>
                                     <div class="col-12 col-sm-12 col-md-6 col-lg-6 mb-2">
                                         <div class="form-floating">
-                                            <input type="text" name="email" class="form-control" id="email" placeholder="E-mail:" value="{{ $user->email ?? '' }}" required>
+                                            <input type="text" name="email" class="form-control" id="email" placeholder="E-mail:" value="{{ $user->email ?? '' }}">
                                             <label for="email">Email:</label>
                                         </div>
                                     </div>
                                     <div class="col-12 col-sm-12 col-md-6 col-lg-6 mb-2">
                                         <div class="form-floating">
-                                            <input type="text" name="phone" class="form-control phone" id="phone" placeholder="WhatsApp:" value="{{ $user->phone ?? '' }}" oninput="maskPhone(this)" required>
+                                            <input type="text" name="phone" class="form-control phone" id="phone" placeholder="WhatsApp:" value="{{ $user->phone ?? '' }}" oninput="maskPhone(this)">
                                             <label for="phone">WhatsApp:</label>
                                         </div>
                                     </div>

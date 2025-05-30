@@ -74,6 +74,9 @@ Route::middleware(['auth'])->group(function () {
 
             //Gateway
             Route::get('/create-monthly', [AssasController::class, 'createMonthly'])->name('create-monthly');
+            
+            Route::get('/wallet', [AssasController::class, 'wallet'])->name('wallet');
+            Route::post('withdraw-send', [AssasController::class, 'withdrawSend'])->name('withdraw-send');
             Route::post('/created-webhook', [AssasController::class, 'createdWebhook'])->name('created-webhook');
             Route::post('/updated-webhook', [AssasController::class, 'updatedWebhook'])->name('updated-webhook');
         });

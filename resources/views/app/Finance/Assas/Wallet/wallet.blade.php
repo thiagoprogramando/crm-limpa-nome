@@ -33,26 +33,26 @@
                                 <div class="row">
                                     <div class="col-12 col-md-12 col-lg-12 mb-1">
                                         <div class="form-floating">
-                                            <input type="text" name="key" class="form-control" id="floatingKey" placeholder="Informe a Chave Pix:" required>
-                                            <label for="floatingKey">Chave Pix:</label>
+                                            <input type="text" name="key" class="form-control" id="key" placeholder="Informe a Chave Pix:" required>
+                                            <label for="key">Chave Pix:</label>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6 col-lg-6 mb-1">
                                         <div class="form-floating">
-                                            <input type="text" name="value" class="form-control" id="floatingValue" placeholder="Informe o valor:" oninput="mascaraReal(this)" required>
-                                            <label for="floatingValue">Valor:</label>
+                                            <input type="text" name="value" class="form-control" id="value" placeholder="Informe o valor:" oninput="maskValue(this)" required>
+                                            <label for="value">Valor:</label>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6 col-lg-6 mb-1">
                                         <div class="form-floating">
-                                            <select name="type" class="form-select" id="floatingType" required>
+                                            <select name="type" class="form-select" id="type" required>
                                                 <option selected="" value="">Tipo:</option>
                                                 <option value="CPF">CPF</option>
                                                 <option value="CNPJ">CNPJ</option>
                                                 <option value="EMAIL">EMAIL</option>
                                                 <option value="PHONE">Telefone:</option>
                                             </select>
-                                            <label for="floatingType">Tipo da chave</label>
+                                            <label for="type">Tipo da chave</label>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-12 col-lg-12 mb-1">
@@ -76,7 +76,7 @@
                 <div class="col-xxl-4 col-md-4">
                     <div class="card info-card revenue-card p-2">
                         <div class="card-body">
-                            <h5 class="card-title">DISPONÍVEL PARA SAQUE</h5>
+                            <h5 class="card-title">SALDO</h5>
                             <div class="d-flex align-items-center">
                                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                 <i class="bi bi-currency-dollar"></i>
@@ -89,47 +89,12 @@
                     </div>
                 </div>
 
-                <div class="col-xxl-4 col-md-4">
-                    <div class="card info-card sales-card p-2">
-                        <div class="card-body">
-                            <h5 class="card-title">RECEBÍVEIS</h5>
-                            <div class="d-flex align-items-center">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                <i class="bi bi-bank"></i>
-                                </div>
-                                <div class="ps-3">
-                                    <h6>R$ {{ number_format($statistics, 2, ',', '.') }}</h6>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="col-xxl-4 col-md-4">
-                    <div class="card info-card customers-card p-2">
-                        <div class="card-body">
-                            <h5 class="card-title">ACUMULADO</h5>
-                            <div class="d-flex align-items-center">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                <i class="bi bi-piggy-bank"></i>
-                                </div>
-                                <div class="ps-3">
-                                    <h6>R$ {{ number_format($accumulated, 2, ',', '.') }}</h6>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="col-xxl-12 col-md-12">
-                    <div class="card p-2">
-                        <h5 class="card-title">Extrato</h5>
+                    <div class="card">
                         <div class="table-responsive">
                             <table class="table table-responsive table-hover" id="table">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
                                         <th>Tipo</th>
                                         <th>Data</th>
                                         <th>Descrição</th>
@@ -137,11 +102,8 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($extracts['data'] as $extract)
+                                    @foreach ($extracts as $extract)
                                         <tr>
-                                            <td>
-                                                <a href=""><b>{{ $extract['id'] }}</b></a>
-                                            </td>
                                             <td>
                                                 @if($extract['value'] < 0)
                                                     Saída
@@ -164,27 +126,5 @@
     </div>
 </section>
 
-<script>
-    document.getElementById('submitBtn').addEventListener('click', function() {
-        const key = document.getElementById('floatingKey').value;
-        const value = document.getElementById('floatingValue').value;
-        const type = document.getElementById('floatingType').value;
-    
-        Swal.fire({
-            title: 'Confirmação',
-            html: `<p>Chave Pix: ${key}</p>
-                   <p>Valor: ${value}</p>
-                   <p>Tipo: ${type}</p>
-                   <p>Deseja confirmar?</p>`,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Sim',
-            cancelButtonText: 'Não'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('withdrawForm').submit();
-            }
-        });
-    });
-</script>
+<script src="{{ asset('assets/js/wallet.js') }}"></script>
 @endsection
