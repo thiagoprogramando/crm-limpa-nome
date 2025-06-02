@@ -573,7 +573,7 @@ class AssasController extends Controller {
         $sale = Sale::find($invoice->sale_id);
         if ($sale) {
             
-            $product = $invoice->id_product ? Product::find($invoice->id_product) : null;
+            $product = $invoice->product_id ? Product::find($invoice->product_id) : null;
             if ($product && $invoice->num == 1) {
                 $sale->status = 1;
                 $sale->guarantee = Carbon::parse($sale->guarantee)->addMonths(3);
