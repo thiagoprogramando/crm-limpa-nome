@@ -153,11 +153,6 @@
                                         </th>
                                         <td title="{{ $sale->product->name }}">
                                             {{ implode(' ', array_slice(explode(' ', $sale->product->name), 0, 2)) }} <br>
-                                            @isset($sale->guarantee)
-                                                <span class="badge bg-primary">
-                                                    Garantia: {{ \Carbon\Carbon::parse($sale->guarantee)->format('d/m/Y') }}
-                                                </span>
-                                            @endisset
                                             <span class="badge bg-success">Valor Venda: R$ {{ number_format($sale->value_total, 2, ',', '.') }}</span>
                                         </td>
                                         <td title="{{ $sale->user->name }}">

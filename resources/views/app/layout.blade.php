@@ -148,7 +148,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="https://servicos.ehmconsultas.com/index.php" target="_blank"> <i class="bi bi-search"></i> <span>Consultas</span> </a>
+                    <a class="nav-link collapsed" href="https://api.whatsapp.com/send/?phone=556140429789&text=%23cadastro-ampay&type=phone_number&app_absent=0" target="_blank"> <i class="bi bi-search"></i> <span>Consultas</span> </a>
                 </li>
 
                 <li class="nav-heading">Gestão de Vendas</li>
