@@ -74,17 +74,9 @@
                     </table>
                 </div>
             @endif
-
-            {{-- @if (!empty($sale->sign_contract))
-                <div class="container text-center mt-3 mb-5">
-                    <img src="{{ $sale->sign_contract }}" alt="Assinatura" style="max-width: 100%; height: auto;">
-                    <br>
-                    <small>Assinatura {{ $sale->user->name }}</small>
-                </div>
-            @endif --}}
         </div>
         
-        @if (empty($sale->sign_contract))
+        @if (empty($sale->contract_sign))
             <button id="floatingButton" class="floating-button btn btn-primary">
                 <i class="ri-add-line"></i> Assinar Contrato
             </button>
@@ -156,14 +148,13 @@
 
                 function resizeCanvas() {
                     var modalBody = document.querySelector('.modal-body');
-                    var width = modalBody.clientWidth - 40; // Mantém uma margem
-                    canvas.width = width > 400 ? 400 : width; // Limita a 400px
+                    var width = modalBody.clientWidth - 40;
+                    canvas.width = width > 400 ? 400 : width;
                     canvas.height = 200;
                     ctx.fillStyle = "white";
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                 }
 
-                // Abre o modal e ajusta o canvas
                 document.getElementById('floatingButton').addEventListener('click', function () {
                     var modal = new bootstrap.Modal(document.getElementById('signatureModal'));
                     modal.show();
@@ -171,7 +162,6 @@
 
                 document.getElementById('signatureModal').addEventListener('shown.bs.modal', resizeCanvas);
 
-                // Captura eventos de toque e mouse
                 function startDrawing(e) {
                     isDrawing = true;
                     [lastX, lastY] = [e.offsetX, e.offsetY];
@@ -193,13 +183,10 @@
                     isDrawing = false;
                 }
 
-                // Eventos para mouse
                 canvas.addEventListener("mousedown", startDrawing);
                 canvas.addEventListener("mousemove", draw);
                 canvas.addEventListener("mouseup", stopDrawing);
                 canvas.addEventListener("mouseout", stopDrawing);
-
-                // Eventos para touchscreen
                 canvas.addEventListener("touchstart", function (e) {
                     var touch = e.touches[0];
                     var rect = canvas.getBoundingClientRect();
@@ -224,14 +211,13 @@
                     ctx.stroke();
                     [lastX, lastY] = [x, y];
 
-                    e.preventDefault(); // Evita rolagem ao tocar
+                    e.preventDefault();
                 });
 
                 canvas.addEventListener("touchend", function () {
                     isDrawing = false;
                 });
 
-                // Botão Limpar
                 document.getElementById('clearSignature').addEventListener('click', function () {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                 });
