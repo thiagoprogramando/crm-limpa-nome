@@ -148,7 +148,21 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="https://api.whatsapp.com/send/?phone=556140429789&text=%23cadastro-ampay&type=phone_number&app_absent=0" target="_blank"> <i class="bi bi-search"></i> <span>Consultas</span> </a>
+                    <a class="nav-link collapsed" data-bs-target="#forms-search" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-search"></i><span>Consultas</span><i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <ul id="forms-search" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                        <li>
+                            <a href="https://api.whatsapp.com/send/?phone=556140429789&text=%23cadastro-ampay&type=phone_number&app_absent=0" target="_blank"> 
+                                <i class="bi bi-circle"></i><span>Registrar</span> 
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://ampay.credi.net/" target="_blank"> 
+                                <i class="bi bi-circle"></i><span>Acessar</span> 
+                            </a>
+                        </li>
+                    </ul>
                 </li>
 
                 <li class="nav-heading">Gestão de Vendas</li>
