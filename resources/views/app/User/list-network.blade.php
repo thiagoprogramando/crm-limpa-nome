@@ -262,20 +262,33 @@
     <script>
         document.getElementById('copyUrlBtn').addEventListener('click', function() {
             const minCost = {{ Auth::user()->fixed_cost }};
+            const maxCost = 2 * {{ Auth::user()->fixed_cost }};
+
             Swal.fire({
                 title: 'Informe o custo',
                 input: 'number',
-                inputLabel: `Custo mínimo: R$ ${minCost.toFixed(2)}`,
+                inputLabel: `Custo mínimo: R$ ${minCost.toFixed(2)} & Máximo: R$ ${maxCost.toFixed(2)}`,
                 inputPlaceholder: minCost,
+                inputAttributes: {
+                    min: minCost,
+                    max: maxCost,
+                    step: '0.01'
+                },
                 showCancelButton: true,
                 confirmButtonText: 'Confirmar',
                 cancelButtonText: 'Cancelar',
                 inputValidator: (value) => {
                     if (!value) {
                         return 'Por favor, insira um valor!';
-                    } else if (parseFloat(value) < minCost) {
+                    }
+                    const floatValue = parseFloat(value);
+                    if (floatValue < minCost) {
                         return `O valor mínimo é R$ ${minCost.toFixed(2)}.`;
                     }
+                    if (floatValue > maxCost) {
+                        return `O valor máximo é R$ ${maxCost.toFixed(2)}.`;
+                    }
+                    return null;
                 }
             }).then((result) => {
                 if (result.isConfirmed) {

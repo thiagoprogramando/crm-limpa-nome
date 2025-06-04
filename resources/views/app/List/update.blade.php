@@ -62,16 +62,6 @@
                             </div>
                             <div class="col-12 col-md-2 col-lg-2 mb-1">
                                 <div class="form-floating">
-                                    <select name="status_quod" class="form-select" id="floatingStatus">
-                                        <option selected value="{{ $list->status_quod }}">Opções:</option>
-                                        <option value="Baixado" @selected($list->status_quod == 'Baixado')>Baixado</option>
-                                        <option value="Em Andamento" @selected($list->status_quod == 'Em Andamento')>Em Andamento</option>
-                                    </select>
-                                    <label for="floatingStatus">Situação QUOD:</label>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-2 col-lg-2 mb-1">
-                                <div class="form-floating">
                                     <select name="status_cenprot" class="form-select" id="floatingStatus">
                                         <option selected value="{{ $list->status_cenprot }}">Opções:</option>
                                         <option value="Baixado" @selected($list->status_cenprot == 'Baixado')>Baixado</option>

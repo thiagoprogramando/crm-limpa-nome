@@ -36,7 +36,6 @@
                                     <th class="text-center" scope="col">Serasa</th>
                                     <th class="text-center" scope="col">SPC</th>
                                     <th class="text-center" scope="col">Boa Vista</th>
-                                    <th class="text-center" scope="col">QUOD</th>
                                     <th class="text-center" scope="col">CENPROT</th>
                                     <th class="text-center" scope="col">Opções</th>
                                 </tr>
@@ -55,7 +54,6 @@
                                         <td class="text-center">{{ $list->serasa_status }}</td>
                                         <td class="text-center">{{ $list->status_spc }}</td>
                                         <td class="text-center">{{ $list->status_boa_vista }}</td>
-                                        <td class="text-center">{{ $list->status_quod }}</td>
                                         <td class="text-center">{{ $list->status_cenprot }}</td>
                                         <td class="text-center">
                                             <form action="{{ route('delete-list') }}" method="POST" class="delete btn-group">

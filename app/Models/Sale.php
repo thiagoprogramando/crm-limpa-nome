@@ -146,7 +146,6 @@ class Sale extends Model {
             $this->list->serasa_status      === 'Baixado' &&
             $this->list->status_spc         === 'Baixado' &&
             $this->list->status_boa_vista   === 'Baixado' &&
-            $this->list->status_quod        === 'Baixado' &&
             $this->list->status_cenprot     === 'Baixado';
     }
 
