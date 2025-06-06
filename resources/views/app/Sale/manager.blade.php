@@ -205,7 +205,7 @@
                                                 <input type="hidden" name="id" value="{{ $sale->id }}"> 
                                                 <div class="btn-group" role="group" aria-label="Basic outlined example">
                                                     <a title="Faturas" href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="bi bi-currency-dollar"></i></a>
-                                                    @if (Auth::user()->type == 1)
+                                                    @if (($sale->id_list == 45 || $sale->id_list == 46) && $sale->status == 1)
                                                         <a title="Reprotocolar" href="{{ route('reprotocol-sale', ['id' => $sale->id]) }}" class="btn btn-outline-primary"><i class="bx bx-check-shield"></i></a>
                                                     @endif
                                                     <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
