@@ -125,7 +125,7 @@ class ListController extends Controller {
         $list = SaleList::find($id);
         if ($list) {
 
-            $sales = Sale::where('id_list', $list->id)->where('status', 1)->orderBy('label', 'asc')->get();
+            $sales = Sale::where('list_id', $list->id)->where('status', 1)->orderBy('label', 'asc')->get();
             return Excel::download(new SalesExport($sales), $list->name.$list->description.'.xlsx');
         }
         
