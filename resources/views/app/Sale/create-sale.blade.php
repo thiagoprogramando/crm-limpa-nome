@@ -17,12 +17,12 @@
 
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-justified" type="button" role="tab" aria-controls="profile" aria-selected="false" tabindex="-1">Enviar nome</button>
+                        <button class="nav-link active" id="sale-tab" data-bs-toggle="tab" data-bs-target="#sale-justified" type="button" role="tab" aria-controls="sale" aria-selected="false" tabindex="-1">Gerar Venda</button>
                     </li>
                 </ul>
 
                 <div class="tab-content pt-2" id="myTabjustifiedContent">
-                    <div class="tab-pane fade active show" id="profile-justified" role="tabpanel" aria-labelledby="profile-tab">
+                    <div class="tab-pane fade active show" id="sale-justified" role="tabpanel" aria-labelledby="sale-tab">
                         <div class="row">
                             <form action="{{ route('created-client-sale') }}" method="POST" class="col-12 col-sm-12 col-md-5 col-lg-5 border-end p-md-3 p-lg-3 mb-5" id="formClient">
                                 @csrf

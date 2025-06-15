@@ -18,6 +18,7 @@ use Illuminate\Support\Str;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+
 class SaleController extends Controller {
 
     public function viewSale($uuid) {
@@ -196,7 +197,7 @@ class SaleController extends Controller {
                     $totalCommission    = max($value - $fixedCost, 0);
 
                     $commissions[] = [
-                        'walletId'   => env('WALLET_EXPRESS'),
+                        'walletId'   => $seller->type == 99 ? $seller->token_wallet : $seller->parent->token_wallet,
                         'fixedValue' => $fixedCost,
                     ];
     
