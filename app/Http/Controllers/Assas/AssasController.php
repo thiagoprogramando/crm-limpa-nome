@@ -236,21 +236,22 @@ class AssasController extends Controller {
             }
         }
 
-        $charge = $this->createCharge($user->customer, 'PIX', '49.99', 'Assinatura -'.env('APP_NAME'), now()->addDay(), null, env('WALLET_HEFESTO'), 20);
+        $charge = $this->createCharge($user->customer, 'PIX', '49.99', 'Assinatura -'.env('APP_NAME'), now()->addDay(), null, env('WALLET_HEFESTO'), 23, env('WALLET_G7'), 23);
         if($charge <> false) {
 
             $invoice = new Invoice();
             $invoice->name          = 'Mensalidade '.env('APP_NAME');
             $invoice->description   = 'Mensalidade '.env('APP_NAME');
 
-            $invoice->id_user       = $user->id;
-            $invoice->id_product    = 0;
-            $invoice->value         = 49.99;
-            $invoice->commission    = 20;
-            $invoice->status        = 0;
-            $invoice->type          = 1;
-            $invoice->num           = 1;
-            $invoice->due_date      = now()->addDay();
+            $invoice->id_user            = $user->id;
+            $invoice->id_product         = 0;
+            $invoice->value              = 49.99;
+            $invoice->commission         = 23;
+            $invoice->commission_filiate = 23;
+            $invoice->status             = 0;
+            $invoice->type               = 1;
+            $invoice->num                = 1;
+            $invoice->due_date           = now()->addDay();
 
             $invoice->url_payment   = $charge['invoiceUrl'];
             $invoice->token_payment = $charge['id'];
@@ -346,7 +347,7 @@ class AssasController extends Controller {
             if ($value > 0) {
 
                 $g7Commission = ($value == 49.99) ? 0 : $commission * 0.05;
-                $commission   = ($commission - $g7Commission);
+                $commission   = ($commission - $g7Commission) - 5;
     
                 if ($wallet == env('WALLET_HEFESTO')) {
                     $g7Commission = 0;
@@ -355,7 +356,6 @@ class AssasController extends Controller {
                 if ($g7Commission > 0 && $commission > 0) {
 
                     $g7Commission -= 3;
-
                     if ($g7Commission > 0) {
                         $options['json']['split'][] = [
                             'walletId'        => env('WALLET_G7'),
@@ -365,7 +365,7 @@ class AssasController extends Controller {
     
                     $options['json']['split'][] = [
                         'walletId'        => env('WALLET_HEFESTO'),
-                        'totalFixedValue' => 1
+                        'totalFixedValue' => 5
                     ];
                 }
     
