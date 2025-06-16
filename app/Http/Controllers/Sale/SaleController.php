@@ -186,20 +186,22 @@ class SaleController extends Controller {
             $assas = new AssasController();
     
             foreach ($installments as $key => $installment) {
-                $value    = $this->formatValue($installment['value']);
-                $dueDate  = $installment['due_date'];
-                $commissions = [];
-                $sponsorCommission = 0;
-                $totalCommission = 0;
+                $value              = $this->formatValue($installment['value']);
+                $dueDate            = $installment['due_date'];
+                $commissions        = [];
+                $sponsorCommission  = 0;
+                $totalCommission    = 0;
     
                 if ($key == 1) {
                     $fixedCost          = ($seller->fixed_cost ?? $product->value_cost) - 5;
                     $totalCommission    = max($value - $fixedCost, 0);
-
-                    $commissions[] = [
-                        'walletId'   => $seller->type == 99 ? $seller->token_wallet : $seller->parent->token_wallet,
-                        'fixedValue' => $fixedCost,
-                    ];
+                    
+                    if (Auth::user()->type !== 99) {
+                        $commissions[] = [
+                            'walletId'   => $seller->parent->token_wallet,
+                            'fixedValue' => $fixedCost,
+                        ];
+                    }
     
                     $sponsor = $seller->sponsor;
                     if ($sponsor && $seller->type !== 99) {
