@@ -157,7 +157,7 @@ class SaleController extends Controller {
 
         $list = SaleList::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
         if (!$list) {
-            return redirect()->back()->with('error', 'Não é possível lançar Vendas no momento, tente novamente mais tarde!');
+            return redirect()->back()->with('error', 'Não há Lista disponível no momento, aguarde uma nova Lista!');
         }
 
         $sale = $this->createdSale($customer, $seller, $client, $product, $list, $request->payment_method, $request->payment_installments, $request->installments);
