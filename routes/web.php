@@ -95,6 +95,14 @@ Route::middleware(['auth'])->group(function () {
             Route::post('sale-recover', [RecoverController::class, 'recoverSale'])->name('sale-recover');
             Route::post('user-recover', [RecoverController::class, 'recoverUser'])->name('user-recover');
 
+            //Lists
+            Route::get('/list-lists', [ListController::class, 'listLists'])->name('list-lists');
+            Route::post('created-list', [ListController::class, 'createdList'])->name('created-list');
+            Route::get('/view-list/{id}', [ListController::class, 'viewList'])->name('view-list');
+            Route::post('updated-list', [ListController::class, 'updatedList'])->name('updated-list');
+            Route::post('deleted-list', [ListController::class, 'deletedList'])->name('deleted-list');
+            Route::get('/list-excel/{id}', [ListController::class, 'excelList'])->name('list-excel');
+
             Route::middleware(['checkAdmin'])->group(function () {
                 //Users
                 Route::get('/list-user/{type}', [UserController::class, 'listuser'])->name('list-user');
@@ -106,14 +114,6 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/update-product/{id}', [ProductController::class, 'productDetails'])->name('update-product');
                 Route::post('updated-product', [ProductController::class, 'productUpdate'])->name('updated-product');
                 Route::post('deleted-product', [ProductController::class, 'productDelete'])->name('deleted-product');
-
-                //Lists
-                Route::get('/list-lists', [ListController::class, 'listLists'])->name('list-lists');
-                Route::post('created-list', [ListController::class, 'createdList'])->name('created-list');
-                Route::get('/view-list/{id}', [ListController::class, 'viewList'])->name('view-list');
-                Route::post('updated-list', [ListController::class, 'updatedList'])->name('updated-list');
-                Route::post('deleted-list', [ListController::class, 'deletedList'])->name('deleted-list');
-                Route::get('/list-excel/{id}', [ListController::class, 'excelList'])->name('list-excel');
 
                 //Media
                 Route::post('created-post', [PostController::class, 'created'])->name('created-post');
