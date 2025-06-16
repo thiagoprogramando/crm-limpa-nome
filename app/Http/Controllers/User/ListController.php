@@ -8,8 +8,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Lists;
 use App\Models\Sale;
 use App\Models\SaleList;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ListController extends Controller {
@@ -125,7 +127,23 @@ class ListController extends Controller {
         $list = SaleList::find($id);
         if ($list) {
 
-            $sales = Sale::where('list_id', $list->id)->where('status', 1)->orderBy('label', 'asc')->get();
+            if (Auth::user()->type == 1) {
+                $sales = Sale::where('list_id', $list->id)
+                                    ->where('status', 1)
+                                    ->orderBy('label', 'asc')
+                                    ->get();
+            } else {
+                
+                $relatedUserIds = User::where('parent_id', Auth::user()->id)->pluck('id')->toArray();
+                $relatedUserIds[] = Auth::user()->id;
+
+                $sales = Sale::where('list_id', $list->id)
+                            ->where('status', 1)
+                            ->whereIn('user_id', $relatedUserIds)
+                            ->orderBy('label', 'asc')
+                            ->get();
+            }
+
             return Excel::download(new SalesExport($sales), $list->name.$list->description.'.xlsx');
         }
         

@@ -205,12 +205,12 @@
                     </ul>
                 </li>
                 
+                <li class="nav-heading">Gestão Geral</li>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="{{ route('list-lists') }}"> <i class="bi bi-list-check"></i> <span>Listas</span> </a>
+                </li>
+
                 @if (Auth::user()->type == 1)
-                    <li class="nav-heading">Gestão Geral</li>
-                    <li class="nav-item">
-                        <a class="nav-link collapsed" href="{{ route('list-lists') }}"> <i class="bi bi-list-check"></i> <span>Listas</span> </a>
-                    </li>
-                    
                     <li class="nav-item">
                         <li class="nav-item">
                             <a class="nav-link collapsed" href="{{ route('list-products') }}"> <i class="bi bi-box"></i> <span>Produtos</span> </a>
