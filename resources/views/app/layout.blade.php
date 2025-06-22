@@ -108,6 +108,12 @@
                                     <span>Termos e Condições</span>
                                 </a>
                             </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{{ route('list-tickets') }}">
+                                    <i class="bx bx-support"></i>
+                                    <span>Ticket & Suporte</span>
+                                </a>
+                            </li>
                             <li> <hr class="dropdown-divider"> </li>
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}">
@@ -236,7 +242,10 @@
         <main id="main" class="main">
             @yield('conteudo')
         </main>
-            
+        
+        <a href="{{ route('list-tickets') }}" class="btn btn-sm btn-primary btn-lg floating-btn">
+            <i class="bx bx-support me-3"></i>Suporte
+        </a>
 
         <footer id="footer" class="footer">
             <div class="copyright">

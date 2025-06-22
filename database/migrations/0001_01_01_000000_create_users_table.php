@@ -36,7 +36,7 @@ return new class extends Migration {
 
             $table->decimal('fixed_cost', 10, 2)->nullable();
             
-            $table->integer('type')->default(2);
+            $table->integer('type')->default(2); // 1 - Admin 2 - Consultor 3 - Cliente 99 - Sócio
             $table->integer('level')->default(1);
             $table->integer('status')->default(2);
 

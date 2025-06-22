@@ -1273,7 +1273,15 @@ canvas {
   max-height: 130px;
 }
 
-/* .darkened-img {
-    filter: brightness(0.5);
-} */
+.floating-btn {
+    position: fixed;
+    bottom: 10px;
+    width: 200px;
+    right: 80px;
+    z-index: 1030;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 

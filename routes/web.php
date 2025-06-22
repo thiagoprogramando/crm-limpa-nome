@@ -18,6 +18,7 @@ use App\Http\Controllers\Sale\CouponController;
 use App\Http\Controllers\Sale\DefaultController;
 use App\Http\Controllers\Sale\InvoiceController;
 use App\Http\Controllers\Sale\SaleController;
+use App\Http\Controllers\Ticket\TicketController;
 use App\Http\Controllers\Trash\RecoverController;
 use App\Http\Controllers\Trash\TrashController;
 use App\Http\Controllers\Upload\UploadController;
@@ -102,6 +103,12 @@ Route::middleware(['auth'])->group(function () {
             Route::post('updated-list', [ListController::class, 'updatedList'])->name('updated-list');
             Route::post('deleted-list', [ListController::class, 'deletedList'])->name('deleted-list');
             Route::get('/list-excel/{id}', [ListController::class, 'excelList'])->name('list-excel');
+
+            //Support
+            Route::get('/list-tickets', [TicketController::class, 'index'])->name('list-tickets');
+            Route::post('created-ticket', [TicketController::class, 'store'])->name('created-ticket');
+            Route::post('updated-ticket/{id}', [TicketController::class, 'update'])->name('updated-ticket');
+            Route::post('deleted-ticket/{id}', [TicketController::class, 'destroy'])->name('deleted-ticket');
 
             Route::middleware(['checkAdmin'])->group(function () {
                 //Users
