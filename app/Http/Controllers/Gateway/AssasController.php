@@ -25,7 +25,9 @@ use Illuminate\Support\Str;
 
 class AssasController extends Controller {
 
-    public function createCharge($customer, $billingType, $value, $dueDate = null, $description, $commissions = null) {
+    public function createCharge($customer, $billingType, $value, $dueDate = null, $description, $commissions = null, $token = null) {
+
+        $token = $token ?? (Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor()->token_key);
 
         try {
             $client = new Client();
@@ -33,7 +35,7 @@ class AssasController extends Controller {
             $options = [
                 'headers' => [
                     'Content-Type' => 'application/json',
-                    'access_token' => Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor()->token_key,
+                    'access_token' => $token,
                     'User-Agent'   => env('APP_NAME')
                 ],
                 'json' => [
@@ -203,7 +205,7 @@ class AssasController extends Controller {
             ];
         }
 
-        $charge = $this->createCharge($customer, 'PIX', $value, now()->addDay(), 'Assinatura -'.env('APP_NAME'), $commissions);
+        $charge = $this->createCharge($customer, 'PIX', $value, now()->addDay(), 'Assinatura -'.env('APP_NAME'), $commissions, env('APP_TOKEN_ASSAS'));
         if($charge <> false) {
 
             $invoice = new Invoice();
