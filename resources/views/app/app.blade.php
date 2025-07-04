@@ -173,7 +173,7 @@
                         </div>
                     </div>
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="card info-card clock-card">
+                        <div class="card info-card green-card">
                             <div class="card-body">
                                 <h5 class="card-title">Geral (R$)</h5>
                                 <div class="d-flex align-items-center">
