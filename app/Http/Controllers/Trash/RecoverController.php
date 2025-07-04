@@ -20,7 +20,7 @@ class RecoverController extends Controller {
     
         $sale->restore();
     
-        return redirect()->route('manager-sale')->with('success', 'Venda recuperada com sucesso!');
+        return redirect()->route('list-sales')->with('success', 'Venda recuperada com sucesso!');
     }
     
     public function recoverUser(Request $request) {

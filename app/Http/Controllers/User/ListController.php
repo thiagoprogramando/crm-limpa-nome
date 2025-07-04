@@ -134,12 +134,12 @@ class ListController extends Controller {
                                     ->get();
             } else {
                 
-                $relatedUserIds = User::where('parent_id', Auth::user()->id)->pluck('id')->toArray();
+                $relatedUserIds = User::where('sponsor_id', Auth::user()->id)->pluck('id')->toArray();
                 $relatedUserIds[] = Auth::user()->id;
 
                 $sales = Sale::where('list_id', $list->id)
                             ->where('status', 1)
-                            ->whereIn('user_id', $relatedUserIds)
+                            ->whereIn('client_id', $relatedUserIds)
                             ->orderBy('label', 'asc')
                             ->get();
             }

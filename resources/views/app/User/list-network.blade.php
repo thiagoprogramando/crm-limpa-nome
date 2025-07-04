@@ -247,46 +247,4 @@
             </div>
         </div>
     </section>
-
-    <script>
-        document.getElementById('copyUrlBtn').addEventListener('click', function() {
-            const minCost = {{ Auth::user()->fixed_cost }};
-            Swal.fire({
-                title: 'Informe o custo',
-                input: 'number',
-                inputLabel: `Custo mínimo: R$ ${minCost.toFixed(2)}`,
-                inputPlaceholder: minCost,
-                showCancelButton: true,
-                confirmButtonText: 'Confirmar',
-                cancelButtonText: 'Cancelar',
-                inputValidator: (value) => {
-                    if (!value) {
-                        return 'Por favor, insira um valor!';
-                    } else if (parseFloat(value) < minCost) {
-                        return `O valor mínimo é R$ ${minCost.toFixed(2)}.`;
-                    }
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const value = parseFloat(result.value).toFixed(2);
-                    const url = `{{ route('registrer', ['id' => Auth::id()]) }}/${value}`;
-                    navigator.clipboard.writeText(url).then(() => {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'URL copiada!',
-                            text: 'A URL foi copiada para a área de transferência.',
-                            confirmButtonText: 'OK'
-                        });
-                    }).catch((err) => {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Erro',
-                            text: 'Houve um erro ao copiar a URL: ' + err,
-                            confirmButtonText: 'OK'
-                        });
-                    });
-                }
-            });
-        });
-    </script>
 @endsection

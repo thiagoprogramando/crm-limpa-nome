@@ -94,12 +94,12 @@
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="headingOne">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne{{ $ticket->id }}" aria-expanded="false" aria-controls="collapseOne{{ $ticket->id }}">
+                                        #{{ $ticket->id }} -  {{ $ticket->user->name }} 
                                         @if ($ticket->status == 1)
-                                            <span class="badge rounded-pill bg-success">Resolvido</span>
+                                            <span class="badge rounded-pill bg-success"><i class="bi bi-check-all"></i></span> 
                                         @else
-                                            <span class="badge rounded-pill bg-warning">Pendente</span>
+                                            <span class="badge rounded-pill bg-warning"><i class="bi bi-question-circle"></i></span> 
                                         @endif 
-                                        {{ $ticket->user->name }} 
                                     </button>
                                 </h2>
                                 <div id="collapseOne{{ $ticket->id }}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionTicket">

@@ -84,26 +84,18 @@
                                             @endisset
                                         </td>
                                         <td class="text-center">
-                                            @isset($sale->url_contract)
-                                                {{ $sale->statusContractLabel() }} <br>
-                                                <span class="badge bg-primary">
+                                            @if ( $sale->statusContractLabel() == 'Assinado')
+                                                <span class="badge bg-success">
                                                     <a title="Contrato" href="{{ env('APP_URL').'view-contract/'.$sale->id }}" target="_blank" class="text-white">Acessar</a>
                                                 </span>
-                                                @if (empty($sale->contract_sign))
-                                                    <span class="badge bg-warning">
-                                                        <a title="Reenviar Contrato" href="{{ route('send-contract', ['id' => $sale->id]) }}" class="text-white"><i class="ri-file-edit-line"></i>Copiar URL</a>
-                                                    </span>
-                                                @endif
-                                            @endisset
-
-                                            @if(!$sale->url_contract)
-                                                    <span class="badge bg-danger">
-                                                        Indisponível
-                                                    </span>
+                                            @else
+                                                <span class="badge bg-warning" title="Copiar URL" onclick="onClip('{{ env('APP_URL') }}view-contract/{{ $sale->id }}')">
+                                                    <i class="ri-file-edit-line"></i> Copiar Link do Contrato
+                                                </span>
                                             @endif
                                         </td>
                                         <td class="text-center">
-                                            {{ $sale->statusLabel() }} <br>
+                                            {{ $sale->statusPaymentLabel() }} <br>
                                             <span class="badge bg-primary">{{ \Carbon\Carbon::parse($sale->created_at)->format('d/m/Y') }}</span>
                                         </td>
                                         <td class="text-center">

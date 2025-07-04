@@ -158,7 +158,7 @@
                                                                     <div class="col-12 col-md-8 col-lg-7 row">
                                                                         <div class="col-12 col-md-12 col-lg-12 mb-2">
                                                                             <div class="form-floating">
-                                                                                <input type="text" class="form-control" id="floatingParent" placeholder="Patrocinador:" value="{{ $user->parent->name ?? '' }}" disabled readonly>
+                                                                                <input type="text" class="form-control" id="floatingParent" placeholder="Patrocinador:" value="{{ $user->sponsor->name ?? '' }}" disabled readonly>
                                                                                 <label for="floatingParent">Patrocinador:</label>
                                                                             </div>
                                                                         </div>

@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Access\ForgoutController;
 use App\Http\Controllers\Access\Login;
-use App\Http\Controllers\Access\Registrer;
 use App\Http\Controllers\Access\TermsUsabilityContract;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\Gateway\AssasController;
@@ -34,9 +33,6 @@ Route::post('/logon', [Login::class, 'logon'])->name('logon');
 Route::get('/login-cliente', [LoginController::class, 'login'])->name('login.cliente');
 Route::post('/logon-cliente', [LoginController::class, 'logon'])->name('logon.cliente');
 
-Route::get('/registrer/{id?}/{fixed_cost?}', [Registrer::class, 'index'])->name('registrer');
-Route::post('registrer-user', [Registrer::class, 'registrerUser'])->name('registrer-user');
-
 Route::get('/forgout/{token?}', [ForgoutController::class, 'forgout'])->name('forgout');
 Route::post('forgout-password', [ForgoutController::class, 'forgoutPassword'])->name('forgout-password');
 Route::post('recovery-password/{token}', [ForgoutController::class, 'recoveryPassword'])->name('recovery-password');
@@ -49,38 +45,33 @@ Route::middleware(['auth'])->group(function () {
 
     //Gateway
     Route::get('/integrate-assas-wallet', [AssasController::class, 'IntegrateWallet'])->name('integrate-assas-wallet');
+    Route::get('/create-monthly', [AssasController::class, 'createMonthly'])->name('create-monthly');
     Route::post('/send-assas-token', [AssasController::class, 'IntegrateToken'])->name('send-assas-token');
-    
 
     Route::middleware(['checkMonthly', 'checkWallet'])->group(function () {
 
-            //Sales
             Route::get('/list-sales', [SaleController::class, 'listSale'])->name('list-sales');
             Route::get('/view-sale/{uuid}', [SaleController::class, 'viewSale'])->name('view-sale');
-            Route::get('/create-sale/{product}/{user?}', [SaleController::class, 'createSale'])->name('create-sale');
+            Route::get('/create-sale/{product}/{user?}/{tab?}', [SaleController::class, 'createSale'])->name('create-sale');
+            Route::post('created-sale-excel/{product}/{tab?}', [SaleController::class, 'createdSaleExcel'])->name('created-sale-excel');
             Route::post('created-client-sale', [SaleController::class, 'createdClientSale'])->name('created-client-sale');
             Route::post('created-payment-sale', [SaleController::class, 'createdPaymentSale'])->name('created-payment-sale');
             Route::post('updated-sale', [SaleController::class, 'updatedSale'])->name('updated-sale');
             Route::post('deleted-sale', [SaleController::class, 'deletedSale'])->name('deleted-sale');
             Route::get('reprotocol-sale/{id}', [SaleController::class, 'reprotocolSale'])->name('reprotocol-sale');
 
-            //Invoices
             Route::get('/view-invoice/{id}', [InvoiceController::class, 'index'])->name('view-invoice');
             Route::post('created-invoice', [InvoiceController::class, 'createdInvoice'])->name('created-invoice');
             Route::post('updated-invoice', [InvoiceController::class, 'updatedInvoice'])->name('updated-invoice');
             Route::post('/deleted-invoice', [InvoiceController::class, 'deletedInvoice'])->name('deleted-invoice');
 
-            //Users
             Route::post('created-user', [UserController::class, 'created'])->name('created-user');
 
-            //Gateway
-            Route::get('/create-monthly', [AssasController::class, 'createMonthly'])->name('create-monthly');
-            
             Route::get('/wallet', [AssasController::class, 'wallet'])->name('wallet');
             Route::post('withdraw-send', [AssasController::class, 'withdrawSend'])->name('withdraw-send');
             Route::post('/created-webhook', [AssasController::class, 'createdWebhook'])->name('created-webhook');
             Route::post('/updated-webhook', [AssasController::class, 'updatedWebhook'])->name('updated-webhook');
-        });
+    });
 
     Route::middleware(['checkMonthly', 'checkAccount'])->group(function () {
 

@@ -13,7 +13,6 @@
     
     <section class="section dashboard">
         <div class="row">
-            
             <div class="col-sm-12 col-md-12 col-lg-12">
 
                 @if (Auth::user()->type == 1)
@@ -272,45 +271,114 @@
             </div>
 
             <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5">
-                @if (Auth::user()->type == 1 || Auth::user()->type == 99)
-                    <div class="row align-items-start">
-                        <div class="col-12 col-sm-5 col-md-5 col-lg-12">
-                            <div class="card info-card clock-card">
-                                <div class="card-body">
-                                    <h5 class="card-title">Assinantes</h5>
-                                    <div class="d-flex align-items-center">
-                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                            <i class="bi bi-person-lines-fill"></i>
-                                        </div>
-                                        <div class="ps-3">
-                                            <p>
-                                                Ativos : {{ $subscribers['actives'] }} <br>
-                                                Inativo: {{ $subscribers['inactives'] }} <br>
-                                            </p>
-                                        </div>
+                <div class="row align-items-start">
+                    <div class="col-12 col-sm-5 col-md-5 col-lg-12">
+                        <div class="card info-card clock-card">
+                            <div class="card-body">
+                                <h5 class="card-title">Assinantes</h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-person-lines-fill"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <p>
+                                            Ativos : {{ $subscribers['actives'] }} <br>
+                                            Inativo: {{ $subscribers['inactives'] }} <br>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="col-12 col-sm-7 col-md-7 col-lg-12">
-                            <div class="card">
-                                @if (Auth::user()->type == 1)
-                                    <div class="filter">
-                                        <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                            <li class="dropdown-header text-start">
-                                                <h6>Opções</h6>
-                                            </li>
+                    <div class="col-12 col-sm-7 col-md-7 col-lg-12">
+                        <div class="card">
+                            @if (Auth::user()->type == 1)
+                                <div class="filter">
+                                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                        <li class="dropdown-header text-start">
+                                            <h6>Opções</h6>
+                                        </li>
+                                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#createModal">Nova Publicação</a></li>
+                                    </ul>
 
-                                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#createModal">Nova Publicação</a></li>
-                                        </ul>
+                                    <div class="modal fade" id="createModal" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <form action="{{ route('created-post') }}" method="POST" enctype="multipart/form-data">
+                                                    @csrf
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Dados da Publicação</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                <div class="form-floating">
+                                                                    <input type="file" name="image" class="form-control" id="image" placeholder="Imagem (Capa 1024px X 768px):">
+                                                                    <label for="image">Imagem (Capa 1024px X 768px):</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                <div class="form-floating">
+                                                                    <input type="text" name="title" class="form-control" id="title" placeholder="Título:">
+                                                                    <label for="title">Título:</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                                                <div class="form-floating">
+                                                                    <input type="text" name="tags" class="form-control" id="tag" placeholder="Tags:">
+                                                                    <label for="tag">Tags:</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-md-6 col-lg-6">
+                                                                <div class="form-floating mb-2">
+                                                                    <select name="access_type" class="form-select" id="access_type">
+                                                                        <option value="">Publicar para:</option>
+                                                                        <option value="">Todos</option>
+                                                                        <option value="1">Administradores</option>
+                                                                        <option value="2">Consultores</option>
+                                                                        <option value="99">Sócios</option>
+                                                                    </select>
+                                                                    <label for="access_type">Opções</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                    <div id="editor"></div>
+                                                                    <textarea id="content" name="content" style="display:none;"></textarea>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer btn-group">
+                                                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                                        <button type="submit" class="btn btn-primary">Publicar</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                            
+                            <div class="card-body pb-0">
+                                <h5 class="card-title">Notícias &amp; Atualizações <span>| Recentes</span></h5>
+                                <div class="news">
+                                    @foreach ($posts as $post)
+                                        <div class="post-item clearfix">
+                                            <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}">
+                                            <h4><a href="#" data-bs-toggle="modal" data-bs-target="#viewModal{{ $post->id }}">{{ $post->title }}</a></h4>
+                                            <p>{{ $post->labelResume() }}</p>
+                                        </div>
 
-                                        <div class="modal fade" id="createModal" tabindex="-1">
-                                            <div class="modal-dialog">
+                                        <div class="modal fade" id="viewModal{{ $post->id }}" tabindex="-1">
+                                            <div class="modal-dialog modal-lg">
                                                 <div class="modal-content">
-                                                    <form action="{{ route('created-post') }}" method="POST" enctype="multipart/form-data">
+                                                    <form action="{{ route('deleted-post') }}" method="POST" class="delete">
                                                         @csrf
+                                                        <input type="hidden" name="id" value="{{ $post->id }}">
                                                         <div class="modal-header">
                                                             <h5 class="modal-title">Dados da Publicação</h5>
                                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -318,149 +386,82 @@
                                                         <div class="modal-body">
                                                             <div class="row">
                                                                 <div class="col-12 col-md-12 col-lg-12 mb-2">
-                                                                    <div class="form-floating">
-                                                                        <input type="file" name="image" class="form-control" id="image" placeholder="Imagem (Capa 1024px X 768px):">
-                                                                        <label for="image">Imagem (Capa 1024px X 768px):</label>
-                                                                    </div>
+                                                                    {!! $post->labelTags() !!}
                                                                 </div>
                                                                 <div class="col-12 col-md-12 col-lg-12 mb-2">
-                                                                    <div class="form-floating">
-                                                                        <input type="text" name="title" class="form-control" id="title" placeholder="Título:">
-                                                                        <label for="title">Título:</label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-12 col-md-6 col-lg-6 mb-2">
-                                                                    <div class="form-floating">
-                                                                        <input type="text" name="tags" class="form-control" id="tag" placeholder="Tags:">
-                                                                        <label for="tag">Tags:</label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-12 col-md-6 col-lg-6">
-                                                                    <div class="form-floating mb-2">
-                                                                        <select name="access_type" class="form-select" id="access_type">
-                                                                            <option value="">Publicar para:</option>
-                                                                            <option value="">Todos</option>
-                                                                            <option value="1">Administradores</option>
-                                                                            <option value="2">Consultores</option>
-                                                                            <option value="99">Sócios</option>
-                                                                        </select>
-                                                                        <label for="access_type">Opções</label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-12 col-md-12 col-lg-12 mb-2">
-                                                                    <div class="col-12 col-md-12 col-lg-12 mb-2">
-                                                                        <div id="editor"></div>
-                                                                        <textarea id="content" name="content" style="display:none;"></textarea>
-                                                                    </div>
+                                                                    {!! $post->content !!}
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="modal-footer btn-group">
-                                                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
-                                                            <button type="submit" class="btn btn-primary">Publicar</button>
-                                                        </div>
+                                                        @if (Auth::user()->type == 1)
+                                                            <div class="modal-footer btn-group">
+                                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                                                <button type="submit" class="btn btn-primary">Excluir</button>
+                                                            </div>
+                                                        @endif
                                                     </form>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                @endif
-
-                                <div class="card-body pb-0">
-                                    <h5 class="card-title">Notícias &amp; Atualizações <span>| Recentes</span></h5>
-                                    <div class="news">
-                                        @foreach ($posts as $post)
-                                            <div class="post-item clearfix">
-                                                <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}">
-                                                <h4><a href="#" data-bs-toggle="modal" data-bs-target="#viewModal{{ $post->id }}">{{ $post->title }}</a></h4>
-                                                <p>{{ $post->labelResume() }}</p>
-                                            </div>
-
-                                            <div class="modal fade" id="viewModal{{ $post->id }}" tabindex="-1">
-                                                <div class="modal-dialog modal-lg">
-                                                    <div class="modal-content">
-                                                        <form action="{{ route('deleted-post') }}" method="POST" class="delete">
-                                                            @csrf
-                                                            <input type="hidden" name="id" value="{{ $post->id }}">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title">Dados da Publicação</h5>
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <div class="row">
-                                                                    <div class="col-12 col-md-12 col-lg-12 mb-2">
-                                                                        {!! $post->labelTags() !!}
-                                                                    </div>
-                                                                    <div class="col-12 col-md-12 col-lg-12 mb-2">
-                                                                        {!! $post->content !!}
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            @if (Auth::user()->type == 1)
-                                                                <div class="modal-footer btn-group">
-                                                                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
-                                                                    <button type="submit" class="btn btn-primary">Excluir</button>
-                                                                </div>
-                                                            @endif
-                                                        </form>
-                                                    </div>
+                                                <div class="modal-footer btn-group">
+                                                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                                    <button type="submit" class="btn btn-primary">Publicar</button>
                                                 </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
+                                            </form>
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
                         </div>
                     </div>
-                @else
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-                        <div class="card info-card clock-card">
-                            <div class="card-body">
-                                <h5 class="card-title">Parceiros <span>| Últimos Associados</span></h5>
-                                
-                                <div class="table-responsive">
-                                    <table class="table table" id="table">
-                                        <thead>
-                                            <tr class="table-primary">
-                                                <th scope="col" class="text-center">°</th>
-                                                <th scope="col">Consultor</th>
-                                                <th scope="col" class="text-center">Status</th>
-                                                <th scope="col" class="text-center">Cadastro</th>
+                </div>
+
+                <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="card info-card clock-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Parceiros <span>| Últimos Associados</span></h5>
+                            
+                            <div class="table-responsive">
+                                <table class="table table" id="table">
+                                    <thead>
+                                        <tr class="table-primary">
+                                            <th scope="col" class="text-center">°</th>
+                                            <th scope="col">Nome</th>
+                                            <th scope="col" class="text-center">Status</th>
+                                            <th scope="col" class="text-center">Cadastro</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($networks as $key => $network)
+                                            <tr>
+                                                <td scope="row" class="d-flex justify-content-center">
+                                                    @if($network->photo)
+                                                        <img src="{{ asset('storage/' . $network->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
+                                                    @else
+                                                        <img src="{{ asset('assets/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    {{ $network->maskedName() }}
+                                                </td>
+                                                <td class="text-center">
+                                                    @if ($network->status == 1)
+                                                        Ativo
+                                                    @else
+                                                        Pendente
+                                                    @endif
+                                                </th>
+                                                <td class="text-center">{{ \Carbon\Carbon::parse($network->created_at)->format('d/m/Y') }}</th>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($networks as $key => $network)
-                                                <tr>
-                                                    <td scope="row" class="d-flex justify-content-center">
-                                                        @if($network->photo)
-                                                            <img src="{{ asset('storage/' . $network->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
-                                                        @else
-                                                            <img src="{{ asset('assets/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        {{ $network->maskedName() }}
-                                                    </td>
-                                                    <td class="text-center">
-                                                        @if ($network->status == 1)
-                                                            Ativo
-                                                        @else
-                                                            Pendente
-                                                        @endif
-                                                    </th>
-                                                    <td class="text-center">{{ \Carbon\Carbon::parse($network->created_at)->format('d/m/Y') }}</th>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                    <div class="text-center">
-                                        {{ $networks->links() }}
-                                    </div>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                                <div class="text-center">
+                                    {{ $networks->links() }}
                                 </div>
                             </div>
                         </div>
                     </div>
-                @endif
+                </div>
             </div>
         </div>
     </section>

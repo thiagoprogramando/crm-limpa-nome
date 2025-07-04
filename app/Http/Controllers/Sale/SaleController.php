@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
+use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -33,7 +36,7 @@ class SaleController extends Controller {
         return redirect()->back()->with('error', 'Produto indisponível!');
     }
 
-    public function createSale($product, $user = null) {
+    public function createSale(Request $request, $product, $user = null, $tab = null) {
 
         $product = Product::find($product);
         if (!$product) {
@@ -47,9 +50,40 @@ class SaleController extends Controller {
             }
         }
 
+        $query = Sale::where('type', 2)->orderBy('created_at', 'desc');
+        if (!empty($request->uuid)) {
+            $query->where('uuid', $request->uuid);
+        }
+        if (!empty($request->name)) {
+            $users = User::where('name', 'LIKE', '%' . $request->name . '%')->pluck('id')->toArray();
+            if (!empty($users)) {
+                $query->whereIn('client_id', $users);
+            }
+        }
+        if (!empty($request->created_at)) {
+            $query->whereDate('created_at', $request->created_at);
+        }
+        if (!empty($request->value) && $this->formatValue($request->value) > 0) {
+            $query->where('value', $this->formatValue($request->value));
+        }
+        if (!empty($request->list_id)) {
+            $query->where('list_id', $request->list_id);
+        }
+        if (!empty($request->product_id)) {
+            $query->where('product_id', $request->product_id);
+        }
+        if (!empty($request->status)) {
+            $query->where('status', $request->status);
+        }
+        if (!empty($request->label)) {
+            $query->where('label', 'LIKE', '%'.$request->label.'%');
+        }
+
         return view('app.Sale.create-sale', [
             'product' => $product, 
-            'user'    => $user ?? null
+            'user'    => $user ?? null,
+            'sales'   => $query->paginate(30),
+            'tab'     => $tab ?? 'sale-justified'
         ]);
     }
 
@@ -57,7 +91,7 @@ class SaleController extends Controller {
 
         $user = $this->createdUser($request->name, $request->email, $request->cpfcnpj, $request->birth_date, $request->phone, Auth::user()->id, Auth::user()->fixed_cost, Auth::user()->association_id);
         if ($user['status'] === true) {
-            return redirect()->route('create-sale', ['product' => $request->product_id, 'user'    => $user['id'] ])->with('success', 'Cliente incluído com sucesso!');
+            return redirect()->route('create-sale', ['product' => $request->product_id, 'user' => $user['id'] ])->with('success', 'Cliente incluído com sucesso!');
         }
 
         return redirect()->back()->with('info', 'Não foi possível incluir o cliente! '.$user['message']);
@@ -137,7 +171,7 @@ class SaleController extends Controller {
         }
 
         $assas = new AssasController();
-        $customer = $assas->createCustomer($client->name, $client->cpfcnpj, $client->phone, $client->email);
+        $customer = $assas->createCustomer($client->name, $client->cpfcnpj);
         if ($customer === false) {
             return false;
         }
@@ -160,7 +194,7 @@ class SaleController extends Controller {
             return redirect()->back()->with('error', 'Não há Lista disponível no momento, aguarde uma nova Lista!');
         }
 
-        $sale = $this->createdSale($customer, $seller, $client, $product, $list, $request->payment_method, $request->payment_installments, $request->installments);
+        return $sale = $this->createdSale($customer, $seller, $client, $product, $list, $request->payment_method, $request->payment_installments, $request->installments);
         if (!empty($sale['uuid'])) {
             return redirect()->route('view-sale', ['uuid' => $sale['uuid']])->with('success', 'Venda cadastrada com sucesso!'); 
         }
@@ -169,7 +203,7 @@ class SaleController extends Controller {
     }
 
     private function createdSale($customer, $seller, $client, $product, $list, $paymentMethod, $paymentInstallments, $installments) {
-        
+
         DB::beginTransaction();
     
         try {
@@ -193,18 +227,12 @@ class SaleController extends Controller {
                 $totalCommission    = 0;
     
                 if ($key == 1) {
-                    $fixedCost          = ($seller->fixed_cost ?? $product->value_cost) - 5;
-                    $totalCommission    = max($value - $fixedCost, 0);
-                    
-                    if (Auth::user()->type !== 99) {
-                        $commissions[] = [
-                            'walletId'   => $seller->parent->token_wallet,
-                            'fixedValue' => $fixedCost,
-                        ];
-                    }
-    
-                    $sponsor = $seller->sponsor;
-                    if ($sponsor && $seller->type !== 99) {
+                    $fixedCost       = ($seller->fixed_cost ?? $product->value_cost);
+                    $totalCommission = max(($value - $fixedCost) - 5, 0);
+
+                    $sponsor            = $seller->sponsor;
+                    $sponsorCommission  = 0;
+                    if ($sponsor) {
                         $sponsorCommission = max($fixedCost - $sponsor->fixed_cost, 0);
                         if ($sponsorCommission > 0) {
                             $commissions[] = [
@@ -213,21 +241,39 @@ class SaleController extends Controller {
                             ];
                         }
                     }
+                    
+                    $commissions[] = [
+                        'walletId'   => env('APP_WALLET_ASSAS'),
+                        'fixedValue' => ($fixedCost - $sponsorCommission),
+                    ];
+
     
-                    if ($totalCommission > 0 && $seller->type !== 99) {
+                    if ($totalCommission > 0) {
                         $commissions[] = [
                             'walletId'   => $seller->token_wallet,
                             'fixedValue' => number_format($totalCommission, 2, '.', ''),
+                        ];
+                        $commissions[] = [
+                            'walletId'   => env('WALLET_EXPRESS'),
+                            'fixedValue' => number_format(1, 2, '.', ''),
                         ];
                     }
                 } else {
                     $percent = $value * 0.05;
                     $totalCommission = ($value - $percent - 5);
                     
-                    if ($totalCommission > 0 && $seller->type !== 99) {
+                    if ($totalCommission > 0) {
                         $commissions[] = [
                             'walletId'   => $seller->token_wallet,
                             'fixedValue' => number_format($totalCommission, 2, '.', ''),
+                        ];
+                        $commissions[] = [
+                            'walletId'   => env('WALLET_EXPRESS'),
+                            'fixedValue' => number_format(1, 2, '.', ''),
+                        ];
+                        $commissions[] = [
+                            'walletId'   => env('WALLET_G7'),
+                            'fixedValue' => number_format($percent, 2, '.', ''),
                         ];
                     }
                 }
@@ -259,12 +305,65 @@ class SaleController extends Controller {
             return [
                 'uuid' => $sale->uuid,
             ];
-    
         } catch (\Throwable $e) {
             DB::rollback();
             Log::error('Erro ao gera dados de pagamento para nova venda: ' . $e->getMessage());
             return false;
         }
+    }
+    
+    public function createdSaleExcel(Request $request, $product, $tab = null) {
+
+        $product = Product::find($product);
+        if (!$product) {
+            return redirect()->back()->with('infor', 'Produto indisponível!');
+        }
+
+        $list = SaleList::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
+        if (!$list) {
+            return redirect()->back()->with('infor', 'Não há Lista disponível no momento, aguarde uma nova Lista!');
+        }
+
+        if (!$request->hasFile('file')) {
+            return redirect()->back()->with('infor', 'Selecione um arquivo para importar!');
+        }
+
+        $file           = $request->file('file');
+        $spreadsheet    = IOFactory::load($file->getPathname());
+        $worksheet      = $spreadsheet->getActiveSheet();
+        $rows           = $worksheet->toArray();
+
+        $data = [];
+
+        for ($i = 3; $i < count($rows); $i++) {
+
+            $row         = $rows[$i];
+            $nome        = trim($row[0] ?? '');
+            $cpfcnpj     = trim($row[3] ?? '');
+            $birth_date  = trim($row[4] ?? '');
+            $value       = str_replace(',', '.', preg_replace('/[^0-9,]/', '', trim($row[6] ?? '')));    
+
+            if (empty($nome) || empty($cpfcnpj) || empty($birth_date)) {
+                continue;
+            }
+
+            if (empty($value)) {
+                $value = Auth::user()->fixed_cost;
+            }
+
+            $data[] = [
+                'name'          => $nome,
+                'cpfcnpj'       => $cpfcnpj,
+                'birth_date'    => $birth_date,
+                'value'         => $value,
+            ];
+        }
+
+        
+
+
+        
+        
     }
 
     public function listSale(Request $request) {

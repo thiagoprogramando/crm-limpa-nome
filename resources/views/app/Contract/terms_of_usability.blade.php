@@ -71,27 +71,27 @@
                 <p>2.1. O presente contrato é de <strong>adesão e prestação de serviço de sistema</strong>, não estabelecendo vínculo empregatício, representação comercial, sociedade ou franquia entre as partes.</p>
 
                 <h2>3. Garantia dos Produtos</h2>
-                <p>3.1. Os produtos e serviços ofertados através do sistema possuem <strong>garantia de 3 (três) meses</strong>, a contar da data da venda, podendo este prazo ser ampliado pela CONTRATANTE, a seu exclusivo critério.</p>
+                <p>3.1. Os produtos e serviços ofertados através do sistema possuem <strong>garantia diferenciada especificada em cada contrato de compra</strong>, a contar da data da venda, podendo este prazo ser ampliado pela CONTRATANTE, a seu exclusivo critério.</p>
 
                 <h2>4. Prazo Mínimo de Uso</h2>
-                <p>4.1. O VENDEDOR PARCEIRO compromete-se a <strong>utilizar o sistema por um prazo mínimo de 6 (seis) meses</strong>, a contar da data de ativação da sua conta no CRM.</p>
+                <p>4.1. O VENDEDOR PARCEIRO compromete-se a <strong>utilizar o sistema por um prazo mínimo de 6 (seis) meses</strong>, a contar da data de ativação da sua conta.</p>
 
                 <h2>5. Regras de Comercialização</h2>
                 <p>5.1. O não cumprimento das <strong>condições contratuais dos produtos ofertados</strong>, especialmente as cláusulas de elegibilidade, prazos e documentos exigidos, <strong>invalida a venda</strong> realizada pelo VENDEDOR PARCEIRO.</p>
                 <p>5.2. O VENDEDOR PARCEIRO é integralmente responsável pelas <strong>informações prestadas aos clientes finais</strong>, devendo seguir fielmente as diretrizes e orientações fornecidas dentro do CRM.</p>
 
-                <h2>6. Responsabilidade por Serviços e Estornos</h2>
-                <p>6.1. A CONTRATANTE compromete-se a <strong>estornar os valores recebidos dos clientes finais</strong>, em caso de <strong>não entrega ou não execução dos serviços contratados</strong>, <strong>excetuando-se os valores pagos a título de assinatura</strong> ou uso do sistema pelo VENDEDOR PARCEIRO, que <strong>não são reembolsáveis</strong>.</p>
+                {{-- <h2>6. Responsabilidade por Serviços e Estornos</h2>
+                <p>6.1. A CONTRATANTE compromete-se a <strong>estornar os valores recebidos dos clientes finais</strong>, em caso de <strong>não entrega ou não execução dos serviços contratados</strong>, <strong>excetuando-se os valores pagos a título de assinatura</strong> ou uso do sistema pelo VENDEDOR PARCEIRO, que <strong>não são reembolsáveis</strong>.</p> --}}
 
-                <h2>7. Limitação de Responsabilidade</h2>
-                <p>7.1. A CONTRATANTE atua <strong>exclusivamente como fornecedora de tecnologia de gestão e intermediação</strong>, não sendo responsável pela comercialização direta dos serviços ou pela atuação dos VENDEDOR PARCEIROS junto ao público.</p>
+                <h2>6. Limitação de Responsabilidade</h2>
+                <p>6.1. A CONTRATANTE atua <strong>exclusivamente como fornecedora de tecnologia de gestão e intermediação</strong>, não sendo responsável pela comercialização direta dos serviços ou pela atuação dos VENDEDOR PARCEIROS junto ao público.</p>
 
-                <h2>8. Rescisão</h2>
-                <p>8.1. O presente contrato poderá ser rescindido a qualquer tempo por qualquer das partes, mediante notificação por escrito, respeitado o <strong>prazo mínimo de 6 (seis) meses</strong> de uso.</p>
-                <p>8.2. A CONTRATANTE reserva-se o direito de <strong>suspender ou encerrar</strong> o acesso do VENDEDOR PARCEIRO em caso de descumprimento de qualquer cláusula deste contrato.</p>
+                <h2>7. Rescisão</h2>
+                <p>7.1. O presente contrato poderá ser rescindido a qualquer tempo por qualquer das partes, mediante notificação por escrito, respeitado o <strong>prazo mínimo de 6 (seis) meses</strong> de uso.</p>
+                <p>7.2. A CONTRATANTE reserva-se o direito de <strong>suspender ou encerrar</strong> o acesso do VENDEDOR PARCEIRO em caso de descumprimento de qualquer cláusula deste contrato.</p>
 
-                <h2>9. Disposições Gerais</h2>
-                <p>9.1. Este contrato é regido pelas leis brasileiras e qualquer controvérsia será dirimida no foro da comarca de <strong>Natal/RN</strong>, com exclusão de qualquer outro, por mais privilegiado que seja.</p>
+                <h2>8. Disposições Gerais</h2>
+                <p>8.1. Este contrato é regido pelas leis brasileiras e qualquer controvérsia será dirimida no foro da comarca de <strong>Natal/RN</strong>, com exclusão de qualquer outro, por mais privilegiado que seja.</p>
 
                 <p><strong>Declaro que li, compreendi e aceito integralmente os termos deste contrato.</strong></p>
                 <p>__________________________________________</p>

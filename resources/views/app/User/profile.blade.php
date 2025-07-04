@@ -157,7 +157,7 @@
                                     </div>
                                 </div>
 
-                                @if (Auth::user()->type == 99)
+                                @if (Auth::user()->type == 99 || Auth::user()->type == 99)
                                     <div class="col-12">
                                         <div class="row">
                                             <div class="col-6 col-md-7 col-lg-7 mb-2">

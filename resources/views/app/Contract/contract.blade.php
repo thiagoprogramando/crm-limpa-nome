@@ -11,7 +11,6 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="{{ asset('login_template/css/style.css') }}">
         <style>
-
             body {
                 font-family: 'Times New Roman', Times, serif;
             }
@@ -52,27 +51,29 @@
             @else
                 {!! $contractContent  !!}
 
-                <div class="table-respondive mb-5">
-                    <p>Anexo I</p>
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th scope="col">Parcela</th>
-                                <th class="text-center" scope="col">Valor</th>
-                                <th class="text-center" scope="col">Vencimento</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($invoices as $invoice)
+                @if (env('VALUES_FOR_CONTRACT') == true)
+                    <div class="table-respondive mb-5">
+                        <p>Anexo I</p>
+                        <table class="table table-hover">
+                            <thead>
                                 <tr>
-                                    <th scope="row">{{ $invoice->description }}</th>
-                                    <td class="text-center">R$ {{ number_format($invoice->value, 2, ',', '.') }}</td>
-                                    <td class="text-center">{{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y') }}</td>
+                                    <th scope="col">Parcela</th>
+                                    <th class="text-center" scope="col">Valor</th>
+                                    <th class="text-center" scope="col">Vencimento</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                @foreach ($invoices as $invoice)
+                                    <tr>
+                                        <th scope="row">{{ $invoice->description }}</th>
+                                        <td class="text-center">R$ {{ number_format($invoice->value, 2, ',', '.') }}</td>
+                                        <td class="text-center">{{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y') }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
             @endif
         </div>
         

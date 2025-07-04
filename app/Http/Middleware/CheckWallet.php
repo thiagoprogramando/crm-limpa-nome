@@ -16,7 +16,7 @@ class CheckWallet {
             if (Auth::check()) {
 
                 $user = Auth::user();
-                if ((empty($user->company_name) || empty($user->company_cpfcnpj) || empty($user->company_address) || empty($user->company_email) && $user->type == 99)) {
+                if (($user->type !== 2) && (empty($user->company_name) || empty($user->company_cpfcnpj) || empty($user->company_address) || empty($user->company_email))) {
                     return redirect()->route('profile')->with('info', 'Preencha todos os dados para acessar sua plataforma!');
                 }
 
@@ -26,7 +26,7 @@ class CheckWallet {
             }
         } catch (\Throwable $e) {
             Log::error('Erro no middleware CheckUsability: '.$e->getMessage());
-            return redirect()->route('payments')->with('error', 'Erro ao verificar mensalidade. Contate o suporte.');
+            return redirect()->route('payments')->with('error', '');
         }
 
         return $next($request);

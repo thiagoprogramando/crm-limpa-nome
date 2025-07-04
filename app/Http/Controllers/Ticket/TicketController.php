@@ -27,8 +27,7 @@ class TicketController extends Controller {
 
         if (empty($request->user_id) && Auth::user()->type !== 1) {
             $query->where(function ($q) {
-                $q->where('user_id', Auth::id())
-                ->orWhere('sponsor_id', Auth::id());
+                $q->where('user_id', Auth::id());
             });
         }
 

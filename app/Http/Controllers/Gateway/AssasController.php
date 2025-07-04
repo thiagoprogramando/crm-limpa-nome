@@ -27,7 +27,7 @@ class AssasController extends Controller {
 
     public function createCharge($customer, $billingType, $value, $dueDate = null, $description, $commissions = null, $token = null) {
 
-        $token = $token ?? (Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor()->token_key);
+        $token = $token ?? (Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key);
 
         try {
             $client = new Client();
@@ -45,7 +45,7 @@ class AssasController extends Controller {
                     'dueDate'           => isset($dueDate) ? Carbon::parse($dueDate)->toIso8601String() : now()->addDays(1),
                     'description'       => $description,
                     'isAddressRequired' => false,
-                    'split'             => env('APP_ENV') !== 'local' ? $commissions : null,
+                    'split'             => $commissions,
                 ],
                 'verify' => false
             ];
@@ -69,14 +69,15 @@ class AssasController extends Controller {
         }
     }
 
-    public function updateCharge($id, $dueDate, $value = null) {
-        
+    public function updateCharge($id, $dueDate, $value = null, $token = null) {
+
+        $token  = $token ?? (Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key);
         $client = new Client();
         
         $options = [
             'headers' => [
                 'Content-Type' => 'application/json',
-                'access_token' => Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor()->token_key,
+                'access_token' => $token,
                 'User-Agent'   => env('APP_NAME')
             ],
             'json' => [
@@ -109,19 +110,22 @@ class AssasController extends Controller {
         return false;
     }
 
-    public function cancelCharge($token) {
+    public function cancelCharge($id, $token = null) {
+
+        $token = $token ?? (Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key);
+        
         try {
             $client = new Client();
             $options = [
                 'headers' => [
                     'Content-Type'  => 'application/json',
-                    'access_token'  => Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor()->token_key,
+                    'access_token'  => $token,
                     'User-Agent'    => env('APP_NAME')
                 ],
                 'verify' => false
             ];
 
-            $response = $client->delete(env('API_URL_ASSAS') . 'v3/payments/' . $token, $options);
+            $response = $client->delete(env('API_URL_ASSAS') . 'v3/payments/' . $id, $options);
 
             if ($response->getStatusCode() === 200) {
                 $data = json_decode((string) $response->getBody(), true);
@@ -136,7 +140,9 @@ class AssasController extends Controller {
         }
     }
 
-    public function createCustomer($name, $cpfcnpj) {
+    public function createCustomer($name, $cpfcnpj, $token = null) {
+
+        $token = $token ?? (Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key);
 
         try {
             $client = new Client();
@@ -144,7 +150,7 @@ class AssasController extends Controller {
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'accept'       => 'application/json',
-                    'access_token' => (Auth::user()->type == 99 || Auth::user()->type == 1) ? Auth::user()->token_key : Auth::user()->sponsor()->token_key,
+                    'access_token' => $token,
                     'User-Agent'   => env('APP_NAME')
                 ],
                 'json' => [
@@ -186,7 +192,7 @@ class AssasController extends Controller {
             return redirect()->route('payments')->with('info', 'Você possui pendências de pagamentos!');
         }
             
-        $customer = $this->createCustomer($user->name, $user->cpfcnpj, $user->phone, $user->email);
+        $customer = $this->createCustomer($user->name, $user->cpfcnpj, env('APP_TOKEN_ASSAS'));
         if (!$customer) {
             return redirect()->route('profile')->with('info', 'Verifique seus dados e tente novamente!');
         }

@@ -24,7 +24,7 @@
                             <div class="login-wrap p-4 p-md-5">
                                 <div class="d-flex">
                                     <div class="w-100 text-center">
-                                        <h3 class="mb-4">{{ env('APP_NAME') }}</h3>
+                                        <h3 class="mb-4">Bem-vindo(a)!</h3>
                                     </div>
                                 </div>
 
