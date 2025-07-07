@@ -18,11 +18,7 @@ class CheckMonthly {
 
                 $user = Auth::user();
 
-                if (empty($user->token_key) || empty($user->token_wallet)) {
-                    return redirect()->route('app')->with('info', 'Escolha um Gateway de Pagamentos no Menu Integrações!');
-                }
-
-                if ($user && in_array($user->status, [1, 2]) && !in_array($user->type, [1, 4])) {
+                if ($user && in_array($user->status, [1, 2]) && !in_array($user->type, [1, 4, 99])) {
                     $monthly = Invoice::where('user_id', $user->id)
                         ->where('status', 1)
                         ->where('type', 1)

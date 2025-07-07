@@ -28,7 +28,6 @@
 
             <div class="btn-group mb-3" role="group">
                 <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
-                {{-- <button type="button" id="toggle-select" class="btn btn-sm btn-outline-primary">Selecionar</button> --}}
             </div>
 
             <div class="modal fade" id="filterModal" tabindex="-1">
@@ -111,7 +110,7 @@
                                 @foreach ($sales as $sale)
                                     <tr>
                                         <td title="{{ $sale->client->name }}">
-                                            <input type="checkbox" class="row-checkbox" value="{{ $sale->id }}"> {{ $sale->id }} -
+                                            {{ $sale->id }} -
                                             {{ implode(' ', array_slice(explode(' ', $sale->client->name), 0, 2)) }} <br>
                                             <span class="badge bg-dark">CPF/CNPJ: {{ $sale->client->cpfcnpjLabel() }}</span>
                                         </td>

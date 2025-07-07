@@ -50,7 +50,24 @@ class SaleController extends Controller {
             }
         }
 
-        $query = Sale::where('type', 2)->orderBy('created_at', 'desc');
+        $query = Sale::orderBy('created_at', 'desc');
+        
+        $authUser           = Auth::user();
+        $affiliateIds       = User::where('sponsor_id', $authUser->id)->pluck('id')->toArray();
+        $accessibleUserIds  = array_merge([$authUser->id], $affiliateIds);
+    
+        if (Auth::user()->type == 1) {
+            if (!empty($request->id_seller)) {
+                $query->where('seller_id', $request->seller_id);
+            }
+        } else {
+            if (!empty($request->seller_id)) {
+                $query->where('seller_id', $request->seller_id);
+            } else {
+                $query->whereIn('seller_id', $accessibleUserIds);
+            }
+        }
+
         if (!empty($request->uuid)) {
             $query->where('uuid', $request->uuid);
         }
@@ -79,11 +96,15 @@ class SaleController extends Controller {
             $query->where('label', 'LIKE', '%'.$request->label.'%');
         }
 
+        $salesType2 = (clone $query)->where('type', 2)->paginate(30, ['*'], 'page_type2');
+        $salesType3 = (clone $query)->where('type', 3)->paginate(30, ['*'], 'page_type3');
+
         return view('app.Sale.create-sale', [
-            'product' => $product, 
-            'user'    => $user ?? null,
-            'sales'   => $query->paginate(30),
-            'tab'     => $tab ?? 'sale-justified'
+            'product'    => $product, 
+            'user'       => $user ?? null,
+            'salesType2' => $salesType2,
+            'salesType3' => $salesType3,
+            'tab'        => $tab ?? 'sale-justified'
         ]);
     }
 
@@ -97,7 +118,7 @@ class SaleController extends Controller {
         return redirect()->back()->with('info', 'Não foi possível incluir o cliente! '.$user['message']);
     }
 
-    private function createdUser($name, $email = null, $cpfcnpj, $birth_date, $phone = null, $sponsor = null, $cost = null, $association_id = null) {
+    private function createdUser($name, $email = null, $cpfcnpj, $birth_date = null, $phone = null, $sponsor = null, $cost = null, $association_id = null) {
         
         $cpfcnpj    = preg_replace('/\D/', '', $cpfcnpj);
         $email      = preg_replace('/[^\w\d\.\@\-\_]/', '', $email);
@@ -126,16 +147,27 @@ class SaleController extends Controller {
             ]);
         }
         
-        $user->fill([
-            'name'            => $name,
-            'email'           => $email,
-            'birth_date'      => $birth_date,
-            'phone'           => $phone,
-            'sponsor_id'      => $sponsor,
-            'association_id'  => $association_id,
-            'fixed_cost'      => $cost,
-        ]);
-
+        if (!empty($name)) {
+            $user->name = $name;
+        }
+        if (!empty($email)) {
+            $user->email = $email;
+        }
+        if (!empty($birth_date)) {
+            $user->birth_date = $birth_date;
+        }
+        if (!empty($phone)) {
+            $user->phone = $phone;
+        }
+        if (!empty($sponsor)) {
+            $user->sponsor_id = $sponsor;
+        }
+        if (!empty($association_id)) {
+            $user->association_id = $association_id;
+        }
+        if (!empty($cost)) {
+            $user->fixed_cost = $cost;
+        }
         
         $customer = $assas->createCustomer($name, $cpfcnpj);
         if ($customer === false) {
@@ -194,7 +226,7 @@ class SaleController extends Controller {
             return redirect()->back()->with('error', 'Não há Lista disponível no momento, aguarde uma nova Lista!');
         }
 
-        return $sale = $this->createdSale($customer, $seller, $client, $product, $list, $request->payment_method, $request->payment_installments, $request->installments);
+        $sale = $this->createdSale($customer, $seller, $client, $product, $list, $request->payment_method, $request->payment_installments, $request->installments);
         if (!empty($sale['uuid'])) {
             return redirect()->route('view-sale', ['uuid' => $sale['uuid']])->with('success', 'Venda cadastrada com sucesso!'); 
         }
@@ -234,12 +266,12 @@ class SaleController extends Controller {
                     $sponsorCommission  = 0;
                     if ($sponsor) {
                         $sponsorCommission = max($fixedCost - $sponsor->fixed_cost, 0);
-                        if ($sponsorCommission > 0) {
-                            $commissions[] = [
-                                'walletId'   => $sponsor->token_wallet,
-                                'fixedValue' => $sponsorCommission,
-                            ];
-                        }
+                        // if ($sponsorCommission > 0) {
+                        //     $commissions[] = [
+                        //         'walletId'   => $sponsor->token_wallet,
+                        //         'fixedValue' => $sponsorCommission - 2,
+                        //     ];
+                        // }
                     }
                     
                     $commissions[] = [
@@ -263,17 +295,19 @@ class SaleController extends Controller {
                     $totalCommission = ($value - $percent - 5);
                     
                     if ($totalCommission > 0) {
-                        $commissions[] = [
-                            'walletId'   => $seller->token_wallet,
-                            'fixedValue' => number_format($totalCommission, 2, '.', ''),
-                        ];
+                        if ($seller->type !== 99 && $seller->type !== 1) {
+                            $commissions[] = [
+                                'walletId'   => $seller->token_wallet,
+                                'fixedValue' => number_format($totalCommission, 2, '.', ''),
+                            ];
+                        }
                         $commissions[] = [
                             'walletId'   => env('WALLET_EXPRESS'),
                             'fixedValue' => number_format(1, 2, '.', ''),
                         ];
                         $commissions[] = [
                             'walletId'   => env('WALLET_G7'),
-                            'fixedValue' => number_format($percent, 2, '.', ''),
+                            'fixedValue' => number_format($percent - 1, 2, '.', ''),
                         ];
                     }
                 }
@@ -295,6 +329,7 @@ class SaleController extends Controller {
                 $invoice->commission_seller  = $totalCommission ?? 0;
                 $invoice->commission_sponsor = $sponsorCommission ?? 0;
                 $invoice->type                = 1;
+                $invoice->status              = 2;
                 $invoice->due_date            = $dueDate;
                 $invoice->payment_token       = $payment['id'];
                 $invoice->payment_url         = $payment['invoiceUrl'];
@@ -358,17 +393,62 @@ class SaleController extends Controller {
                 'value'         => $value,
             ];
         }
-
         
+    }
 
+    public function createdSaleAssociation(Request $request, $product, $tab = null) {
 
+        $product = Product::find($product);
+        if (!$product) {
+            return redirect()->back()->with('infor', 'Produto indisponível!');
+        }
+
+        $list = SaleList::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
+        if (!$list) {
+            return redirect()->back()->with('infor', 'Não há Lista disponível no momento, aguarde uma nova Lista!');
+        }
         
-        
+        $client = $this->createdUser($request->name, null, $request->cpfcnpj);
+        if ($client['status'] === false) {
+            return redirect()->back()->with('info', 'Não foi possível incluir o cliente! '.$client['message']);
+        }   
+
+        $sale = new Sale();
+        $sale->uuid                 = Str::uuid();
+        $sale->seller_id            = Auth::user()->id;
+        $sale->client_id            = $client['id'];
+        $sale->product_id           = $product->id;
+        $sale->list_id              = $list->id;
+        $sale->payment_method       = 'PIX';
+        $sale->payment_installments = 1;
+        $sale->type                 = 3;  
+        if ($sale->save()) {
+            return redirect()->route('list-sales')->with('success', 'Sucesso! Nome incluído com sucesso!');
+        }
+
+        return redirect()->route('list-sales')->with('infor', 'Não foi possível adicionar o nome, verifique os dados e tente novamente!');
     }
 
     public function listSale(Request $request) {
         
         $query = Sale::orderBy('created_at', 'desc');
+
+        $authUser = Auth::user();
+    
+        $affiliateIds = User::where('sponsor_id', $authUser->id)->pluck('id')->toArray();
+        $accessibleUserIds = array_merge([$authUser->id], $affiliateIds);
+    
+        if (Auth::user()->type == 1) {
+            if (!empty($request->id_seller)) {
+                $query->where('seller_id', $request->seller_id);
+            }
+        } else {
+            if (!empty($request->seller_id)) {
+                $query->where('seller_id', $request->seller_id);
+            } else {
+                $query->whereIn('seller_id', $accessibleUserIds);
+            }
+        }
     
         if (!empty($request->uuid)) {
             $query->where('uuid', $request->uuid);
@@ -380,7 +460,7 @@ class SaleController extends Controller {
                 $query->whereIn('client_id', $users);
             }
         }
-
+        
         if (!empty($request->created_at)) {
             $query->whereDate('created_at', $request->created_at);
         }
@@ -459,7 +539,7 @@ class SaleController extends Controller {
             return redirect()->back()->with('info', 'Venda já confirmada, não é possível excluir!');
         }
 
-        $invoices = Invoice::where('sale_id', $sale->id)->get();
+        $invoices = Invoice::where('sale_id', $sale->id)->orWhere('payment_token', $sale->payment_token)->get();
         foreach ($invoices as $invoice) {
            
             $assasController = new AssasController();

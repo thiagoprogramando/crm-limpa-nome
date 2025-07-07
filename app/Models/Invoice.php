@@ -48,7 +48,9 @@ class Invoice extends Model {
             case 1:
                 return 'Aprovado';
                 break;      
-            return $this->status;
+            default:
+                return 'Pendente';
+                break;
         }
     }
 }

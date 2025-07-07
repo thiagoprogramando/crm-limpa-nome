@@ -30,7 +30,7 @@ class UserController extends Controller {
         $user->association_id   = $request->association_id ??  Auth::user()->association_id;
         $user->name             = $request->name;
         $user->email            = $request->email;
-        $user->fixed_cost       = $this->formatValue($request->fixed_cost);
+        $user->fixed_cost       = $request->fixed_cost >= Auth::user()->fixed_cost ? $this->formatValue($request->fixed_cost) : Auth::user()->fixed_cost;
         $user->cpfcnpj          = preg_replace('/\D/', '', $request->cpfcnpj);
         $user->password         = preg_replace('/\D/', '', $request->cpfcnpj);
         $user->type             = $request->type;

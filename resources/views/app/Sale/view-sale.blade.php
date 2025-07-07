@@ -23,7 +23,7 @@
 
                 <div class="tab-content pt-2" id="myTabjustifiedContent">
                     <div class="tab-pane fade active show" id="profile-justified" role="tabpanel" aria-labelledby="profile-tab">
-                        <div class="row">
+                        <div class="row align-items-start">
                             <form action="{{ route('created-client-sale') }}" method="POST" class="col-12 col-sm-12 col-md-5 col-lg-5 border-end">
                                 @csrf
                                 <input type="hidden" name="seller_id" value="{{ Auth::user()->id }}">
@@ -69,10 +69,12 @@
                                 </div>
                             </form>
 
-                            <div class="col-12 col-sm-12 col-md-7 col-lg-7 row">
+                            <div class="col-12 col-sm-12 col-md-7 col-lg-7 row align-items-start">
                                 <div class="col-12 col-sm-12 col-md-12 col-lg-12">
                                     <p class="card-title m-0 p-0">Dados de Pagamento</p>
-                                    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createdModal">Adicionar Cobrança</button>
+                                    @if ($sale->type == 1)
+                                        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createdModal">Adicionar Cobrança</button>
+                                    @endif
 
                                     <div class="modal fade" id="createdModal" tabindex="-1">
                                         <div class="modal-dialog">
@@ -128,10 +130,10 @@
                                         <table class="table table-sm">
                                             <thead>
                                                 <tr>
-                                                    <th>Fatura</th>
-                                                    <th>Detalhes</th>
-                                                    <th>Valor</th>
-                                                    <th class="text-center">Opções</th>
+                                                    <th>FATURA</th>
+                                                    <th>DETALHES</th>
+                                                    <th>VALOR</th>
+                                                    <th class="text-center">OPÇÕES</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="paymentTable">
@@ -152,9 +154,44 @@
                                                                 @csrf
                                                                 <input type="hidden" name="id" value="{{ $invoice->id }}">
                                                                 <div class="btn-group">
-                                                                    <a href="{{ route('view-invoice', ['id' => $invoice->id]) }}" class="btn btn-outline-primary btn-sm">
-                                                                        Editar
-                                                                    </a>
+                                                                    @if ($sale->type == 1)
+                                                                        <a href="{{ route('view-invoice', ['id' => $invoice->id]) }}" class="btn btn-outline-primary btn-sm">
+                                                                            Editar
+                                                                        </a>
+                                                                    @endif
+                                                                    @if (Auth::user()->type === 1 && $invoice->status !== 1)
+                                                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                                            Excluir
+                                                                        </button>
+                                                                    @endif
+                                                                </div>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+
+                                                @foreach ($sale->invoicesByToken as $invoice)
+                                                    <tr>
+                                                        <td>{{ $invoice->name }}</td>
+                                                        <td>
+                                                            <span class="badge bg-primary">
+                                                                {{ $invoice->statusLabel() }}
+                                                            </span>
+                                                            <a class="badge bg-dark" href="{{ $invoice->payment_url }}" target="_blank">
+                                                                Link de Pagamento
+                                                            </a>
+                                                        </td>
+                                                        <td>{{ number_format($invoice->value, 2, ',', '.') }}</td>
+                                                        <td>
+                                                            <form action="{{ route('deleted-invoice') }}" method="POST" class="d-grid delete">
+                                                                @csrf
+                                                                <input type="hidden" name="id" value="{{ $invoice->id }}">
+                                                                <div class="btn-group">
+                                                                    @if ($sale->type == 1)
+                                                                        <a href="{{ route('view-invoice', ['id' => $invoice->id]) }}" class="btn btn-outline-primary btn-sm">
+                                                                            Editar
+                                                                        </a>
+                                                                    @endif
                                                                     @if (Auth::user()->type === 1 && $invoice->status !== 1)
                                                                         <button type="submit" class="btn btn-outline-danger btn-sm">
                                                                             Excluir

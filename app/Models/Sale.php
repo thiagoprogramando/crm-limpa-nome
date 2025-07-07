@@ -34,7 +34,11 @@ class Sale extends Model {
     }
 
     public function invoices() {
-        return $this->hasMany(Invoice::class);
+        return $this->hasMany(Invoice::class, 'sale_id', 'id');
+    }
+
+    public function invoicesByToken() {
+        return $this->hasMany(Invoice::class, 'payment_token', 'payment_token');
     }
 
     public function list() {

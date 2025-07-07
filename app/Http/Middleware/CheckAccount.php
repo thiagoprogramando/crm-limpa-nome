@@ -22,11 +22,6 @@ class CheckAccount {
             if ($user->name == null || $user->cpfcnpj == null || $user->birth_date == null || $user->phone == null) {
                 return redirect()->route('profile')->with('info', 'Complete seus dados para acessar todos os módulos!');
             }
-
-            $months = Invoice::where('user_id', $user->id)->where('status', 0)->where('type', 1)->count();
-            if($months >= 1) {
-                return redirect()->route('payments')->with('info', 'Você precisa renovar sua Assinatura!');
-            }
         }
 
         return $next($request);

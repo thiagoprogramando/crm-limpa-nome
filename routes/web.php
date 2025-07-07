@@ -43,28 +43,15 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/app', [AppController::class, 'app'])->name('app');
 
-    //Gateway
     Route::get('/integrate-assas-wallet', [AssasController::class, 'IntegrateWallet'])->name('integrate-assas-wallet');
     Route::get('/create-monthly', [AssasController::class, 'createMonthly'])->name('create-monthly');
     Route::post('/send-assas-token', [AssasController::class, 'IntegrateToken'])->name('send-assas-token');
 
     Route::middleware(['checkMonthly', 'checkWallet'])->group(function () {
 
-            Route::get('/list-sales', [SaleController::class, 'listSale'])->name('list-sales');
-            Route::get('/view-sale/{uuid}', [SaleController::class, 'viewSale'])->name('view-sale');
-            Route::get('/create-sale/{product}/{user?}/{tab?}', [SaleController::class, 'createSale'])->name('create-sale');
-            Route::post('created-sale-excel/{product}/{tab?}', [SaleController::class, 'createdSaleExcel'])->name('created-sale-excel');
             Route::post('created-client-sale', [SaleController::class, 'createdClientSale'])->name('created-client-sale');
             Route::post('created-payment-sale', [SaleController::class, 'createdPaymentSale'])->name('created-payment-sale');
-            Route::post('updated-sale', [SaleController::class, 'updatedSale'])->name('updated-sale');
-            Route::post('deleted-sale', [SaleController::class, 'deletedSale'])->name('deleted-sale');
-            Route::get('reprotocol-sale/{id}', [SaleController::class, 'reprotocolSale'])->name('reprotocol-sale');
-
-            Route::get('/view-invoice/{id}', [InvoiceController::class, 'index'])->name('view-invoice');
-            Route::post('created-invoice', [InvoiceController::class, 'createdInvoice'])->name('created-invoice');
-            Route::post('updated-invoice', [InvoiceController::class, 'updatedInvoice'])->name('updated-invoice');
-            Route::post('/deleted-invoice', [InvoiceController::class, 'deletedInvoice'])->name('deleted-invoice');
-
+            
             Route::post('created-user', [UserController::class, 'created'])->name('created-user');
 
             Route::get('/wallet', [AssasController::class, 'wallet'])->name('wallet');
@@ -74,6 +61,21 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::middleware(['checkMonthly', 'checkAccount'])->group(function () {
+
+            Route::get('/create-sale/{product}/{user?}/{tab?}', [SaleController::class, 'createSale'])->name('create-sale');
+            Route::get('/list-sales', [SaleController::class, 'listSale'])->name('list-sales');
+            Route::get('/view-sale/{uuid}', [SaleController::class, 'viewSale'])->name('view-sale');
+
+            Route::get('reprotocol-sale/{id}', [SaleController::class, 'reprotocolSale'])->name('reprotocol-sale');
+            Route::post('created-sale-excel/{product}/{tab?}', [SaleController::class, 'createdSaleExcel'])->name('created-sale-excel');
+            Route::post('created-sale-association/{product}/{tab?}', [SaleController::class, 'createdSaleAssociation'])->name('created-sale-association');
+            Route::post('updated-sale', [SaleController::class, 'updatedSale'])->name('updated-sale');
+            Route::post('deleted-sale', [SaleController::class, 'deletedSale'])->name('deleted-sale');
+
+            Route::get('/view-invoice/{id}', [InvoiceController::class, 'index'])->name('view-invoice');
+            Route::post('created-invoice', [InvoiceController::class, 'createdInvoice'])->name('created-invoice');
+            Route::post('updated-invoice', [InvoiceController::class, 'updatedInvoice'])->name('updated-invoice');
+            Route::post('/deleted-invoice', [InvoiceController::class, 'deletedInvoice'])->name('deleted-invoice');
 
             //Coupons
             Route::get('/list-coupons', [CouponController::class, 'coupons'])->name('list-coupons');
@@ -94,12 +96,6 @@ Route::middleware(['auth'])->group(function () {
             Route::post('updated-list', [ListController::class, 'updatedList'])->name('updated-list');
             Route::post('deleted-list', [ListController::class, 'deletedList'])->name('deleted-list');
             Route::get('/list-excel/{id}', [ListController::class, 'excelList'])->name('list-excel');
-
-            //Support
-            Route::get('/list-tickets', [TicketController::class, 'index'])->name('list-tickets');
-            Route::post('created-ticket', [TicketController::class, 'store'])->name('created-ticket');
-            Route::post('updated-ticket/{id}', [TicketController::class, 'update'])->name('updated-ticket');
-            Route::post('deleted-ticket/{id}', [TicketController::class, 'destroy'])->name('deleted-ticket');
 
             Route::middleware(['checkAdmin'])->group(function () {
                 //Users
@@ -128,19 +124,19 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [UserController::class, 'profile'])->name('profile');
     Route::post('update-user', [UserController::class, 'updateProfile'])->name('update-user');
     Route::post('delete-user', [UserController::class, 'deleteUser'])->name('delete-user');
-        //Network
-        Route::get('/list-network', [UserController::class, 'listNetwork'])->name('list-network');
-        Route::get('/list-client', [UserController::class, 'listClient'])->name('list-client');
-        Route::get('/list-active/{status}', [UserController::class, 'listActive'])->name('list-active');
+    //Network
+    Route::get('/list-network', [UserController::class, 'listNetwork'])->name('list-network');
+    Route::get('/list-client', [UserController::class, 'listClient'])->name('list-client');
+    Route::get('/list-active/{status}', [UserController::class, 'listActive'])->name('list-active');
+
+    //Support
+    Route::get('/list-tickets', [TicketController::class, 'index'])->name('list-tickets');
+    Route::post('created-ticket', [TicketController::class, 'store'])->name('created-ticket');
+    Route::post('updated-ticket/{id}', [TicketController::class, 'update'])->name('updated-ticket');
+    Route::post('deleted-ticket/{id}', [TicketController::class, 'destroy'])->name('deleted-ticket');
 
     //Operations
     Route::get('/payments', [Payment::class, 'payments'])->name('payments');
-    // Route::get('/receivable', [Payment::class, 'receivable'])->name('receivable');
 
     Route::get('/logout', [Login::class, 'logout'])->name('logout');
-
-    // ========================== Clientes =============================
-    Route::get('/app-client', [ClientAppController::class, 'app'])->name('app.client');
-    Route::get('/invoice-client/{sale?}', [ClientAppController::class, 'invoice'])->name('invoice.client');
-    Route::get('/logout-client', [ClientAppController::class, 'logout'])->name('logout.client');
 });

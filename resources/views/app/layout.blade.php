@@ -148,15 +148,8 @@
                         @endforeach
                     </ul>
                 </li>
-
                 <li class="nav-item">
-                    <a class="nav-link {{ Route::currentRouteName() == 'list-sales' || Route::currentRouteName() == 'coupons' ? '' : 'collapsed' }}" data-bs-target="#forms-sale" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-bag"></i><span>Vendas</span><i class="bi bi-chevron-down ms-auto"></i>
-                    </a>
-                    <ul id="forms-sale" class="nav-content collapse {{ Route::currentRouteName() == 'list-sales' || Route::currentRouteName() == 'coupons' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
-                        <li> <a href="{{ route('list-sales') }}"> <i class="bi bi-circle"></i><span>Vendas</span> </a> </li>
-                        <li><a href="{{ route('list-coupons') }}"> <i class="bi bi-circle"></i><span>Cupons</span> </a></li>
-                    </ul>
+                    <a class="nav-link collapsed" href="{{ route('list-sales') }}"> <i class="bi bi-bag"></i> <span>Vendas</span> </a>
                 </li>
                 
                 <li class="nav-heading">Gestão de Pessoas</li>
@@ -198,7 +191,7 @@
                     </a>
                     <ul id="forms-apis" class="nav-content collapse" data-bs-parent="#sidebar-nav">  
                         <li><a href="{{ route('integrate-assas-wallet') }}"><i class="bi bi-circle"></i><span>Assas - Conta PF e PJ</span></a></li>
-                        <li><a href="#"> <i class="bi bi-circle"></i><span>Neon - Conta PF e PJ</span></a></li>
+                        {{-- <li><a href="#"> <i class="bi bi-circle"></i><span>Neon - Conta PF e PJ</span></a></li> --}}
                     </ul>
                 </li>
                 <li class="nav-item">

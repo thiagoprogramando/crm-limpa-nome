@@ -27,7 +27,9 @@ class AssasController extends Controller {
 
     public function createCharge($customer, $billingType, $value, $dueDate = null, $description, $commissions = null, $token = null) {
 
-        $token = $token ?? (Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key);
+        if (empty($token)) {
+            $token = $token ?? (Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key);
+        }
 
         try {
             $client = new Client();
@@ -71,7 +73,9 @@ class AssasController extends Controller {
 
     public function updateCharge($id, $dueDate, $value = null, $token = null) {
 
-        $token  = $token ?? (Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key);
+        if (empty($token)) {
+            $token = $token ?? (Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key);
+        }
         $client = new Client();
         
         $options = [
@@ -112,7 +116,9 @@ class AssasController extends Controller {
 
     public function cancelCharge($id, $token = null) {
 
-        $token = $token ?? (Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key);
+        if (empty($token)) {
+            $token = $token ?? (Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key);
+        }
         
         try {
             $client = new Client();
@@ -129,20 +135,21 @@ class AssasController extends Controller {
 
             if ($response->getStatusCode() === 200) {
                 $data = json_decode((string) $response->getBody(), true);
-
                 return isset($data['deleted']) && $data['deleted'] === true;
             }
 
             return false;
         } catch (\Throwable $e) {
-            Log::error('Erro ao cancelar fatura (Token: ' . $token . '): ' . $e->getMessage());
+            Log::error('Erro ao cancelar fatura (ID: ' . $id . '): ' . $e->getMessage());
             return false;
         }
     }
 
     public function createCustomer($name, $cpfcnpj, $token = null) {
 
-        $token = $token ?? (Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key);
+        if (empty($token)) {
+            $token = $token ?? (Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key);
+        }
 
         try {
             $client = new Client();
@@ -643,6 +650,213 @@ class AssasController extends Controller {
         }
 
         return response()->json(['status' => 'success', 'message' => 'Operation completed successfully.']);
+    }
+
+    public function createPayment(Request $request) {
+
+        DB::beginTransaction();
+        try {
+            $user = $this->validateUser($request->user_id);
+
+            if (!$user->name || !$user->cpfcnpj) {
+                throw new \Exception('Verifique seus dados e tente novamente!');
+            }
+
+            $product = $this->validateProduct($request->product_id);
+            $sponsor = $this->validateSponsor($user);
+            $sales   = $this->getSales($request['ids']);
+
+            $saleIds     = $sales->pluck('id')->toArray();
+            $saleNumbers = implode(', ', $saleIds);
+
+            $totalValue = $this->calculateTotalValue($sales, $user, $product);
+
+            $unitCost  = $user->fixed_cost ?? $product->value_cost;
+            $totalCost = $unitCost * count($sales);
+
+            $commissions = [];
+            $sponsorCommission = 0;
+
+            if ($sponsor) {
+                $unitSponsorProfit = $unitCost - $sponsor->fixed_cost;
+                if ($unitSponsorProfit > 0) {
+                    $sponsorCommission = $unitSponsorProfit * count($sales);
+                    // $commissions[] = [
+                    //     'walletId'   => $sponsor->token_wallet,
+                    //     'fixedValue' => number_format($sponsorCommission - 2, 2, '.', ''),
+                    // ];
+                    $commissions[] = [
+                        'walletId'   => env('APP_WALLET_ASSAS'),
+                        'fixedValue' => number_format($totalCost - $sponsorCommission, 2, '.', ''),
+                    ];
+                } else {
+                    $commissions[] = [
+                        'walletId'   => env('APP_WALLET_ASSAS'),
+                        'fixedValue' => number_format($totalCost - 2, 2, '.', ''),
+                    ];
+                }
+            } else {
+                $commissions[] = [
+                    'walletId'   => env('APP_WALLET_ASSAS'),
+                    'fixedValue' => number_format($totalCost - 2, 2, '.', ''),
+                ];
+            }
+
+            $token = $user->type === 99 ? $user->token_key : optional($user->sponsor)->token_key;
+            $this->cancelPreviousInvoices($sales, $token);
+
+            try {
+                $customer = $this->createCustomer($user->name, $user->cpfcnpj, $token);
+
+                $charge = $this->createCharge(
+                    $customer,
+                    'PIX',
+                    $totalValue,
+                    now()->addDay(),
+                    'Fatura referente às vendas N° - ' . $saleNumbers,
+                    $commissions,
+                    $token
+                );
+
+                if (!$charge || empty($charge['id'])) {
+                    throw new \Exception('Erro ao criar fatura!');
+                }
+            } catch (\Exception $e) {
+                throw new \Exception('Erro ao criar cobrança: ' . $e->getMessage());
+            }
+
+            $this->createInvoice($product, $charge, $user, $totalValue, 'Fatura referente às vendas N° - ' . $saleNumbers, $sponsorCommission);
+            $this->associateSalesWithCharge($sales, $charge['id']);
+
+            DB::commit();
+
+            return $this->jsonSuccess('Fatura criada com sucesso!', [
+                'invoiceUrl' => $charge['invoiceUrl'],
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->jsonError('Erro no processo: ' . $e->getMessage(), 500);
+        }
+    }
+
+    private function validateUser($id) {
+        $user = User::find($id);
+        if (!$user) {
+            throw new \Exception('Verifique seus dados e tente novamente.');
+        }
+        return $user;
+    }
+
+    private function validateSponsor($user) {
+        if (!$user->sponsor) {
+            return null;
+        }
+
+        $sponsor = $user->sponsor;
+
+        if (!$sponsor || !$sponsor instanceof User) {
+            throw new \Exception('Patrocinador inválido!');
+        }
+
+        return $sponsor;
+    }
+
+    private function validateProduct($productId) {
+
+        $product = Product::find($productId);
+        if (!$product) {
+            throw new \Exception('Produto indisponível!');
+        }
+        return $product;
+    }
+
+    private function getSales($ids) {
+
+        if (!is_array($ids) || empty($ids)) {
+            throw new \Exception('Nenhuma venda informada.');
+        }
+
+        $sales = Sale::whereIn('id', $ids)
+            ->whereIn('status', [0, 2])
+            ->with('product')
+            ->get();
+
+        if ($sales->isEmpty()) {
+            throw new \Exception('Nenhuma venda encontrada.');
+        }
+
+        return $sales;
+    }
+
+    private function calculateTotalValue($sales, $user, $product) {
+        $totalValue = 0;
+        foreach ($sales as $sale) {
+            $totalValue += $user->fixed_cost > 0
+                ? $user->fixed_cost
+                : ($sale->product->value_cost ?? $product->value_cost);
+        }
+
+        if ($totalValue <= 0) {
+            throw new \Exception('Valor total inválido!');
+        }
+
+        return $totalValue;
+    }
+
+    private function createInvoice($product, $charge, $user, $totalValue, $description, $commission) {
+        $invoice = new Invoice();
+        $invoice->uuid               = Str::uuid();
+        $invoice->name               = $description;
+        $invoice->description        = $description;
+        $invoice->user_id            = $user->id;
+        $invoice->product_id         = $product->id;
+        $invoice->value              = $totalValue;
+        $invoice->commission_seller  = 0;
+        $invoice->commission_sponsor = $commission;
+        $invoice->status             = 2;
+        $invoice->type               = 2;
+        $invoice->num                = 1;
+        $invoice->due_date           = now()->addDay(2);
+        $invoice->payment_url        = $charge['invoiceUrl'];
+        $invoice->payment_token      = $charge['id'];
+        $invoice->save();
+    }
+
+    private function cancelPreviousInvoices($sales, $token) {
+
+        foreach ($sales as $sale) {
+            if (!empty($sale->payment_token)) {
+                
+                $invoice = Invoice::where('payment_token', $sale->payment_token)->first();
+                if ($invoice) {
+                    $canceled = $this->cancelCharge($invoice->payment_token, $token);
+                    Log::info('Assas: ', ['canceled' => $canceled]);
+                    if ($invoice->delete()) {
+                        $sale->payment_token = null;
+                        $sale->save();
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+
+    private function associateSalesWithCharge($sales, $chargeId) {
+        Sale::whereIn('id', $sales->pluck('id')->toArray())
+            ->update(['payment_token' => $chargeId]);
+    }
+
+    private function jsonSuccess($message, $data = []) {
+        return response()->json(array_merge(['success' => true, 'message' => $message, 'data' => $data]));
+    }
+
+    private function jsonError($message, $code) {
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+            'data' => null
+        ], $code);
     }
 
     private function formatValue($valor) {

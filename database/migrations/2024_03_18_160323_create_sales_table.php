@@ -26,7 +26,7 @@ return new class extends Migration {
             $table->date('guarantee')->nullable();
             $table->string('label')->nullable();
             $table->tinyInteger('status')->default(2);
-            $table->tinyInteger('type')->default(1); // 1 Venda Normal 2 - Venda Por Lote
+            $table->tinyInteger('type')->default(1); // 1 Venda Normal 2 - Venda Por Lote 3 - Venda Associação
             $table->timestamps();
             $table->softDeletes();
         });

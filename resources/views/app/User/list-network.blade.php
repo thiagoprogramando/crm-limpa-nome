@@ -39,16 +39,22 @@
                                                 <label for="name">Nome:</label>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-7 col-lg-7 mb-2">
+                                        <div class="col-12 col-md-12 col-lg-12 mb-2">
                                             <div class="form-floating">
                                                 <input type="text" name="email" class="form-control" id="email" placeholder="Email:" required>
                                                 <label for="email">Email:</label>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-5 col-lg-5 mb-2">
+                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
                                             <div class="form-floating">
                                                 <input type="text" name="cpfcnpj" class="form-control" id="cpfcnpj" placeholder="CPF/CNPJ:" oninput="maskCpfCnpj(this)" required>
                                                 <label for="cpfcnpj">CPF/CNPJ:</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                            <div class="form-floating">
+                                                <input type="text" name="fixed_cost" class="form-control" id="fixed_cost" placeholder="Custo Fixo (Mín: {{ Auth::user()->fixed_cost }}):" oninput="maskValue(this)" required>
+                                                <label for="fixed_cost">Custo Fixo (Mín: {{ Auth::user()->fixed_cost }}):</label>
                                             </div>
                                         </div>
                                     </div>
