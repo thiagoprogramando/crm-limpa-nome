@@ -21,8 +21,8 @@ class Forgout extends Mailable {
         return new Envelope(
             subject: $this->data['subject'] ?? 'Recuperação de Senha - '.env('APP_NAME'),
             from: new Address (
-                $this->data['fromEmail'], 
-                $this->data['fromName']
+                $this->data['toEmail'], 
+                $this->data['toName']
             ),
         );
     }
