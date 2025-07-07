@@ -269,7 +269,7 @@
                                                                                 <td class="text-center">{{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y') }}</td>
                                                                                 <td class="text-center">
                                                                                     <div class="btn-group">
-                                                                                        <a href="{{ $invoice->url_payment }}" target="_blank" class="btn btn-sm btn-outline-primary"> Acessar </a>
+                                                                                        <a href="{{ $invoice->payment_url }}" target="_blank" class="btn btn-sm btn-outline-primary"> Acessar </a>
                                                                                         @if($invoice->status <> 1 )
                                                                                             <a href="" class="btn btn-sm btn-outline-danger confirm"> Excluir </a>
                                                                                         @endif
