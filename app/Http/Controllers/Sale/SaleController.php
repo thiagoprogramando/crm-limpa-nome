@@ -36,7 +36,7 @@ class SaleController extends Controller {
         return redirect()->back()->with('error', 'Produto indisponível!');
     }
 
-    public function createSale(Request $request, $product, $user = null, $tab = null) {
+    public function createSale(Request $request, $product, $user = null) {
 
         $product = Product::find($product);
         if (!$product) {
@@ -96,14 +96,11 @@ class SaleController extends Controller {
             $query->where('label', 'LIKE', '%'.$request->label.'%');
         }
 
-        $salesType2 = (clone $query)->where('type', 2)->paginate(30, ['*'], 'page_type2');
-        $salesType3 = (clone $query)->where('type', 3)->paginate(30, ['*'], 'page_type3');
-
+        $sales = $query->whereIn('type', [2, 3])->paginate(30);
         return view('app.Sale.create-sale', [
             'product'    => $product, 
             'user'       => $user ?? null,
-            'salesType2' => $salesType2,
-            'salesType3' => $salesType3,
+            'sales'     => $sales,
             'tab'        => $tab ?? 'sale-justified'
         ]);
     }
@@ -368,32 +365,73 @@ class SaleController extends Controller {
         $worksheet      = $spreadsheet->getActiveSheet();
         $rows           = $worksheet->toArray();
 
-        $data = [];
+        $data           = []; 
+        $createdSales   = 0;
 
         for ($i = 3; $i < count($rows); $i++) {
 
             $row         = $rows[$i];
             $nome        = trim($row[0] ?? '');
-            $cpfcnpj     = trim($row[3] ?? '');
-            $birth_date  = trim($row[4] ?? '');
-            $value       = str_replace(',', '.', preg_replace('/[^0-9,]/', '', trim($row[6] ?? '')));    
+            $cpfcnpj     = trim($row[1] ?? '');
+            $birth_date  = trim($row[2] ?? '');    
 
-            if (empty($nome) || empty($cpfcnpj) || empty($birth_date)) {
+            if (empty($nome) || empty($cpfcnpj)) {
                 continue;
             }
 
-            if (empty($value)) {
-                $value = Auth::user()->fixed_cost;
+            if (!(self::validateCpf($cpfcnpj) || self::validateCnpj($cpfcnpj))) {
+                continue;
             }
 
-            $data[] = [
-                'name'          => $nome,
-                'cpfcnpj'       => $cpfcnpj,
-                'birth_date'    => $birth_date,
-                'value'         => $value,
-            ];
+            $createdUser = $this->createdUser($nome, null, $cpfcnpj, $birth_date);
+            if (!$createdUser['status']) {
+                continue;
+            }
+
+            $sale                      = new Sale();
+            $sale->uuid                 = Str::uuid();
+            $sale->seller_id            = Auth::id();
+            $sale->client_id            = $createdUser['id'];
+            $sale->product_id           = $product->id;
+            $sale->list_id              = $list->id;
+            $sale->payment_method       = 'PIX';
+            $sale->payment_installments = 1;
+            $sale->type                 = 2;
+            $sale->save();
+
+            $createdSales++;
         }
-        
+
+        return redirect()->route('create-sale', ['product' => $product->id, 'user' => null, 'tab' => $tab])->with('success', 'Importação concluída! ' . $createdSales . ' vendas criadas com sucesso!');
+    }
+
+    private static function validateCpf($cpf) {
+        $cpf = preg_replace('/[^0-9]/', '', $cpf);
+        if (strlen($cpf) !== 11 || preg_match('/(\d)\1{10}/', $cpf)) return false;
+
+        for ($t = 9; $t < 11; $t++) {
+            for ($d = 0, $c = 0; $c < $t; $c++) {
+                $d += $cpf[$c] * (($t + 1) - $c);
+            }
+            $d = ((10 * $d) % 11) % 10;
+            if ($cpf[$c] != $d) return false;
+        }
+        return true;
+    }
+
+    private static function validateCnpj($cnpj) {
+        $cnpj = preg_replace('/[^0-9]/', '', $cnpj);
+        if (strlen($cnpj) != 14) return false;
+
+        for ($t = 12; $t < 14; $t++) {
+            for ($d = 0, $c = 0, $p = $t - 7; $c < $t; $c++, $p--) {
+                $p = $p < 2 ? 9 : $p;
+                $d += $cnpj[$c] * $p;
+            }
+            $d = ((10 * $d) % 11) % 10;
+            if ($cnpj[$c] != $d) return false;
+        }
+        return true;
     }
 
     public function createdSaleAssociation(Request $request, $product, $tab = null) {
@@ -593,6 +631,40 @@ class SaleController extends Controller {
         }
 
         return redirect()->back()->with('error', 'Não foi possível localizar os dados da Venda!');
+    }
+
+    public function approvedAllPayment(Request $request) {
+
+        try {
+            
+            $sales = Sale::whereIn('id', $request['ids'])->get();
+            if ($sales->isEmpty()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Nenhuma venda encontrada!',
+                ], 404);
+            }
+    
+            foreach ($sales as $sale) {
+                $sale->status = 1;
+                $sale->save();
+            }
+    
+            return response()->json([
+                'success'       => true,
+                'status'        => 'success',
+                'message'       => 'Vendas aprovadas com sucesso!',
+                'approved_ids'  => $sales->pluck('id')
+            ], 200);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'success'   => false,
+                'status'    => 'error',
+                'message'   => 'Ocorreu um erro ao aprovar as vendas!',
+                'details'   => $e->getMessage(),
+            ], 500);
+        }
     }
 
     private function formatValue($valor) {

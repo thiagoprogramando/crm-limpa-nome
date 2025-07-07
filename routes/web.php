@@ -62,7 +62,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['checkMonthly', 'checkAccount'])->group(function () {
 
-        Route::get('/create-sale/{product}/{user?}/{tab?}', [SaleController::class, 'createSale'])->name('create-sale');
+        Route::get('/create-sale/{product}/{user?}', [SaleController::class, 'createSale'])->name('create-sale');
         Route::get('/list-sales', [SaleController::class, 'listSale'])->name('list-sales');
         Route::get('/view-sale/{uuid}', [SaleController::class, 'viewSale'])->name('view-sale');
 

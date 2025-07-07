@@ -28,7 +28,7 @@ class AssasController extends Controller {
     public function createCharge($customer, $billingType, $value, $dueDate = null, $description, $commissions = null, $token = null) {
 
         if (empty($token)) {
-            $token = $token ?? (Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key);
+            $token = Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key;
         }
 
         try {
@@ -74,7 +74,7 @@ class AssasController extends Controller {
     public function updateCharge($id, $dueDate, $value = null, $token = null) {
 
         if (empty($token)) {
-            $token = $token ?? (Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key);
+            $token = Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key;
         }
         $client = new Client();
         
@@ -117,7 +117,7 @@ class AssasController extends Controller {
     public function cancelCharge($id, $token = null) {
 
         if (empty($token)) {
-            $token = $token ?? (Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key);
+            $token = Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key;
         }
         
         try {
@@ -148,7 +148,7 @@ class AssasController extends Controller {
     public function createCustomer($name, $cpfcnpj, $token = null) {
 
         if (empty($token)) {
-            $token = $token ?? (Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key);
+            $token = Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key;
         }
 
         try {
