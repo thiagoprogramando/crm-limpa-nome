@@ -90,7 +90,7 @@
                                                 </div>
                                                 <div class="col-12 col-md-12 col-lg-12 mb-1">
                                                     <div class="form-floating">
-                                                        <input type="text" name="url" class="form-control" id="url" placeholder="URL:" value="{{ env('APP_URL') }}/api/webhook-assas" readonly>
+                                                        <input type="text" name="url" class="form-control" id="url" placeholder="URL:" value="{{ env('APP_URL') }}api/webhook-assas" readonly>
                                                         <label for="url">URL:</label>
                                                     </div>
                                                 </div>
