@@ -20,7 +20,7 @@ class CheckWallet {
                     return redirect()->route('profile')->with('info', 'Preencha todos os dados para acessar sua plataforma!');
                 }
 
-                if (empty($user_token_key) || empty($user->wallet)) {
+                if (empty($user->token_key) || empty($user->wallet)) {
                     return redirect()->route('app')->with('info', 'Escolha um Gateway de Pagamentos no Menu Integrações!');
                 }
             }

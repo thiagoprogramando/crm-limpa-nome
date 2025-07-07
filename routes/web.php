@@ -49,72 +49,72 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['checkMonthly', 'checkWallet'])->group(function () {
 
-            Route::post('created-client-sale', [SaleController::class, 'createdClientSale'])->name('created-client-sale');
-            Route::post('created-payment-sale', [SaleController::class, 'createdPaymentSale'])->name('created-payment-sale');
-            
-            Route::post('created-user', [UserController::class, 'created'])->name('created-user');
+        Route::post('created-client-sale', [SaleController::class, 'createdClientSale'])->name('created-client-sale');
+        Route::post('created-payment-sale', [SaleController::class, 'createdPaymentSale'])->name('created-payment-sale');
+        
+        Route::post('created-user', [UserController::class, 'created'])->name('created-user');
 
-            Route::get('/wallet', [AssasController::class, 'wallet'])->name('wallet');
-            Route::post('withdraw-send', [AssasController::class, 'withdrawSend'])->name('withdraw-send');
-            Route::post('/created-webhook', [AssasController::class, 'createdWebhook'])->name('created-webhook');
-            Route::post('/updated-webhook', [AssasController::class, 'updatedWebhook'])->name('updated-webhook');
+        Route::get('/wallet', [AssasController::class, 'wallet'])->name('wallet');
+        Route::post('withdraw-send', [AssasController::class, 'withdrawSend'])->name('withdraw-send');
+        Route::post('/created-webhook', [AssasController::class, 'createdWebhook'])->name('created-webhook');
+        Route::post('/updated-webhook', [AssasController::class, 'updatedWebhook'])->name('updated-webhook');
     });
 
     Route::middleware(['checkMonthly', 'checkAccount'])->group(function () {
 
-            Route::get('/create-sale/{product}/{user?}/{tab?}', [SaleController::class, 'createSale'])->name('create-sale');
-            Route::get('/list-sales', [SaleController::class, 'listSale'])->name('list-sales');
-            Route::get('/view-sale/{uuid}', [SaleController::class, 'viewSale'])->name('view-sale');
+        Route::get('/create-sale/{product}/{user?}/{tab?}', [SaleController::class, 'createSale'])->name('create-sale');
+        Route::get('/list-sales', [SaleController::class, 'listSale'])->name('list-sales');
+        Route::get('/view-sale/{uuid}', [SaleController::class, 'viewSale'])->name('view-sale');
 
-            Route::get('reprotocol-sale/{id}', [SaleController::class, 'reprotocolSale'])->name('reprotocol-sale');
-            Route::post('created-sale-excel/{product}/{tab?}', [SaleController::class, 'createdSaleExcel'])->name('created-sale-excel');
-            Route::post('created-sale-association/{product}/{tab?}', [SaleController::class, 'createdSaleAssociation'])->name('created-sale-association');
-            Route::post('updated-sale', [SaleController::class, 'updatedSale'])->name('updated-sale');
-            Route::post('deleted-sale', [SaleController::class, 'deletedSale'])->name('deleted-sale');
+        Route::get('reprotocol-sale/{id}', [SaleController::class, 'reprotocolSale'])->name('reprotocol-sale');
+        Route::post('created-sale-excel/{product}/{tab?}', [SaleController::class, 'createdSaleExcel'])->name('created-sale-excel');
+        Route::post('created-sale-association/{product}/{tab?}', [SaleController::class, 'createdSaleAssociation'])->name('created-sale-association');
+        Route::post('updated-sale', [SaleController::class, 'updatedSale'])->name('updated-sale');
+        Route::post('deleted-sale', [SaleController::class, 'deletedSale'])->name('deleted-sale');
 
-            Route::get('/view-invoice/{id}', [InvoiceController::class, 'index'])->name('view-invoice');
-            Route::post('created-invoice', [InvoiceController::class, 'createdInvoice'])->name('created-invoice');
-            Route::post('updated-invoice', [InvoiceController::class, 'updatedInvoice'])->name('updated-invoice');
-            Route::post('/deleted-invoice', [InvoiceController::class, 'deletedInvoice'])->name('deleted-invoice');
+        Route::get('/view-invoice/{id}', [InvoiceController::class, 'index'])->name('view-invoice');
+        Route::post('created-invoice', [InvoiceController::class, 'createdInvoice'])->name('created-invoice');
+        Route::post('updated-invoice', [InvoiceController::class, 'updatedInvoice'])->name('updated-invoice');
+        Route::post('/deleted-invoice', [InvoiceController::class, 'deletedInvoice'])->name('deleted-invoice');
 
-            //Coupons
-            Route::get('/list-coupons', [CouponController::class, 'coupons'])->name('list-coupons');
-            Route::post('created-coupon', [CouponController::class, 'created'])->name('created-coupon');
-            Route::post('deleted-coupon', [CouponController::class, 'deleted'])->name('deleted-coupon');
-            Route::post('add-coupon', [CouponController::class, 'addCoupon'])->name('add-coupon');
+        //Coupons
+        Route::get('/list-coupons', [CouponController::class, 'coupons'])->name('list-coupons');
+        Route::post('created-coupon', [CouponController::class, 'created'])->name('created-coupon');
+        Route::post('deleted-coupon', [CouponController::class, 'deleted'])->name('deleted-coupon');
+        Route::post('add-coupon', [CouponController::class, 'addCoupon'])->name('add-coupon');
 
-            //Lixeira
-            Route::get('/trash-sales', [TrashController::class, 'trashSales'])->name('trash-sales');
-            Route::get('/trash-users', [TrashController::class, 'trashUsers'])->name('trash-users');
-            Route::post('sale-recover', [RecoverController::class, 'recoverSale'])->name('sale-recover');
-            Route::post('user-recover', [RecoverController::class, 'recoverUser'])->name('user-recover');
+        //Lixeira
+        Route::get('/trash-sales', [TrashController::class, 'trashSales'])->name('trash-sales');
+        Route::get('/trash-users', [TrashController::class, 'trashUsers'])->name('trash-users');
+        Route::post('sale-recover', [RecoverController::class, 'recoverSale'])->name('sale-recover');
+        Route::post('user-recover', [RecoverController::class, 'recoverUser'])->name('user-recover');
 
-            //Lists
-            Route::get('/list-lists', [ListController::class, 'listLists'])->name('list-lists');
-            Route::post('created-list', [ListController::class, 'createdList'])->name('created-list');
-            Route::get('/view-list/{id}', [ListController::class, 'viewList'])->name('view-list');
-            Route::post('updated-list', [ListController::class, 'updatedList'])->name('updated-list');
-            Route::post('deleted-list', [ListController::class, 'deletedList'])->name('deleted-list');
-            Route::get('/list-excel/{id}', [ListController::class, 'excelList'])->name('list-excel');
+        //Lists
+        Route::get('/list-lists', [ListController::class, 'listLists'])->name('list-lists');
+        Route::post('created-list', [ListController::class, 'createdList'])->name('created-list');
+        Route::get('/view-list/{id}', [ListController::class, 'viewList'])->name('view-list');
+        Route::post('updated-list', [ListController::class, 'updatedList'])->name('updated-list');
+        Route::post('deleted-list', [ListController::class, 'deletedList'])->name('deleted-list');
+        Route::get('/list-excel/{id}', [ListController::class, 'excelList'])->name('list-excel');
 
-            Route::middleware(['checkAdmin'])->group(function () {
-                //Users
-                Route::get('/list-user/{type}', [UserController::class, 'listuser'])->name('list-user');
+        Route::middleware(['checkAdmin'])->group(function () {
+            //Users
+            Route::get('/list-user/{type}', [UserController::class, 'listuser'])->name('list-user');
 
-                //Products
-                Route::get('/list-products', [ProductController::class, 'index'])->name('list-products');
-                Route::get('/create-product', [ProductController::class, 'productView'])->name('create-product');
-                Route::post('created-product', [ProductController::class, 'productCreate'])->name('created-product');
-                Route::get('/update-product/{id}', [ProductController::class, 'productDetails'])->name('update-product');
-                Route::post('updated-product', [ProductController::class, 'productUpdate'])->name('updated-product');
-                Route::post('deleted-product', [ProductController::class, 'productDelete'])->name('deleted-product');
+            //Products
+            Route::get('/list-products', [ProductController::class, 'index'])->name('list-products');
+            Route::get('/create-product', [ProductController::class, 'productView'])->name('create-product');
+            Route::post('created-product', [ProductController::class, 'productCreate'])->name('created-product');
+            Route::get('/update-product/{id}', [ProductController::class, 'productDetails'])->name('update-product');
+            Route::post('updated-product', [ProductController::class, 'productUpdate'])->name('updated-product');
+            Route::post('deleted-product', [ProductController::class, 'productDelete'])->name('deleted-product');
 
-                //Media
-                Route::post('created-post', [PostController::class, 'created'])->name('created-post');
-                Route::post('deleted-post', [PostController::class, 'deleted'])->name('deleted-post');
-                Route::post('created-banner', [BannerController::class, 'created'])->name('created-banner');
-                Route::get('deleted-banner/{id}', [BannerController::class, 'deleted'])->name('deleted-banner');
-            });
+            //Media
+            Route::post('created-post', [PostController::class, 'created'])->name('created-post');
+            Route::post('deleted-post', [PostController::class, 'deleted'])->name('deleted-post');
+            Route::post('created-banner', [BannerController::class, 'created'])->name('created-banner');
+            Route::get('deleted-banner/{id}', [BannerController::class, 'deleted'])->name('deleted-banner');
+        });
     });
 
     //Terms

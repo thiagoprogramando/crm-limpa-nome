@@ -253,4 +253,34 @@
             </div>
         </div>
     </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('userForm');
+            const deleteBtn = document.getElementById('deleteUserBtn');
+            const updateBtn = document.getElementById('updateUserBtn');
+
+            deleteBtn.addEventListener('click', function () {
+                Swal.fire({
+                    title: 'Tem certeza?',
+                    text: 'Você realmente deseja excluir este registro?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sim',
+                    confirmButtonColor: '#008000',
+                    cancelButtonText: 'Não',
+                    cancelButtonColor: '#FF0000',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.action = "{{ route('delete-user') }}";
+                        form.submit();
+                    }
+                });
+            });
+
+            updateBtn.addEventListener('click', function () {
+                form.action = "{{ route('update-user') }}";
+            });
+        });
+    </script>
 @endsection
