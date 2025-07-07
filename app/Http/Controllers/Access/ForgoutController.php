@@ -53,11 +53,11 @@ class ForgoutController extends Controller {
         );
         
         Mail::to($user->email, $user->name)->send(new Forgout([
-            'fromName'  => 'Express Software',
-            'fromEmail' => 'suporte@expressoftwareclub.com',
+            'fromName'  => env('MAIL_FROM_NAME'),
+            'fromEmail' => env('MAIL_USERNAME'),
             'toName'    => $user->name,
             'toEmail'   => $user->email,
-            'token'     => $token,  
+            'token'     => $token,
         ]));
 
         return redirect()->back()->with('success', 'Verifique sua caixa de E-mail, enviamos às instruções para você!');
