@@ -273,11 +273,10 @@ class SaleController extends Controller {
                     
                     $commissions[] = [
                         'walletId'   => env('APP_WALLET_ASSAS'),
-                        'fixedValue' => ($fixedCost - $sponsorCommission),
+                        'fixedValue' => max(($fixedCost - $sponsorCommission), 0),
                     ];
-
     
-                    if ($totalCommission > 0) {
+                    if ($totalCommission > 0 && $seller->type !== 99 && $seller->type !== 1) {
                         $commissions[] = [
                             'walletId'   => $seller->token_wallet,
                             'fixedValue' => number_format($totalCommission, 2, '.', ''),
@@ -291,13 +290,14 @@ class SaleController extends Controller {
                     $percent = $value * 0.05;
                     $totalCommission = ($value - $percent - 5);
                     
+                    if ($totalCommission > 0 && $seller->type !== 99 && $seller->type !== 1) {
+                        $commissions[] = [
+                            'walletId'   => $seller->token_wallet,
+                            'fixedValue' => number_format($totalCommission, 2, '.', ''),
+                        ];
+                    }
+
                     if ($totalCommission > 0) {
-                        if ($seller->type !== 99 && $seller->type !== 1) {
-                            $commissions[] = [
-                                'walletId'   => $seller->token_wallet,
-                                'fixedValue' => number_format($totalCommission, 2, '.', ''),
-                            ];
-                        }
                         $commissions[] = [
                             'walletId'   => env('WALLET_EXPRESS'),
                             'fixedValue' => number_format(1, 2, '.', ''),
@@ -311,7 +311,7 @@ class SaleController extends Controller {
     
                 $payment = $assas->createCharge($customer, $paymentMethod, $value, $dueDate, 'Fatura '.$key.' para venda N° '.$sale->id, $commissions);
                 if (!$payment || !isset($payment['id'], $payment['invoiceUrl'])) {
-                    throw new \Exception("Erro ao gera dados de pagamento para nova venda na parcela {$key}");
+                    throw new \Exception("Erro ao gerar dados de pagamento para a parcela {$key}");
                 }
     
                 $invoice = new Invoice();
@@ -339,7 +339,7 @@ class SaleController extends Controller {
             ];
         } catch (\Throwable $e) {
             DB::rollback();
-            Log::error('Erro ao gera dados de pagamento para nova venda: ' . $e->getMessage());
+            Log::error('Erro na criação de venda:', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             return false;
         }
     }
