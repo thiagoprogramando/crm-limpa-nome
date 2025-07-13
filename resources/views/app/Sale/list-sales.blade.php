@@ -126,18 +126,20 @@
                                         </td>
                                         <td>
                                             <div class="text-start">
-                                                <span class="badge bg-primary" title="{{ $sale->list->name }}">
-                                                    {{ $sale->list->name }} <br> {{ $sale->list->statusProtocolLabel() }}
-                                                </span>
+                                                @if ($sale->status == 1)
+                                                    <span class="badge bg-primary" title="Lista {{ $sale->list->name }}">
+                                                        Lista {{ $sale->list->name }} <br> {{ $sale->list->statusProtocolLabel() }}
+                                                    </span>
+                                                    @isset($sale->guarantee)
+                                                        <span class="badge bg-success">
+                                                            Garantia: {{ \Carbon\Carbon::parse($sale->guarantee)->format('d/m/Y') }}
+                                                        </span>
+                                                    @endisset
+                                                @endif
                                                 @isset($sale->label) 
                                                     <span class="badge bg-warning">
                                                         {{ $sale->label }}
                                                     </span> 
-                                                @endisset
-                                                @isset($sale->guarantee)
-                                                    <span class="badge bg-success">
-                                                        Garantia: {{ \Carbon\Carbon::parse($sale->guarantee)->format('d/m/Y') }}
-                                                    </span>
                                                 @endisset
                                             </div>                     
                                         </td>

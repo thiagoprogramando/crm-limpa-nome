@@ -203,7 +203,7 @@
                                                                         </div>
                                                                         <div class="col-12 col-md-6 col-lg-6 mb-2">
                                                                             <div class="form-floating">
-                                                                                <input type="text" name="fixed_cost" class="form-control" id="fixed_cost" placeholder="Custo Fixo (R$):" value="{{ $user->fixed_cost }}" oninput="mascaraReal(this)">
+                                                                                <input type="text" name="fixed_cost" class="form-control" id="fixed_cost" placeholder="Custo Fixo (R$):" value="{{ $user->fixed_cost }}" oninput="maskValue(this)">
                                                                                 <label for="fixed_cost">Custo Fixo (R$):</label>
                                                                             </div>
                                                                         </div>

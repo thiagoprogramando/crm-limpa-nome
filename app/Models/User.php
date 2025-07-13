@@ -219,7 +219,6 @@ class User extends Authenticatable {
 
             return false;
         } catch (\Throwable $e) {
-            Log::error('Erro ao buscar saldo de '.$this->name.': ' . $e->getMessage());
             return false;
         }
     }

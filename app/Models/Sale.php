@@ -54,7 +54,9 @@ class Sale extends Model {
     }    
 
     public function totalInvoices() {
-        return $this->invoices()->sum('value');
+        return Invoice::where('sale_id', $this->id)
+            ->orWhere('payment_token', $this->payment_token)
+            ->sum('value');
     }
 
     public function paymentMethod() {

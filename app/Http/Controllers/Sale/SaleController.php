@@ -50,7 +50,7 @@ class SaleController extends Controller {
             }
         }
 
-        $query = Sale::orderBy('created_at', 'desc');
+        $query = Sale::where('status', 2)->orderBy('created_at', 'desc');
         
         $authUser           = Auth::user();
         $affiliateIds       = User::where('sponsor_id', $authUser->id)->pluck('id')->toArray();
@@ -89,9 +89,6 @@ class SaleController extends Controller {
         if (!empty($request->product_id)) {
             $query->where('product_id', $request->product_id);
         }
-        if (!empty($request->status)) {
-            $query->where('status', $request->status);
-        }
         if (!empty($request->label)) {
             $query->where('label', 'LIKE', '%'.$request->label.'%');
         }
@@ -100,7 +97,7 @@ class SaleController extends Controller {
         return view('app.Sale.create-sale', [
             'product'    => $product, 
             'user'       => $user ?? null,
-            'sales'     => $sales,
+            'sales'      => $sales,
             'tab'        => $tab ?? 'sale-justified'
         ]);
     }
@@ -461,10 +458,10 @@ class SaleController extends Controller {
         $sale->payment_installments = 1;
         $sale->type                 = 3;  
         if ($sale->save()) {
-            return redirect()->route('list-sales')->with('success', 'Sucesso! Nome incluído com sucesso!');
+            return redirect()->route('create-sale', ['product' => $product->id])->with('success', 'Sucesso! Nome incluído com sucesso!');
         }
 
-        return redirect()->route('list-sales')->with('infor', 'Não foi possível adicionar o nome, verifique os dados e tente novamente!');
+        return redirect()->back()->with('infor', 'Não foi possível adicionar o nome, verifique os dados e tente novamente!');
     }
 
     public function listSale(Request $request) {
