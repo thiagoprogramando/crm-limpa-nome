@@ -104,8 +104,8 @@
                                         </div>
                                         <div class="col-7 col-sm-7 col-md-5 col-lg-5 mb-2">
                                             <div class="form-floating">
-                                                <input type="text" name="installments[1][value]" class="form-control" id="installments[1][value]" placeholder="Valor da venda (Mín R$ {{ Auth::user()->fixed_cost }}):" oninput="maskValue(this)" required>
-                                                <label for="installments[1][value]">Entrada (Mín R$ {{ Auth::user()->fixed_cost ?? $product->value_min }}):</label>
+                                                <input type="text" name="installments[1][value]" class="form-control" id="installments[1][value]" placeholder="Valor da venda (Mín R$ {{ $product->value_min }}):" oninput="maskValue(this)" required>
+                                                <label for="installments[1][value]">Entrada (Mín R$ {{ $product->value_min }}):</label>
                                             </div>
                                         </div>
                                         <div class="col-5 col-sm-5 col-md-4 col-lg-4 mb-2">
@@ -133,9 +133,9 @@
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
                                     <button type="button" id="toggle-select" class="btn btn-outline-primary">Selecionar</button>
-                                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">Importar Por Excel</button>
+                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">Importar Por Excel</button>
                                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">Adicionar Nome</button>
-                                    <button id="quanty-name" class="btn btn-sm btn-primary">Selecionados: </button>
+                                    <button id="quanty-name" class="btn btn-sm btn-outline-primary">Selecionados: </button>
                                 </div>
                             </div>
 

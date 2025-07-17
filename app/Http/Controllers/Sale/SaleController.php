@@ -207,17 +207,21 @@ class SaleController extends Controller {
             return redirect()->route('logout')->with('error', 'Acesso negado!');
         }
             
-        if ((empty($seller->fixed_cost) || $seller->fixed_cost == 0) && $this->formatValue($request->installments[1]['value'] ?? 0) < $product->value_min) {
-            return redirect()->back()->with('error', 'O valor mín de Entrada é: R$ '.$product->value_min.'!');
-        }
+        // if ((empty($seller->fixed_cost) || $seller->fixed_cost == 0) && $this->formatValue($request->installments[1]['value'] ?? 0) < $product->value_min) {
+        //     return redirect()->back()->with('error', 'O valor mín de Entrada é: R$ '.$product->value_min.'!');
+        // }
 
-        if (($seller->fixed_cost > 0 ) && ($this->formatValue($request->installments[1]['value'] ?? 0) < $seller->fixed_cost)) {
-            return redirect()->back()->with('error', 'O valor mín de Entrada é: R$ '.$seller->fixed_cost.'!');
+        // if (($seller->fixed_cost > 0 ) && ($this->formatValue($request->installments[1]['value'] ?? 0) < $seller->fixed_cost)) {
+        //     return redirect()->back()->with('error', 'O valor mín de Entrada é: R$ '.$seller->fixed_cost.'!');
+        // }
+
+        if (($product->value_min > 0) && ($this->formatValue($request->installments[1]['value'] ?? 0) < $product->value_min)) {
+            return redirect()->back()->with('error', 'O valor mín de Entrada é: R$ '.$product->value_min.'!');
         }
 
         $list = SaleList::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
         if (!$list) {
-            return redirect()->back()->with('error', 'Não há Lista disponível no momento, aguarde uma nova Lista!');
+            return redirect()->back()->with('error', 'Não há Lista disponível no momento, aguarde uma nova!');
         }
 
         $sale = $this->createdSale($customer, $seller, $client, $product, $list, $request->payment_method, $request->payment_installments, $request->installments);
