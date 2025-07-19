@@ -269,14 +269,14 @@
         if (aprovedAll) {
             aprovedAll.addEventListener('click', () => {
                 const selectedIds = getSelectedIds();
-                sendToApi('api/approved-all', selectedIds);
+                sendToApi('{{ url('api/approved-all') }}', selectedIds);
             });
         }
 
         if (btnCreatePayment) {
             btnCreatePayment.addEventListener('click', () => {
                 const selectedIds = getSelectedIds();
-                sendToApi('api/create-payment', selectedIds);
+                sendToApi('{{ url('api/create-payment') }}', selectedIds);
             });
         }
 
