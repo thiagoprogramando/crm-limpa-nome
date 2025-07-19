@@ -81,7 +81,11 @@
                                 </form>
 
                                 <div id="action-buttons" class="d-none btn-group mb-2 mt-2">
+                                    @if(Auth::user()->type == 1)
+                                        <button id="aproved-all" class="btn btn-primary">Aprovar Todos</button>
+                                    @endif
                                     <button id="create-payment" class="btn btn-outline-primary">Gerar Pagamento</button>
+                                    <button id="quanty-name" class="btn btn-outline-primary">Nomes: </button>
                                 </div>
 
                                 <div class="table-responsive">
@@ -230,50 +234,60 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-    
+
             const toggleSelectBtn   = document.getElementById('toggle-select');
             const rowCheckboxes     = document.querySelectorAll('.row-checkbox');
             const actionButtons     = document.getElementById('action-buttons');
+            const aprovedAll        = document.getElementById('aproved-all');
             const btnCreatePayment  = document.getElementById('create-payment');
-    
+            const btnQuantyNames    = document.getElementById('quanty-name');
+
             let isSelecting = false;
-    
+
             toggleSelectBtn.addEventListener('click', () => {
                 isSelecting = !isSelecting;
-    
+
                 rowCheckboxes.forEach(checkbox => checkbox.checked = isSelecting);
                 toggleSelectBtn.textContent = isSelecting ? 'Cancelar' : 'Selecionar';
                 updateActionButtons();
             });
-    
+
             rowCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', updateActionButtons);
             });
-    
+
             function updateActionButtons() {
                 const selectedIds = getSelectedIds();
+                btnQuantyNames.textContent = 'Nomes: ' + selectedIds.length;
                 if (selectedIds.length > 0) {
                     actionButtons.classList.remove('d-none');
                 } else {
                     actionButtons.classList.add('d-none');
                 }
             }
-    
+
             function getSelectedIds() {
                 return Array.from(rowCheckboxes)
                     .filter(checkbox => checkbox.checked)
                     .map(checkbox => checkbox.value);
             }
-    
+
+            if (aprovedAll) {
+                aprovedAll.addEventListener('click', () => {
+                    const selectedIds = getSelectedIds();
+                    sendToApi('api/approved-all', selectedIds);
+                });
+            }
+
             if (btnCreatePayment) {
                 btnCreatePayment.addEventListener('click', () => {
                     const selectedIds = getSelectedIds();
-                    sendToApi(selectedIds);
+                    sendToApi('api/create-payment', selectedIds);
                 });
             }
-    
-            function sendToApi(ids) {
-    
+
+            function sendToApi(route, ids) {
+
                 if (ids.length === 0) {
                     Swal.fire({
                         title: 'Atenção!',
@@ -283,10 +297,10 @@
                     });
                     return;
                 }
-    
+
                 var userCustomer = @json(Auth::user()->customer);
-    
-                fetch(`{{ url('api/create-payment') }}`, {
+
+                fetch(route, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -305,7 +319,7 @@
                             text: 'Processo concluído! Você será redirecionado para página de Pagamento.',
                             icon: 'success',
                             showCancelButton: false,
-                            confirmButtonColor: '#002396',
+                            confirmButtonColor: '#3085d6',
                             confirmButtonText: 'Ver Fatura',
                         }).then((result) => {
                             if (result.isConfirmed) {
