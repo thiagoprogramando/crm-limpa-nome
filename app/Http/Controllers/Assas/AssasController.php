@@ -347,10 +347,12 @@ class AssasController extends Controller {
             if ($value > 0) {
 
                 $g7Commission = ($value == 49.99) ? 0 : $commission * 0.05;
-                $commission   = ($commission - $g7Commission) - 5;
     
                 if ($wallet == env('WALLET_HEFESTO')) {
                     $g7Commission = 0;
+                    $commission   = $commission;
+                } else {
+                    $commission   = ($commission - $g7Commission) - 5;
                 }
     
                 if ($g7Commission > 0 && $commission > 0) {
