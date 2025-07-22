@@ -339,7 +339,7 @@ class AssasController extends Controller {
     
             if (($filiate <> null) && ($commission_filiate > 0)) {
                 $options['json']['split'][] = [
-                    'walletId'        => $filiate->wallet,
+                    'walletId'        => $filiate->wallet ?? $filiate,
                     'totalFixedValue' => number_format($commission_filiate, 2, '.', '')
                 ];
             }
