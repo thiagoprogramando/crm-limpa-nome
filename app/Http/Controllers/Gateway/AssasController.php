@@ -243,7 +243,7 @@ class AssasController extends Controller {
             $invoice->due_date          = now()->addDay();
             $invoice->payment_url       = $charge['invoiceUrl'];
             $invoice->payment_token     = $charge['id'];
-            $invoice->payment_splits    = $charge['splits'];
+            $invoice->payment_splits    = json_encode($charge['splits']);
 
             if($invoice->save()) {
                 return redirect($charge['invoiceUrl']);
@@ -664,8 +664,8 @@ class AssasController extends Controller {
 
         DB::beginTransaction();
         try {
-            $user = $this->validateUser($request->user_id);
 
+            $user = $this->validateUser($request->user_id);
             if (!$user->name || !$user->cpfcnpj) {
                 throw new \Exception('Verifique seus dados e tente novamente!');
             }
@@ -678,39 +678,47 @@ class AssasController extends Controller {
             $saleNumbers = implode(', ', $saleIds);
 
             $totalValue = $this->calculateTotalValue($sales, $user, $product);
+            $unitCost   = $user->fixed_cost ?? $product->value_cost;
+            $totalCost  = $unitCost * count($sales);
 
-            $unitCost  = $user->fixed_cost ?? $product->value_cost;
-            $totalCost = $unitCost * count($sales);
-
-            $commissions = [];
-            $sponsorCommission = 0;
+            $commissions        = [];
+            $sponsorCommission  = 0;
+            $uuid               = Str::uuid();
 
             if ($sponsor) {
                 $unitSponsorProfit = $unitCost - $sponsor->fixed_cost;
                 if ($unitSponsorProfit > 0) {
                     $sponsorCommission = $unitSponsorProfit * count($sales);
-                    // $commissions[] = [
-                    //     'walletId'   => $sponsor->token_wallet,
-                    //     'fixedValue' => number_format($sponsorCommission - 2, 2, '.', ''),
-                    // ];
                     $commissions[] = [
-                        'walletId'   => env('APP_WALLET_ASSAS'),
-                        'fixedValue' => number_format($totalCost - $sponsorCommission, 2, '.', ''),
+                        'walletId'          => $sponsor->token_wallet,
+                        'fixedValue'        => number_format($sponsorCommission - 2, 2, '.', ''),
+                        'externalReference' => $uuid,
+                        'description'       => 'Fatura referente às vendas N° - ' . $saleNumbers,
+                    ];
+                    $commissions[] = [
+                        'walletId'          => env('APP_WALLET_ASSAS'),
+                        'fixedValue'        => number_format($totalCost - $sponsorCommission, 2, '.', ''),
+                        'externalReference' => $uuid,
+                        'description'       => 'Fatura referente às vendas N° - ' . $saleNumbers,
                     ];
                 } else {
                     $commissions[] = [
-                        'walletId'   => env('APP_WALLET_ASSAS'),
-                        'fixedValue' => number_format($totalCost - 2, 2, '.', ''),
+                        'walletId'          => env('APP_WALLET_ASSAS'),
+                        'fixedValue'        => number_format($totalCost - 2, 2, '.', ''),
+                        'externalReference' => $uuid,
+                        'description'       => 'Fatura referente às vendas N° - ' . $saleNumbers,
                     ];
                 }
             } else {
                 $commissions[] = [
-                    'walletId'   => env('APP_WALLET_ASSAS'),
-                    'fixedValue' => number_format($totalCost - 2, 2, '.', ''),
+                    'walletId'          => env('APP_WALLET_ASSAS'),
+                    'fixedValue'        => number_format($totalCost - 2, 2, '.', ''),
+                    'externalReference' => $uuid,
+                    'description'       => 'Fatura referente às vendas N° - ' . $saleNumbers,
                 ];
             }
 
-            $token = $user->type === 99 ? $user->token_key : optional($user->sponsor)->token_key;
+            $token = env('APP_TOKEN_ASSAS');
             $this->cancelPreviousInvoices($sales, $token);
 
             try {
@@ -733,7 +741,7 @@ class AssasController extends Controller {
                 throw new \Exception('Erro ao criar cobrança: ' . $e->getMessage());
             }
 
-            $this->createInvoice($product, $charge, $user, $totalValue, 'Fatura referente às vendas N° - ' . $saleNumbers, $sponsorCommission);
+            $this->createInvoice($uuid, $product, $charge, $user, $totalValue, 'Fatura referente às vendas N° - ' . $saleNumbers, $sponsorCommission);
             $this->associateSalesWithCharge($sales, $charge['id']);
 
             DB::commit();
@@ -811,9 +819,9 @@ class AssasController extends Controller {
         return $totalValue;
     }
 
-    private function createInvoice($product, $charge, $user, $totalValue, $description, $commission) {
+    private function createInvoice($uuid, $product, $charge, $user, $totalValue, $description, $commission) {
         $invoice = new Invoice();
-        $invoice->uuid               = Str::uuid();
+        $invoice->uuid               = $uuid;
         $invoice->name               = $description;
         $invoice->description        = $description;
         $invoice->user_id            = $user->id;

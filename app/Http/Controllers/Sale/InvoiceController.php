@@ -66,6 +66,7 @@ class InvoiceController extends Controller {
             $invoice->description           = 'Fatura '.($sale->invoices()->count() + 1).' para venda N° '.$sale->id;
             $invoice->payment_token         = $assasInvoice['id'];
             $invoice->payment_url           = $assasInvoice['invoiceUrl'];
+            $invoice->payment_splits        = json_encode($assasInvoice['splits']);
             $invoice->due_date              = $request->due_date;
             $invoice->value                 = $this->formatarValor($request->value);
             $invoice->commission_seller     = $totalCommission ?? 0;

@@ -332,7 +332,7 @@ class SaleController extends Controller {
                 $invoice->due_date            = $dueDate;
                 $invoice->payment_token       = $payment['id'];
                 $invoice->payment_url         = $payment['invoiceUrl'];
-                $invoice->payment_splits      = $payment['splits'];
+                $invoice->payment_splits      = json_encode($payment['splits']);
                 $invoice->save();
             }
     
@@ -386,7 +386,7 @@ class SaleController extends Controller {
                 continue;
             }
 
-            $createdUser = $this->createdUser($nome, null, $cpfcnpj, $birth_date);
+            $createdUser = $this->createdUser($nome, null, $cpfcnpj, $birth_date, env('APP_TOKEN_ASSAS'));
             if (!$createdUser['status']) {
                 continue;
             }
@@ -451,7 +451,7 @@ class SaleController extends Controller {
         
         $client = $this->createdUser($request->name, null, $request->cpfcnpj);
         if ($client['status'] === false) {
-            return redirect()->back()->with('info', 'Não foi possível incluir o cliente! '.$client['message']);
+            return redirect()->back()->with('infor', 'Não foi possível incluir o cliente! '.$client['message']);
         }   
 
         $sale = new Sale();
