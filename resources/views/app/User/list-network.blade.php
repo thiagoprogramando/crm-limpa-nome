@@ -172,6 +172,36 @@
                                                                         <label for="floatingBirthDate">Data Nascimento:</label>
                                                                     </div>
                                                                 </div>
+                                                                 <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                                                    <div class="form-floating">
+                                                                        <input type="text" name="company_name" value="{{  $user->company_name }}" class="form-control" id="company_name" placeholder="Nome Fantasia:">
+                                                                        <label for="company_name">Nome Fantasia (Informação no Contrato):</label>
+                                                                    </div>
+                                                                </div>
+                                                                 <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                                                    <div class="form-floating">
+                                                                        <input type="text" name="company_cpfcnpj" value="{{  $user->company_cpfcnpj }}" class="form-control cpfcnpj" id="company_cpfcnpj" oninput="maskCpfCnpj(this)" placeholder="CNPJ:">
+                                                                        <label for="company_cpfcnpj">CNPJ (Informação no Contrato):</label>
+                                                                    </div>
+                                                                </div>
+                                                                 <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                                                    <div class="form-floating">
+                                                                        <input type="email" name="company_email" value="{{  $user->company_email }}" class="form-control" id="company_email" placeholder="E-mail:">
+                                                                        <label for="company_email">E-mail (Informação no Contrato):</label>
+                                                                    </div>
+                                                                </div>
+                                                                 <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                                                    <div class="form-floating">
+                                                                        <input type="text" name="company_phone" value="{{  $user->company_phone }}" class="form-control" id="company_phone phone" oninput="maskPhone(this)" placeholder="Telefone:">
+                                                                        <label for="company_phone">Telefone (Informação no Contrato):</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                    <div class="form-floating">
+                                                                        <input type="text" name="company_address" value="{{  $user->company_address }}" class="form-control" id="company_address" placeholder="Endereço:">
+                                                                        <label for="company_address">Endereço (Informação no Contrato):</label>
+                                                                    </div>
+                                                                </div>
                                                                 <div class="col-12 offset-md-6 col-md-6 offset-lg-6 col-lg-6 mb-2 d-grid gap-2">
                                                                     <div class="btn-group">
                                                                         <button type="button" id="deleteUserBtn" class="btn btn-sm btn-outline-danger">Excluir </button>
