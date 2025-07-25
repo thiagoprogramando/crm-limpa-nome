@@ -30,9 +30,7 @@ class ContractController extends Controller {
         if (empty($sale->product->subject_contract)) {
             return redirect()->back()->with('info', 'Não há Contrato disponível para venda N° '.$sale->id);
         }
-
-     
-            
+  
         $contractContent = Str::of($sale->product->subject_contract)
             ->replace('{CLIENT_NAME}', $sale->client->name ?? 'N/A')
             ->replace('{CLIENT_CPFCNPJ}', $sale->client->cpfcnpj ?? 'N/A')
