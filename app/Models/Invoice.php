@@ -23,6 +23,7 @@ class Invoice extends Model {
 
         'payment_token',
         'payment_url',
+        'payment_splits',
 
         'due_date',
         'value',

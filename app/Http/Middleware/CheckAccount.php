@@ -24,6 +24,12 @@ class CheckAccount {
             }
         }
 
+        if ($user && $user->type === 99) {
+            if ($user->company_name == null || $user->company_cpfcnpj == null) {
+                return redirect()->route('profile')->with('info', 'Complete os dados da sua Empresa para acessar todos os módulos!');
+            }
+        }
+
         return $next($request);
     }
 }

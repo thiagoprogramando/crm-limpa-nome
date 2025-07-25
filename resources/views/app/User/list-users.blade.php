@@ -268,12 +268,14 @@
                                                                                 <td class="text-center">R$ {{ number_format($invoice->value, 2, ',', '.') }}</td>
                                                                                 <td class="text-center">{{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y') }}</td>
                                                                                 <td class="text-center">
-                                                                                    <div class="btn-group">
+                                                                                    <form action="{{ route('deleted-invoice') }}" method="POST" class="btn-group delete">
+                                                                                        @csrf
+                                                                                        <input type="hidden" name="id" value="{{ $invoice->id }}">
                                                                                         <a href="{{ $invoice->payment_url }}" target="_blank" class="btn btn-sm btn-outline-primary"> Acessar </a>
                                                                                         @if($invoice->status <> 1 )
-                                                                                            <a href="" class="btn btn-sm btn-outline-danger confirm"> Excluir </a>
+                                                                                            <button type="submit" class="btn btn-sm btn-outline-danger"> Excluir </button>
                                                                                         @endif
-                                                                                    </div>
+                                                                                    </form>
                                                                                 </td>
                                                                             </tr>
                                                                         @endforeach

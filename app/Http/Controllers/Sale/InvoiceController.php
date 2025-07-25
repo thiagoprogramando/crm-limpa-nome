@@ -44,17 +44,21 @@ class InvoiceController extends Controller {
             return redirect()->back()->with('info', 'Verifique os dados do cliente e tente novamente!');
         }
 
+        $uuid = Str::uuid();
+
         $totalCommission    = $this->formatarValor($request->value) - 5;
         $commissions[] = [
-            'wallet'     => $sale->seller->wallet,
-            'fixedValue' => number_format($totalCommission, 2, '.', ''),
+            'wallet'            => $sale->seller->wallet,
+            'fixedValue'        => number_format($totalCommission, 2, '.', ''),
+            'externalReference' => $uuid,
+            'description'       => 'Comissão do vendedor - Venda N° '.$sale->id,
         ];
         
         $assasInvoice = $assasController->createCharge($customer, $request->payment_method, $this->formatarValor($request->value), $request->due_date, 'Fatura '.($sale->invoices()->count() + 1).' para venda N° '.$sale->id, $commissions);
         if ($assasInvoice <> false) {
 
             $invoice                        = new Invoice();
-            $invoice->uuid                  = Str::uuid();;
+            $invoice->uuid                  = $uuid;
             $invoice->user_id               = $sale->client_id;
             $invoice->product_id            = $product->id;
             $invoice->sale_id               = $sale->id;
@@ -89,7 +93,7 @@ class InvoiceController extends Controller {
         $assasController = new AssasController();
         if($invoice->status !== 1) {
 
-            $invoiceAssas = $assasController->updateCharge($invoice->payment_token, $request->due_date);
+            $invoiceAssas = $assasController->updateCharge($invoice->payment_token, $request->due_date, env('APP_TOKEN_ASSAS'));
             if($invoiceAssas !== false) {
                 $invoice->due_date       = $request->due_date;
                 $invoice->payment_url    = $invoiceAssas['invoiceUrl'];
@@ -115,8 +119,8 @@ class InvoiceController extends Controller {
         $assasController = new AssasController();
         if($invoice->status !== 1) {
 
-            $cancelCharge = $assasController->cancelCharge($invoice->payment_token);
-            if($cancelCharge && $invoice->delete()) {
+            $invoiceAssas = $assasController->cancelCharge($invoice->payment_token, env('APP_TOKEN_ASSAS'));
+            if($invoice->delete() && $invoiceAssas !== false) {
                 return redirect()->back()->with('success', 'Fatura excluída com sucesso!');
             }
 

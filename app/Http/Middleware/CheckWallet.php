@@ -23,9 +23,10 @@ class CheckWallet {
                 if (empty($user->token_key) || empty($user->wallet)) {
                     return redirect()->route('app')->with('info', 'Escolha um Gateway de Pagamentos no Menu Integrações!');
                 }
+
             }
         } catch (\Throwable $e) {
-            Log::error('Erro no middleware CheckUsability: '.$e->getMessage());
+            Log::error('Erro no middleware Wallet: '.$e->getMessage());
             return redirect()->route('payments')->with('error', '');
         }
 

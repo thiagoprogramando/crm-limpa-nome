@@ -75,7 +75,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/view-invoice/{id}', [InvoiceController::class, 'index'])->name('view-invoice');
         Route::post('created-invoice', [InvoiceController::class, 'createdInvoice'])->name('created-invoice');
         Route::post('updated-invoice', [InvoiceController::class, 'updatedInvoice'])->name('updated-invoice');
-        Route::post('/deleted-invoice', [InvoiceController::class, 'deletedInvoice'])->name('deleted-invoice');
+        Route::post('deleted-invoice', [InvoiceController::class, 'deletedInvoice'])->name('deleted-invoice');
 
         //Coupons
         Route::get('/list-coupons', [CouponController::class, 'coupons'])->name('list-coupons');

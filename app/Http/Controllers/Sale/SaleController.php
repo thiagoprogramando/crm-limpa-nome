@@ -134,10 +134,13 @@ class SaleController extends Controller {
             }
         } else {
             $user = new User([
-                'uuid'          => str::uuid(),
-                'cpfcnpj'       => $cpfcnpj,
-                'password'      => bcrypt($cpfcnpj),
-                'type'          => 3,
+                'uuid'              => str::uuid(),
+                'cpfcnpj'           => $cpfcnpj,
+                'password'          => bcrypt($cpfcnpj),
+                'type'              => 3,
+                'association_id'    => $association_id,
+                'sponsor_id'        => $sponsor, 
+                'fixed_cost'        => $cost,  
             ]);
         }
         
@@ -153,17 +156,8 @@ class SaleController extends Controller {
         if (!empty($phone)) {
             $user->phone = $phone;
         }
-        if (!empty($sponsor)) {
-            $user->sponsor_id = $sponsor;
-        }
-        if (!empty($association_id)) {
-            $user->association_id = $association_id;
-        }
-        if (!empty($cost)) {
-            $user->fixed_cost = $cost;
-        }
         
-        $customer = $assas->createCustomer($name, $cpfcnpj);
+        $customer = $assas->createCustomer($name, $cpfcnpj, env('APP_TOKEN_ASSAS'));
         if ($customer === false) {
             return [
                 'status'  => false,
@@ -197,7 +191,7 @@ class SaleController extends Controller {
         }
 
         $assas = new AssasController();
-        $customer = $assas->createCustomer($client->name, $client->cpfcnpj);
+        $customer = $assas->createCustomer($client->name, $client->cpfcnpj, env('APP_TOKEN_ASSAS'));
         if ($customer === false) {
             return false;
         }
@@ -206,14 +200,6 @@ class SaleController extends Controller {
         if (!$seller) {
             return redirect()->route('logout')->with('error', 'Acesso negado!');
         }
-            
-        // if ((empty($seller->fixed_cost) || $seller->fixed_cost == 0) && $this->formatValue($request->installments[1]['value'] ?? 0) < $product->value_min) {
-        //     return redirect()->back()->with('error', 'O valor mín de Entrada é: R$ '.$product->value_min.'!');
-        // }
-
-        // if (($seller->fixed_cost > 0 ) && ($this->formatValue($request->installments[1]['value'] ?? 0) < $seller->fixed_cost)) {
-        //     return redirect()->back()->with('error', 'O valor mín de Entrada é: R$ '.$seller->fixed_cost.'!');
-        // }
 
         if (($product->value_min > 0) && ($this->formatValue($request->installments[1]['value'] ?? 0) < $product->value_min)) {
             return redirect()->back()->with('error', 'O valor mín de Entrada é: R$ '.$product->value_min.'!');
@@ -255,6 +241,7 @@ class SaleController extends Controller {
                 $commissions        = [];
                 $sponsorCommission  = 0;
                 $totalCommission    = 0;
+                $uuid               = str::uuid();
     
                 if ($key == 1) {
                     $fixedCost       = ($seller->fixed_cost ?? $product->value_cost);
@@ -264,27 +251,35 @@ class SaleController extends Controller {
                     $sponsorCommission  = 0;
                     if ($sponsor) {
                         $sponsorCommission = max($fixedCost - $sponsor->fixed_cost, 0);
-                        // if ($sponsorCommission > 0) {
-                        //     $commissions[] = [
-                        //         'walletId'   => $sponsor->token_wallet,
-                        //         'fixedValue' => $sponsorCommission - 2,
-                        //     ];
-                        // }
+                        if ($sponsorCommission > 0) {
+                            $commissions[] = [
+                                'walletId'          => $sponsor->token_wallet,
+                                'fixedValue'        => $sponsorCommission - 2,
+                                'externalReference' => $uuid,
+                                'description'       => 'Fatura '.$key.' para venda N° '.$sale->id,
+                            ];
+                        }
                     }
                     
                     $commissions[] = [
-                        'walletId'   => env('APP_WALLET_ASSAS'),
-                        'fixedValue' => max(($fixedCost - $sponsorCommission), 0),
+                        'walletId'          => env('APP_WALLET_ASSAS'),
+                        'fixedValue'        => max(($fixedCost - $sponsorCommission), 0),
+                        'externalReference' => $uuid,
+                        'description'       => 'Fatura '.$key.' para venda N° '.$sale->id,
                     ];
     
                     if ($totalCommission > 0 && $seller->type !== 99 && $seller->type !== 1) {
                         $commissions[] = [
-                            'walletId'   => $seller->token_wallet,
-                            'fixedValue' => number_format($totalCommission, 2, '.', ''),
+                            'walletId'          => $seller->token_wallet,
+                            'fixedValue'        => number_format($totalCommission, 2, '.', ''),
+                            'externalReference' => $uuid,
+                            'description'       => 'Fatura '.$key.' para venda N° '.$sale->id,
                         ];
                         $commissions[] = [
-                            'walletId'   => env('WALLET_EXPRESS'),
-                            'fixedValue' => number_format(1, 2, '.', ''),
+                            'walletId'          => env('WALLET_EXPRESS'),
+                            'fixedValue'        => number_format(1, 2, '.', ''),
+                            'externalReference' => $uuid,
+                            'description'       => 'Fatura '.$key.' para venda N° '.$sale->id,
                         ];
                     }
                 } else {
@@ -295,6 +290,8 @@ class SaleController extends Controller {
                         $commissions[] = [
                             'walletId'   => $seller->token_wallet,
                             'fixedValue' => number_format($totalCommission, 2, '.', ''),
+                            'externalReference' => $uuid,
+                            'description'       => 'Fatura '.$key.' para venda N° '.$sale->id,
                         ];
                     }
 
@@ -302,21 +299,25 @@ class SaleController extends Controller {
                         $commissions[] = [
                             'walletId'   => env('WALLET_EXPRESS'),
                             'fixedValue' => number_format(1, 2, '.', ''),
+                            'externalReference' => $uuid,
+                            'description'       => 'Fatura '.$key.' para venda N° '.$sale->id,
                         ];
                         $commissions[] = [
                             'walletId'   => env('WALLET_G7'),
                             'fixedValue' => number_format($percent - 1, 2, '.', ''),
+                            'externalReference' => $uuid,
+                            'description'       => 'Fatura '.$key.' para venda N° '.$sale->id,
                         ];
                     }
                 }
     
-                $payment = $assas->createCharge($customer, $paymentMethod, $value, $dueDate, 'Fatura '.$key.' para venda N° '.$sale->id, $commissions);
+                $payment = $assas->createCharge($customer, $paymentMethod, $value, $dueDate, 'Fatura '.$key.' para venda N° '.$sale->id, $commissions, env('APP_TOKEN_ASSAS'));
                 if (!$payment || !isset($payment['id'], $payment['invoiceUrl'])) {
                     throw new \Exception("Erro ao gerar dados de pagamento para a parcela {$key}");
                 }
     
                 $invoice = new Invoice();
-                $invoice->uuid                = str::uuid();
+                $invoice->uuid                = $uuid;
                 $invoice->product_id          = $product->id;
                 $invoice->user_id             = $client->id;
                 $invoice->sale_id             = $sale->id;
@@ -331,6 +332,7 @@ class SaleController extends Controller {
                 $invoice->due_date            = $dueDate;
                 $invoice->payment_token       = $payment['id'];
                 $invoice->payment_url         = $payment['invoiceUrl'];
+                $invoice->payment_splits      = $payment['splits'];
                 $invoice->save();
             }
     

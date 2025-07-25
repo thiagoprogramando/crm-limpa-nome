@@ -60,6 +60,7 @@ class AssasController extends Controller {
                 return [
                     'id'            => $data['id'],
                     'invoiceUrl'    => $data['invoiceUrl'],
+                    'splits'        => $data['split'] ?? [],
                 ];
             } else {
                 Log::error('Erro ao Gerar Fatura (Controller AssasController) de '.$customer.': ' . $body);
@@ -204,17 +205,23 @@ class AssasController extends Controller {
             return redirect()->route('profile')->with('info', 'Verifique seus dados e tente novamente!');
         }
 
+        $uuid = Str::uuid();
+
         $value = Auth::user()->type == 2 ? env('MONTHLY_AFILIATE') : env('MONTHLY_WHITE_LABEL');
         $commissions = [
             [
-                'walletId'        => env('WALLET_EXPRESS'),
-                'percentualValue' => env('WALLET_EXPRESS_PERCENTAGE'),
+                'walletId'          => env('WALLET_EXPRESS'),
+                'percentualValue'   => env('WALLET_EXPRESS_PERCENTAGE'),
+                'externalReference' => $uuid,
+                'description'       => 'Assinatura - '.env('APP_NAME'),
             ],
         ];
         if (!empty(env('WALLET_SOCIO'))) {
             $commissions[] = [
-                'walletId'        => env('WALLET_SOCIO'),
-                'percentualValue' => env('WALLET_SOCIO_PERCENTAGE'),
+                'walletId'          => env('WALLET_SOCIO'),
+                'percentualValue'   => env('WALLET_SOCIO_PERCENTAGE'),
+                'externalReference' => $uuid,
+                'description'       => 'Assinatura - '.env('APP_NAME'),
             ];
         }
 
@@ -222,7 +229,7 @@ class AssasController extends Controller {
         if($charge <> false) {
 
             $invoice = new Invoice();
-            $invoice->uuid          = Str::uuid();;
+            $invoice->uuid          = $uuid;
             $invoice->name          = 'Assinatura - '.env('APP_NAME');
             $invoice->description   = 'Assinatura - '.env('APP_NAME');
 
@@ -233,9 +240,10 @@ class AssasController extends Controller {
             $invoice->type          = 1;
             $invoice->num           = 1;
             
-            $invoice->due_date      = now()->addDay();
-            $invoice->payment_url   = $charge['invoiceUrl'];
-            $invoice->payment_token = $charge['id'];
+            $invoice->due_date          = now()->addDay();
+            $invoice->payment_url       = $charge['invoiceUrl'];
+            $invoice->payment_token     = $charge['id'];
+            $invoice->payment_splits    = $charge['splits'];
 
             if($invoice->save()) {
                 return redirect($charge['invoiceUrl']);
