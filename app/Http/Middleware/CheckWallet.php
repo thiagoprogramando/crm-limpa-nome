@@ -16,7 +16,7 @@ class CheckWallet {
             if (Auth::check()) {
 
                 $user = Auth::user();
-                if (($user->type !== 2) && (empty($user->company_name) || empty($user->company_cpfcnpj) || empty($user->company_address) || empty($user->company_email))) {
+                if (($user->type !== 2) && (empty($user->company_name) || empty($user->company_cpfcnpj) || empty($user->company_address) || empty($user->city) || empty($user->state) || empty($user->company_email))) {
                     return redirect()->route('profile')->with('info', 'Preencha todos os dados para acessar sua plataforma!');
                 }
 

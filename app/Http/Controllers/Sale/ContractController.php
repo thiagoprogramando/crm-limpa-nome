@@ -38,16 +38,22 @@ class ContractController extends Controller {
                 ? Carbon::parse($sale->client->birth_date)->format('d/m/Y') 
                 : 'N/A')
             ->replace('{SELLER_NAME}', 
-                $sale->seller?->company_name ?? $sale->seller?->sponsor()?->company_name ?? 'Express Consultoria & Tecnologia'
+                $sale->seller?->company_name ?? $sale->seller?->sponsor?->company_name ?? 'Express Consultoria & Tecnologia'
             )
             ->replace('{SELLER_CPFCNPJ}', 
-                $sale->seller?->company_cpfcnpj ?? $sale->seller?->sponsor()?->company_cpfcnpj ?? '60.730.811/0001-70'
+                $sale->seller?->company_cpfcnpj ?? $sale->seller?->sponsor?->company_cpfcnpj ?? '60.730.811/0001-70'
             )
             ->replace('{SELLER_ADDRESS}', 
-                $sale->seller?->company_address ?? $sale->seller?->sponsor()?->company_address ?? 'Av. Deodoro da Fonseca 301B - Natal/RN'
+                $sale->seller?->company_address ?? $sale->seller?->sponsor?->company_address ?? 'Av. Deodoro da Fonseca 301B - Natal/RN'
             )
             ->replace('{SELLER_EMAIL}', 
-                $sale->seller?->company_email ?? $sale->seller?->sponsor()?->company_email ?? 'financas@expressoftwareclub.com'
+                $sale->seller?->company_email ?? $sale->seller?->sponsor?->company_email ?? 'financas@expressoftwareclub.com'
+            )
+            ->replace('{SALE_CITY}', 
+                $sale->seller?->city ?? $sale->seller?->sponsor?->city ?? 'São Paulo'
+            )
+            ->replace('{SALE_STATE}', 
+                $sale->seller?->state ?? $sale->seller?->sponsor?->state ?? 'São Paulo'
             )
             ->replace('{SALE_VALUE}', 
                 $sale->value ? number_format($sale->value, 2, ',', '.') : '---'
@@ -55,7 +61,7 @@ class ContractController extends Controller {
             ->replace('{SALE_METHOD}', 
                 $sale->paymentMethod() . ' em ' . $sale->installments . 'x'
             )
-            ->replace('{SALE_DATE}', date('d') . '/' . date('m') . '/' . date('Y'));
+            ->replace('{SALE_DATE}', now()->format('d/m/Y'));
 
         return view('app.Contract.contract', [
             'title'           => 'Contrato de serviço - ' . $sale->product->name,
