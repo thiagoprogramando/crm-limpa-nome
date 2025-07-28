@@ -56,7 +56,7 @@
                                         <div class="form-floating">
                                             <select name="status" class="form-select" id="status">
                                                 <option selected value="">Escolha uma opção:</option>
-                                                <option value="0">Pendente</option>
+                                                <option value="2">Pendente</option>
                                                 <option value="1">Pagamento confirmado</option>
                                             </select>
                                             <label for="status">Status</label>

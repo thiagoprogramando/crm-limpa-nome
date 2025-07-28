@@ -584,9 +584,9 @@ class AssasController extends Controller {
             return response()->json(['status' => 'success', 'message' => 'No pending invoice found.']);
         }
 
-        if ($data['payment']['billingType'] == 'RECEIVED_IN_CASH' && ($invoice->num == 1 || $invoice->type == 1)) {
-            return response()->json(['status' => 'success', 'message' => 'RECEIVED_IN_CASH no accept.']);
-        }
+        // if ($data['payment']['billingType'] == 'RECEIVED_IN_CASH' && ($invoice->num == 1 || $invoice->type == 1)) {
+        //     return response()->json(['status' => 'success', 'message' => 'RECEIVED_IN_CASH no accept.']);
+        // }
 
         $invoice->status = 1;
         if (!$invoice->save()) {
@@ -651,9 +651,8 @@ class AssasController extends Controller {
             }
         }
 
-        $pendingSales = Sale::where('payment_token', $paymentToken)->where('status', 0)->get();
-        if ($pendingSales->isNotEmpty()) {
-            Sale::whereIn('id', $pendingSales->pluck('id'))->update(['status' => 1]);
+        $updatedRows = Sale::where('payment_token', $paymentToken)->whereIn('status', [0, 2])->update(['status' => 1]);
+        if ($updatedRows > 0) {
             return response()->json(['status' => 'success', 'message' => 'Sales status updated successfully.']);
         }
 
