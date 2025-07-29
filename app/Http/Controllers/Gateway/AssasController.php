@@ -421,9 +421,9 @@ class AssasController extends Controller {
         }
     }
 
-    public function wallet() {
+    public function wallet(Request $request) {
 
-        $extracts     = $this->extract();
+        $extracts     = $this->extract($request->start, $request->end);
         return view('app.Finance.Assas.Wallet.wallet', [
             'balance'   => $this->balance() ?? 0, 
             'extracts'  => $extracts ?? [], 
@@ -463,12 +463,12 @@ class AssasController extends Controller {
         return redirect()->back()->with('info', 'Tokens não válidados! Aguarde aprovação da sua carteira/ou entre em contato com o suporte do banco!');
     }
 
-    public function extract() {
+    public function extract($start = null, $end = null) {
         try {
 
             $client     = new Client();
-            $startDate  = now()->toDateString();
-            $finishDate = now()->toDateString();
+            $startDate  = $start ?? now()->toDateString();
+            $finishDate = $end ?? now()->toDateString();
     
             $response = $client->request('GET', env('API_URL_ASSAS') . "v3/financialTransactions?startDate={$startDate}&finishDate={$finishDate}&order=desc", [
                 'headers' => [
@@ -571,17 +571,29 @@ class AssasController extends Controller {
         $event = $data['event'] ?? null;
 
         if (!in_array($event, ['PAYMENT_CONFIRMED', 'PAYMENT_RECEIVED'])) {
-            return response()->json(['status' => 'ignored', 'message' => 'Event not handled.']);
+            return response()->json(['status' => 'ignored', 'message' => 'Evento não utilizado pelo Webhook!']);
         }
 
         $paymentToken = $data['payment']['id'] ?? null;
         if (!$paymentToken) {
-            return response()->json(['status' => 'error', 'message' => 'Invalid payment token.']);
+            return response()->json(['status' => 'error', 'message' => 'Nenhum ID/TOKEN encontrado!']);
         }
 
         $invoice = Invoice::where('payment_token', $paymentToken)->where('status', 0)->first();
         if ($invoice) {
+
             $invoice->status = 1;
+            if ($invoice->type == 1) {
+
+                $invoice->user->status = 1;
+                if ($invoice->user->save()) {
+                    return response()->json(['status' => 'success', 'message' => 'Operação completa!']);
+                }
+            }
+
+            $invoice->save();
+
+            $saleList = SaleList::where('start', '<=', now())->where('end', '>=', now())->first();
 
             $sale = Sale::find($invoice->sale_id);
             if ($sale) {
@@ -589,9 +601,7 @@ class AssasController extends Controller {
                 $product = $invoice->product_id ? Product::find($invoice->product_id) : null;
                 if ($product && $invoice->num == 1) {
                     $sale->status = 1;
-                    $sale->guarantee = Carbon::parse($sale->guarantee)->addMonths(3);
-
-                    $saleList = SaleList::where('start', '<=', now())->where('end', '>=', now())->first();
+                    // $sale->guarantee = Carbon::parse($sale->guarantee)->addMonths(3);
                     if ($saleList) {
                         $sale->list_id = $saleList->id;
                     }
@@ -624,34 +634,26 @@ class AssasController extends Controller {
 
                     if (isset($levels[$salesCount])) {
 
-                        $seller->type->level = $levels[$salesCount]['level'];
+                        $seller->level = $levels[$salesCount]['level'];
                         Notification::create([
-                            'name'          => 'New Level!',
-                            'description'   => $seller->type->name . ' reached level: ' . $levels[$salesCount]['name'],
+                            'name'          => 'Novo Nível!',
+                            'description'   => $seller->name . ' Alcançou: ' . $levels[$salesCount]['name'],
                             'type'          => 2,
                             'user_id'       => $seller->id,
                         ]);
-                    }
-
-                    if ($invoice->type == 1) {
-                        $seller->status = 1;
                     }
 
                     $seller->save();
                 }
             }
 
-            if (!$invoice->save()) {
-                return response()->json(['status' => 'error', 'message' => 'Failed to update invoice.']);
-            }
+            $updatedRows = Sale::where('payment_token', $paymentToken)->whereIn('status', [0, 2])->update(['status' => 1, 'list_id' => $saleList->id]);
+            if ($updatedRows > 0) {
+                return response()->json(['status' => 'success', 'message' => 'Sales status updated successfully.']);
+            } 
         }
 
-        $updatedRows = Sale::where('payment_token', $paymentToken)->whereIn('status', [0, 2])->update(['status' => 1]);
-        if ($updatedRows > 0) {
-            return response()->json(['status' => 'success', 'message' => 'Sales status updated successfully.']);
-        }
-
-        return response()->json(['status' => 'success', 'message' => 'Operation completed successfully.']);
+        return response()->json(['status' => 'success', 'message' => 'Nenhuma operação registrada!']);
     }
 
     public function createPayment(Request $request) {

@@ -139,7 +139,7 @@
                                             <tbody id="paymentTable">
                                                 @foreach ($sale->invoices as $invoice)
                                                     <tr>
-                                                        <td>{{ $invoice->name }}</td>
+                                                        <td>#{{ $invoice->id }} - {{ $invoice->name }}</td>
                                                         <td>
                                                             <span class="badge bg-primary">
                                                                 {{ $invoice->statusLabel() }}
@@ -172,7 +172,7 @@
 
                                                 @foreach ($sale->invoicesByToken as $invoice)
                                                     <tr>
-                                                        <td>{{ $invoice->name }}</td>
+                                                        <td>#{{ $invoice->id }} - {{ $invoice->name }}</td>
                                                         <td>
                                                             <span class="badge bg-primary">
                                                                 {{ $invoice->statusLabel() }}

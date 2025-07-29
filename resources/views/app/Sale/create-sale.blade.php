@@ -519,7 +519,6 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        console.log('invoiceUrl:', data.invoiceUrl);
                         Swal.fire({
                             title: 'Sucesso!',
                             text: 'Processo concluído! Você será redirecionado para página de Pagamento.',
@@ -529,8 +528,8 @@
                             confirmButtonText: 'Ver Fatura',
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                if (data.invoiceUrl) {
-                                    window.open(data.invoiceUrl, '_blank', 'noopener,noreferrer');
+                                if (data.data.invoiceUrl) {
+                                    window.open(data.data.invoiceUrl, '_blank', 'noopener,noreferrer');
                                     return;
                                 }
                                 

@@ -18,6 +18,40 @@
             <div class="btn-group mb-3" role="group">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Solicitar saque</button>
                 <button type="button" id="gerarExcel" class="btn btn-outline-primary">Excel</button>
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
+            </div>
+
+            <div class="modal fade" id="filterModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form action="{{ route('wallet') }}" method="GET">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Dados da Pesquisa</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                        <div class="form-floating">
+                                            <input type="date" name="start" class="form-control" id="start" placeholder="Data inicial:">
+                                            <label for="start">Data inicial:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                        <div class="form-floating">
+                                            <input type="date" name="end" class="form-control" id="end" placeholder="Data final:">
+                                            <label for="end">Data final:</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer btn-group">
+                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn btn-primary">Consultar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
 
             <div class="modal fade" id="filterModal" tabindex="-1">

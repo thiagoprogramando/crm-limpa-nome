@@ -262,7 +262,7 @@
                                                                         @foreach ($user->invoices as $invoice)
                                                                             <tr>
                                                                                 <td>
-                                                                                    {{ $invoice->name }} <br>
+                                                                                    #{{ $invoice->id }} - {{ $invoice->name }} <br>
                                                                                     <span class="badge {{ $invoice->status == 1 ? 'bg-success' : 'bg-primary' }}">{{ $invoice->statusLabel() }}</span>
                                                                                 </td>
                                                                                 <td class="text-center">R$ {{ number_format($invoice->value, 2, ',', '.') }}</td>

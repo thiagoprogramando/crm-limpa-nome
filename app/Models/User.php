@@ -250,7 +250,7 @@ class User extends Authenticatable {
             ->first();
 
         return $lastPendingInvoice 
-            ? $lastPendingInvoice->url_payment
+            ? $lastPendingInvoice->payment_url
             : '---';
     }
 

@@ -181,28 +181,35 @@
                                     <i class="bi bi-currency-dollar"></i>
                                     </div>
                                     <div class="ps-3">
-                                        <h6>{{ number_format(Auth::user()->sales->flatMap(function ($sale) { return $sale->invoices; })->sum('value'), 2, ',', '.') }}</h6>
+                                        <h6>{{ number_format((Auth::user()->sales->flatMap->invoices->sum('value') + Auth::user()->sales->flatMap->invoicesByToken->sum('value')), 2, ',', '.') }}</h6>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="card info-card clock-card">
+                        <div class="card info-card green-card">
                             <div class="card-body">
                                 <h5 class="card-title">Hoje (R$)</h5>
                                 <div class="d-flex align-items-center">
                                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                    <i class="ri-money-dollar-circle-line"></i>
+                                        <i class="bi bi-currency-dollar"></i>
                                     </div>
                                     <div class="ps-3">
-                                        <h6>{{ number_format(Auth::user()->sales->where('created_at', '>=', \Carbon\Carbon::today())->flatMap(function ($sale) { return $sale->invoices; })->sum('value'), 2, ',', '.') }}</h6>
+                                        <h6>
+                                            {{
+                                                number_format(
+                                                    Auth::user()->sales->flatMap->invoices->filter(fn($i) => $i->created_at->isToday())->sum('value') +
+                                                    Auth::user()->sales->flatMap->invoicesByToken->filter(fn($i) => $i->created_at->isToday())->sum('value'),
+                                                    2, ',', '.'
+                                                )
+                                            }}
+                                        </h6>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                         <div class="card info-card clock-card">
                             <div class="card-body">
