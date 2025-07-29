@@ -580,17 +580,11 @@ class AssasController extends Controller {
         }
 
         $invoice = Invoice::where('payment_token', $paymentToken)->where('status', 0)->first();
-        if (!$invoice) {
-            return response()->json(['status' => 'success', 'message' => 'No pending invoice found.']);
-        }
-
-        // if ($data['payment']['billingType'] == 'RECEIVED_IN_CASH' && ($invoice->num == 1 || $invoice->type == 1)) {
-        //     return response()->json(['status' => 'success', 'message' => 'RECEIVED_IN_CASH no accept.']);
-        // }
-
-        $invoice->status = 1;
-        if (!$invoice->save()) {
-            return response()->json(['status' => 'error', 'message' => 'Failed to update invoice.']);
+        if ($invoice) {
+            $invoice->status = 1;
+            if (!$invoice->save()) {
+                return response()->json(['status' => 'error', 'message' => 'Failed to update invoice.']);
+            }
         }
 
         $sale = Sale::find($invoice->sale_id);
