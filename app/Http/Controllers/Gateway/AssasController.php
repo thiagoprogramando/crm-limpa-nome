@@ -579,7 +579,7 @@ class AssasController extends Controller {
             return response()->json(['status' => 'error', 'message' => 'Nenhum ID/TOKEN encontrado!']);
         }
 
-        $invoice = Invoice::where('payment_token', $paymentToken)->where('status', 0)->first();
+        $invoice = Invoice::where('payment_token', $paymentToken)->whereIn('status', [0, 2])->first();
         if ($invoice) {
 
             $invoice->status = 1;
