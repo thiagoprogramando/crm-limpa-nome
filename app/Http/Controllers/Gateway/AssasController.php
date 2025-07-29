@@ -582,66 +582,67 @@ class AssasController extends Controller {
         $invoice = Invoice::where('payment_token', $paymentToken)->where('status', 0)->first();
         if ($invoice) {
             $invoice->status = 1;
+
+            $sale = Sale::find($invoice->sale_id);
+            if ($sale) {
+                
+                $product = $invoice->product_id ? Product::find($invoice->product_id) : null;
+                if ($product && $invoice->num == 1) {
+                    $sale->status = 1;
+                    $sale->guarantee = Carbon::parse($sale->guarantee)->addMonths(3);
+
+                    $saleList = SaleList::where('start', '<=', now())->where('end', '>=', now())->first();
+                    if ($saleList) {
+                        $sale->list_id = $saleList->id;
+                    }
+                }
+
+                $sale->save();
+
+                Notification::create([
+                    'name'          => 'Invoice #' . $invoice->id,
+                    'description'   => 'Fatura recebida com sucesso!',
+                    'type'          => 1,
+                    'user_id'       => $sale->seller_id
+                ]);
+
+                $seller = $sale->seller;
+
+                if ($seller->type != 4) {
+
+                    $salesCount = $seller->sales()->count();
+                    
+                    $levels = [
+                        10      => ['level' => 2, 'name' => 'CONSULTANT'],
+                        30      => ['level' => 3, 'name' => 'LEAD CONSULTANT'],
+                        50      => ['level' => 4, 'name' => 'REGIONAL'],
+                        100     => ['level' => 5, 'name' => 'REGIONAL MANAGER'],
+                        300     => ['level' => 7, 'name' => 'DIRECTOR'],
+                        500     => ['level' => 8, 'name' => 'REGIONAL DIRECTOR'],
+                        1000    => ['level' => 9, 'name' => 'PRESIDENT VIP'],
+                    ];
+
+                    if (isset($levels[$salesCount])) {
+
+                        $seller->type->level = $levels[$salesCount]['level'];
+                        Notification::create([
+                            'name'          => 'New Level!',
+                            'description'   => $seller->type->name . ' reached level: ' . $levels[$salesCount]['name'],
+                            'type'          => 2,
+                            'user_id'       => $seller->id,
+                        ]);
+                    }
+
+                    if ($invoice->type == 1) {
+                        $seller->status = 1;
+                    }
+
+                    $seller->save();
+                }
+            }
+
             if (!$invoice->save()) {
                 return response()->json(['status' => 'error', 'message' => 'Failed to update invoice.']);
-            }
-        }
-
-        $sale = Sale::find($invoice->sale_id);
-        if ($sale) {
-            
-            $product = $invoice->product_id ? Product::find($invoice->product_id) : null;
-            if ($product && $invoice->num == 1) {
-                $sale->status = 1;
-                $sale->guarantee = Carbon::parse($sale->guarantee)->addMonths(3);
-
-                $saleList = SaleList::where('start', '<=', now())->where('end', '>=', now())->first();
-                if ($saleList) {
-                    $sale->list_id = $saleList->id;
-                }
-            }
-
-            $sale->save();
-
-            Notification::create([
-                'name'          => 'Invoice #' . $invoice->id,
-                'description'   => 'Fatura recebida com sucesso!',
-                'type'          => 1,
-                'user_id'       => $sale->seller_id
-            ]);
-
-            $seller = $sale->seller;
-
-            if ($seller->type != 4) {
-
-                $salesCount = $seller->sales()->count();
-                
-                $levels = [
-                    10      => ['level' => 2, 'name' => 'CONSULTANT'],
-                    30      => ['level' => 3, 'name' => 'LEAD CONSULTANT'],
-                    50      => ['level' => 4, 'name' => 'REGIONAL'],
-                    100     => ['level' => 5, 'name' => 'REGIONAL MANAGER'],
-                    300     => ['level' => 7, 'name' => 'DIRECTOR'],
-                    500     => ['level' => 8, 'name' => 'REGIONAL DIRECTOR'],
-                    1000    => ['level' => 9, 'name' => 'PRESIDENT VIP'],
-                ];
-
-                if (isset($levels[$salesCount])) {
-
-                    $seller->type->level = $levels[$salesCount]['level'];
-                    Notification::create([
-                        'name'          => 'New Level!',
-                        'description'   => $seller->type->name . ' reached level: ' . $levels[$salesCount]['name'],
-                        'type'          => 2,
-                        'user_id'       => $seller->id,
-                    ]);
-                }
-
-                if ($invoice->type == 1) {
-                    $seller->status = 1;
-                }
-
-                $seller->save();
             }
         }
 
