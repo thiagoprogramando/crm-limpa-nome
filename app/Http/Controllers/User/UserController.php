@@ -4,7 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Assas\AssasController;
 use App\Http\Controllers\Controller;
-
+use App\Http\Controllers\Gateway\AssasController as GatewayAssasController;
 use App\Models\Invoice;
 use App\Models\Sale;
 use App\Models\User;
@@ -127,6 +127,19 @@ class UserController extends Controller {
             $user->type = $request->type;
         }
 
+        if (!empty($request->status)) {
+            $user->status = $request->status;
+        }
+
+        if (!empty($request->token_issuer)) {
+
+            if ($request->token_issuer == 'MY' && empty($user->token_key)) {
+                return redirect()->back()->with('info', 'É necessário primeiro integrar o TOKEN KEY!');
+            }
+ 
+            $user->token_issuer = $request->token_issuer == 'OUTROS' ? null : $request->token_issuer;
+        }
+
         if (!empty($request->company_name)) {
             $user->company_name = $request->company_name;
         }
@@ -155,6 +168,24 @@ class UserController extends Controller {
 
             $path = $request->file('photo')->store('profile-photos', 'public');
             $user->photo = $path;
+        }
+
+        if (!empty($request->token_wallet)) {
+            $user->token_wallet = $request->token_wallet;
+        }
+
+        if (!empty($request->token_key)) {
+
+            $assas = new GatewayAssasController;
+
+            $validateToken = $assas->accountStatus($request->token_key);
+            if (is_array($validateToken) && (isset($validateToken['general']) && ($validateToken['general'] == 'APPROVED' || $validateToken['general'] == 'AWAITING_APPROVA'))) {
+                $user->token_key = $request->token_key;
+
+                $createWebhook = $assas->createdWebhook($user, env('APP_URL').'api/webhook-assas', $request->token_key);
+            } else {
+                return redirect()->back()->with('info', 'Token não válidado! Aguarde aprovação da sua carteira/ou entre em contato com o suporte do Banco!');
+            }
         }
 
         if ($user->save()) {

@@ -39,6 +39,7 @@ class User extends Authenticatable {
 
         'wallet',
         'token_wallet',
+        'token_issuer',
         'token_key',
 
         'fixed_cost',
@@ -56,6 +57,29 @@ class User extends Authenticatable {
         'terms_of_usability',
         'terms_of_privacy',
     ];
+
+    public function getToken() {
+
+        switch ($this->token_issuer) {
+            case 'AMPAY':
+                $token = env('APP_AMPAY_ASSAS');
+                break;
+            case 'EXPRESS':
+                $token = env('APP_EXPRESS_ASSAS');
+                break;
+            case 'ASSOCIATION':
+                $token = env('APP_ASSOCIATION_ASSAS');
+                break;
+            case 'MY':
+               $token = $this->token_key;
+                break;
+            default:
+                $token = $this->sponsor?->getToken();
+                break;
+        }
+
+        return $token;
+    }
 
     public function maskedName() {
         if (!$this->name) {
@@ -196,7 +220,10 @@ class User extends Authenticatable {
             return intval($daysRemaining > 0 ? $daysRemaining : 0);
         }
 
-        return 0;
+        $freeTrialEnd   = $this->created_at->copy()->addDays(30);
+        $daysRemaining  = Carbon::now()->diffInDays($freeTrialEnd, false);
+
+        return intval($daysRemaining > 0 ? $daysRemaining : 0);
     }
 
     public function balance() {

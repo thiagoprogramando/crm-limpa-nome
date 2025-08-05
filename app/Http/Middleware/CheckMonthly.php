@@ -19,17 +19,18 @@ class CheckMonthly {
                 $user = Auth::user();
 
                 if ($user && in_array($user->status, [1, 2]) && !in_array($user->type, [1, 4, 99])) {
+                    if ($user->created_at->lte(now()->subDays(30))) {
+                        $monthly = Invoice::where('user_id', $user->id)->where('status', 1)->where('type', 1)->latest('created_at')->first();
+                        if (!$monthly || ($monthly->created_at && $monthly->created_at->lte(now()->subDays(30)->startOfDay()))) {
 
-                    $monthly = Invoice::where('user_id', $user->id)->where('status', 1)->where('type', 1)->latest('created_at')->first();
-                    if (!$monthly || ($monthly->created_at && $monthly->created_at->lte(now()->subDays(30)->startOfDay()))) {
+                            $assas = new AssasController(); 
+                            $createMonthly = $assas->createMonthly($user->id);
+                            if (isset($createMonthly['success'])) {
+                                return redirect()->route('payments')->with('info', $createMonthly['message']);
+                            }
 
-                        $assas = new AssasController(); 
-                        $createMonthly = $assas->createMonthly($user->id);
-                        if (isset($createMonthly['success'])) {
-                            return redirect()->route('payments')->with('info', $createMonthly['message']);
+                            return redirect()->route('profile')->with('error', 'Verifique seus dados e tente novamente!');
                         }
-
-                        return redirect()->route('profile')->with('error', 'Verifique seus dados e tente novamente!');
                     }
                 }
             }

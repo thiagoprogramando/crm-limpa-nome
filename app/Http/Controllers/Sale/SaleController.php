@@ -157,7 +157,7 @@ class SaleController extends Controller {
             $user->phone = $phone;
         }
         
-        $customer = $assas->createCustomer($name, $cpfcnpj, env('APP_TOKEN_ASSAS'));
+        $customer = $assas->createCustomer($name, $cpfcnpj);
         if ($customer === false) {
             return [
                 'status'  => false,
@@ -191,7 +191,7 @@ class SaleController extends Controller {
         }
 
         $assas = new AssasController();
-        $customer = $assas->createCustomer($client->name, $client->cpfcnpj, env('APP_TOKEN_ASSAS'));
+        $customer = $assas->createCustomer($client->name, $client->cpfcnpj);
         if ($customer === false) {
             return false;
         }
@@ -247,11 +247,11 @@ class SaleController extends Controller {
                     $fixedCost       = ($seller->fixed_cost ?? $product->value_cost);
                     $totalCommission = max(($value - $fixedCost) - 5, 0);
 
-                    $sponsor            = $seller->sponsor;
+                    $sponsor = $seller->sponsor;
                     $sponsorCommission  = 0;
                     if ($sponsor) {
                         $sponsorCommission = max($fixedCost - $sponsor->fixed_cost, 0);
-                        if ($sponsorCommission > 0) {
+                        if ($sponsorCommission > 0 && $sponsor->token_issuer !== 'MY') {
                             $commissions[] = [
                                 'walletId'          => $sponsor->token_wallet,
                                 'fixedValue'        => $sponsorCommission - 2,
@@ -268,7 +268,7 @@ class SaleController extends Controller {
                         'description'       => 'Fatura '.$key.' para venda N° '.$sale->id,
                     ];
     
-                    if ($totalCommission > 0 && $seller->type !== 99 && $seller->type !== 1) {
+                    if ($totalCommission > 0 && $seller->token_issuer !== 'MY') {
                         $commissions[] = [
                             'walletId'          => $seller->token_wallet,
                             'fixedValue'        => number_format($totalCommission, 2, '.', ''),

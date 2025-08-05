@@ -193,7 +193,6 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-
                                                                     <div class="col-12 col-md-4 col-lg-5 row">
                                                                         <div class="col-12 col-md-6 col-lg-6 mb-2">
                                                                             <div class="form-floating">
@@ -203,7 +202,7 @@
                                                                         </div>
                                                                         <div class="col-12 col-md-6 col-lg-6 mb-2">
                                                                             <div class="form-floating">
-                                                                                <input type="text" name="fixed_cost" class="form-control" id="fixed_cost" placeholder="Custo Fixo (R$):" value="{{ $user->fixed_cost }}" oninput="maskValue(this)">
+                                                                                <input type="text" name="fixed_cost" class="form-control money" id="fixed_cost" placeholder="Custo Fixo (R$):" value="{{ $user->fixed_cost }}" oninput="maskValue(this)">
                                                                                 <label for="fixed_cost">Custo Fixo (R$):</label>
                                                                             </div>
                                                                         </div>
@@ -235,6 +234,41 @@
                                                                                     <option value="6" @selected($user->level == 7)>Vendedor Interno</option>
                                                                                 </select>
                                                                                 <label for="floatingLevel">Graduação</label>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                                                            <div class="form-floating">
+                                                                                <select name="status" class="form-select" id="status">
+                                                                                    <option selected value="{{ $user->status }}">Status:</option>
+                                                                                    <option value="1" @selected($user->status == 1)>Aprovado</option>
+                                                                                    <option value="2" @selected($user->status == 2)>Pendente</option>
+                                                                                </select>
+                                                                                <label for="status">Status</label>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-12 col-md-6 col-lg-6 mb-2">
+                                                                            <div class="form-floating">
+                                                                                <select name="token_issuer" class="form-select" id="token_issuer">
+                                                                                    <option selected value="{{ $user->token_issuer }}">Emissor:</option>
+                                                                                    <option value="OUTROS" @selected($user->token_issuer == null)>HIERARQUIA</option>
+                                                                                    <option value="AMPAY" @selected($user->token_issuer == 'AMPAY')>AMPAY</option>
+                                                                                    <option value="EXPRESS" @selected($user->token_issuer == 'EXPRESS')>EXPRESS</option>
+                                                                                    <option value="ASSOCIATION" @selected($user->token_issuer == 'ASSOCIATION')>ASSOCIAÇÃO</option>
+                                                                                    <option value="MY" @selected($user->token_issuer == 'MY')>USUÁRIO</option>
+                                                                                </select>
+                                                                                <label for="token_issuer">Emissor</label>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                            <div class="form-floating">
+                                                                                <input type="text" name="token_wallet" class="form-control" id="wallet_id" placeholder="WALLET ID:" value="{{ $user->token_wallet }}">
+                                                                                <label for="wallet_id">WALLET ID:</label>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                            <div class="form-floating">
+                                                                                <input type="text" name="token_key" class="form-control" id="api_key" placeholder="API KEY:" value="{{ $user->token_key }}">
+                                                                                <label for="api_key">API KEY:</label>
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-12 col-md-12 col-lg-12 mb-2 mb-2 d-grid">

@@ -502,6 +502,7 @@
                 }
 
                 var user_id = @json(Auth::user()->id);
+                var user_token = @json(Auth::user()->getToken());
                 var product_id = @json($product->id);
 
                 fetch(route, {
@@ -512,8 +513,9 @@
                     },
                     body: JSON.stringify({ 
                         ids, 
-                        user_id: user_id ,
-                        product_id: product_id 
+                        user_id: user_id,
+                        product_id: product_id,
+                        token: user_token
                     })
                 })
                 .then(response => response.json())

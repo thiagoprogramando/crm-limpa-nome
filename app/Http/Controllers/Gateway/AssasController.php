@@ -27,17 +27,13 @@ class AssasController extends Controller {
 
     public function createCharge($customer, $billingType, $value, $dueDate = null, $description, $commissions = null, $token = null) {
 
-        if (empty($token)) {
-            $token = Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key;
-        }
-
         try {
             $client = new Client();
     
             $options = [
                 'headers' => [
                     'Content-Type' => 'application/json',
-                    'access_token' => $token,
+                    'access_token' => $token ?? Auth::user()->getToken(),
                     'User-Agent'   => env('APP_NAME')
                 ],
                 'json' => [
@@ -72,17 +68,14 @@ class AssasController extends Controller {
         }
     }
 
-    public function updateCharge($id, $dueDate, $value = null, $token = null) {
+    public function updateCharge($id, $dueDate, $value = null) {
 
-        if (empty($token)) {
-            $token = Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key;
-        }
         $client = new Client();
         
         $options = [
             'headers' => [
                 'Content-Type' => 'application/json',
-                'access_token' => $token,
+                'access_token' => Auth::user()->getToken(),
                 'User-Agent'   => env('APP_NAME')
             ],
             'json' => [
@@ -115,25 +108,20 @@ class AssasController extends Controller {
         return false;
     }
 
-    public function cancelCharge($id, $token = null) {
-
-        if (empty($token)) {
-            $token = Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key;
-        }
+    public function cancelCharge($id) {
         
         try {
             $client = new Client();
             $options = [
                 'headers' => [
                     'Content-Type'  => 'application/json',
-                    'access_token'  => $token,
+                    'access_token'  => Auth::user()->getToken(),
                     'User-Agent'    => env('APP_NAME')
                 ],
                 'verify' => false
             ];
 
             $response = $client->delete(env('API_URL_ASSAS') . 'v3/payments/' . $id, $options);
-
             if ($response->getStatusCode() === 200) {
                 $data = json_decode((string) $response->getBody(), true);
                 return isset($data['deleted']) && $data['deleted'] === true;
@@ -148,17 +136,13 @@ class AssasController extends Controller {
 
     public function createCustomer($name, $cpfcnpj, $token = null) {
 
-        if (empty($token)) {
-            $token = Auth::user()->type == 99 ? Auth::user()->token_key : Auth::user()->sponsor->token_key;
-        }
-
         try {
             $client = new Client();
             $options = [
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'accept'       => 'application/json',
-                    'access_token' => $token,
+                    'access_token' => $token ?? Auth::user()->getToken(),
                     'User-Agent'   => env('APP_NAME')
                 ],
                 'json' => [
@@ -200,7 +184,7 @@ class AssasController extends Controller {
             return redirect()->route('payments')->with('info', 'Você possui pendências de pagamentos!');
         }
             
-        $customer = $this->createCustomer($user->name, $user->cpfcnpj, env('APP_TOKEN_ASSAS'));
+        $customer = $this->createCustomer($user->name, $user->cpfcnpj);
         if (!$customer) {
             return redirect()->route('profile')->with('info', 'Verifique seus dados e tente novamente!');
         }
@@ -225,7 +209,7 @@ class AssasController extends Controller {
             ];
         }
 
-        $charge = $this->createCharge($customer, 'PIX', $value, now()->addDay(), 'Assinatura -'.env('APP_NAME'), $commissions, env('APP_TOKEN_ASSAS'));
+        $charge = $this->createCharge($customer, 'PIX', $value, now()->addDay(), 'Assinatura -'.env('APP_NAME'), $commissions);
         if($charge <> false) {
 
             $invoice = new Invoice();
@@ -290,21 +274,21 @@ class AssasController extends Controller {
         }
     }
 
-    public function createdWebhook (Request $request) {
+    public function createdWebhook ($user, $url, $token) {
 
-        if (Auth::check() && (Auth::user()->type == 99 || Auth::user()->type == 1)) {
+        if ($user->type == 99 || $user->type == 1) {
             try {
                 $client = new Client();
                 $options = [
                     'headers' => [
                         'Content-Type' => 'application/json',
                         'accept'       => 'application/json',
-                        'access_token' => Auth::user()->token_key,
+                        'access_token' => $token,
                         'User-Agent'   => env('APP_NAME')
                     ],
                     'json' => [
-                        'name'          => $request->name,
-                        'url'           => $request->url,
+                        'name'          => $user->name,
+                        'url'           => $url,
                         'email'         => env('MAIL_USERNAME'),
                         'enabled'       => true,
                         'interrupted'   => false,
@@ -323,7 +307,7 @@ class AssasController extends Controller {
         
                 if ($response->getStatusCode() === 200) {
                     $webhook                = new WebHook();
-                    $webhook->user_id       = Auth::user()->id;
+                    $webhook->user_id       = $user->id;
                     $webhook->uuid          = $data['id'];
                     $webhook->name          = $data['name'];
                     $webhook->url           = $data['url'];
@@ -333,13 +317,13 @@ class AssasController extends Controller {
                     $webhook->apiVersion    = $data['apiVersion'];
                     $webhook->sendType      = $data['sendType'];
                     if ($webhook->save()) {
-                        return redirect()->back()->with('success', 'WebHook criado sucesso!');
+                        return false;
                     }
 
-                    return redirect()->back()->with('info', 'WebHook criado no Banco, mas não foi possível criar na plataforma!');
+                     return false;
                 } else {
                     Log::error("Erro na criação de WebHook no AssasController: " . json_encode($data));
-                    return redirect()->back()->with('info', 'Falha ao tentar criar Novo WebHook: ' .json_encode($data));
+                        return false;
                 }
         
             } catch (RequestException $e) {
@@ -350,7 +334,7 @@ class AssasController extends Controller {
                 return redirect()->back()->with('info', 'Erro na criação de WebHook: ' .$e->getMessage());
             }
         } else {
-            return redirect()->route('logout')->with('info', 'Faça Login para ter acesso aos módulos!');
+            return false;
         }
     }
 
@@ -440,27 +424,25 @@ class AssasController extends Controller {
 
     public function IntegrateToken(Request $request) {
 
-        if (empty($request->token_key) && empty($request->token_wallet)) {
+        if (empty($request->token_key)) {
             return redirect()->back()->with('info', 'Informe os dados necessários para integração!'); 
         }
 
-        $user = User::where('id', $request->id)->first();
+        $user = User::find($request->id);
         if (!$user) {
             return redirect()->route('logout')->with('info', 'Faça Login para acessar os módulos do sistema!'); 
         }
 
         $status = $this->accountStatus($request->token_key);
         if (is_array($status) && (isset($status['general']) && ($status['general'] == 'APPROVED' || $status['general'] == 'AWAITING_APPROVA'))) {
-            $user->token_wallet = $request->token_wallet;
+            
             $user->token_key    = $request->token_key;
-            $user->status       = 1;
-
             if ($user->save()) {
-                return redirect()->back()->with('success', 'Tokens válidados com sucesso!');
+                return redirect()->back()->with('success', 'Token válidado com sucesso!');
             }
         } 
 
-        return redirect()->back()->with('info', 'Tokens não válidados! Aguarde aprovação da sua carteira/ou entre em contato com o suporte do banco!');
+        return redirect()->back()->with('info', 'Token não válidado! Aguarde aprovação da sua carteira/ou entre em contato com o suporte do Banco!');
     }
 
     public function extract($start = null, $end = null) {
@@ -538,7 +520,7 @@ class AssasController extends Controller {
         return redirect()->back()->with('error', 'Senha inválida!');
     }
 
-    private function accountStatus($token_key) {
+    public function accountStatus($token_key) {
         try {
             $client = new Client();
             
@@ -586,7 +568,7 @@ class AssasController extends Controller {
             if ($invoice->type == 1) {
 
                 $invoice->user->status = 1;
-                if ($invoice->user->save()) {
+                if ($invoice->user->save() && $invoice->save()) {
                     return response()->json(['status' => 'success', 'message' => 'Operação completa!']);
                 }
             }
@@ -685,12 +667,14 @@ class AssasController extends Controller {
                 $unitSponsorProfit = $unitCost - $sponsor->fixed_cost;
                 if ($unitSponsorProfit > 0) {
                     $sponsorCommission = $unitSponsorProfit * count($sales);
-                    $commissions[] = [
-                        'walletId'          => $sponsor->token_wallet,
-                        'fixedValue'        => number_format($sponsorCommission - 2, 2, '.', ''),
-                        'externalReference' => $uuid,
-                        'description'       => 'Fatura referente às vendas N° - ' . $saleNumbers,
-                    ];
+                    if ($sponsor->token_issuer !== 'MY') {
+                        $commissions[] = [
+                            'walletId'          => $sponsor->token_wallet,
+                            'fixedValue'        => number_format($sponsorCommission - 2, 2, '.', ''),
+                            'externalReference' => $uuid,
+                            'description'       => 'Fatura referente às vendas N° - ' . $saleNumbers,
+                        ];
+                    }
                     $commissions[] = [
                         'walletId'          => env('APP_WALLET_ASSAS'),
                         'fixedValue'        => number_format($totalCost - $sponsorCommission, 2, '.', ''),
@@ -714,11 +698,10 @@ class AssasController extends Controller {
                 ];
             }
 
-            $token = env('APP_TOKEN_ASSAS');
-            $this->cancelPreviousInvoices($sales, $token);
+            $this->cancelPreviousInvoices($sales, $request->token);
 
             try {
-                $customer = $this->createCustomer($user->name, $user->cpfcnpj, $token);
+                $customer = $this->createCustomer($user->name, $user->cpfcnpj, $request->token);
 
                 $charge = $this->createCharge(
                     $customer,
@@ -727,7 +710,7 @@ class AssasController extends Controller {
                     now()->addDay(),
                     'Fatura referente às vendas N° - ' . $saleNumbers,
                     $commissions,
-                    $token
+                    $request->token
                 );
 
                 if (!$charge || empty($charge['id'])) {
@@ -737,7 +720,7 @@ class AssasController extends Controller {
                 throw new \Exception('Erro ao criar cobrança: ' . $e->getMessage());
             }
 
-            $this->createInvoice($uuid, $product, $charge, $user, $totalValue, 'Fatura referente às vendas N° - ' . $saleNumbers, $sponsorCommission);
+            $this->createInvoice($uuid, $product, $charge, $user, $totalValue, 'Fatura referente às vendas N° - ' . $saleNumbers, $sponsorCommission, $commissions);
             $this->associateSalesWithCharge($sales, $charge['id']);
 
             DB::commit();
@@ -831,6 +814,7 @@ class AssasController extends Controller {
         $invoice->due_date           = now()->addDay(2);
         $invoice->payment_url        = $charge['invoiceUrl'];
         $invoice->payment_token      = $charge['id'];
+        $invoice->payment_splits     = json_encode($charge['splits'] ?? []);
         $invoice->save();
     }
 
@@ -841,8 +825,8 @@ class AssasController extends Controller {
                 
                 $invoice = Invoice::where('payment_token', $sale->payment_token)->first();
                 if ($invoice) {
-                    $canceled = $this->cancelCharge($invoice->payment_token, $token);
-                    Log::info('Assas: ', ['canceled' => $canceled]);
+                    // $canceled = $this->cancelCharge($invoice->payment_token, $token);
+                    // Log::info('Assas: ', ['canceled' => $canceled]);
                     if ($invoice->delete()) {
                         $sale->payment_token = null;
                         $sale->save();
