@@ -60,7 +60,7 @@ class CouponController extends Controller {
         $coupon->qtd            = $request->qtd;
         if($coupon->save()) {
 
-            if($user) {
+            if(!empty($user)) {
 
                 $expiryDate = \Carbon\Carbon::parse($request->expiry_date);
                 $message =  "*Surpresa Especial para Você! 🎁* \r\n\r\n"

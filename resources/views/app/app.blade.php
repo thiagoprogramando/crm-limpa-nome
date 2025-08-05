@@ -17,6 +17,9 @@
                 <div id="carouselExampleControls" class="carousel slide mb-2" data-bs-ride="carousel">
                     <div class="carousel-inner">
                         <div class="carousel-item carousel-item-next carousel-item-start">
+                            <img style="max-height: 300px !important;" src="{{ asset('assets/dashboard/img/marketing/nome_10_um_cupom.png') }}" class="d-block w-100" alt="Envie dez nomes e ganhe um!">
+                        </div>
+                        <div class="carousel-item carousel-item-next carousel-item-start">
                             <img style="max-height: 300px !important;" src="{{ asset('assets/dashboard/img/marketing/indicados_5_1_cupom.png') }}" class="d-block w-100" alt="Envie dez nomes e ganhe um!">
                         </div>
                     </div>

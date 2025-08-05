@@ -574,9 +574,9 @@ class AssasController extends Controller {
                             $notification->save();
                         }
 
-                        // if ($seller->salesSeller()->where('status', 1)->count() % 10 === 0) {
-                        //     $this->createCoupon($seller, 'Promoção 10 vendas ganha 1 nome!');
-                        // }
+                        if ($seller->salesSeller()->where('status', 1)->count() % 10 === 0) {
+                            $this->createCoupon($seller, 'Promoção 10 vendas ganha 1 nome!');
+                        }
 
                         $seller->save();
                     }
