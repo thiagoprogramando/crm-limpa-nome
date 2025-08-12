@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banner;
 use App\Models\Lists;
+use App\Models\Post;
 use App\Models\Sale;
 use App\Models\User;
 
@@ -101,6 +103,16 @@ class AppController extends Controller {
         })->count();
 
         $networks = User::where('filiate', Auth::user()->id)->where('type', 2)->orderBy('created_at', 'desc')->paginate(10);
+
+        $userType   = Auth::user()->type;
+        $posts      = Post::when($userType != 1, function ($query) use ($userType) {
+                $query->where(function ($q) use ($userType) {
+                    $q->where('access_type', $userType)
+                    ->orWhereNull('access_type');
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
     
         return view('app.app', [
             'sales'         => $sales,
@@ -115,7 +127,9 @@ class AppController extends Controller {
             'consultant'    => $consultant,
             'actives'       => $actives,
             'inactives'     => $inactives,
-            'networks'      => $networks
+            'networks'      => $networks,
+            'banners'       => Banner::where('level', Auth::user()->level)->orWhereNull('level')->inRandomOrder()->get(),
+            'posts'         => $posts,
         ]);
     }    
 
@@ -181,6 +195,16 @@ class AppController extends Controller {
 
         $networks = User::where('type', 2)->orderBy('created_at', 'desc')->paginate(8);
 
+        $userType   = Auth::user()->type;
+        $posts      = Post::when($userType != 1, function ($query) use ($userType) {
+                $query->where(function ($q) use ($userType) {
+                    $q->where('access_type', $userType)
+                    ->orWhereNull('access_type');
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
+
         return view('app.app', [
             'sales'         => $sales,
             'salesDay'      => $salesDay,
@@ -193,7 +217,9 @@ class AppController extends Controller {
             'consultant'    => $consultant,
             'actives'       => $actives,
             'inactives'     => $inactives,
-            'networks'      => $networks
+            'networks'      => $networks,
+            'banners'       => Banner::where('level', Auth::user()->level)->orWhereNull('level')->inRandomOrder()->get(),
+            'posts'         => $posts,
         ]);
     } 
 }

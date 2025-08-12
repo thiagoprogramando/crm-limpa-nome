@@ -5,6 +5,8 @@ use App\Http\Controllers\Access\Login;
 use App\Http\Controllers\Access\Registrer;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\Assas\AssasController;
+use App\Http\Controllers\Assets\BannerController;
+use App\Http\Controllers\Assets\PostController;
 use App\Http\Controllers\Client\AppController as ClientAppController;
 use App\Http\Controllers\Client\LoginController;
 use App\Http\Controllers\Faq\FaqController;
@@ -126,6 +128,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/app-cliente', [ClientAppController::class, 'app'])->name('app-cliente');
     Route::get('/invoice-cliente/{sale?}', [ClientAppController::class, 'invoice'])->name('invoice-cliente');
     Route::get('/logout-cliente', [ClientAppController::class, 'logout'])->name('logout-cliente');
+
+    Route::middleware(['checkAdmin'])->group(function () {
+
+        Route::post('/created-banner', [BannerController::class, 'store'])->name('created-banner');
+        Route::post('/deleted-banner/{id}', [BannerController::class, 'destroy'])->name('deleted-banner');
+
+        Route::post('/created-post', [PostController::class, 'store'])->name('created-post');
+        Route::post('/deleted-post/{id}', [PostController::class, 'destroy'])->name('deleted-post');
+
+    });
 
     Route::get('/logout', [Login::class, 'logout'])->name('logout');
 });

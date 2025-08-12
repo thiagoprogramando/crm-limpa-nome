@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\Cache;
 use App\Http\Middleware\CheckAccount;
+use App\Http\Middleware\CheckAdmin;
 use App\Http\Middleware\CheckCache;
 use App\Http\Middleware\CheckUser;
 use App\Http\Middleware\CheckWallet;
@@ -22,6 +23,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web( [
             ShareProducts::class,
             CheckCache::class
+        ]);
+
+        $middleware->appendToGroup('checkAdmin', [
+            CheckAdmin::class,
+            CheckCache::class,
         ]);
 
         $middleware->appendToGroup('checkMonthly', [
