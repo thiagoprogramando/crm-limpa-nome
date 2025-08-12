@@ -57,7 +57,7 @@ class UserController extends Controller {
         }
 
         if (!empty($request->phone)) {
-            $user->phone = $request->phone;
+            $user->phone = preg_replace('/\D/', '', $request->phone);
         }
 
         if ($request->email && $request->email != $user->email) {
@@ -282,11 +282,24 @@ class UserController extends Controller {
     }
 
     public function listActive($status = null) {
-        
-        $users = User::query()->whereIn('type', [2, 99])->where('status', $status)->orderBy('name', 'asc');
+        $queryUsers = User::query()
+            ->whereIn('type', [2, 99])
+            ->where('status', $status);
 
-        $invoices = Invoice::where('type', 1)->where('status', $status)
-            ->whereYear('created_at', Carbon::now()->year)
+        $queryInvoices = Invoice::where('type', 1)
+            ->where('status', $status)
+            ->whereYear('created_at', Carbon::now()->year);
+
+        if (Auth::user()->type == 99) {
+            $queryUsers->where('sponsor_id', Auth::id());
+            $queryInvoices->whereHas('user', function ($q) {
+                $q->where('sponsor_id', Auth::id());
+            });
+        }
+
+        $users = $queryUsers->orderBy('name', 'asc');
+
+        $invoices = $queryInvoices
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
             ->groupBy('month')
             ->orderBy('month')
@@ -296,7 +309,7 @@ class UserController extends Controller {
         foreach ($invoices as $month => $total) {
             $months[$month] = $total;
         }
-        
+
         return view('app.User.list-actives', [
             'users'         => $users->paginate(30),
             'invoicesData'  => array_values($months)
