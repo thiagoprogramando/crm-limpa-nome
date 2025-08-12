@@ -128,20 +128,13 @@ class ListController extends Controller {
         if ($list) {
 
             if (Auth::user()->type == 1) {
-                $sales = Sale::where('list_id', $list->id)
-                                    ->where('status', 1)
-                                    ->orderBy('label', 'asc')
-                                    ->get();
+                $sales = Sale::where('list_id', $list->id)->where('status', 1)->orderBy('label', 'asc')->get();
+
             } else {
                 
-                $relatedUserIds = User::where('sponsor_id', Auth::user()->id)->pluck('id')->toArray();
-                $relatedUserIds[] = Auth::user()->id;
-
-                $sales = Sale::where('list_id', $list->id)
-                            ->where('status', 1)
-                            ->whereIn('client_id', $relatedUserIds)
-                            ->orderBy('label', 'asc')
-                            ->get();
+                $relatedUserIds     = User::where('sponsor_id', Auth::user()->id)->pluck('id')->toArray();
+                $relatedUserIds[]   = Auth::user()->id;
+                $sales              = Sale::where('list_id', $list->id)->where('status', 1)->whereIn('seller_id', $relatedUserIds)->orderBy('label', 'asc')->get();
             }
 
             return Excel::download(new SalesExport($sales), $list->name.$list->description.'.xlsx');
