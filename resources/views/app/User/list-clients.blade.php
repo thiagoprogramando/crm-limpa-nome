@@ -107,7 +107,7 @@
                                                             </div>
                                                             <div class="col-12 col-md-4 col-lg-4 mb-2">
                                                                 <div class="form-floating">
-                                                                    <input type="text" name="cpfcnpj" class="form-control cpfcnpj" id="floatingCpfCnpj" placeholder="CPF/CNPJ:" oninput="mascaraCpfCnpj(this)" value="{{ $user->cpfcnpj }}">
+                                                                    <input type="text" name="cpfcnpj" class="form-control cpfcnpj" id="floatingCpfCnpj" placeholder="CPF/CNPJ:" oninput="mascaraCpfCnpj(this)" value="{{ $user->cpfcnpj }}" readonly>
                                                                     <label for="floatingCpfCnpj">CPF/CNPJ:</label>
                                                                 </div>
                                                             </div>

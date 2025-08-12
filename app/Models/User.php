@@ -60,6 +60,10 @@ class User extends Authenticatable {
 
     public function getToken() {
 
+        if ($this->type == 2) {
+            return $this->sponsor->getToken() ?? env('APP_AMPAY_ASSAS');
+        }
+
         switch ($this->token_issuer) {
             case 'AMPAY':
                 $token = env('APP_AMPAY_ASSAS');
@@ -71,10 +75,10 @@ class User extends Authenticatable {
                 $token = env('APP_ASSOCIATION_ASSAS');
                 break;
             case 'MY':
-               $token = $this->token_key;
+                $token = $this->token_key;
                 break;
             default:
-                $token = $this->sponsor?->getToken();
+                $token = env('APP_AMPAY_ASSAS');
                 break;
         }
 

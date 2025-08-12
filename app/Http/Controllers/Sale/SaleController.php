@@ -139,7 +139,7 @@ class SaleController extends Controller {
                 'password'          => bcrypt($cpfcnpj),
                 'type'              => 3,
                 'association_id'    => $association_id,
-                'sponsor_id'        => $sponsor, 
+                'sponsor_id'        => $sponsor ?? Auth::id(), 
                 'fixed_cost'        => $cost,  
             ]);
         }

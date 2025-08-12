@@ -180,9 +180,12 @@ class UserController extends Controller {
 
             $validateToken = $assas->accountStatus($request->token_key);
             if (is_array($validateToken) && (isset($validateToken['general']) && ($validateToken['general'] == 'APPROVED' || $validateToken['general'] == 'AWAITING_APPROVA'))) {
-                $user->token_key = $request->token_key;
+                
+                if ($user->token_key !== $request->token_key) {
+                    $createWebhook = $assas->createdWebhook($user, env('APP_URL').'api/webhook-assas', $request->token_key);
+                }
 
-                $createWebhook = $assas->createdWebhook($user, env('APP_URL').'api/webhook-assas', $request->token_key);
+                $user->token_key = $request->token_key;
             } else {
                 return redirect()->back()->with('info', 'Token não válidado! Aguarde aprovação da sua carteira/ou entre em contato com o suporte do Banco!');
             }
