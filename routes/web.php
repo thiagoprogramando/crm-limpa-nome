@@ -77,8 +77,6 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/create-payment-upload/{id}', [UploadController::class, 'createInvoice'])->name('create-payment-upload');
             Route::post('create-upload', [UploadController::class, 'createSale'])->name('create-upload');
 
-            Route::get('/profile-white-label', [WhiteLabelContractController::class, 'profileContract'])->name('profile-white-label');
-
             Route::get('/trash-sales', [TrashController::class, 'trashSales'])->name('trash-sales');
             Route::get('/trash-users', [TrashController::class, 'trashUsers'])->name('trash-users');
             Route::post('sale-recover', [RecoverController::class, 'recoverSale'])->name('sale-recover');
@@ -98,6 +96,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('delete-user', [UserController::class, 'deleteUser'])->name('delete-user');
     Route::get('/list-active/{status}', [UserController::class, 'listActive'])->name('list-active');
     Route::get('/send-active/{id}', [UserController::class, 'sendActive'])->name('send-active');
+    
+    Route::get('/profile-white-label', [WhiteLabelContractController::class, 'profileContract'])->name('profile-white-label');
 
     Route::get('/listproduct', [ProductController::class, 'list'])->name('listproduct');
     Route::get('/createproduct', [ProductController::class, 'create'])->name('createproduct');
