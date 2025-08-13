@@ -60,7 +60,7 @@
                 </div>
             @endif
 
-            <div class="col-sm-12 col-md-8 col-lg-7">
+            <div class="col-sm-12 col-md-8 col-lg-8">
                 <div class="row align-items-start">
                     <div class="col-sm-12 col-md-4 col-lg-4">
                         <div class="card info-card clock-card">
@@ -170,12 +170,110 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-12 col-sm-12 col-lg-7">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Ranking <span>| Os 10 melhores faturamentos.</span></h5>
+                                
+                                <div class="table-responsive">
+                                    <table class="table table" id="table">
+                                        <thead>
+                                            <tr class="table-primary">
+                                                <th scope="col" class="text-center">°</th>
+                                                <th scope="col">Nome</th>
+                                                <th scope="col" class="text-center">Estado</th>
+                                                <th scope="col">Faturamento</th>
+                                                <th scope="col">Graduação</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($users as $key => $user)
+                                                <tr>
+                                                    <td scope="row" class="d-flex justify-content-center">
+                                                        @switch($loop->iteration)
+                                                            @case(1)
+                                                                <i class="bi bi-award" style="color: #fcef87;"></i>
+                                                                @break
+                                                            @case(2)
+                                                                <i class="bi bi-award" style="color: #4f4f4f;"></i>
+                                                                @break
+                                                            @case(3)
+                                                                <i class="bi bi-award" style="color: #ea7e12;"></i>
+                                                                @break
+                                                            @default
+                                                                <i class="bi bi-award" style="color: #C0C0C0;"></i>
+                                                                @break  
+                                                        @endswitch
+                                                        @if($user->photo)
+                                                            <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
+                                                        @else
+                                                            <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
+                                                        @endif
+                                                    </td>
+                                                    @if ($user->name == Auth::user()->name)
+                                                        <td>{{ $user->name }}</td>
+                                                    @else
+                                                        <td>{{ $user->maskedName() }}</td>
+                                                    @endif
+                                                    <td class="text-center">{{ $user->state }}</th>
+                                                    <td class="text-success">R$ {{ number_format($user->saleTotal(), 2, ',', '.') }}</td>
+                                                    <td>{{ $user->levelLabel() }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-12 col-lg-5">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Rede <span>| Últimos cadastros</span></h5>
+                                
+                                <div class="table-responsive">
+                                    <table class="table table" id="table">
+                                        <thead>
+                                            <tr class="table-primary">
+                                                <th scope="col">Nome</th>
+                                                <th scope="col" class="text-center">Status</th>
+                                                <th scope="col" class="text-center">Cadastro</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($networks as $key => $network)
+                                                <tr>
+                                                    <td>
+                                                        @if ($network->name == Auth::user()->name)
+                                                            {{ $network->name }}
+                                                        @else
+                                                            {{ $network->maskedName() }}
+                                                        @endif
+                                                    </td>
+                                                    <td class="text-center">
+                                                        @if ($network->status == 1)
+                                                            Ativo
+                                                        @else
+                                                            Pendente
+                                                        @endif
+                                                    </th>
+                                                    <td class="text-center">{{ \Carbon\Carbon::parse($network->created_at)->format('d/m/Y') }}</th>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-sm-12 col-md-4 col-lg-5">
+            <div class="col-sm-12 col-md-4 col-lg-4">
                 <div class="row align-items-start">
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
                         <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">Ativos/Inativos</h5>
@@ -261,8 +359,8 @@
                                 <h5 class="card-title">Notícias &amp; Atualizações <span>| Recentes</span></h5>
                                 <div class="news">
                                     @foreach ($posts as $post)
-                                        <div class="post-item clearfix">
-                                            <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}">
+                                        <div class="post-item clearfix mb-2">
+                                            <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}" data-bs-toggle="modal" data-bs-target="#viewModal{{ $post->id }}">
                                             <h4><a href="#" data-bs-toggle="modal" data-bs-target="#viewModal{{ $post->id }}">{{ $post->title }}</a></h4>
                                             <p>{{ $post->labelResume() }}</p>
                                         </div>
@@ -302,117 +400,6 @@
                 </div>
             </div>
           
-        </div>
-       
-        <div class="row">
-            <div class="col-12 col-sm-6 col-lg-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Ranking <span>| Os 10 melhores faturamentos.</span></h5>
-                        
-                        <div class="table-responsive">
-                            <table class="table table" id="table">
-                                <thead>
-                                    <tr class="table-primary">
-                                        <th scope="col" class="text-center">°</th>
-                                        <th scope="col">Consultor</th>
-                                        <th scope="col" class="text-center">Estado</th>
-                                        <th scope="col">Faturamento</th>
-                                        <th scope="col">Graduação</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($users as $key => $user)
-                                        <tr>
-                                            <td scope="row" class="d-flex justify-content-center">
-                                                @switch($loop->iteration)
-                                                    @case(1)
-                                                        <i class="bi bi-award" style="color: #fcef87;"></i>
-                                                        @break
-                                                    @case(2)
-                                                        <i class="bi bi-award" style="color: #4f4f4f;"></i>
-                                                        @break
-                                                    @case(3)
-                                                        <i class="bi bi-award" style="color: #ea7e12;"></i>
-                                                        @break
-                                                    @default
-                                                        <i class="bi bi-award" style="color: #C0C0C0;"></i>
-                                                        @break  
-                                                @endswitch
-                                                @if($user->photo)
-                                                    <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
-                                                @else
-                                                    <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
-                                                @endif
-                                            </td>
-                                            @if ($user->name == Auth::user()->name)
-                                                <td>{{ $user->name }}</td>
-                                            @else
-                                                <td>{{ $user->maskedName() }}</td>
-                                            @endif
-                                            <td class="text-center">{{ $user->state }}</th>
-                                            <td class="text-success">R$ {{ number_format($user->saleTotal(), 2, ',', '.') }}</td>
-                                            <td>{{ $user->levelLabel() }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-12 col-sm-6 col-lg-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Rede <span>| Últimos cadastros</span></h5>
-                        
-                        <div class="table-responsive">
-                            <table class="table table" id="table">
-                                <thead>
-                                    <tr class="table-primary">
-                                        <th scope="col" class="text-center">°</th>
-                                        <th scope="col">Consultor</th>
-                                        <th scope="col" class="text-center">Status</th>
-                                        <th scope="col" class="text-center">Cadastro</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($networks as $key => $network)
-                                        <tr>
-                                            <td scope="row" class="d-flex justify-content-center">
-                                                @if($network->photo)
-                                                    <img src="{{ asset('storage/' . $network->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
-                                                @else
-                                                    <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if ($network->name == Auth::user()->name)
-                                                    {{ $network->name }}
-                                                @else
-                                                    {{ $network->maskedName() }}
-                                                @endif
-                                            </td>
-                                            <td class="text-center">
-                                                @if ($network->status == 1)
-                                                    Ativo
-                                                @else
-                                                    Pendente
-                                                @endif
-                                            </th>
-                                            <td class="text-center">{{ \Carbon\Carbon::parse($network->created_at)->format('d/m/Y') }}</th>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                            <div class="text-center">
-                                {{ $networks->links() }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </section>
 

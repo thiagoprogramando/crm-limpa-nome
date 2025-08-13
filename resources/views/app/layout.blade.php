@@ -208,21 +208,20 @@
                     <a class="nav-link collapsed" href="{{ route('list-client') }}"> <i class="bi bi-file-earmark-person"></i> <span>Clientes</span> </a>
                 </li>
 
-                @if (Auth::user()->white_label_contract == 1)
-                    <li class="nav-heading">Customização</li>
-                    <li class="nav-item">
-                        <a class="nav-link collapsed" data-bs-target="#forms-integration" data-bs-toggle="collapse" href="#">
-                            <i class="ri-braces-line"></i><span>Integrações</span><i class="bi bi-chevron-down ms-auto"></i>
-                        </a>
-                        <ul id="forms-integration" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                            @if (Auth::user()->white_label_contract == 1)
-                                <li> 
-                                    <a href="{{ route('profile-white-label') }}"><i class="bi bi-circle"></i><span>Contrato</span></a>
-                                </li>
-                            @endif
-                        </ul>
-                    </li>
-                @endif
+                
+                <li class="nav-heading">Customização</li>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" data-bs-target="#forms-integration" data-bs-toggle="collapse" href="#">
+                        <i class="ri-braces-line"></i><span>Integrações</span><i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <ul id="forms-integration" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                        @if (Auth::user()->white_label_contract == 1)
+                            <li> 
+                                <a href="{{ route('profile-white-label') }}"><i class="bi bi-circle"></i><span>Contrato</span></a>
+                            </li>
+                        @endif
+                    </ul>
+                </li>
 
                 @if (Auth::user()->type !== 4)
                     <li class="nav-heading">Financeiro</li>
