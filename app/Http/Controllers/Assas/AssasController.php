@@ -264,7 +264,7 @@ class AssasController extends Controller {
         return redirect()->back()->with('error', 'Tivemos um pequeno problema, contate o suporte!');
     }
 
-    public function createCustomer($name, $cpfcnpj, $mobilePhone, $email) {
+    public function createCustomer($name, $cpfcnpj, $mobilePhone = null, $email = null) {
 
         try {
             $user = User::where('cpfcnpj', $cpfcnpj)->first();

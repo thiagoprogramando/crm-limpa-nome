@@ -62,7 +62,7 @@
 
             <div class="col-sm-12 col-md-8 col-lg-8">
                 <div class="row align-items-start">
-                    <div class="col-sm-12 col-md-4 col-lg-4">
+                    <div class="col-sm-12 col-md-6 col-lg-4">
                         <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">T. Vendas (N°)</h5>
@@ -79,7 +79,7 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-12 col-md-4 col-lg-4">
+                    <div class="col-sm-12 col-md-6 col-lg-4">
                         <a href="{{ route('manager-sale') }}?created_at={{ now()->format('Y-m-d') }}&status=1">
                             <div class="card info-card clock-card">
                                 <div class="card-body">
@@ -98,7 +98,7 @@
                         </a>
                     </div>
 
-                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                         <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">Graduação</h5>
@@ -123,7 +123,7 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-12 col-md-4 col-lg-4">
+                    <div class="col-sm-12 col-md-6 col-lg-4">
                         <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">T. Faturamento (R$)</h5>
@@ -139,7 +139,7 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-12 col-md-4 col-lg-4">
+                    <div class="col-sm-12 col-md-6 col-lg-4">
                         <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">T. Faturamento (R$ Hoje)</h5>
@@ -155,7 +155,7 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                         <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">Próxima Lista @if($list) <span>{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</span> @else --- @endif</h5>
@@ -208,7 +208,7 @@
                                                         @if($user->photo)
                                                             <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
                                                         @else
-                                                            <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
+                                                            <img src="{{ asset('assets/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
                                                         @endif
                                                     </td>
                                                     @if ($user->name == Auth::user()->name)

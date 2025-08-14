@@ -65,6 +65,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/update-sale/{id}', [SaleController::class, 'viewSale'])->name('update-sale');
             Route::post('updated-sale', [SaleController::class, 'updatedSale'])->name('updated-sale');
             Route::post('delete-sale', [SaleController::class, 'deleteSale'])->name('delete-sale');
+            Route::post('created-sale-excel/{product}', [SaleController::class, 'createdSaleExcel'])->name('created-sale-excel');
 
             Route::get('/invoice-default', [SaleController::class, 'default'])->name('invoice-default');
             Route::get('/delete-invoice/{id}', [SaleController::class, 'deleteInvoice'])->name('delete-invoice');

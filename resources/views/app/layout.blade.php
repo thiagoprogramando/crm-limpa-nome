@@ -8,23 +8,23 @@
         <meta content="" name="description">
         <meta content="" name="keywords">
 
-        <link href="{{ asset('assets/dashboard/img/favicon.png') }}" rel="icon">
+        <link href="{{ asset('assets/img/favicon.png') }}" rel="icon">
 
         <link href="https://fonts.gstatic.com" rel="preconnect">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
 
-        <link href="{{ asset('assets/dashboard/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/dashboard/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/dashboard/vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/dashboard/vendor/quill/quill.snow.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/dashboard/vendor/quill/quill.bubble.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/dashboard/vendor/remixicon/remixicon.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/dashboard/vendor/simple-datatables/style.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/dashboard/css/style.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/vendor/quill/quill.snow.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/vendor/quill/quill.bubble.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/vendor/remixicon/remixicon.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/vendor/simple-datatables/style.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
 
-        <script src="{{ asset('assets/dashboard/js/chart.js')}}"></script>
-        <script src="{{ asset('assets/dashboard/js/sweetalert.js')}}"></script>
-        <script src="{{ asset('assets/dashboard/js/jquery.js') }}"></script>
+        <script src="{{ asset('assets/js/chart.js')}}"></script>
+        <script src="{{ asset('assets/js/sweetalert.js')}}"></script>
+        <script src="{{ asset('assets/js/jquery.js') }}"></script>
     </head>
 
     <body>
@@ -32,7 +32,7 @@
         <header id="header" class="header fixed-top d-flex align-items-center">
             <div class="d-flex align-items-center justify-content-between">
                 <a href="{{ route('app') }}" class="logo d-flex align-items-center">
-                    <img src="{{ asset('assets/dashboard/img/logo.png') }}">
+                    <img src="{{ asset('assets/img/logo.png') }}">
                 </a>
                 <i class="bi bi-list toggle-sidebar-btn text-white"></i>
             </div>
@@ -100,7 +100,7 @@
                             @if(Auth::user()->photo)
                                 <img src="{{ asset('storage/' . Auth::user()->photo) }}" alt="Foto de Perfil" class="rounded-circle">
                             @else
-                                <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle">
+                                <img src="{{ asset('assets/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle">
                             @endif
                             
                             <span class="dropdown-toggle text-white ps-2 d-none d-sm-block">{{ $firstName }}</span>
@@ -311,10 +311,10 @@
 
         <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-        <script src="{{ asset('assets/dashboard/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-        <script src="{{ asset('assets/dashboard/js/main.js') }}"></script>
-        <script src="{{ asset('assets/dashboard/js/mask.js') }}"></script>
-        <script src="{{ asset('assets/dashboard/js/excel.js') }}"></script>
+        <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ asset('assets/js/main.js') }}"></script>
+        <script src="{{ asset('assets/js/mask.js') }}"></script>
+        <script src="{{ asset('assets/js/excel.js') }}"></script>
         <script>
             @if(session('error'))
                 Swal.fire({

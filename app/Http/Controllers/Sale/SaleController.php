@@ -16,11 +16,13 @@ use App\Models\User;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class SaleController extends Controller {
 
@@ -132,6 +134,13 @@ class SaleController extends Controller {
 
         if (!empty($request->name)) {
             $users = User::where('name', 'LIKE', '%' . $request->name . '%')->pluck('id')->toArray();
+            if (!empty($users)) {
+                $query->whereIn('id_client', $users);
+            }
+        }
+
+        if (!empty($request->cpfcnpj)) {
+            $users = User::where('cpfcnpj', $request->cpfcnpj)->pluck('id')->toArray();
             if (!empty($users)) {
                 $query->whereIn('id_client', $users);
             }
@@ -538,5 +547,163 @@ class SaleController extends Controller {
         $valorFloat = floatval($valor);
     
         return number_format($valorFloat, 2, '.', '');
+    }
+
+    // ===================== NOVA ERA 0.0.1 ===================== //
+
+    public function createdSaleExcel(Request $request, $product) {
+
+        $product = Product::find($product);
+        if (!$product) {
+            return redirect()->back()->with('info', 'Produto indisponível!');
+        }
+
+        $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
+        if (!$list) {
+            return redirect()->back()->with('info', 'Não há Lista disponível no momento, aguarde uma nova Lista!');
+        }
+
+        if (!$request->hasFile('file')) {
+            return redirect()->back()->with('info', 'Selecione um arquivo para importar!');
+        }
+
+        $file           = $request->file('file');
+        $spreadsheet    = IOFactory::load($file->getPathname());
+        $worksheet      = $spreadsheet->getActiveSheet();
+        $rows           = $worksheet->toArray();
+
+        $data           = []; 
+        $createdSales   = 0;
+
+        for ($i = 3; $i < count($rows); $i++) {
+
+            $row         = $rows[$i];
+            $nome        = trim($row[0] ?? '');
+            $cpfcnpj     = trim($row[1] ?? '');
+            $birth_date  = trim($row[2] ?? '');    
+
+            if (empty($nome) || empty($cpfcnpj)) {
+                continue;
+            }
+
+            if (!(self::validateCpf($cpfcnpj) || self::validateCnpj($cpfcnpj))) {
+                continue;
+            }
+
+            $createdUser = $this->createdUser($nome, null, $cpfcnpj, $birth_date);
+            if (!$createdUser['status']) {
+                continue;
+            }
+
+            $sale                 = new Sale();
+            $sale->id_seller      = Auth::id();
+            $sale->id_client      = $createdUser['id'];
+            $sale->id_product     = $product->id;
+            $sale->id_list        = $list->id;
+            $sale->payment        = 'ENVIO MANUAL';
+            $sale->installments   = 1;
+            $sale->type           = 2;
+            $sale->status         = 0;
+            $sale->value         = Auth::user()->fixed_cost > 0 ? Auth::user()->fixed_cost : $product->value_cost;
+            $sale->value_total   = Auth::user()->fixed_cost > 0 ? Auth::user()->fixed_cost : $product->value_cost;
+            $sale->save();
+
+            $createdSales++;
+        }
+
+        return redirect()->route('createupload', ['id' => $product->id])->with('success', 'Importação concluída! ' . $createdSales . ' vendas criadas com sucesso!');
+    }
+
+    private static function validateCpf($cpf) {
+        $cpf = preg_replace('/[^0-9]/', '', $cpf);
+        if (strlen($cpf) !== 11 || preg_match('/(\d)\1{10}/', $cpf)) return false;
+
+        for ($t = 9; $t < 11; $t++) {
+            for ($d = 0, $c = 0; $c < $t; $c++) {
+                $d += $cpf[$c] * (($t + 1) - $c);
+            }
+            $d = ((10 * $d) % 11) % 10;
+            if ($cpf[$c] != $d) return false;
+        }
+        return true;
+    }
+
+    private static function validateCnpj($cnpj) {
+        $cnpj = preg_replace('/[^0-9]/', '', $cnpj);
+        if (strlen($cnpj) != 14) return false;
+
+        for ($t = 12; $t < 14; $t++) {
+            for ($d = 0, $c = 0, $p = $t - 7; $c < $t; $c++, $p--) {
+                $p = $p < 2 ? 9 : $p;
+                $d += $cnpj[$c] * $p;
+            }
+            $d = ((10 * $d) % 11) % 10;
+            if ($cnpj[$c] != $d) return false;
+        }
+        return true;
+    }
+
+    private function createdUser($name, $email = null, $cpfcnpj, $birth_date = null, $phone = null, $sponsor = null, $cost = null, $association_id = null) {
+        
+        $cpfcnpj    = preg_replace('/\D/', '', $cpfcnpj);
+        $email      = preg_replace('/[^\w\d\.\@\-\_]/', '', $email);
+        $phone      = preg_replace('/\D/', '', $phone);
+
+        if (str_word_count(trim($name)) < 2) {
+            return [
+                'status'  => false,
+                'message' => 'Informar Nome Completo!'
+            ];
+        }
+
+        $assas = new AssasController();
+    
+        $user = User::withTrashed()->where('cpfcnpj', preg_replace('/\D/', '', $cpfcnpj))->first();
+        if ($user) {
+            if ($user->trashed()) {
+                $user->restore();
+            }
+        } else {
+            $user = new User([
+                'cpfcnpj'           => $cpfcnpj,
+                'password'          => bcrypt($cpfcnpj),
+                'type'              => 3,
+                'filiate'           => $sponsor ?? Auth::id(), 
+                'fixed_cost'        => $cost,  
+            ]);
+        }
+        
+        if (!empty($name)) {
+            $user->name = $name;
+        }
+        if (!empty($email)) {
+            $user->email = $email;
+        }
+        if (!empty($birth_date)) {
+            $user->birth_date = Carbon::createFromFormat('m/d/Y', $birth_date)->format('Y-m-d');
+        }
+        if (!empty($phone)) {
+            $user->phone = $phone;
+        }
+        
+        $customer = $assas->createCustomer($name, $cpfcnpj);
+        if ($customer === false) {
+            return [
+                'status'  => false,
+                'message' => 'Verfique os dados do Cliente e tente novamente!'
+            ];
+        }
+
+        if ($user->save()) {
+            return [
+                'status'  => true,
+                'id'      => $user->id
+            ];
+        }
+
+        return [
+                'status'  => false,
+                'message' => 'Verfique os dados do Cliente e tente novamente!'
+            ];
     }
 }

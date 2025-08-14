@@ -48,6 +48,12 @@
                                             <label for="floatingName">Cliente:</label>
                                         </div>
                                     </div>
+                                    <div class="col-12 col-md-12 col-lg-12 mb-1">
+                                        <div class="form-floating">
+                                            <input type="text" name="cpfcnpj" class="form-control" id="cpfcnpj" placeholder="CPF/CNPJ:">
+                                            <label for="cpfcnpj">CPF/CNPJ:</label>
+                                        </div>
+                                    </div>
                                     <div class="col-12 col-md-6 col-lg-6 mb-1">
                                         <div class="form-floating">
                                             <input type="date" name="created_at" class="form-control" id="floatingCreated_at" placeholder="Informe a data:">
@@ -112,18 +118,16 @@
                 </div>
             </div>
 
-            <div class="card p-2">
-                <div class="card-body">
+            <div class="card p-0 m-0">
+                <div class="card-body p-0 m-0">
 
-                    <div id="action-buttons" class="d-none btn-group mb-2 mt-2">
+                    <div id="action-buttons" class="d-none btn-group m-3">
                         @if(Auth::user()->type == 1)
                             <button id="aproved-all" class="btn btn-primary">Aprovar Todos</button>
                         @endif
                         <button id="create-payment" class="btn btn-outline-primary">Gerar Pagamento</button>
                         <button id="quanty-name" class="btn btn-outline-primary">Nomes: </button>
                     </div>
-
-                    <h5 class="card-title">Vendas</h5>
                     
                     <div class="table-responsive">
                         <table class="table table-sm table-hover" id="table">

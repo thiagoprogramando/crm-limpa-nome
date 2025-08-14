@@ -29,14 +29,50 @@
                             </li>
                         </ul>
 
-                        <div class="tab-content pt-2" id="myTabjustifiedContent">
-                            <div class="tab-pane fade active show" id="profile-justified" role="tabpanel" aria-labelledby="profile-tab">
+                                <div class="tab-content pt-2" id="myTabjustifiedContent">
+                                    <div class="tab-pane fade active show" id="profile-justified" role="tabpanel" aria-labelledby="profile-tab">
 
-                                <div class="btn-group mt-2 mb-3" role="group">
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nameModal">Adicionar Nome</button>
-                                    <button type="button" id="toggle-select" class="btn btn-outline-primary">Selecionar</button>
-                                    <button type="button" class="btn btn-outline-primary">Nomes: {{ $sales->count() }}</button>
-                                    <button type="button" class="btn btn-outline-primary">Valor Total: R$ {{ $sales->count() * Auth::user()->fixed_cost }}</button>
+                                        <div class="btn-group mt-2 mb-3" role="group">
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nameModal">Adicionar Nome</button>
+                                            <button type="button" id="toggle-select" class="btn btn-outline-primary">Selecionar</button>
+                                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">Importar Por Excel</button>
+                                            <button type="button" class="btn btn-outline-primary">Nomes: {{ $sales->count() }}</button>
+                                            <button type="button" class="btn btn-outline-primary">Valor Total: R$ {{ $sales->count() * Auth::user()->fixed_cost }}</button>
+                                        </div>
+
+                                        <div class="modal fade" id="uploadModal" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <form action="{{ route('created-sale-excel', ['product' => $product]) }}" method="POST" enctype="multipart/form-data">
+                                                    @csrf
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Enviar Por Excel</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                <p>
+                                                                    <b class="text-danger">ATENÇÃO!</b> <br>
+                                                                    O Envio por Excel exige o preenchimento correto da  <b><a href="{{ asset('assets/files/planilha_limpa_nome.xlsm') }}" download>Planilha Modelo</a></b>, 
+                                                                    os campos marcados com <b class="text-danger">*</b> são obrigatórios!</b>
+                                                                </p>
+                                                            </div>
+                                                            <div class="col-12 col-md-12 col-lg-12 mb-2">
+                                                                <div class="form-floating">
+                                                                    <input type="file" name="file" class="form-control" id="file" placeholder="file:" accept=".xlsm" required>
+                                                                    <label for="file">Excel:</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer btn-group">
+                                                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                                        <button type="submit" class="btn btn-primary">Enviar</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
                                 </div>
 
                                 <form action="{{ route('create-upload') }}" method="POST" class="row">
@@ -96,7 +132,7 @@
                                                 <th scope="col">Lista</th>
                                                 <th scope="col">Nome</th>
                                                 <th scope="col">CPF/CNPJ</th>
-                                                <th scope="col" class="text-center">Status Pagamento</th>
+                                                <th scope="col" class="text-center">Status</th>
                                                 <th scope="col" class="text-center">Opções</th>
                                             </tr>
                                         </thead>
@@ -117,14 +153,14 @@
                                                             @csrf
                                                             <input type="hidden" name="id" value="{{ $sale->id }}"> 
                                                             <div class="btn-group" role="group">
-                                                                <button type="submit" class="btn btn-outline-primary text-danger" title="Remover Nome"><i class="bi bi-trash"></i></button>
+                                                                <button type="submit" class="btn btn-outline-primary" title="Remover Nome"><i class="bi bi-trash"></i></button>
                                                                 @if ($sale->status !== 1)
-                                                                    <button type="button" class="btn btn-outline-primary" title="Aplicar CUPOM" data-bs-toggle="modal" data-bs-target="#couponModal{{ $sale->id }}"><i class="bi bi-percent"></i> Aplicar CUPOM</button>
+                                                                    <button type="button" class="btn btn-outline-primary" title="Aplicar CUPOM" data-bs-toggle="modal" data-bs-target="#couponModal{{ $sale->id }}"><i class="bi bi-percent"></i></button>
                                                                 @endif
                                                                 @if ($sale->token_payment)
-                                                                    <a href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-primary text-light" title="Pagar Nome"><i class="bi bi-upc"></i> Acessar Fatura</a>
+                                                                    <a href="{{ route('update-sale', ['id' => $sale->id]) }}" class="btn btn-primary" title="Pagar Nome"><i class="bi bi-upc"></i> Acessar Fatura</a>
                                                                 @else
-                                                                    <a href="{{ route('create-payment-upload', ['id' => $sale->id]) }}" class="btn btn-primary text-light" title="Pagar Nome"><i class="bi bi-upc"></i> Pagar</a>
+                                                                    <a href="{{ route('create-payment-upload', ['id' => $sale->id]) }}" class="btn btn-primary" title="Pagar Nome"><i class="bi bi-upc"></i> Pagar</a>
                                                                 @endif
                                                             </div>
                                                         </form>
