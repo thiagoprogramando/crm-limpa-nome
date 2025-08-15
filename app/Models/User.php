@@ -98,34 +98,29 @@ class User extends Authenticatable {
 
         switch ($this->level) {
             case 1:
-                return 'INICIANTE';
+                return 'Iniciante';
                 break;
             case 2:
-                return 'CONSULTOR';
+                return 'Agente Profissional';
                 break; 
             case 3:
-                return 'CONSULTOR LÍDER';
+                return 'Consultor Avançado';
                 break; 
             case 4:
-                return 'REGIONAL';
+                return 'Especialista Executivo';
                 break; 
             case 5:
-                return 'GERENTE REGIONAL';
+                return 'Gestor Regional';
                 break; 
             case 6:
-                return 'VENDEDOR INTERNO';
+                return 'Diretor Nacional';
                 break; 
             case 7:
-                return 'DIRETOR';
+                return 'Embaixador Master Brasil';
                 break; 
-            case 8:
-                return 'DIRETOR REGIONAL';
-                break; 
-            case 9:
-                return 'PRESIDENTE VIP';
-                break;        
-            return $this->method;
         }
+
+        return '---';
     }
 
     public function saleTotal() {
@@ -167,21 +162,25 @@ class User extends Authenticatable {
             case 4:
                 return 'Pendente de Dados';
                 break;         
-            return $this->method;
         }
+
+        return '---';
     }
 
     public function getGraduation() {
         $saleTotal = $this->saleCount();
 
         $levels = [
-            'Consultor' => 2,
-            'Consultor Líder' => 10,
-            'Regional' => 50,
-            'Gerente Regional' => 100,
+            'Iniciante'                 => 1,
+            'Agente Profissional'       => 100,
+            'Consultor Avançado'        => 250,
+            'Especialista Executivo'    => 500,
+            'Gestor Regional'           => 1000,
+            'Diretor Nacional'          => 2500,
+            'Embaixador Master Brasil'  => 5000,
         ];
 
-        $nivel = 'Gerente Regional';
+        $nivel = 'Iniciante';
         $maxSalesAtual = end($levels);
         $progressAtual = 100;
 

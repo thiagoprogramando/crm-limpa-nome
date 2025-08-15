@@ -100,12 +100,12 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('/profile-white-label', [WhiteLabelContractController::class, 'profileContract'])->name('profile-white-label');
 
-    Route::get('/listproduct', [ProductController::class, 'list'])->name('listproduct');
-    Route::get('/createproduct', [ProductController::class, 'create'])->name('createproduct');
-    Route::post('create-product', [ProductController::class, 'createProduct'])->name('create-product');
-    Route::get('/updateproduct/{id}', [ProductController::class, 'update'])->name('updateproduct');
-    Route::post('update-product', [ProductController::class, 'updateProduct'])->name('update-product');
-    Route::post('delete-product', [ProductController::class, 'delete'])->name('delete-product');
+    Route::get('/products', [ProductController::class, 'index'])->name('products');
+    Route::get('/product/{id}', [ProductController::class, 'show'])->name('product');
+    Route::get('/create-product', [ProductController::class, 'form'])->name('create-product');
+    Route::post('created-product', [ProductController::class, 'store'])->name('created-product');
+    Route::post('updated-product', [ProductController::class, 'update'])->name('updated-product');
+    Route::post('deleted-product', [ProductController::class, 'destroy'])->name('deleted-product');
 
     Route::get('/lists', [ListController::class, 'list'])->name('lists');
     Route::get('/createlist', [ListController::class, 'create'])->name('createlist');

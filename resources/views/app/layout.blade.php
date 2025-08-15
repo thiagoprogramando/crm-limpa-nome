@@ -203,12 +203,10 @@
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="{{ route('list-network') }}"> <i class="bi bi-person-lines-fill"></i> <span>Minha Rede</span> </a>
                 </li>
-           
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="{{ route('list-client') }}"> <i class="bi bi-file-earmark-person"></i> <span>Clientes</span> </a>
                 </li>
 
-                
                 <li class="nav-heading">Customização</li>
                 <li class="nav-item">
                     <a class="nav-link collapsed" data-bs-target="#forms-integration" data-bs-toggle="collapse" href="#">
@@ -255,21 +253,9 @@
                     <li class="nav-item">
                         <a class="nav-link collapsed" href="{{ route('lists') }}"> <i class="bi bi-list-check"></i> <span>Listas</span> </a>
                     </li>
-                    
                     <li class="nav-item">
-                        <a class="nav-link {{ Route::currentRouteName() == 'listproduct' || Route::currentRouteName() == 'createproduct' ? '' : 'collapsed' }}" data-bs-target="#forms-product" data-bs-toggle="collapse" href="#">
-                            <i class="bi bi-box"></i><span>Produtos</span><i class="bi bi-chevron-down ms-auto"></i>
-                        </a>
-                        <ul id="forms-product" class="nav-content collapse {{ Route::currentRouteName() == 'listproduct' || Route::currentRouteName() == 'createproduct' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
-                            <li>
-                                <a href="{{ route('listproduct') }}"> <i class="bi bi-circle"></i><span>Produtos</span> </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('createproduct') }}"> <i class="bi bi-circle"></i><span>Criar Produto</span> </a>
-                            </li>
-                        </ul>
+                        <a class="nav-link collapsed" href="{{ route('products') }}"> <i class="bi bi-box"></i> <span>Produtos</span> </a>
                     </li>
-                
                     <li class="nav-item">
                         <a class="nav-link {{ Route::currentRouteName() == 'list-user' ? '' : 'collapsed' }}" data-bs-target="#forms-users" data-bs-toggle="collapse" href="#">
                             <i class="bi bi-file-earmark-person"></i><span>Pessoas</span><i class="bi bi-chevron-down ms-auto"></i>
@@ -281,7 +267,6 @@
                             <li> <a href="{{ route('list-user', ['type' => 4]) }}"><i class="bi bi-circle"></i><span>Consultor Interno</span></a> </li>
                         </ul>
                     </li>
-
                     <li class="nav-item">
                         <a class="nav-link {{ Route::currentRouteName() == 'list-active' ? '' : 'collapsed' }}" data-bs-target="#forms-actvie" data-bs-toggle="collapse" href="#">
                             <i class="bi bi-person-bounding-box"></i><span>Atividade</span><i class="bi bi-chevron-down ms-auto"></i>

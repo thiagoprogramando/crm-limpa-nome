@@ -13,41 +13,38 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller {
     
-    public function list() {
+    public function index() {
         
-        $products = Product::withCount([
-            'sales' => function ($query) {
-                $query->whereIn('status', [1, 2]);
-            }
-        ])
-        ->orderByDesc('sales_count')
-        ->orderBy('created_at', 'desc')
-        ->get();
-    
-        return view('app.Product.list', [
+        $products = Product::orderBy('name')->orderBy('created_at', 'desc')->get();
+        return view('app.Product.list-products', [
             'products' => $products
         ]);
     }
 
-    public function create() {
-
-        return view('app.Product.create');
+    public function form() {
+        
+        return view('app.Product.create-product');
     }
 
-    public function createProduct(Request $request) {
+    public function store(Request $request) {
 
         $product                = new Product();
         $product->name          = $request->name;
         $product->description   = $request->description;
-        $product->terms_text    = $request->terms_text;
 
-        $product->address           = $request->has('address') ? 1 : 0;
-        $product->createuser        = $request->has('createuser') ? 1 : 0;
-        $product->terms             = $request->has('terms') ? 1 : 0;
-        $product->level             = $request->level;
-        $product->contract          = $request->contract;
+        $product->request_address      = $request->has('request_address') ? 1 : 0;
+        $product->request_selfie       = $request->has('request_selfie') ? 1 : 0;
+        $product->request_contact      = $request->has('request_contact') ? 1 : 0;
+        $product->request_serasa       = $request->has('request_serasa') ? 1 : 0;
+        $product->request_spc          = $request->has('request_spc') ? 1 : 0;
+        $product->request_boa_vista    = $request->has('request_boa_vista') ? 1 : 0;
+        $product->request_no_document  = $request->has('request_no_document') ? 1 : 0;
+
+        $product->level     = $request->level;
+        $product->status    = $request->status;
+
+        $product->request_contract  = $request->has('request_contract') ? 1 : 0;
         $product->contract_subject  = $request->contract_subject;
-        $product->active            = $request->active;
 
         $product->value_cost    = $this->formatarValor($request->value_cost);
         $product->value_rate    = $this->formatarValor($request->value_rate);
@@ -55,17 +52,17 @@ class ProductController extends Controller {
         $product->value_max     = $this->formatarValor($request->value_max);
 
         if($product->save()) {
-            return redirect()->route('updateproduct', ['id' => $product->id])->with('success', 'Produto criado com sucesso!');
+            return redirect()->route('product', ['id' => $product->id])->with('success', 'Produto criado com sucesso!');
         }
         
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
     }
 
-    public function update($id) {
+    public function show($id) {
 
         $product = Product::find($id);
         if($product) {
-            return view('app.Product.update', [
+            return view('app.Product.view-product', [
                 'product'   => $product,
             ]);
         }
@@ -73,33 +70,32 @@ class ProductController extends Controller {
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, dados do Produto não encontrados!');
     }
 
-    public function updateProduct(Request $request) {
+    public function update(Request $request) {
 
         $product = Product::find($request->id);
         if($product) {
             
-            if($request->name) {
-                $product->name = $request->name;
-            }
-            if($request->description) {
-                $product->description = $request->description;
-            }
-            if($request->terms_text) {
-                $product->terms_text = $request->terms_text;
-            }
-            
-            $product->address       = $request->has('address') ? 1 : 0;
-            $product->createuser    = $request->has('createuser') ? 1 : 0;
-            $product->terms         = $request->has('terms') ? 1 : 0;
-            
-            $product->level             = $request->level;
-            $product->contract          = $request->contract ?? '';
-            $product->contract_subject  = $request->contract_subject ?? '';
-            $product->active            = $request->active;
-            $product->value_cost        = $this->formatarValor($request->value_cost) ?? 0;
-            $product->value_rate        = $this->formatarValor($request->value_rate) ?? 0;
-            $product->value_min         = $this->formatarValor($request->value_min) ?? 0;
-            $product->value_max         = $this->formatarValor($request->value_max) ?? 0;
+            $product->name        = $request->name;
+            $product->description = $request->description;
+
+            $product->request_address      = $request->has('request_address') ? 1 : 0;
+            $product->request_selfie       = $request->has('request_selfie') ? 1 : 0;
+            $product->request_contact      = $request->has('request_contact') ? 1 : 0;
+            $product->request_serasa       = $request->has('request_serasa') ? 1 : 0;
+            $product->request_spc          = $request->has('request_spc') ? 1 : 0;
+            $product->request_boa_vista    = $request->has('request_boa_vista') ? 1 : 0;
+            $product->request_no_document  = $request->has('request_no_document') ? 1 : 0;
+
+            $product->level  = $request->level;
+            $product->status = $request->status;
+
+            $product->request_contract = $request->has('request_contract') ? 1 : 0;
+            $product->contract_subject = $request->contract_subject;
+
+            $product->value_cost = $this->formatarValor($request->value_cost);
+            $product->value_rate = $this->formatarValor($request->value_rate);
+            $product->value_min  = $this->formatarValor($request->value_min);
+            $product->value_max  = $this->formatarValor($request->value_max);
     
             if($product->save()) {
                 return redirect()->back()->with('success', 'Produto atualizado com sucesso!');
@@ -109,7 +105,7 @@ class ProductController extends Controller {
         return redirect()->back()->with('error', 'Não foi possível realizar essa ação, tente novamente mais tarde!');
     }
 
-    public function delete(Request $request) {
+    public function destroy(Request $request) {
 
         $product = Product::find($request->id);
         if($product) {

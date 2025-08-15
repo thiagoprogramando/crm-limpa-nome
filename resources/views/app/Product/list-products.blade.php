@@ -3,7 +3,7 @@
 @section('conteudo')
 
 <div class="pagetitle">
-    <h1>Dashboard</h1>
+    <h1>Produtos</h1>
     <nav>
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('app') }}">Escritório</a></li>
@@ -15,10 +15,14 @@
 <section class="section dashboard">
     <div class="row">
         <div class="col-12">
-            <div class="card p-2">
-                <div class="card-body">
-                    <h5 class="card-title">Produtos</h5>
-                    
+            <div class="btn-group mb-3" role="group">
+                <a href="{{ route('create-product') }}" class="btn btn-sm btn-outline-primary">Adicionar</a>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card p-0 m-0">
+                <div class="card-body p-0 m-0">
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
@@ -33,16 +37,18 @@
                             <tbody>
                                 @foreach ($products as $product)
                                     <tr>
-                                        <td>{{ $product->name }}</td>
+                                        <td>
+                                            {{ $product->name }}
+                                        </td>
                                         <td class="text-center">R$ {{ number_format($product->value_min, 2, ',', '.') }}</td>
                                         <td class="text-center">R$ {{ number_format($product->value_max, 2, ',', '.') }}</td>
                                         <td class="text-center">{{ $product->totalSale() }}</td>
                                         <td class="text-center">
-                                            <form action="{{ route('delete-product') }}" method="POST" class="delete btn-group">
+                                            <form action="{{ route('deleted-product') }}" method="POST" class="delete btn-group">
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $product->id }}">
-                                                <a href="{{ route('updateproduct', ['id' => $product->id]) }}" class="btn btn-warning text-light"><i class="bi bi-pencil-square"></i></a>
-                                                <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
+                                                <a href="{{ route('product', ['id' => $product->id]) }}" class="btn btn-outline-primary"><i class="bi bi-pencil-square"></i></a>
+                                                <button type="submit" class="btn btn-primary"><i class="bi bi-trash"></i></button>
                                             </form>
                                         </td>
                                     </tr>
@@ -50,7 +56,6 @@
                             </tbody>
                         </table>
                     </div>
-
                 </div>
             </div>
         </div>

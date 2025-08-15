@@ -161,16 +161,14 @@
                                                                 <div class="col-12 col-md-5 col-lg-5 mb-1">
                                                                     <div class="form-floating">
                                                                         <select name="level" class="form-select" id="floatingLevel">
-                                                                            <option selected value="{{ $user->level }}">Graduações:</option>
+                                                                            <option selected value="">Graduações:</option>
                                                                             <option value="1" @selected($user->level == 1)>Iniciante</option>
-                                                                            <option value="2" @selected($user->level == 2)>Consultor</option>
-                                                                            <option value="3" @selected($user->level == 3)>Consultor Líder</option>
-                                                                            <option value="4" @selected($user->level == 4)>Regional</option>
-                                                                            <option value="5" @selected($user->level == 5)>Gerente Regional</option>
-                                                                            <option value="7" @selected($user->level == 7)>Diretor</option>
-                                                                            <option value="8" @selected($user->level == 8)>Diretor Vip</option>
-                                                                            <option value="9" @selected($user->level == 9)>Presidente Vip</option>
-                                                                            <option value="6" @selected($user->level == 7)>Vendedor Interno</option>
+                                                                            <option value="2" @selected($user->level == 2)>Agente Profissional</option>
+                                                                            <option value="3" @selected($user->level == 3)>Consultor Avançado</option>
+                                                                            <option value="4" @selected($user->level == 4)>Especialista Executivo</option>
+                                                                            <option value="5" @selected($user->level == 5)>Gestor Regional</option>
+                                                                            <option value="6" @selected($user->level == 6)>Diretor Nacional</option>
+                                                                            <option value="7" @selected($user->level == 7)>Embaixador Master Brasil</option>
                                                                         </select>
                                                                         <label for="floatingLevel">Graduação</label>
                                                                     </div>

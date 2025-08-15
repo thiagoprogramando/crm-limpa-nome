@@ -9,23 +9,29 @@ class Product extends Model {
 
     use HasFactory;
 
-    protected $table = 'product';
+    protected $table = 'products';
 
     protected $fillable = [
-
         'name',
         'description',
-
-        'level',
-        'contract',
-        'contract_subject'.
-        'address',
-        'createuser',
 
         'value_min',
         'value_max',
         'value_cost',
         'value_rate',
+
+        'contract_subject',
+        'request_contract',
+        'request_address',
+        'request_selfie',
+        'request_contact',
+        'request_serasa',
+        'request_spc',
+        'request_boa_vista',
+        'request_no_document',
+
+        'level',
+        'status',
     ];
 
     public function totalSale() {
