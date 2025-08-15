@@ -18,15 +18,14 @@ class ShareProducts {
     public function handle(Request $request, Closure $next): Response {
 
         if (Auth::check()) {
-            $business = Product::where('status', 1)
-                ->where(function ($query) {
+            $business = Product::where(function ($query) {
                     $query->where('level', null)
                         ->orWhere('level', Auth::user()->level);
-                })
-                ->get();
+                });
 
             View::share([
-                'business'          => $business,
+                'business'          => $business->get(),
+                'sends'             => $business->where('request_no_document', 1)->get(),
                 'notifications'     => Notification::where('id_user', Auth::id())->get(),
                 'totalNotification' => Notification::where('id_user', Auth::id())->count(),
             ]);

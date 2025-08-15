@@ -20,14 +20,22 @@ class UploadController extends Controller {
 
     public function create($id) {
 
-        $product        = Product::find($id);
-        $sales          = Sale::where('id_seller', Auth::user()->id)->where('status', '!=', 1)->where('payment', 'ENVIO MANUAL')->get();
-        $salesApproved  = Sale::where('id_seller', Auth::user()->id)->where('status',  1)->where('payment', 'ENVIO MANUAL')->get();
+        $product = Product::find($id);
+        if (!$product) {
+            return redirect()->back()->with('info', 'Produto indisponível!');
+        }
+
+        if ($product->status != 1) {
+            return redirect()->back()->with('info', 'Em breve!!');
+        }
+
+        $sales      = Sale::where('id_seller', Auth::user()->id)->where('status', '!=', 1)->where('payment', 'ENVIO MANUAL')->get();
+        $approveds  = Sale::where('id_seller', Auth::user()->id)->where('status',  1)->where('payment', 'ENVIO MANUAL')->get();
 
         return view('app.Sale.upload', [
             'product'       => $product,
             'sales'         => $sales,
-            'salesApproved' => $salesApproved
+            'salesApproved' => $approveds
         ]);
     }
 

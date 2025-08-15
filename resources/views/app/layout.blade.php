@@ -182,8 +182,8 @@
                         <i class="bi bi-cloud-upload"></i><span>Enviar Nome (Associação)</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
                     <ul id="forms-upload" class="nav-content collapse " data-bs-parent="#sidebar-upload">
-                        @foreach($business as $busines)
-                            <li><a href="{{ route('createupload', ['id' => $busines->id]) }}"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
+                        @foreach($sends as $send)
+                            <li><a href="{{ route('createupload', ['id' => $send->id]) }}"> <i class="bi bi-circle"></i><span>{{ $send->name }}</span> </a></li>
                         @endforeach
                     </ul>
                 </li>

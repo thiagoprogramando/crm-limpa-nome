@@ -29,6 +29,14 @@ class SaleController extends Controller {
     public function create($id) {
 
         $product = Product::find($id);
+        if (!$product) {
+            return redirect()->back()->with('info', 'Produto indisponível!');
+        }
+
+        if ($product->status != 1) {
+            return redirect()->back()->with('info', 'Em breve!!');
+        }
+
         return view('app.Sale.create', [
             'product' => $product, 
         ]);
