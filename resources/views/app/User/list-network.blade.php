@@ -87,8 +87,6 @@
                                                 <th scope="col" class="text-center">°</th>
                                                 <th scope="col">Nome</th>
                                                 <th class="text-center" scope="col">T. Vendas (Geral)</th>
-                                                <th class="text-center" scope="col">T. Comissão (Vendedor)</th>
-                                                <th class="text-center" scope="col">T. Comissão (Patrocinador)</th>
                                                 <th class="text-center" scope="col">Opções</th>
                                             </tr>
                                         </thead>
@@ -99,17 +97,15 @@
                                                         @if($user->photo)
                                                             <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
                                                         @else
-                                                            <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
+                                                            <img src="{{ asset('assets/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
                                                         @endif
                                                     </td>
                                                     <td>{{ $user->name }} <br>
                                                         <span class="badge bg-dark">{{ $user->statusLabel() }}</span>
                                                     </td>
                                                     <td class="text-center">R$ {{ number_format($user->saleTotal(), 2, ',', '.') }}</td>
-                                                    <td class="text-center">R$ {{ number_format($user->commissionTotal(), 2, ',', '.') }}</td>
-                                                    <td class="text-center">R$ {{ number_format($user->commissionTotalParent(), 2, ',', '.') }}</td>
                                                     <td class="text-center">
-                                                        <form action="{{ route('delete-user') }}" method="POST" class="delete btn-group">
+                                                        <form action="{{ route('deleted-user') }}" method="POST" class="delete btn-group">
                                                             @csrf
                                                             <input type="hidden" name="id" value="{{ $user->id }}">
                                                             <button type="button" class="btn btn-warning text-light" data-bs-toggle="modal" data-bs-target="#updateModal{{ $user->id }}"><i class="bi bi-arrow-up-right-circle"></i></button>
@@ -123,7 +119,7 @@
                                                 <div class="modal fade" id="updateModal{{ $user->id }}" tabindex="-1">
                                                     <div class="modal-dialog">
                                                         <div class="modal-content">
-                                                            <form action="{{ route('update-user') }}" method="POST">
+                                                            <form action="{{ route('updated-user') }}" method="POST">
                                                                 @csrf
                                                                 <div class="modal-header">
                                                                     <h5 class="modal-title">Editar dados</h5>
@@ -235,7 +231,7 @@
                                                         @if($rank->photo)
                                                             <img src="{{ asset('storage/' . $rank->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
                                                         @else
-                                                            <img src="{{ asset('assets/dashboard/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
+                                                            <img src="{{ asset('assets/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
                                                         @endif
                                                     </td>
                                                     @if ($rank->name == Auth::user()->name)

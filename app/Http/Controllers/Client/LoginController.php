@@ -12,12 +12,12 @@ use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller {
     
-    public function login() {
+    public function index() {
 
         return view('client.login');
     }
 
-    public function logon(Request $request) {
+    public function store(Request $request) {
 
         $user = User::where('cpfcnpj', $request->cpfcnpj)->first();
         if(!$user) {

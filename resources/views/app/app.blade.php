@@ -66,13 +66,12 @@
                         <div class="card info-card clock-card">
                             <div class="card-body">
                                 <h5 class="card-title">T. Vendas (N°)</h5>
-
                                 <div class="d-flex align-items-center">
                                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                         <i class="bi bi-cart"></i>
                                     </div>
                                     <div class="ps-3">
-                                        <h6>{{ $sales }}</h6>
+                                        <h6>{{ $sales->count() }}</h6>
                                     </div>
                                 </div>
                             </div>
@@ -80,11 +79,10 @@
                     </div>
 
                     <div class="col-sm-12 col-md-6 col-lg-4">
-                        <a href="{{ route('manager-sale') }}?created_at={{ now()->format('Y-m-d') }}&status=1">
+                        <a href="{{ route('sales') }}?created_at={{ now()->format('Y-m-d') }}&status=1">
                             <div class="card info-card clock-card">
                                 <div class="card-body">
                                     <h5 class="card-title">T. Vendas (Hoje)</h5>
-
                                     <div class="d-flex align-items-center">
                                         <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #ff8400; color:#fff;">
                                             <i class="bi bi-cart-check-fill"></i>
@@ -107,14 +105,9 @@
                                         <i class="bi bi-award"></i>
                                     </div>
                                     <div class="ps-3">
-                                        <p>{{ Auth::user()->levelLabel() }}</p>
+                                        <p>{{ Auth::user()->getGraduation()->nivel }}</p>
                                         <div class="progress">
-                                            <div class="progress-bar" role="progressbar" 
-                                                style="width: {{ Auth::user()->getGraduation()->progress }}%" 
-                                                aria-valuenow="{{ Auth::user()->getGraduation()->progress }}" 
-                                                aria-valuemin="0" 
-                                                aria-valuemax="{{ Auth::user()->getGraduation()->maxSales }}">
-                                            </div>
+                                            <div class="progress-bar" role="progressbar" style="width: {{ Auth::user()->getGraduation()->progress }}%" aria-valuenow="{{ Auth::user()->getGraduation()->progress }}" aria-valuemin="0" aria-valuemax="{{ Auth::user()->getGraduation()->maxSales }}"></div>
                                             <small>{{ Auth::user()->getGraduation()->progress }}%</small>
                                         </div>
                                     </div>
@@ -126,13 +119,13 @@
                     <div class="col-sm-12 col-md-6 col-lg-4">
                         <div class="card info-card clock-card">
                             <div class="card-body">
-                                <h5 class="card-title">T. Faturamento (R$)</h5>
+                                <h5 class="card-title">Faturamento</h5>
                                 <div class="d-flex align-items-center">
                                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #559eff; color:#fff;">
                                     <i class="bi bi-currency-dollar"></i>
                                     </div>
                                     <div class="ps-3">
-                                        <h6>{{ number_format($invoicing, 2, ',', '.') }}</h6>
+                                        {{-- <h6>{{ number_format($invoicing, 2, ',', '.') }}</h6> --}}
                                     </div>
                                 </div>
                             </div>
@@ -142,13 +135,13 @@
                     <div class="col-sm-12 col-md-6 col-lg-4">
                         <div class="card info-card clock-card">
                             <div class="card-body">
-                                <h5 class="card-title">T. Faturamento (R$ Hoje)</h5>
+                                <h5 class="card-title">Faturamento (Hoje)</h5>
                                 <div class="d-flex align-items-center">
                                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #00FF9C; color:#fff;">
                                     <i class="ri-money-dollar-circle-line"></i>
                                     </div>
                                     <div class="ps-3">
-                                        <h6>{{ number_format($invoicingDay, 2, ',', '.') }}</h6>
+                                        {{-- <h6>{{ number_format($invoicingDay, 2, ',', '.') }}</h6> --}}
                                     </div>
                                 </div>
                             </div>
@@ -158,26 +151,28 @@
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                         <div class="card info-card clock-card">
                             <div class="card-body">
-                                <h5 class="card-title">Próxima Lista @if($list) <span>{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</span> @else --- @endif</h5>
+                                <h5 class="card-title">Ativos/Inativos</h5>
                                 <div class="d-flex align-items-center">
                                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-clock-history"></i>
+                                        <i class="bi bi-person-lines-fill"></i>
                                     </div>
                                     <div class="ps-3">
-                                        <h6>{{ $remainingTime }}</h6>
+                                        <p>
+                                            Ativos : {{ Auth::user()->activeFiliatesCount() }} <br>
+                                            Inativos: {{ Auth::user()->inactiveFiliatesCount() }} <br>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-12 col-lg-7">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-7 col-xxl-7">
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Ranking <span>| Os 10 melhores faturamentos.</span></h5>
-                                
                                 <div class="table-responsive">
-                                    <table class="table table" id="table">
+                                    <table class="table table-sm" id="table">
                                         <thead>
                                             <tr class="table-primary">
                                                 <th scope="col" class="text-center">°</th>
@@ -188,7 +183,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($users as $key => $user)
+                                            @foreach ($ranking as $key => $position)
                                                 <tr>
                                                     <td scope="row" class="d-flex justify-content-center">
                                                         @switch($loop->iteration)
@@ -205,20 +200,20 @@
                                                                 <i class="bi bi-award" style="color: #C0C0C0;"></i>
                                                                 @break  
                                                         @endswitch
-                                                        @if($user->photo)
-                                                            <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
-                                                        @else
-                                                            <img src="{{ asset('assets/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
-                                                        @endif
+                                                        <img src="{{ $position->photo ? asset('storage/' . $position->photo) :  asset('assets/img/profile_white.png') }}" alt="Foto de Perfil" class="rounded-circle" width="30" height="30">
                                                     </td>
-                                                    @if ($user->name == Auth::user()->name)
-                                                        <td>{{ $user->name }}</td>
-                                                    @else
-                                                        <td>{{ $user->maskedName() }}</td>
-                                                    @endif
-                                                    <td class="text-center">{{ $user->state }}</th>
-                                                    <td class="text-success">R$ {{ number_format($user->saleTotal(), 2, ',', '.') }}</td>
-                                                    <td>{{ $user->levelLabel() }}</td>
+                                                    <td>
+                                                        {{ $position->maskedName() }}
+                                                    </td>
+                                                    <td class="text-center">
+                                                        {{ $position->state }}
+                                                    </th>
+                                                    <td class="text-success">
+                                                        R$ {{ number_format($position->saleTotal(), 2, ',', '.') }}
+                                                    </td>
+                                                    <td>
+                                                        {{ $position->getGraduation()->nivel }}
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -228,13 +223,12 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-12 col-lg-5">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-5 col-xxl-5">
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Rede <span>| Últimos cadastros</span></h5>
-                                
                                 <div class="table-responsive">
-                                    <table class="table table" id="table">
+                                    <table class="table table-sm" id="table">
                                         <thead>
                                             <tr class="table-primary">
                                                 <th scope="col">Nome</th>
@@ -243,23 +237,17 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($networks as $key => $network)
+                                            @foreach (Auth::user()->afiliates->sortByDesc('created_at')->take(10) as $key => $afiliate)
                                                 <tr>
                                                     <td>
-                                                        @if ($network->name == Auth::user()->name)
-                                                            {{ $network->name }}
-                                                        @else
-                                                            {{ $network->maskedName() }}
-                                                        @endif
+                                                        {{ $afiliate->maskedName() }}
                                                     </td>
                                                     <td class="text-center">
-                                                        @if ($network->status == 1)
-                                                            Ativo
-                                                        @else
-                                                            Pendente
-                                                        @endif
+                                                        {{ $afiliate->status == 1 ? 'Ativo' : 'Pendente' }}
                                                     </th>
-                                                    <td class="text-center">{{ \Carbon\Carbon::parse($network->created_at)->format('d/m/Y') }}</th>
+                                                    <td class="text-center">
+                                                        {{ \Carbon\Carbon::parse($afiliate->created_at)->format('d/m/Y') }}
+                                                    </th>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -276,16 +264,16 @@
                     <div class="col-12 col-sm-12 col-md-12 col-lg-12">
                         <div class="card info-card clock-card">
                             <div class="card-body">
-                                <h5 class="card-title">Ativos/Inativos</h5>
+                                <h5 class="card-title">Próxima Lista</h5>
                                 <div class="d-flex align-items-center">
                                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-person-lines-fill"></i>
+                                        <i class="bi bi-clock-history"></i>
                                     </div>
                                     <div class="ps-3">
-                                        <p>
-                                            Ativos : {{ $actives }} <br>
-                                            Inativo: {{ $inactives }} <br>
-                                        </p>
+                                        <h6>{{ $remainingTime }}</h6>
+                                        @isset($list)
+                                            <span>{{ \Carbon\Carbon::parse($list->end)->format('d/m/Y') }}</span>
+                                        @endisset
                                     </div>
                                 </div>
                             </div>

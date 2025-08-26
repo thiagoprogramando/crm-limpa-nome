@@ -37,54 +37,70 @@ class User extends Authenticatable {
         'state',
         'num',
 
-        'token_acess',
         'wallet',
-        'wallet_id',
-        'api_key',
+        'token_wallet',
+        'token_key',
+
         'api_token_zapapi',
         'customer',
-        'wallet_off',
 
         'type',
         'filiate',
-
         'fixed_cost'
     ];
+
+    public function sales() {
+        return $this->hasMany(Sale::class, 'seller_id');
+    }
+
+    public function saleTotal() {
+        return Invoice::whereIn('sale_id', $this->sales()->pluck('id'))->sum('value');
+    }
 
     public function salesClient() {
         return $this->hasMany(Sale::class, 'id_client');
     }
 
-    public function salesSeller() {
-        return $this->hasMany(Sale::class, 'id_seller');
+    public function invoices() {
+        return $this->hasMany(Invoice::class, 'user_id')->orderBy('status', 'asc');
     }
 
-    public function invoices() {
-        return $this->hasMany(Invoice::class, 'id_user')->orderBy('status', 'asc');
+    public function saleCount() {
+        return Sale::where('seller_id', $this->id)->where('status', 1)->count();
+    }
+
+    public function parent() {
+        return $this->belongsTo(User::class, 'filiate');
+    }
+
+    public function afiliates() {
+        return $this->hasMany(User::class, 'filiate', 'id');
+    }
+
+    public function activeFiliatesCount() {
+
+        if ($this->type == 1) {
+            return User::where('type', 2)->where('status', 1)->count();
+        }
+
+        return $this->hasMany(User::class, 'filiate', 'id')->where('status', 1)->count();
+    }
+
+    public function inactiveFiliatesCount() {
+
+        if ($this->type == 1) {
+            return User::where('type', 2)->where('status', 2)->count();
+        }
+
+        return $this->hasMany(User::class, 'filiate', 'id')->where('status', 2)->count();
     }
 
     public function lastPendingInvoiceTypeOne() {
 
-        $lastPendingInvoice = $this->invoices()
+        return $lastPendingInvoice = $this->invoices()
             ->where('type', 1)
             ->orderBy('created_at', 'desc')
             ->first();
-
-        return $lastPendingInvoice 
-            ? $lastPendingInvoice->created_at->format('d/m/Y H:i:s') 
-            : '---';
-    }
-
-    public function lastPendingInvoiceTypeOneUrl() {
-
-        $lastPendingInvoice = $this->invoices()
-            ->where('type', 1)
-            ->orderBy('created_at', 'desc')
-            ->first();
-
-        return $lastPendingInvoice 
-            ? $lastPendingInvoice->url_payment
-            : '---';
     }
 
     public function months() {
@@ -123,30 +139,6 @@ class User extends Authenticatable {
         return '---';
     }
 
-    public function saleTotal() {
-
-        $id = $this->id;
-        return Sale::where('id_seller', $id)->where('status', 1)->sum('value');
-    }
-
-    public function saleCount() {
-
-        $id = $this->id;
-        return Sale::where('id_seller', $id)->where('status', 1)->count();
-    }
-
-    public function commissionTotal() {
-
-        $id = $this->id;
-        return Sale::where('id_seller', $id)->where('status', 1)->sum('commission');
-    }
-
-    public function commissionTotalParent() {
-
-        $id = $this->id;
-        return Sale::where('id_seller', $id)->where('status', 1)->sum('commission_filiate');
-    }
-
     public function statusLabel() {
 
         switch ($this->status) {
@@ -154,20 +146,19 @@ class User extends Authenticatable {
                 return 'Ativo e Associado';
                 break;
             case 2:
-                return 'Pendente de Documentos';
+                return 'Pendente de Associação/Inativo';
                 break; 
             case 3:
-                return 'Pendente de Associação';
-                break; 
-            case 4:
                 return 'Pendente de Dados';
-                break;         
+                break;  
+            default:
+                return 'Sem Dados';
+                break;     
         }
-
-        return '---';
     }
 
     public function getGraduation() {
+        
         $saleTotal = $this->saleCount();
 
         $levels = [
@@ -214,25 +205,6 @@ class User extends Authenticatable {
         return $cpfCnpj;
     }
 
-    public function indicator() {
-        
-        if ($this->filiate !== null) {
-            
-            $affiliate = User::find($this->filiate);
-            return $affiliate ? $affiliate->name : "---";
-        }
-
-        return "---";
-    }
-
-    public function parent() {
-        return $this->belongsTo(User::class, 'filiate');
-    }
-
-    public function afiliates() {
-        return $this->hasMany(User::class, 'filiate', 'id');
-    }
-
     public function timeMonthly() {
        
         $lastInvoice = $this->invoices()->where('type', 1)->orderBy('due_date', 'desc')->first();
@@ -268,7 +240,7 @@ class User extends Authenticatable {
             $response = $client->request('GET', env('API_URL_ASSAS') . 'v3/finance/balance', [
                 'headers' => [
                     'accept'       => 'application/json',
-                    'access_token' => $this->api_key,
+                    'access_token' => $this->token_key,
                     'User-Agent'   => env('APP_NAME'),
                 ],
                 'verify' => false,

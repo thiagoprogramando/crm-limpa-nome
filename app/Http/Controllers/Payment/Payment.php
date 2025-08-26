@@ -14,7 +14,7 @@ class Payment extends Controller {
     
     public function payments(Request $request) {
 
-        $query = Invoice::where('id_user', Auth::id());
+        $query = Invoice::where('user_id', Auth::id());
         if ($request->has('status') && !empty($request->status)) {
             $query->where('status', $request->status);
         }

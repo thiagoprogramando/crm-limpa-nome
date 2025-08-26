@@ -11,14 +11,14 @@ class Sale extends Model {
 
     use HasFactory, SoftDeletes;
 
-    protected $table = 'sale';
+    protected $table = 'sales';
 
     protected $fillable = [
 
-        'id_product',
-        'id_list',
-        'id_client',
-        'id_seller',
+        'product_id',
+        'list_id',
+        'client_id',
+        'seller_id',
 
         'payment',
         'installments',
@@ -40,19 +40,42 @@ class Sale extends Model {
     ];
 
     public function product() {
-        return $this->belongsTo(Product::class, 'id_product');
+        return $this->belongsTo(Product::class, 'product_id');
     }
 
-    public function user() {
-        return $this->belongsTo(User::class, 'id_client')->withTrashed();
+    public function invoices() {
+        return $this->hasMany(Invoice::class, 'sale_id', 'id');
+    }
+
+    public function invoicesByToken() {
+        return $this->hasMany(Invoice::class, 'payment_token', 'payment_token');
+    }
+
+    public function client() {
+        return $this->belongsTo(User::class, 'client_id')->withTrashed();
     }
 
     public function seller() {
-        return $this->belongsTo(User::class, 'id_seller')->withTrashed();
+        return $this->belongsTo(User::class, 'seller_id')->withTrashed();
     }
 
     public function list() {
-        return $this->belongsTo(Lists::class, 'id_list');
+        return $this->belongsTo(Lists::class, 'list_id');
+    }
+
+    public function totalInvoices() {
+
+        $total = Invoice::where('sale_id', $this->id)->orWhere('payment_token', $this->payment_token)->sum('value');
+        if ($this->payment_token == null) {
+            return $total;
+        }
+
+        $sales = Sale::where('payment_token', $this->payment_token)->count();
+        if ($sales > 1) {
+            return $total / $sales;
+        }
+
+        return $total;
     }
 
     public function paymentMethod() {
@@ -69,35 +92,27 @@ class Sale extends Model {
         }
     }
     
-    public function statusLabel() {
+    public function statusPaymentLabel() {
         switch ($this->status) {
             case 1:
                 return 'Confirmado';
                 break;
-            case 4:
+            case 2:
                 return 'Pendente';
                 break;
             default:
-                return 'Pendente';
+                return 'Desconhecido';
                 break;
         }
     }
 
     public function statusContractLabel() {
-        switch ($this->status_contract) {
-            case 1:
-                return 'Assinado';
-                break;
-            case 2:
-                return 'Pendente';
-                break;
-            case 3:
-                return 'Contrato não gerado';
-                break;
-            default:
-                return 'Contrato não gerado';
-                break;
+
+        if (empty($this->contract_sign)) {
+            return 'Pendente de Assinatura';
         }
+
+        return 'Assinado';
     }
 
     public function protocolLabel() {

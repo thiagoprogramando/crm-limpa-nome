@@ -71,7 +71,7 @@ class CouponController extends Controller {
                             . "Agradecemos por fazer parte da nossa jornada! \r\n\r\n";
 
                 $assas = new AssasController();
-                $assas->sendWhatsapp('', $message, $user->phone, $user->api_token_zapapi);
+                $assas->sendWhatsapp('', $message, $user->phone, $user->token_whatsapp);
             }
 
             return redirect()->back()->with('success', 'CUPOM cadastrado com sucesso!');

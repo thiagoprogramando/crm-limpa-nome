@@ -6,12 +6,11 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
         <title>{{ $title }}</title>
-        <link href="{{ asset('assets/dashboard/img/favicon.png') }}" rel="icon">
+        <link href="{{ asset('assets/img/favicon.png') }}" rel="icon">
         <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="{{ asset('assets/login-form/css/style.css') }}">
+        <link rel="stylesheet" href="{{ asset('login-form/css/style.css') }}">
         <style>
-
             body {
                 font-family: 'Times New Roman', Times, serif;
             }
@@ -47,40 +46,38 @@
     <body>
 
         <div class="container mt-5 mb-5 p-5">
-            {!! $contractContent  !!}
+            @if (!empty($sale->contract_url))
+                {!! $sale->contract_url  !!}
+            @else
+                {!! $contractContent  !!}
 
-            <div class="table-respondive mb-5">
-                <p>Anexo I</p>
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">Parcela</th>
-                            <th class="text-center" scope="col">Valor</th>
-                            <th class="text-center" scope="col">Vencimento</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($invoices as $invoice)
-                            <tr>
-                                <th scope="row">{{ $invoice->description }}</th>
-                                <td class="text-center">R$ {{ number_format($invoice->value, 2, ',', '.') }}</td>
-                                <td class="text-center">{{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y') }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            @if (!empty($sale->sign_contract))
-                <div class="container text-center mt-3 mb-5">
-                    <img src="{{ $sale->sign_contract }}" alt="Assinatura" style="max-width: 100%; height: auto;">
-                    <br>
-                    <small>Assinatura {{ $sale->user->name }}</small>
-                </div>
+                @if (env('VALUES_FOR_CONTRACT') == true)
+                    <div class="table-respondive mb-5">
+                        <p>Anexo I</p>
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Parcela</th>
+                                    <th class="text-center" scope="col">Valor</th>
+                                    <th class="text-center" scope="col">Vencimento</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($invoices as $invoice)
+                                    <tr>
+                                        <th scope="row">{{ $invoice->description }}</th>
+                                        <td class="text-center">R$ {{ number_format($invoice->value, 2, ',', '.') }}</td>
+                                        <td class="text-center">{{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y') }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
             @endif
         </div>
         
-        @if (empty($sale->sign_contract))
+        @if (empty($sale->contract_sign))
             <button id="floatingButton" class="floating-button btn btn-primary">
                 <i class="ri-add-line"></i> Assinar Contrato
             </button>
@@ -107,12 +104,12 @@
             </div>
         </div>
 
-        <script src="{{ asset('assets/login-form/js/jquery.min.js') }}"></script>
-        <script src="{{ asset('assets/login-form/js/popper.js') }}"></script>
-        <script src="{{ asset('assets/login-form/js/bootstrap.min.js') }}"></script>
-        <script src="{{ asset('assets/login-form/js/main.js') }}"></script>
-        <script src="{{ asset('assets/dashboard/js/sweetalert.js')}}"></script>
-        <script src="{{ asset('assets/login-form/js/signature_pad.js') }}"></script>
+        <script src="{{ asset('login-form/js/jquery.min.js') }}"></script>
+        <script src="{{ asset('login-form/js/popper.js') }}"></script>
+        <script src="{{ asset('login-form/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('login-form/js/main.js') }}"></script>
+        <script src="{{ asset('assets/js/sweetalert.js')}}"></script>
+        <script src="{{ asset('login-form/js/signature_pad.js') }}"></script>
 
         <script>
             @if(session('error'))
@@ -152,14 +149,13 @@
 
                 function resizeCanvas() {
                     var modalBody = document.querySelector('.modal-body');
-                    var width = modalBody.clientWidth - 40; // Mantém uma margem
-                    canvas.width = width > 400 ? 400 : width; // Limita a 400px
+                    var width = modalBody.clientWidth - 40;
+                    canvas.width = width > 400 ? 400 : width;
                     canvas.height = 200;
                     ctx.fillStyle = "white";
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                 }
 
-                // Abre o modal e ajusta o canvas
                 document.getElementById('floatingButton').addEventListener('click', function () {
                     var modal = new bootstrap.Modal(document.getElementById('signatureModal'));
                     modal.show();
@@ -167,7 +163,6 @@
 
                 document.getElementById('signatureModal').addEventListener('shown.bs.modal', resizeCanvas);
 
-                // Captura eventos de toque e mouse
                 function startDrawing(e) {
                     isDrawing = true;
                     [lastX, lastY] = [e.offsetX, e.offsetY];
@@ -189,13 +184,10 @@
                     isDrawing = false;
                 }
 
-                // Eventos para mouse
                 canvas.addEventListener("mousedown", startDrawing);
                 canvas.addEventListener("mousemove", draw);
                 canvas.addEventListener("mouseup", stopDrawing);
                 canvas.addEventListener("mouseout", stopDrawing);
-
-                // Eventos para touchscreen
                 canvas.addEventListener("touchstart", function (e) {
                     var touch = e.touches[0];
                     var rect = canvas.getBoundingClientRect();
@@ -220,14 +212,13 @@
                     ctx.stroke();
                     [lastX, lastY] = [x, y];
 
-                    e.preventDefault(); // Evita rolagem ao tocar
+                    e.preventDefault();
                 });
 
                 canvas.addEventListener("touchend", function () {
                     isDrawing = false;
                 });
 
-                // Botão Limpar
                 document.getElementById('clearSignature').addEventListener('click', function () {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                 });
@@ -245,6 +236,7 @@
 
                     var signatureData = canvas.toDataURL("image/png");
                     var saleId = "{{ $sale->id }}";
+                    var contractHtml = document.querySelector('.container.mt-5.mb-5.p-5').innerHTML;
 
                     fetch("/api/sign-sale", {
                         method: "POST",
@@ -252,8 +244,9 @@
                             "Content-Type": "application/json",
                         },
                         body: JSON.stringify({
-                            id: saleId,
-                            sign: signatureData
+                            id      : saleId,
+                            sign    : signatureData,
+                            html    : contractHtml
                         })
                     })
                     .then(response => response.json())

@@ -33,7 +33,7 @@ class UserController extends Controller {
         ]);
     }
 
-    public function updateProfile(Request $request) {
+    public function update(Request $request) {
 
         $user = User::where('id', $request->id)->first();
 
@@ -81,8 +81,8 @@ class UserController extends Controller {
             $user->num = $request->num;
         }
 
-        if (!empty($request->api_token_zapapi)) {
-            $user->api_token_zapapi = $request->api_token_zapapi;
+        if (!empty($request->token_whatsapp)) {
+            $user->token_whatsapp = $request->token_whatsapp;
         }
 
         if (!empty($request->white_label_network)) {
@@ -187,7 +187,7 @@ class UserController extends Controller {
                 env('APP_URL'),
                 $message,
                 $user->phone,
-                $user->api_token_zapapi
+                $user->token_whatsapp
             );
 
             return redirect()->back()->with('success', 'mensagem enviada com sucesso!');
@@ -243,36 +243,10 @@ class UserController extends Controller {
             $endDate = Carbon::createFromFormat('Y-m-d', $request->created_at_end)->endOfDay();
             $query->where('created_at', '<=', $endDate);
         }
-        
-        $query->where('type', $type);
 
-        $users = $query->paginate(30);
-
-        $users->getCollection()->transform(function ($user) {
-            $user->commission_total = $user->commissionTotal();
-            return $user;
-        });
-
-        $sortedUsers = $users->sortByDesc('commission_total');
-        $users->setCollection($sortedUsers);
-
-        $currentYear = Carbon::now()->year;
-        $usersByMonth = User::where('type', $type)
-            ->whereYear('created_at', $currentYear)
-            ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
-            ->groupBy('month')
-            ->orderBy('month')
-            ->pluck('total', 'month');
-
-        $months = array_fill(1, 12, 0);
-        foreach ($usersByMonth as $month => $total) {
-            $months[$month] = $total;
-        }
-
-        return view('app.User.list', [
-            'users'     => $users, 
+        return view('app.User.list-users', [
+            'users'     => $query->where('type', $type)->paginate(30),
             'type'      => $type,
-            'usersData' => array_values($months)
         ]);
     }
 
@@ -315,7 +289,7 @@ class UserController extends Controller {
 
     public function listClient(Request $request) {
 
-        $query = User::orderBy('name', 'desc')->where('filiate', Auth::id())->where('type', '=', '3');
+        $query = User::orderBy('name', 'desc')->where('filiate', Auth::id())->where('type', '3');
 
         if (!empty($request->name)) {
             $query->where('name', 'like', '%' . $request->name . '%');
@@ -333,12 +307,12 @@ class UserController extends Controller {
             $query->where('created_at', $request->created_at);
         }
 
-        $users = $query->get();
-
-        return view('app.User.list-client', ['users' => $users]);
+        return view('app.User.list-client', [
+            'users' => $query->paginate(30)
+        ]);
     }
 
-    public function deleteUser(Request $request) {
+    public function destroy(Request $request) {
 
         $user = User::find($request->id);
         if ($user && $user->delete()) {
@@ -356,76 +330,6 @@ class UserController extends Controller {
         }
 
         return redirect()->back()->with('error', 'Ops! Notificação não encontrada.');
-    }
-
-    public function listActive($status = null) {
-
-        if (!in_array($status, [1, 2])) {
-            return redirect()->back()->with('error', 'Dados não encontrados para a pesquisa!');
-        }
-
-        $dateLimit = Carbon::now()->subDays(30);
-        if ($status == 1) {
-            $query = User::where('type', 2)->whereHas('invoices', function ($query) use ($dateLimit) {
-                $query->where('type', 1)
-                      ->where('status', 1)
-                      ->whereDate('due_date', '>=', $dateLimit);
-            });
-        } elseif ($status == 2) {
-            $query = User::where('type', 2)->where(function ($query) use ($dateLimit) {
-                $query->whereDoesntHave('invoices', function ($subQuery) {
-                    $subQuery->where('type', 1);
-                })
-                ->orWhereHas('invoices', function ($subQuery) use ($dateLimit) {
-                    $subQuery->where('type', 1)
-                             ->where('status', '!=', 1)
-                             ->whereDate('due_date', '>=', $dateLimit);
-                });
-            });
-        }
-
-        $currentYear = Carbon::now()->year;
-
-        $invoices = Invoice::where('type', 1)->where('status', $status)
-            ->whereYear('created_at', $currentYear)
-            ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
-            ->groupBy('month')
-            ->orderBy('month')
-            ->pluck('total', 'month');
-
-        $months = array_fill(1, 12, 0);
-        foreach ($invoices as $month => $total) {
-            $months[$month] = $total;
-        }
-        return view('app.User.active', [
-            'users'         => $query->orderBy('name', 'asc')->paginate(30),
-            'invoicesData'  => array_values($months)
-        ]);
-    }
-
-    public function sendActive($id) {
-
-        $user = User::find($id);
-        if($user) {
-
-            $message =  "Olá, {$user->name},\r\n\r\n"
-                        . "Sua conta em nossa plataforma ainda não foi ativada. Para continuar a ganhar comissões e aproveitar nossos benefícios, ative sua conta até ". Carbon::now()->addDays(30)->format('d/m/Y') ." \r\n\r\n"
-                        . "*Instruções para ativação:*\r\n\r\n"
-                        . "Acesse: ".env('APP_URL')."\r\n"
-                        . "Faça login com seu e-mail e CPF. \r\n"
-                        . "Complete a ativação \r\n"
-                        . "Após a data limite, o acesso será desativado permanentemente. \r\n\r\n"
-                        . "Precisa de ajuda? Estamos aqui para você!\r\n\r\n";
-            $this->sendWhatsapp(
-                env('APP_URL'),
-                $message,
-                $user->phone,
-                $user->api_token_zapapi
-            );
-
-            return redirect()->back()->with('success', 'mensagem enviada com sucesso!');
-        }
-
     }
 
     private function sendWhatsapp($link, $message, $phone, $token = null) {

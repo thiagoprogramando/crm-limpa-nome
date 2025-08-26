@@ -100,7 +100,7 @@
 
                                                 <div class="tab-content pt-2" id="myTabContent">
                                                     <div class="tab-pane fade show active" id="home{{ $user->id }}" role="tabpanel" aria-labelledby="home-tab{{ $user->id }}">
-                                                        <form action="{{ route('update-user') }}" method="POST" id="userForm">
+                                                        <form action="{{ route('updated-user') }}" method="POST" id="userForm">
                                                             @csrf
                                                             <div class="row">
                                                                 <input type="hidden" name="id" value="{{ $user->id }}">
@@ -112,38 +112,38 @@
                                                                 </div>
                                                                 <div class="col-12 col-md-7 col-lg-7 mb-1">
                                                                     <div class="form-floating">
-                                                                        <input type="text" name="name" class="form-control" id="floatingName" placeholder="Nome:" value="{{ $user->name }}">
-                                                                        <label for="floatingName">Nome:</label>
+                                                                        <input type="text" name="name" class="form-control" id="name" placeholder="Nome:" value="{{ $user->name }}">
+                                                                        <label for="name">Nome:</label>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-md-5 col-lg-5 mb-1">
                                                                     <div class="form-floating">
-                                                                        <input type="text" class="form-control" id="floatingBalance" placeholder="Saldo Diponível:" value="{{ $user->balance() }}" disabled readonly>
-                                                                        <label for="floatingBalance">Saldo Diponível:</label>
+                                                                        <input type="text" class="form-control" id="balance" placeholder="Saldo Diponível:" value="{{ $user->balance() }}" disabled readonly>
+                                                                        <label for="balance">Saldo Diponível:</label>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-md-7 col-lg-7 mb-1">
                                                                     <div class="form-floating">
-                                                                        <input type="email" name="email" class="form-control" id="floatingEmail" placeholder="Email:" value="{{ $user->email }}">
-                                                                        <label for="floatingEmail">Email:</label>
+                                                                        <input type="email" name="email" class="form-control" id="email" placeholder="Email:" value="{{ $user->email }}">
+                                                                        <label for="email">Email:</label>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-md-5 col-lg-5 mb-1">
                                                                     <div class="form-floating">
-                                                                        <input type="text" name="phone" class="form-control" id="floatingPhone" placeholder="Whatsapp:" oninput="mascaraTelefone(this)" value="{{ $user->phone }}">
-                                                                        <label for="floatingPhone">Whatsapp:</label>
+                                                                        <input type="text" name="phone" class="form-control phone" id="phone" placeholder="Whatsapp:" oninput="mascaraTelefone(this)" value="{{ $user->phone }}">
+                                                                        <label for="phone">Whatsapp:</label>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-md-7 col-lg-7 mb-1">
                                                                     <div class="form-floating">
-                                                                        <input type="text" name="cpfcnpj" class="form-control" id="floatingCpfCnpj" placeholder="CPF/CNPJ:" oninput="mascaraCpfCnpj(this)" value="{{ $user->cpfcnpj }}">
-                                                                        <label for="floatingCpfCnpj">CPF/CNPJ:</label>
+                                                                        <input type="text" name="cpfcnpj" class="form-control cpfcnpj" id="cpfcnpj" placeholder="CPF/CNPJ:" oninput="mascaraCpfCnpj(this)" value="{{ $user->cpfcnpj }}">
+                                                                        <label for="cpfcnpj">CPF/CNPJ:</label>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-md-5 col-lg-5 mb-1">
                                                                     <div class="form-floating">
-                                                                        <input type="date" name="birth_date" class="form-control" id="floatingBirthDate" placeholder="Data Nascimento:" value="{{ $user->birth_date }}">
-                                                                        <label for="floatingBirthDate">Data Nascimento:</label>
+                                                                        <input type="date" name="birth_date" class="form-control" id="birth_date" placeholder="Data Nascimento:" value="{{ $user->birth_date }}">
+                                                                        <label for="birth_date">Data Nascimento:</label>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-md-7 col-lg-7 mb-1">
@@ -261,7 +261,7 @@
                                                                                         <i class="bi bi-arrow-up-right-circle"></i> Acessar Fatura
                                                                                     </a>
                                                                                     @if($invoice->status <> 1 )
-                                                                                        <a href="{{ route('delete-invoice', ['id' => $invoice->id]) }}" class="btn btn-danger text-light confirm">
+                                                                                        <a href="{{ route('deleted-invoice', ['id' => $invoice->id]) }}" class="btn btn-danger text-light confirm">
                                                                                             <i class="bi bi-trash"></i>
                                                                                         </a>
                                                                                     @endif
@@ -286,21 +286,11 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Crescimento {{ date('Y') }}</h5>
-                            <div id="lineChart"></div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 </section>
 
-<script src="{{ asset('assets/dashboard/vendor/apexcharts/apexcharts.min.js') }}"></script>
 <script>
     document.getElementById('copy-url-btn').addEventListener('click', function(event) {
 
@@ -339,45 +329,15 @@
                 cancelButtonColor: '#FF0000',
             }).then((result) => {
                 if (result.isConfirmed) {
-                    form.action = "{{ route('delete-user') }}";
+                    form.action = "{{ route('deleted-user') }}";
                     form.submit();
                 }
             });
         });
 
         updateBtn.addEventListener('click', function () {
-            form.action = "{{ route('update-user') }}";
+            form.action = "{{ route('updated-user') }}";
         });
-
-        const usersData = @json($usersData);
-        new ApexCharts(document.querySelector("#lineChart"), {
-            series: [{
-                name: "Usuários",
-                data: usersData
-            }],
-            chart: {
-                height: 350,
-                type: 'line',
-                zoom: {
-                    enabled: false
-                }
-            },
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                curve: 'straight'
-            },
-            grid: {
-                row: {
-                    colors: ['#f3f3f3', 'transparent'],
-                    opacity: 0.5
-                },
-            },
-            xaxis: {
-                categories: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
-            }
-        }).render();
     });
 </script>
 @endsection

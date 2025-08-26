@@ -37,19 +37,8 @@
                 <i class="bi bi-list toggle-sidebar-btn text-white"></i>
             </div>
 
-            <div class="search-bar">
-                <form class="search-form d-flex align-items-center" method="GET" action="{{ route('search') }}">
-                    <input type="text" name="search" placeholder="Pesquisar" title="Pesquisar">
-                    <button type="submit" title="Search"><i class="bi bi-search"></i></button>
-                </form>
-            </div>
-
             <nav class="header-nav ms-auto">
                 <ul class="d-flex align-items-center">
-
-                    <li class="nav-item d-block d-lg-none">
-                        <a class="nav-link nav-icon search-bar-toggle " href="#"><i class="bi bi-search text-white"></i></a>
-                    </li>
 
                     <li class="nav-item">
                         <a class="nav-link nav-icon" href="#">
@@ -172,7 +161,7 @@
                     </a>
                     <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                         @foreach($business as $busines)
-                            <li><a href="@if(Auth::user()->type == 7 || Auth::user()->type == 9) {{ route('createupload', ['id' => $busines->id]) }} @else {{ route('createsale', ['id' => $busines->id]) }} @endif"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
+                            <li><a href="{{ route('create-sale', ['product' => $busines->id, 'type' => 1]) }}"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
                         @endforeach
                     </ul>
                 </li>
@@ -183,18 +172,17 @@
                     </a>
                     <ul id="forms-upload" class="nav-content collapse " data-bs-parent="#sidebar-upload">
                         @foreach($sends as $send)
-                            <li><a href="{{ route('createupload', ['id' => $send->id]) }}"> <i class="bi bi-circle"></i><span>{{ $send->name }}</span> </a></li>
+                            <li><a href="{{ route('create-sale', ['product' => $busines->id, 'type' => 2]) }}"> <i class="bi bi-circle"></i><span>{{ $send->name }}</span> </a></li>
                         @endforeach
                     </ul>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link {{ Route::currentRouteName() == 'manager-sale' || Route::currentRouteName() == 'invoice-default' || Route::currentRouteName() == 'coupons' ? '' : 'collapsed' }}" data-bs-target="#forms-sale" data-bs-toggle="collapse" href="#">
+                    <a class="nav-link {{ Route::currentRouteName() == 'sales' || Route::currentRouteName() == 'invoice-default' || Route::currentRouteName() == 'coupons' ? '' : 'collapsed' }}" data-bs-target="#forms-sale" data-bs-toggle="collapse" href="#">
                         <i class="bi bi-bag"></i><span>Vendas</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul id="forms-sale" class="nav-content collapse {{ Route::currentRouteName() == 'manager-sale' || Route::currentRouteName() == 'invoice-default' || Route::currentRouteName() == 'coupons' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
-                        <li> <a href="{{ route('manager-sale') }}"> <i class="bi bi-circle"></i><span>Vendas</span> </a> </li>
-                        <li> <a href="{{ route('invoice-default') }}"> <i class="bi bi-circle"></i><span>Inadimplência</span> </a> </li>
+                    <ul id="forms-sale" class="nav-content collapse {{ Route::currentRouteName() == 'sales' || Route::currentRouteName() == 'invoice-default' || Route::currentRouteName() == 'coupons' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
+                        <li> <a href="{{ route('sales') }}"> <i class="bi bi-circle"></i><span>Vendas</span> </a> </li>
                         <li><a href="{{ route('coupons') }}"> <i class="bi bi-circle"></i><span>Cupons</span> </a></li>
                     </ul>
                 </li>
@@ -269,11 +257,11 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ Route::currentRouteName() == 'list-active' ? '' : 'collapsed' }}" data-bs-target="#forms-actvie" data-bs-toggle="collapse" href="#">
-                            <i class="bi bi-person-bounding-box"></i><span>Atividade</span><i class="bi bi-chevron-down ms-auto"></i>
+                            <i class="bi bi-graph-up"></i><span>Recorrência</span><i class="bi bi-chevron-down ms-auto"></i>
                         </a>
                         <ul id="forms-actvie" class="nav-content collapse {{ Route::currentRouteName() == 'list-active' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
-                            <li> <a href="{{ route('list-active', ['status' => 1]) }}"><i class="bi bi-circle"></i><span>Ativos</span></a> </li>
-                            <li> <a href="{{ route('list-active', ['status' => 2]) }}"><i class="bi bi-circle"></i><span>Inativos</span></a> </li>
+                            <li> <a href="{{ route('recurrences', ['status' => 1]) }}"><i class="bi bi-circle"></i><span>Ativos</span></a> </li>
+                            <li> <a href="{{ route('recurrences', ['status' => 2]) }}"><i class="bi bi-circle"></i><span>Inativos</span></a> </li>
                         </ul>
                     </li>
                 @endif
@@ -299,7 +287,7 @@
         <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
         <script src="{{ asset('assets/js/main.js') }}"></script>
         <script src="{{ asset('assets/js/mask.js') }}"></script>
-        <script src="{{ asset('assets/js/excel.js') }}"></script>
+        <script src="{{ asset('assets/js/index.js') }}"></script>
         <script>
             @if(session('error'))
                 Swal.fire({
@@ -327,95 +315,6 @@
                     timer: 2000
                 })
             @endif
-
-            document.addEventListener('DOMContentLoaded', function () {
-                
-                const deleteForms = document.querySelectorAll('form.delete');
-                deleteForms.forEach(form => {
-                    form.addEventListener('submit', function (event) {
-                        
-                        event.preventDefault();
-                        Swal.fire({
-                            title: 'Tem certeza?',
-                            text: 'Você realmente deseja excluir este registro?',
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonText: 'Sim',
-                            confirmButtonColor: '#008000',
-                            cancelButtonText: 'Não',
-                            cancelButtonColor: '#FF0000',
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                form.submit();
-                            }
-                        });
-                    });
-                });
-                
-                var links = document.querySelectorAll('.confirm');
-                links.forEach(function(link) {
-                    link.addEventListener('click', function(event) {
-
-                        event.preventDefault();
-                        var message = this.getAttribute('data-message') || 'Tem certeza?';
-                        
-                        Swal.fire({
-                            title: 'Tem certeza?',
-                            text: 'Você realmente deseja executar esta ação?',
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonText: 'Sim',
-                            confirmButtonColor: '#008000',
-                            cancelButtonText: 'Não',
-                            cancelButtonColor: '#FF0000',
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = link.href;
-                            }
-                        });
-                    });
-                });
-
-                let inputs = document.querySelectorAll('input[type="text"][oninput="mascaraReal(this)"]');
-                inputs.forEach(function(input) {
-                    mascaraReal(input);
-                });
-            });
-
-            $('#gerarExcel').click(function() {
-
-                var tabela = document.getElementById('table');
-                var wb = XLSX.utils.table_to_book(tabela, {
-                    sheet: 'Sheet 1'
-                });
-                var wbout = XLSX.write(wb, {
-                    bookType: 'xlsx',
-                    type: 'binary'
-                });
-
-                function s2ab(s) {
-                    var buf = new ArrayBuffer(s.length);
-                    var view = new Uint8Array(buf);
-                    for (var i = 0; i < s.length; i++) {
-                        view[i] = s.charCodeAt(i) & 0xFF;
-                    }
-                    return buf;
-                }
-
-                var blob = new Blob([s2ab(wbout)], {
-                    type: 'application/octet-stream'
-                });
-                var url = URL.createObjectURL(blob);
-                var a = document.createElement('a');
-                a.href = url;
-                a.download = 'tabela.xlsx';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                setTimeout(function() {
-                    URL.revokeObjectURL(url);
-                }, 100);
-            });
         </script>
     </body>
 </html>

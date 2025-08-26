@@ -14,12 +14,33 @@ use GuzzleHttp\Exception\RequestException;
 
 class Forgout extends Controller {
     
-    public function forgout($code = null) {
+    public function index($code = null) {
 
         return view('forgout', ['code' => $code]);
     }
 
-    public function updatePassword(Request $request) {
+    public function store(Request $request) {
+
+        $user = User::where('email', $request->email)->first();
+        if($user) {
+
+            $code                   = new Code();
+            $code->code             = $this->generateCode();
+            $code->data_generate    = now();
+            $code->id_user          = $user->id;
+            if($code->save()) {
+                if($this->sendCode($user->phone, $code->code)) {
+                    return redirect()->route('forgout', ['code' => 1])->with('success', 'Código enviado para o número cadastro!');
+                }
+
+                return redirect()->back()->with('error', 'Não foi possível enviar o código, tente novamente!');
+            }
+        }
+
+        return redirect()->back()->with('error', 'Email não pertece a nenhuma conta associada!');
+    }
+
+    public function update(Request $request) {
 
         if($request->password != $request->repeat_password) {
             return redirect()->back()->with('error', 'Senhas diferentes!');
@@ -44,27 +65,6 @@ class Forgout extends Controller {
             return redirect()->route('login')->with('success', 'Senha atualizada com sucesso!');
         }
 
-    }
-
-    public function sendCodePassword(Request $request) {
-
-        $user = User::where('email', $request->email)->first();
-        if($user) {
-
-            $code                   = new Code();
-            $code->code             = $this->generateCode();
-            $code->data_generate    = now();
-            $code->id_user          = $user->id;
-            if($code->save()) {
-                if($this->sendCode($user->phone, $code->code)) {
-                    return redirect()->route('forgout', ['code' => 1])->with('success', 'Código enviado para o número cadastro!');
-                }
-
-                return redirect()->back()->with('error', 'Não foi possível enviar o código, tente novamente!');
-            }
-        }
-
-        return redirect()->back()->with('error', 'Email não pertece a nenhuma conta associada!');
     }
 
     private function generateCode() {

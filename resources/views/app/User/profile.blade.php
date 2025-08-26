@@ -51,7 +51,7 @@
                     <div class="card-body p-0">
                         <div class="row">
                             <div class="col-12 col-sm-12 col-md-4 col-lg-4 text-center" style="background-color: #063986 !important;">
-                                <img src="{{ asset('assets/dashboard/img/document.png') }}" class="w-50 m-5">
+                                <img src="{{ asset('assets/img/document.png') }}" class="w-50 m-5">
                             </div>
 
                             <div class="col-12 col-sm-12 col-md-8 col-lg-8">
@@ -111,20 +111,20 @@
                                 @if(Auth::user()->photo)
                                     <img src="{{ asset('storage/' . Auth::user()->photo) }}" alt="User Photo" class="img-thumbnail w-50">
                                 @else
-                                    <img src="{{ asset('assets/dashboard/img/profile_black.png') }}" alt="Default Photo" class="img-thumbnail w-50">
+                                    <img src="{{ asset('assets/img/profile_black.png') }}" alt="Default Photo" class="img-thumbnail w-50">
                                 @endif
                             </div>
             
                             <button class="btn btn-dark mt-3" id="change-photo-button">Trocar foto de perfil</button>
             
-                            <form action="{{ route('update-user') }}" method="POST" enctype="multipart/form-data" id="photo-upload-form" class="d-none">
+                            <form action="{{ route('updated-user') }}" method="POST" enctype="multipart/form-data" id="photo-upload-form" class="d-none">
                                 @csrf
                                 <input type="hidden" name="id" value="{{ Auth::user()->id }}">
                                 <input type="file" name="photo" id="photo-input" accept="image/*" onchange="document.getElementById('photo-upload-form').submit();">
                             </form>
                         </div>
 
-                        <form action="{{ route('update-user') }}" method="POST" class="col-12 col-sm-12 col-md-9 col-lg-9 row">
+                        <form action="{{ route('updated-user') }}" method="POST" class="col-12 col-sm-12 col-md-9 col-lg-9 row">
                             @csrf
                             <input type="hidden" name="id" value="{{ Auth::user()->id }}">
 
@@ -202,8 +202,6 @@
                                     <button type="submit" class="btn btn-primary">Atualizar</button>
                                 </div>
                             </div>
-
-                            
                         </form>
                     </div>
                 </div>

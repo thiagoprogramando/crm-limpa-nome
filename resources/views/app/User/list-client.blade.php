@@ -65,17 +65,15 @@
                     </div>
                 </div>
 
-                <div class="card p-2">
-                    <div class="card-body">
-                        <h5 class="card-title">Meus Clientes</h5>
-                        
+                <div class="card">
+                    <div class="card-body p-0 m-0">
                         <div class="table-responsive">
                             <table class="table table-hover" id="table">
                                 <thead>
                                     <tr>
                                         <th scope="col">N°</th>
                                         <th scope="col">Nome</th>
-                                        <th class="text-center" scope="col">Dados</th>
+                                        <th scope="col">Dados</th>
                                         <th class="text-center" scope="col">Opções</th>
                                     </tr>
                                 </thead>
@@ -85,16 +83,16 @@
                                             <th scope="row">{{ $user->id }}</th>
                                             <td>{{ $user->name }}</td>
                                             <td>
-                                                <span class="badge bg-primary">{{ $user->phone }}</span> / <span class="badge bg-primary">{{ $user->email }}</span> <br>
-                                                <span class="badge bg-dark">{{ $user->cpfcnpj }}</span>
+                                                <span class="badge bg-primary">{{ 'Telefone: '.$user->phone }}</span> <span class="badge bg-primary">{{ 'Email: '.$user->email }}</span>
+                                                <span class="badge bg-dark">{{ 'CPF/CNPJ: '.$user->cpfcnpjLabel() }}</span>
                                             </td>
                                             <td class="text-center">
-                                                <form action="{{ route('delete-user') }}" method="POST" class="delete btn-group">
+                                                <form action="{{ route('deleted-user') }}" method="POST" class="delete btn-group">
                                                     @csrf
                                                     <input type="hidden" name="id" value="{{ $user->id }}">
-                                                    <button type="button" class="btn btn-warning text-light" data-bs-toggle="modal" data-bs-target="#updateModal{{ $user->id }}"><i class="bi bi-arrow-up-right-circle"></i></button>
+                                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#updateModal{{ $user->id }}"><i class="bi bi-arrow-up-right-circle"></i></button>
                                                     @if (Auth::user()->type == 1)
-                                                        <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
+                                                        <button type="submit" class="btn btn-outline-primary"><i class="bi bi-trash"></i></button>
                                                     @endif 
                                                 </form>
                                             </td>
@@ -103,7 +101,7 @@
                                         <div class="modal fade" id="updateModal{{ $user->id }}" tabindex="-1">
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
-                                                    <form action="{{ route('update-user') }}" method="POST">
+                                                    <form action="{{ route('updated-user') }}" method="POST">
                                                         @csrf
                                                         <div class="modal-header">
                                                             <h5 class="modal-title">Editar dados</h5>
@@ -166,7 +164,9 @@
                                 </tbody>
                             </table>
                         </div>
-
+                    </div>
+                    <div class="card-footer text-center">
+                        {{ $users->links() }}
                     </div>
                 </div>
             </div>

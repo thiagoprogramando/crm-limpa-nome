@@ -9,33 +9,32 @@ class Invoice extends Model {
 
     use HasFactory;
 
-    protected $table = 'invoice';
+    protected $table = 'invoices';
 
     protected $fillable = [
-        'id_user',
-        'id_product',
-        'id_sale',
-
+        'user_id',
+        'product_id',
+        'sale_id',
         'name',
         'description',
-
-        'token_payment',
-        'url_payment',
-
+        'payment_token',
+        'payment_url',
+        'payment_splits',
         'due_date',
         'value',
-        'commission',
+        'commission_seller',
+        'commission_afiliate',
         'status',
         'num',
         'type',
     ];
 
     public function user() {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function sale() {
-        return $this->belongsTo(Sale::class, 'id_sale');
+        return $this->belongsTo(Sale::class, 'sale_id');
     }
 
     public function statusLabel() {
@@ -46,7 +45,9 @@ class Invoice extends Model {
             case 1:
                 return 'Aprovado';
                 break;      
-            return $this->status;
+            default:
+                return 'Pendente';
+                break;
         }
     }
 }

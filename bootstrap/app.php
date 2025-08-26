@@ -7,6 +7,7 @@ use App\Http\Middleware\CheckCache;
 use App\Http\Middleware\CheckUser;
 use App\Http\Middleware\CheckWallet;
 use App\Http\Middleware\Monthly;
+use App\Http\Middleware\Share;
 use App\Http\Middleware\ShareProducts;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web( [
             ShareProducts::class,
+            Share::class,
             CheckCache::class
         ]);
 

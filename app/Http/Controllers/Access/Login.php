@@ -13,7 +13,7 @@ class Login extends Controller {
         return view('welcome');
     }
 
-    public function logon(Request $request) {
+    public function store(Request $request) {
 
         $request->validate([
             'email' => 'required|email',

@@ -1,217 +1,223 @@
 @extends('app.layout')
-@section('title') Dados da Venda: N° {{ $sale->id }} - {{ $sale->user->name }} @endsection
+@section('title') Venda: {{ $sale->client->name }} @endsection
 @section('conteudo')
+    <div class="pagetitle">
+        <h1>Venda: {{ $sale->client->name }}</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ route('app') }}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Venda: {{ $sale->client->name }}</li>
+            </ol>
+        </nav>
+    </div>
 
-<div class="pagetitle">
-    <h1>Dados da Venda: N° {{ $sale->id }} - {{ $sale->user->name }}</h1>
-    <nav>
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('app') }}">Escritório</a></li>
-            <li class="breadcrumb-item active">Dados da Venda: N° {{ $sale->id }}</li>
-        </ol>
-    </nav>
-</div>
+    <section class="section dashboard">
+        <div class="card">
+            <div class="card-body m-0 p-3">
 
-<section class="section dashboard">
-    <div class="row">
-        <div class="col-12">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-justified" type="button" role="tab" aria-controls="profile" aria-selected="false" tabindex="-1">Dados da Venda</button>
+                    </li>
+                </ul>
 
-            <div class="btn-group mb-3" role="group">
-                @if(Auth::user()->type == 1) 
-                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#updatedModal">Alterar dados</button>
-                @endif
-                @if ($sale->payment !== 'ENVIO MANUAL')
-                    @if ($invoices->count() >= 1)
-                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#invoiceModal">Adicionar Fatura</button>
-                    @else
-                        <a href="{{ route('request-invoices', ['id' => $sale->id]) }}" class="btn btn-outline-primary" href="">Gerar Fatura</a>
-                    @endif
-                @endif
-            </div>
-
-            <div class="modal fade" id="updatedModal" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <form action="{{ route('updated-sale') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="id" value="{{ $sale->id }}">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Dados da venda</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
+                <div class="tab-content pt-2" id="myTabjustifiedContent">
+                    <div class="tab-pane fade active show" id="profile-justified" role="tabpanel" aria-labelledby="profile-tab">
+                        <div class="row align-items-start">
+                            <form action="{{ route('created-client-sale') }}" method="POST" class="col-12 col-sm-12 col-md-5 col-lg-5 border-end">
+                                @csrf
+                                <input type="hidden" name="seller_id" value="{{ Auth::user()->id }}">
                                 <div class="row">
-                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                                        <p class="card-title  m-0 p-0">Dados do Cliente</p>
+                                    </div>
+                                    <div class="col-12 col-sm-12 col-md-12 col-lg-12 mb-2">
                                         <div class="form-floating">
-                                            <select name="status" class="form-select" id="floatingSeller">
-                                                <option value="">Status:</option>
-                                                <option @selected($sale->status == 1) value="1">Aprovado</option>
-                                                <option @selected($sale->status == 2) value="2">Assinado</option>
-                                                <option @selected($sale->status == 3) value="3">Pendente</option>
-                                            </select>
-                                            <label for="floatingSeller">Status</label>
+                                            <input type="text" name="name" class="form-control" id="name" placeholder="Nome:" value="{{ $sale->client->name ?? '' }}" required>
+                                            <label for="name">Nome:</label>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 mb-2">
                                         <div class="form-floating">
-                                            <select name="id_list" class="form-select" id="floatinglist">
-                                                <option selected="" value="">Lista:</option>
-                                                @foreach ($lists as $list)
-                                                    <option value="{{ $list->id }}">{{ $list->name }}</option>  
-                                                @endforeach
-                                            </select>
-                                            <label for="floatinglist">Listas</label>
+                                            <input type="text" name="email" class="form-control" id="email" placeholder="E-mail:" value="{{ $sale->client->email ?? '' }}" required>
+                                            <label for="email">Email:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 mb-2">
+                                        <div class="form-floating">
+                                            <input type="text" name="phone" class="form-control phone" id="phone" placeholder="WhatsApp:" value="{{ $sale->client->phone ?? '' }}" oninput="mascaraTelefone(this)" required>
+                                            <label for="phone">WhatsApp:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 mb-2">
+                                        <div class="form-floating">
+                                            <input type="text" name="cpfcnpj" class="form-control cpfcnpj" id="cpfcnpj" placeholder="CPF ou CNPJ:" value="{{ $sale->client->cpfcnpj ?? '' }}" oninput="mascaraCpfCnpj(this)" disabled>
+                                            <label for="cpfcnpj">CPF ou CNPJ:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 mb-2">
+                                        <div class="form-floating">
+                                            <input type="date" name="birth_date" class="form-control" id="birth_date" placeholder="Data Nascimento:" value="{{ $sale->client->birth_date ?? '' }}" disabled>
+                                            <label for="birth_date">Data Nascimento:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-12 offset-md-6 col-md-6 offset-lg-6 col-lg-6 mb-2">
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-outline-primary mt-1">{{ $sale->client ? 'Atualizar Cliente' : 'Incluir Cliente' }}</button>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="modal-footer btn-group">
-                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
-                                <button type="submit" class="btn btn-primary">Salvar</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+                            </form>
 
-            <div class="modal fade" id="invoiceModal" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <form action="{{ route('create-invoice') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="sale_id" value="{{ $sale->id }}">
-                            <input type="hidden" name="product_id" value="{{ $sale->product->id }}">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Dados da Fatura</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="row">
-                                    <div class="col-12 col-md-7 col-lg-7 mb-2">
-                                        <div class="form-floating">
-                                            <input type="text" name="value" class="form-control" id="floatingValue" placeholder="Valor:" oninput="mascaraReal(this)" required>
-                                            <label for="floatingValue">Valor:</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-5 col-lg-5 mb-2">
-                                        <div class="form-floating">
-                                            <input type="date" name="due_date" class="form-control" id="floatingDueDate" placeholder="Vencimento:" required>
-                                            <label for="floatingDueDate">Vencimento:</label>
-                                        </div>
-                                    </div>
-                                    @if (Auth::user()->type == 1)
-                                        <div class="col-12 col-md-7 col-lg-7 mb-2">
-                                            <div class="form-floating">
-                                                <select name="wallet" class="form-select" id="floatingSeller">
-                                                    <option value="">Comissão (opcional):</option>
-                                                    @foreach ($users as $user)
-                                                        <option value="{{ $user->wallet }}">{{ $user->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                                <label for="floatingSeller">Consultores</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-md-5 col-lg-5 mb-2">
-                                            <div class="form-floating">
-                                                <input type="text" name="commission" class="form-control" id="floatingCommission" placeholder="Comissão (valor):" oninput="mascaraReal(this)">
-                                                <label for="floatingCommission">Comissão (valor):</label>
+                            <div class="col-12 col-sm-12 col-md-7 col-lg-7 row align-items-start">
+                                <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                                    <p class="card-title m-0 p-0">Dados de Pagamento</p>
+                                    @if ($sale->type == 1)
+                                        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createdModal">Adicionar Cobrança</button>
+
+                                        <div class="modal fade" id="createdModal" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <form action="{{ route('created-invoice') }}" method="POST">
+                                                        @csrf
+                                                        <input type="hidden" name="sale_id" value="{{ $sale->id }}">
+                                                        <input type="hidden" name="product_id" value="{{ $sale->product_id }}">
+                                                        <input type="hidden" name="client_id" value="{{ $sale->client_id }}">
+                                                        <input type="hidden" name="seller_id" value="{{ $sale->seller_id }}">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Dados da Cobrança</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="row">
+                                                                <div class="col-12 col-sm-12 col-md-12 col-lg-12 mb-2">
+                                                                    <div class="form-floating">
+                                                                        <select name="payment_method" class="form-select" id="payment_method" required>
+                                                                            <option selected="">Opções:</option>
+                                                                            <option value="PIX">Pix</option>
+                                                                            <option value="BOLETO">Boleto</option>
+                                                                        </select>
+                                                                        <label for="payment_method">Forma de Pagamento</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                                                    <div class="form-floating">
+                                                                        <input type="text" name="value" class="form-control" id="value" placeholder="Valor:" oninput="maskValue(this)" required>
+                                                                        <label for="value">Valor:</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12 col-md-6 col-lg-6 mb-1">
+                                                                    <div class="form-floating">
+                                                                        <input type="date" name="due_date" class="form-control" id="due_date" placeholder="Vencimento:" required>
+                                                                        <label for="due_date">Vencimento:</label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer btn-group">
+                                                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                                            <button type="submit" class="btn btn-primary">Gerar</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
                                     @endif
-                                    <div class="col-12 col-md-7 col-lg-7 mb-2">
-                                        <div class="form-floating">
-                                            <select name="billingType" class="form-select" id="floatingBillingType" required>
-                                                <option value="">Método de Pagamento:</option>
-                                                <option value="PIX">Pix</option>
-                                                <option value="BOLETO">Boleto</option>
-                                                <option value="CREDIT_CARD">Cartão de Crédito</option>
-                                            </select>
-                                            <label for="floatingBillingType">Métodos</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-5 col-lg-5 mb-2">
-                                        <div class="form-floating">
-                                            <input type="number" name="installments" class="form-control" id="floatingInstallments" placeholder="Parcelas:" min="1" max="1" disabled>
-                                            <label for="floatingInstallments">Parcelas:</label>
-                                        </div>
+                                </div>
+                                <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>FATURA</th>
+                                                    <th>DETALHES</th>
+                                                    <th>VALOR</th>
+                                                    <th class="text-center">OPÇÕES</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="paymentTable">
+                                                @foreach ($sale->invoices as $invoice)
+                                                    <tr>
+                                                        <td>
+                                                            #{{ $invoice->id }} - {{ $invoice->name }}
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge bg-primary">
+                                                                {{ $invoice->statusLabel() }}
+                                                            </span>
+                                                            <a class="badge bg-dark" href="{{ $invoice->payment_url }}" target="_blank">
+                                                                Link de Pagamento
+                                                            </a>
+                                                        </td>
+                                                        <td>
+                                                            {{ number_format($invoice->value, 2, ',', '.') }}
+                                                        </td>
+                                                        <td>
+                                                            <form action="{{ route('deleted-invoice') }}" method="POST" class="d-grid delete">
+                                                                @csrf
+                                                                <input type="hidden" name="id" value="{{ $invoice->id }}">
+                                                                <div class="btn-group">
+                                                                    @if ($sale->type == 1)
+                                                                        <a href="{{ route('view-invoice', ['id' => $invoice->id]) }}" class="btn btn-outline-primary btn-sm">
+                                                                            Editar
+                                                                        </a>
+                                                                    @endif
+                                                                    @if ($invoice->num !== 1 && $invoice->status !== 1)
+                                                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                                            Excluir
+                                                                        </button>
+                                                                    @endif
+                                                                </div>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+
+                                                @foreach ($sale->invoicesByToken as $invoice)
+                                                    <tr>
+                                                        <td>
+                                                            #{{ $invoice->id }} - {{ $invoice->name }}
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge bg-primary">
+                                                                {{ $invoice->statusLabel() }}
+                                                            </span>
+                                                            <a class="badge bg-dark" href="{{ $invoice->payment_url }}" target="_blank">
+                                                                Link de Pagamento
+                                                            </a>
+                                                        </td>
+                                                        <td>
+                                                            {{ number_format($invoice->value, 2, ',', '.') }}
+                                                        </td>
+                                                        <td>
+                                                            <form action="{{ route('deleted-invoice') }}" method="POST" class="d-grid delete">
+                                                                @csrf
+                                                                <input type="hidden" name="id" value="{{ $invoice->id }}">
+                                                                <div class="btn-group">
+                                                                    @if ($sale->type == 1)
+                                                                        <a href="{{ route('view-invoice', ['id' => $invoice->id]) }}" class="btn btn-outline-primary btn-sm">
+                                                                            Editar
+                                                                        </a>
+                                                                    @endif
+                                                                     @if ($invoice->num !== 1 && $invoice->status !== 1)
+                                                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                                            Excluir
+                                                                        </button>
+                                                                    @endif
+                                                                </div>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal-footer btn-group">
-                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
-                                <button type="submit" class="btn btn-primary">Criar Fatura</button>
-                            </div>
-                        </form>
+                        </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Faturas associadas</h5>
-                    
-                    <div class="table-responsive">
-                        <table class="table table-hover" id="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">ID</th>
-                                    <th scope="col">Descrição</th>
-                                    <th scope="col">Vencimento</th>
-                                    <th class="text-center" scope="col">V. Parcela</th>
-                                    <th class="text-center" scope="col">V. Comissão</th>
-                                    <th class="text-center" scope="col">Status</th>
-                                    <th class="text-center" scope="col">Opções</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($invoices as $invoice)
-                                    <tr>
-                                        <th scope="row">{{ $invoice->id }}</th>
-                                        <td>{{ $invoice->description }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y') }}</td>
-                                        <td class="text-center">R$ {{ number_format($invoice->value, 2, ',', '.') }}</td>
-                                        <td class="text-center">R$ {{ number_format($invoice->commission, 2, ',', '.') }}</td>
-                                        <td class="text-center">{{ $invoice->statusLabel() }}</td>
-                                        <td class="text-center">
-                                            <div class="btn-group">
-                                                <a href="{{ $invoice->url_payment }}" target="_blank" class="btn btn-primary text-light"><i class="bi bi-upc"></i></a>
-                                                <a href="{{ route('send-default-whatsapp', ['id' => $invoice->id]) }}" class="btn btn-success text-light confirm"><i class="bi bi-whatsapp"></i></a>
-                                                @if($invoice->num <> 1)
-                                                    <a href="{{ route('delete-invoice', ['id' => $invoice->id]) }}" class="btn btn-danger text-light confirm"><i class="bi bi-trash"></i></a>
-                                                @endif
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-
                 </div>
             </div>
         </div>
-    </div>
-</section>
-
-<script>
-    const billingType = document.getElementById("floatingBillingType");
-    const installments = document.getElementById("floatingInstallments");
-
-    billingType.addEventListener("change", function () {
-        const selectedValue = billingType.value;
-
-        if (selectedValue === "CREDIT_CARD") {
-            installments.disabled = false;
-            installments.max = 6;
-            installments.value = 1;
-        } else if (selectedValue === "PIX" || selectedValue === "BOLETO") {
-            installments.disabled = false;
-            installments.max = 1;
-            installments.value = 1;
-        } else {
-            installments.disabled = true;
-            installments.value = "";
-        }
-    });
-</script>
+    </section>
 @endsection

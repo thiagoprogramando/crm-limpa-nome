@@ -20,7 +20,7 @@ class Registrer extends Controller {
         ]);
     }
 
-    public function registrerUser(Request $request) {
+    public function store(Request $request) {
 
         $request->validate([
             'name'      => 'required',

@@ -41,7 +41,7 @@
                             </p>
                         </div>                        
 
-                        <form action="{{ route('update-user') }}" method="POST" class="col-12 col-sm-12 col-md-7 col-lg-7 row">
+                        <form action="{{ route('updated-user') }}" method="POST" class="col-12 col-sm-12 col-md-7 col-lg-7 row">
                             @csrf
                             <input type="hidden" name="id" value="{{ Auth::user()->id }}">
                             <div class="col-12 col-md-12 col-lg-12 mb-1">
