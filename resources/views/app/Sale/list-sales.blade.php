@@ -98,13 +98,13 @@
                                     </div>
                                     <div class="col-12 col-md-6 col-lg-6 mb-2">
                                         <div class="form-floating">
-                                            <select name="id_seller" class="form-select" id="floatingSeller">
+                                            <select name="seller_id" class="form-select" id="seller_id">
                                                 <option selected="" value="">Consultores:</option>
                                                 @foreach ($sellers as $seller)
                                                     <option value="{{ $seller->id }}">{{ $seller->name }}</option>  
                                                 @endforeach
                                             </select>
-                                            <label for="floatingSeller">Consultor</label>
+                                            <label for="seller_id">Consultor</label>
                                         </div>
                                     </div>
                                 </div>
@@ -132,7 +132,8 @@
                         <table class="table table-sm table-hover" id="table">
                             <thead>
                                 <tr>
-                                    <th>Detalhes</th>
+                                    <th>ID</th>
+                                    <th scope="col">Lista</th>
                                     <th scope="col">Produto</th>
                                     <th scope="col">Cliente</th>
                                     <th scope="col">Consultor</th>
@@ -146,16 +147,19 @@
                                     <tr>
                                         <td title="{{ $sale->client->name }}">
                                             @if (Auth::user()->type == 1)
-                                                <input type="checkbox" class="row-checkbox" value="{{ $sale->id }}"> {{ $sale->id }}
+                                                <input type="checkbox" class="row-checkbox" value="{{ $sale->id }}">
                                             @endif
+                                            #{{ $sale->id }}
+                                        </td>
+                                        <td>
                                             <div class="text-start">
                                                 @if ($sale->status == 1)
                                                     <span class="badge bg-primary" title="Lista {{ $sale->list->name }}">
-                                                        Lista {{ $sale->list->name }} <br> {{ $sale->protocolLabel()['label'] }}
+                                                        {{ $sale->list->name }} <br> {{ $sale->protocolLabel()['label'] }}
                                                     </span>
                                                 @endif
                                                 @isset($sale->label) 
-                                                    <span class="badge bg-warning">
+                                                    <span class="badge bg-primary">
                                                         {{ $sale->label }}
                                                     </span> 
                                                 @endisset
@@ -165,20 +169,14 @@
                                             <p class="m-0 p-0">
                                                 {{ implode(' ', array_slice(explode(' ', $sale->product->name), 0, 2)) }} <br>
                                             </p>
-                                            <span>R$ {{ number_format($sale->totalInvoices(), 2, ',', '.') }}</span>  <br>
-                                            @isset($sale->guarantee)
-                                                <span class="badge bg-success">
-                                                    Garantia: {{ \Carbon\Carbon::parse($sale->guarantee)->format('d/m/Y') }}
-                                                </span>
-                                            @endisset
+                                            <span class="badge bg-secondary">R$ {{ number_format($sale->totalInvoices(), 2, ',', '.') }}</span>  <br>
                                         </td>
                                         <td>
                                             {{ implode(' ', array_slice(explode(' ', $sale->client->name), 0, 2)) }} <br>
-                                            <span class="badge bg-dark">CPF/CNPJ: {{ $sale->client->cpfcnpjLabel() }}</span>              
+                                            <span>CPF/CNPJ: {{ $sale->client->cpfcnpjLabel() }}</span>              
                                         </td>
                                         <td title="{{ $sale->seller->name }}">
                                             {{ implode(' ', array_slice(explode(' ', $sale->seller->name), 0, 2)) }} <br>
-                                            <span class="badge bg-dark">{{ $sale->seller->email }}</span>
                                         </td>
                                         <td class="text-center">
                                             @if ( $sale->statusContractLabel() == 'Assinado')
@@ -186,11 +184,11 @@
                                                     <a title="Contrato" href="{{ env('APP_URL').'preview-contract/'.$sale->id }}" target="_blank" class="text-white">Acessar</a>
                                                 </span>
                                             @else
-                                                <span class="badge bg-warning" title="Copiar URL" onclick="onClip('{{ env('APP_URL') }}preview-contract/{{ $sale->id }}')">
+                                                <span class="text-primary" title="Copiar URL" onclick="onClip('{{ env('APP_URL') }}preview-contract/{{ $sale->id }}')">
                                                     <i class="ri-file-edit-line"></i> Copiar Link do Contrato
                                                 </span>
                                             @endif
-                                            <a href="{{ route('send-contract', ['id' => $sale->id]) }}" class="badge bg-primary" title="Enviar Cópia (Cliente)">
+                                            <a href="{{ route('send-contract', ['id' => $sale->id]) }}" class="badge bg-secondary" title="Enviar Cópia (Cliente)">
                                                 <i class="ri-send-plane-fill"></i> Enviar Cópia (Cliente)
                                             </a>
                                         </td>

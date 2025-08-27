@@ -101,7 +101,7 @@ class Sale extends Model {
                 return 'Pendente';
                 break;
             default:
-                return 'Desconhecido';
+                return 'Pendente';
                 break;
         }
     }

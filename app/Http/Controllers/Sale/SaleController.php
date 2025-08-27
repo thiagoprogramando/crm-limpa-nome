@@ -38,14 +38,14 @@ class SaleController extends Controller {
         $accessibleUserIds = array_merge([$currentUser->id], $affiliateIds);
     
         if (Auth::user()->type == 1) {
-            if (!empty($request->id_seller)) {
-                $query->where('id_seller', $request->id_seller);
+            if (!empty($request->seller_id)) {
+                $query->where('seller_id', $request->seller_id);
             }
         } else {
-            if (!empty($request->id_seller)) {
-                $query->where('id_seller', $request->id_seller);
+            if (!empty($request->seller_id)) {
+                $query->where('seller_id', $request->seller_id);
             } else {
-                $query->whereIn('id_seller', $accessibleUserIds);
+                $query->whereIn('seller_id', $accessibleUserIds);
             }
         }
 
