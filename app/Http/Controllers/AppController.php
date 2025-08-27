@@ -39,8 +39,7 @@ class AppController extends Controller {
                     ->select(DB::raw('COALESCE(SUM(invoices.value), 0)'));
             }], 'total_sales')
             ->orderByDesc('total_sales')
-            ->take(10)
-            ->get();
+            ->paginate(10);
     
         return view('app.app', [
             'sales'    => $sales,
