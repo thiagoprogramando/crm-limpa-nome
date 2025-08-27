@@ -423,7 +423,7 @@ class AssasController extends Controller {
                 $seller = User::find($sale->seller_id);
                 if ($seller && $invoice->num == 1 && $invoice->type == 3) {
                     $message =  "Olá, {$seller->name}, Espero que esteja bem! 😊\r\n\r\n"
-                                . "Gostaria de informar que uma nova venda foi realizada com sucesso.🤑💸\r\n\r\n"
+                                . "Gostaria de infomar que uma nova venda foi realizada com sucesso.🤑💸\r\n\r\n"
                                 . "Cliente: {$client->name}\r\n"
                                 . "Produto/Serviço: {$product->name}\r\n"
                                 . "Valor Total: R$ " . number_format($sale->value, 2, ',', '.') . "\r\n"
@@ -435,7 +435,7 @@ class AssasController extends Controller {
 
                 if ($seller && $invoice->num != 1 && $invoice->type == 3 && $invoice->commission > 0) {
                     $message =  "Olá, {$seller->name}, Espero que esteja bem! 😊\r\n\r\n"
-                                . "Gostaria de informar que uma nova COMISSÃO FOI RECEBIDA com sucesso.🤑💸\r\n\r\n"
+                                . "Gostaria de infomar que uma nova COMISSÃO FOI RECEBIDA com sucesso.🤑💸\r\n\r\n"
                                 . "Cliente: {$client->name}\r\n"
                                 . "Produto/Serviço: {$product->name}\r\n"
                                 . "Fatura N° {$invoice->num}\r\n"
@@ -1071,7 +1071,7 @@ class AssasController extends Controller {
     private function getSales($ids) {
 
         if (!is_array($ids) || empty($ids)) {
-            throw new \Exception('Nenhuma venda informada.');
+            throw new \Exception('Nenhuma venda infomada.');
         }
 
         $sales = Sale::whereIn('id', $ids)

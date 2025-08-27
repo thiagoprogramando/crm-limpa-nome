@@ -108,7 +108,7 @@ class SaleController extends Controller {
 
         $sale       = Sale::find($id);
         if (!$sale) {
-            return redirect()->back()->with('infor', 'Não encontramos dados da venda!');
+            return redirect()->back()->with('info', 'Não encontramos dados da venda!');
         }
 
         $invoices = Invoice::where('sale_id', $sale->id)->orWhere('payment_token', $sale->payment_token)->get();
@@ -134,7 +134,7 @@ class SaleController extends Controller {
         }
 
         if ($product->status != 1) {
-            return redirect()->back()->with('infor', 'Em breve!!');
+            return redirect()->back()->with('info', 'Em breve!!');
         }
 
         $query = Sale::where('seller_id', Auth::user()->id)->whereIn('status', [0, 2])->orderBy('created_at', 'desc');
@@ -176,7 +176,7 @@ class SaleController extends Controller {
             return redirect()->route('create-sale', ['product' => $request->product_id, 'type' => 1, 'user' => $user['id'] ])->with('success', 'Cliente incluído com sucesso!');
         }
 
-        return redirect()->back()->with('infor', 'Não foi possível incluir o cliente! '.$user['message']);
+        return redirect()->back()->with('info', 'Não foi possível incluir o cliente! '.$user['message']);
     }
 
     public function createdPaymentSale(Request $request) {
@@ -448,7 +448,7 @@ class SaleController extends Controller {
             
                 $message = "*Assunto: Reprotocolamento de Processo Judicial*\r\n\r\n" .
                            "{$clientName},\r\n\r\n" .
-                           "Gostaríamos de informar que o *seu processo* foi *reprotocolado com sucesso.*\r\n\r\n" .
+                           "Gostaríamos de infomar que o *seu processo* foi *reprotocolado com sucesso.*\r\n\r\n" .
                            "A partir de agora, será necessário *aguardar o prazo estimado de 20 a 30 dias*, " .
                            "conforme estipulado pelos trâmites judiciais, para a análise e andamento do seu caso.\r\n\r\n" .
                            "Estamos acompanhando de perto o andamento do processo e *entraremos em contato assim que houver novidades.*\r\n\r\n" .
@@ -463,7 +463,7 @@ class SaleController extends Controller {
             
                 $message = "*Assunto: Conclusão do Processo Judicial*\r\n\r\n" .
                            "{$clientName},\r\n\r\n" .
-                           "É com satisfação que informamos que o *seu processo foi concluído com sucesso!*\r\n\r\n" .
+                           "É com satisfação que infomamos que o *seu processo foi concluído com sucesso!*\r\n\r\n" .
                            "Agradecemos pela confiança em nosso trabalho.";
             
                 $this->sendWhatsapp(env('APP_URL') . 'login-cliente', $message, $phone, $sellerApiToken);
@@ -587,17 +587,17 @@ class SaleController extends Controller {
 
         $product = Product::find($product);
         if (!$product) {
-            return redirect()->back()->with('infor', 'Produto indisponível!');
+            return redirect()->back()->with('info', 'Produto indisponível!');
         }
 
         $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
         if (!$list) {
-            return redirect()->back()->with('infor', 'Não há Lista disponível no momento, aguarde uma nova Lista!');
+            return redirect()->back()->with('info', 'Não há Lista disponível no momento, aguarde uma nova Lista!');
         }
         
         $client = $this->createdUser($request->name, null, $request->cpfcnpj);
         if ($client['status'] === false) {
-            return redirect()->back()->with('infor', 'Não foi possível incluir o cliente! '.$client['message']);
+            return redirect()->back()->with('info', 'Não foi possível incluir o cliente! '.$client['message']);
         }   
 
         $sale = new Sale();
@@ -613,7 +613,7 @@ class SaleController extends Controller {
             return redirect()->route('create-sale', ['product' => $product->id, 'type' => $type])->with('success', 'Sucesso! Nome incluído com sucesso!');
         }
 
-        return redirect()->back()->with('infor', 'Não foi possível adicionar o nome, verifique os dados e tente novamente!');
+        return redirect()->back()->with('info', 'Não foi possível adicionar o nome, verifique os dados e tente novamente!');
     }
 
     public function createdSaleExcel(Request $request, $product, $type = null) {
@@ -715,7 +715,7 @@ class SaleController extends Controller {
         if (str_word_count(trim($name)) < 2) {
             return [
                 'status'  => false,
-                'message' => 'Informar Nome Completo!'
+                'message' => 'infomar Nome Completo!'
             ];
         }
 
