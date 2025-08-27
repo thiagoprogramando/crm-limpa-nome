@@ -46,18 +46,18 @@
                             <input type="hidden" name="id" value="{{ Auth::user()->id }}">
                             <div class="col-12 col-md-12 col-lg-12 mb-1">
                                 <div class="form-floating">
-                                    <input type="text" name="wallet" value="{{ Auth::user()->wallet }}" class="form-control" id="floatingWallet" placeholder="Wallet:" @readonly(!empty(Auth::user()->wallet))>
+                                    <input type="text" name="wallet" value="{{ Auth::user()->wallet }}" class="form-control" id="floatingWallet" placeholder="Wallet:" @readonly(!empty(Auth::user()->token_wallet))>
                                     <label for="floatingWallet">Wallet:</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-12 col-lg-12 mb-1">
                                 <div class="form-floating">
-                                    <input type="text" name="api_key" value="{{ Auth::user()->api_key }}" class="form-control" id="floatingApiKey" placeholder="API KEY:" @readonly(!empty(Auth::user()->api_key))>
+                                    <input type="text" name="api_key" value="{{ Auth::user()->api_key }}" class="form-control" id="floatingApiKey" placeholder="API KEY:" @readonly(!empty(Auth::user()->token_key))>
                                     <label for="floatingApiKey">API KEY:</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-12 col-lg-12 d-grid gap-2 mb-3">
-                                <button type="submit" class="btn btn-primary" @disabled(!empty(Auth::user()->api_key) && !empty(Auth::user()->wallet))>Válidar Tokens</button>
+                                <button type="submit" class="btn btn-primary" @disabled(!empty(Auth::user()->token_key) && !empty(Auth::user()->token_wallet))>Válidar Tokens</button>
                             </div>
                         </form>
                     </div>

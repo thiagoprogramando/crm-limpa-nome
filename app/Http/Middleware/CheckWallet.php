@@ -13,7 +13,7 @@ class CheckWallet {
     public function handle(Request $request, Closure $next): Response {
 
         $user = Auth::user();
-        if ($user && $user->type !== 4 && $user->type !== 1 && ($user->wallet == null || $user->api_key == null)) {
+        if ($user && $user->type !== 4 && $user->type !== 1 && ($user->token_wallet == null || $user->token_key == null)) {
             return redirect()->route('create-wallet')->with('info', 'Você precisa de uma Carteira Digital para acessar esse módulo!');
         }
 
