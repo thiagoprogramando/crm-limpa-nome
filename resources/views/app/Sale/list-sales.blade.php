@@ -132,9 +132,10 @@
                         <table class="table table-sm table-hover" id="table">
                             <thead>
                                 <tr>
+                                    <th>Detalhes</th>
+                                    <th scope="col">Produto</th>
                                     <th scope="col">Cliente</th>
                                     <th scope="col">Consultor</th>
-                                    <th>Detalhes</th>
                                     <th class="text-center">Contrato</th>
                                     <th class="text-center">Pagamento</th>
                                     <th class="text-center">Opções</th>
@@ -145,37 +146,39 @@
                                     <tr>
                                         <td title="{{ $sale->client->name }}">
                                             @if (Auth::user()->type == 1)
-                                                <input type="checkbox" class="row-checkbox" value="{{ $sale->id }}"> {{ $sale->id }} -
+                                                <input type="checkbox" class="row-checkbox" value="{{ $sale->id }}"> {{ $sale->id }}
                                             @endif
-                                            {{ implode(' ', array_slice(explode(' ', $sale->client->name), 0, 2)) }} <br>
-                                            <span class="badge bg-dark">CPF/CNPJ: {{ $sale->client->cpfcnpjLabel() }}</span>
-                                        </td>
-                                        <td title="{{ $sale->seller->name }}">
-                                            {{ implode(' ', array_slice(explode(' ', $sale->seller->name), 0, 2)) }} <br>
-                                            <span class="badge bg-dark">{{ $sale->seller->email }}</span>
-                                        </td>
-                                        <td>
-                                            <p class="m-0 p-0">
-                                                {{ implode(' ', array_slice(explode(' ', $sale->product->name), 0, 2)) }} <br>
-                                            </p>
-                                            <span>R$ {{ number_format($sale->totalInvoices(), 2, ',', '.') }}</span>  <br>
                                             <div class="text-start">
                                                 @if ($sale->status == 1)
                                                     <span class="badge bg-primary" title="Lista {{ $sale->list->name }}">
                                                         Lista {{ $sale->list->name }} <br> {{ $sale->protocolLabel()['label'] }}
                                                     </span>
-                                                    @isset($sale->guarantee)
-                                                        <span class="badge bg-success">
-                                                            Garantia: {{ \Carbon\Carbon::parse($sale->guarantee)->format('d/m/Y') }}
-                                                        </span>
-                                                    @endisset
                                                 @endif
                                                 @isset($sale->label) 
                                                     <span class="badge bg-warning">
                                                         {{ $sale->label }}
                                                     </span> 
                                                 @endisset
-                                            </div>                     
+                                            </div>   
+                                        </td>
+                                        <td>
+                                            <p class="m-0 p-0">
+                                                {{ implode(' ', array_slice(explode(' ', $sale->product->name), 0, 2)) }} <br>
+                                            </p>
+                                            <span>R$ {{ number_format($sale->totalInvoices(), 2, ',', '.') }}</span>  <br>
+                                            @isset($sale->guarantee)
+                                                <span class="badge bg-success">
+                                                    Garantia: {{ \Carbon\Carbon::parse($sale->guarantee)->format('d/m/Y') }}
+                                                </span>
+                                            @endisset
+                                        </td>
+                                        <td>
+                                            {{ implode(' ', array_slice(explode(' ', $sale->client->name), 0, 2)) }} <br>
+                                            <span class="badge bg-dark">CPF/CNPJ: {{ $sale->client->cpfcnpjLabel() }}</span>              
+                                        </td>
+                                        <td title="{{ $sale->seller->name }}">
+                                            {{ implode(' ', array_slice(explode(' ', $sale->seller->name), 0, 2)) }} <br>
+                                            <span class="badge bg-dark">{{ $sale->seller->email }}</span>
                                         </td>
                                         <td class="text-center">
                                             @if ( $sale->statusContractLabel() == 'Assinado')
