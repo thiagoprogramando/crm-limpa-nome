@@ -67,7 +67,7 @@ class AssasController extends Controller {
             return redirect()->route('profile')->with('info', 'Verifique seus dados e tente novamente!');
         }
        
-        $invoice = Invoice::where('id_user', $user->id)->where('type', 1)->where('status', 0)->exists();
+        $invoice = Invoice::where('user_id', $user->id)->where('type', 1)->where('status', 0)->exists();
         if ($invoice) {
             return redirect()->route('payments')->with('error', 'Você possui uma mensalidade em aberto!');
         }
@@ -90,8 +90,8 @@ class AssasController extends Controller {
             $invoice->name          = 'Mensalidade '.env('APP_NAME');
             $invoice->description   = 'Mensalidade '.env('APP_NAME');
 
-            $invoice->id_user            = $user->id;
-            $invoice->id_product         = 0;
+            $invoice->user_id            = $user->id;
+            $invoice->product_id         = 0;
             $invoice->value              = 49.99;
             $invoice->commission         = 23;
             $invoice->commission_filiate = 23;
@@ -101,9 +101,11 @@ class AssasController extends Controller {
             $invoice->due_date           = now()->addDay();
 
             $invoice->url_payment   = $charge['invoiceUrl'];
-            $invoice->token_payment = $charge['id'];
+            $invoice->payment_token = $charge['id'];
 
-            if($invoice->save()) {
+            $user->status = 2;
+
+            if($invoice->save() && $user->save()) {
                 return redirect($charge['invoiceUrl']);
             }
         }
@@ -307,7 +309,7 @@ class AssasController extends Controller {
         $invoice = Invoice::find($id);
         if ($invoice) {
             
-            $user = User::find($invoice->id_user);
+            $user = User::find($invoice->user_id);
             if ($user) {
                 if (($user->parent->afiliates()->count() % 5 === 0) &&  $user->invoices()->where('type', 1)->count() <= 1 && $user->created_at > Carbon::create(2025, 8, 5)) {
                     $this->createCoupon($user->parent, 'Promoção 10 Afiliados 1 Mensalidade!');
@@ -330,7 +332,7 @@ class AssasController extends Controller {
         $coupon                 = new Coupon();
         $coupon->name           = $couponName;
         $coupon->description    = $description;
-        $coupon->id_user        = $parent->id;
+        $coupon->user_id        = $parent->id;
         $coupon->percentage     = 100;
         $coupon->qtd            = 1;
         if($coupon->save()) {
@@ -360,7 +362,7 @@ class AssasController extends Controller {
         if ($jsonData['event'] === 'PAYMENT_CONFIRMED' || $jsonData['event'] === 'PAYMENT_RECEIVED') {
             
             $token = $jsonData['payment']['id'];
-            $invoice = Invoice::where('token_payment', $token)->where('status', 0)->first();
+            $invoice = Invoice::where('payment_token', $token)->whereIn('status', [0, 2])->first();
             if ($invoice) {
 
                 $invoice->status = 1;
@@ -379,16 +381,16 @@ class AssasController extends Controller {
 
                 $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
 
-                $sale = Sale::where('id', $invoice->id_sale)->first();
+                $sale = Sale::where('id', $invoice->sale_id)->first();
                 if ($sale) {
 
-                    $product = $invoice->id_product <> null ? Product::where('id', $invoice->id_product)->first() : false;
+                    $product = $invoice->product_id <> null ? Product::where('id', $invoice->product_id)->first() : false;
                     if ($product && $invoice->num == 1) {
                             
                         $sale->status = 1;
                         $sale->guarantee = Carbon::parse($sale->guarantee)->addMonths(3);
                         if ($list) {
-                            $sale->id_list = $list->id;
+                            $sale->list_id = $list->id;
                         }
                     }
 
@@ -398,77 +400,27 @@ class AssasController extends Controller {
                     $notification->name         = 'Fatura N°'.$invoice->id;
                     $notification->description  = 'Faturas recebida com sucesso!';
                     $notification->type         = 1;
-                    $notification->id_user      = $invoice->id_seller; 
+                    $notification->user_id      = $invoice->seller_id; 
                     $notification->save();
-
-                    $seller = User::find($sale->id_seller);
-                    if ($seller && $seller->type <> 4) {
-
-                        $totalSales = Sale::where('id_seller', $seller->id)->where('status', 1)->count();
-                        switch($totalSales) {
-                            case 10:
-                                $seller->level = 2;
-                                $nivel = 'CONSULTOR'; 
-                                break;
-                            case 30:
-                                $seller->level = 3;
-                                $nivel = 'CONSULTOR LÍDER'; 
-                                break;
-                            case 50:
-                                $seller->level = 4;
-                                $nivel = 'REGIONAL'; 
-                                break;
-                            case 100:
-                                $seller->level = 5;
-                                $nivel = 'GERENTE REGIONAL';
-                                break;
-                            case 300:
-                                $seller->level = 7;
-                                $nivel = 'DIRETOR';
-                                break;
-                            case 500:
-                                $seller->level = 8;
-                                $nivel = 'DIRETOR REGIONAL';
-                                break;
-                            case 1000:
-                                $seller->level = 9;
-                                $nivel = 'PRESIDENTE VIP';
-                                break;
-                        }
-
-                        if (!empty($nivel)) {
-                            $notification               = new Notification();
-                            $notification->name         = 'Novo nível!';
-                            $notification->description  = $seller->name.' Alcançou o nível: '.$nivel;
-                            $notification->type         = 2;
-                            $notification->id_user      = 14; 
-                            $notification->save();
-                        }
-
-                        if ($seller->salesSeller()->where('status', 1)->count() % 10 === 0) {
-                            $this->createCoupon($seller, 'Promoção 10 vendas ganha 1 nome!');
-                        }
-
-                        $seller->save();
-                    }
                 }
 
-                $sales = Sale::where('token_payment', $token)->where('status', 0)->get();
+                $sales = Sale::where('payment_token', $token)->where('status', 0)->get();
                 if ($sales->isNotEmpty()) {
 
                     Sale::whereIn('id', $sales->pluck('id'))
-                        ->update(['status' => 1, 'id_list' => $list->id]);
+                        ->update(['status' => 1, 'list_id' => $list->id]);
                 
                     return response()->json(['success' => 'success', 'message' => 'Status das vendas atualizado com sucesso!']);
                 }
 
-                $client = User::find($invoice->id_user);
+                $client = User::find($invoice->user_id);
                 if ($client && $invoice->num == 1) {
                     $this->sendWhatsapp(env('APP_URL').'login-cliente', "Olá, ".$client->name."!\r\n\r\nAgradecemos pelo seu pagamento! \r\n\r\n\r\n Tenha a certeza de que sua situação está em boas mãos. \r\n\r\n\r\n *Nos próximos 30 dias úteis*, nossa equipe especializada acompanhará de perto todo o processo para garantir que seu nome seja limpo o mais rápido possível. \r\n\r\n\r\n Estamos à disposição para qualquer dúvida ou esclarecimento. \r\n\r\n Você pode acompanhar o processo acessando nosso sistema no link abaixo: \r\n\r\n", $client->phone, $seller->token_whatsapp);
                 } else {
                     $this->sendWhatsapp(env('APP_URL').'login-cliente', $client->name."!\r\n\r\nAgradecemos por manter o compromisso e realizar o pagamento do boleto, o que garante a continuidade e a validade da garantia do serviço. \r\n\r\n Acesse o Painel do cliente👇", $client->phone, $seller->token_whatsapp);
                 }
 
+                $seller = User::find($sale->seller_id);
                 if ($seller && $invoice->num == 1 && $invoice->type == 3) {
                     $message =  "Olá, {$seller->name}, Espero que esteja bem! 😊\r\n\r\n"
                                 . "Gostaria de informar que uma nova venda foi realizada com sucesso.🤑💸\r\n\r\n"
@@ -543,9 +495,9 @@ class AssasController extends Controller {
                 $data = json_decode($body, true);
                 if ($callback) {
 
-                    $invoice = Invoice::where('token_payment', $id)->first();
+                    $invoice = Invoice::where('payment_token', $id)->first();
                     if ($invoice) {
-                        $invoice->token_payment = $data['id'];
+                        $invoice->payment_token = $data['id'];
                         $invoice->url_payment   = $data['invoiceUrl'];
                         $invoice->due_date      = $dueDate;
                         $invoice->save();
@@ -876,7 +828,7 @@ class AssasController extends Controller {
                 return redirect()->back()->with('error', 'Não é possível pagar essa Fatura com saldo!');
             }
     
-            $user = User::find($invoice->id_user);
+            $user = User::find($invoice->user_id);
             if (!$user) {
                 return redirect()->back()->with('info', 'Dados não localizados!');
             }
@@ -887,7 +839,7 @@ class AssasController extends Controller {
             }
     
             $client = new Client();
-            $response = $client->request('GET', env('API_URL_ASSAS') . "v3/payments/{$invoice->token_payment}/pixQrCode", [
+            $response = $client->request('GET', env('API_URL_ASSAS') . "v3/payments/{$invoice->payment_token}/pixQrCode", [
                 'headers' => [
                     'accept'       => 'application/json',
                     'access_token' => $user->token_key,
