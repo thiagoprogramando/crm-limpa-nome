@@ -6,11 +6,16 @@ use App\Http\Controllers\Assas\AssasController;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class WalletController extends Controller {
     
     public function wallet() {
+
+        if (empty(Auth::user()->token_wallet) || empty(Auth::user()->token_wallet)) {
+            return redirect()->back()->with('info', 'Necessário Integrar  APIs de uma Carteira Digital!');
+        }
 
         $assas   = new AssasController();
         $balance = $assas->balance() ?? 0;

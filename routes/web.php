@@ -49,20 +49,16 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/app', [AppController::class, 'index'])->name('app');
             Route::get('/faq', [FaqController::class, 'faq'])->name('faq');
 
-            Route::middleware(['checkWallet'])->group(function () {
+            
+            Route::get('/list-network', [UserController::class, 'listNetwork'])->name('list-network');
 
-                Route::get('/list-network', [UserController::class, 'listNetwork'])->name('list-network');
+            Route::get('/create-sale/{product}/{type?}/{user?}', [SaleController::class, 'create'])->name('create-sale');
+            Route::post('created-client-sale', [SaleController::class, 'createdClientSale'])->name('created-client-sale');
+            Route::post('created-payment-sale', [SaleController::class, 'createdPaymentSale'])->name('created-payment-sale');
 
-                Route::get('/create-sale/{product}/{type?}/{user?}', [SaleController::class, 'create'])->name('create-sale');
-                Route::post('created-client-sale', [SaleController::class, 'createdClientSale'])->name('created-client-sale');
-                Route::post('created-payment-sale', [SaleController::class, 'createdPaymentSale'])->name('created-payment-sale');
-
-                Route::get('/wallet', [WalletController::class, 'wallet'])->name('wallet');
-                Route::post('withdraw-send', [WalletController::class, 'withdrawSend'])->name('withdraw-send');
-                Route::get('/receivable', [Payment::class, 'receivable'])->name('receivable');
-
-                Route::post('create-invoice', [SaleController::class, 'createInvoice'])->name('create-invoice');
-            });
+            Route::get('/wallet', [WalletController::class, 'wallet'])->name('wallet');
+            Route::post('withdraw-send', [WalletController::class, 'withdrawSend'])->name('withdraw-send');
+            Route::get('/receivable', [Payment::class, 'receivable'])->name('receivable');
 
             Route::get('/sales', [SaleController::class, 'index'])->name('sales');
             Route::get('/view-sale/{id}', [SaleController::class, 'show'])->name('view-sale');

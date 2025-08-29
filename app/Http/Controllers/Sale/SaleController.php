@@ -171,6 +171,10 @@ class SaleController extends Controller {
 
     public function createdClientSale(Request $request) {
 
+        if (empty(Auth::user()->token_wallet) || empty(Auth::user()->token_wallet)) {
+            return redirect()->back()->with('info', 'Necessário Integrar  APIs de uma Carteira Digital!');
+        }
+
         $user = $this->createdUser($request->name, $request->email, $request->cpfcnpj, $request->birth_date, $request->phone, Auth::user()->id, Auth::user()->fixed_cost);
         if ($user['status'] === true) {
             return redirect()->route('create-sale', ['product' => $request->product_id, 'type' => 1, 'user' => $user['id'] ])->with('success', 'Cliente incluído com sucesso!');
