@@ -161,18 +161,26 @@
                     </a>
                     <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                         @foreach($business as $busines)
-                            <li><a href="{{ route('create-sale', ['product' => $busines->id, 'type' => 1]) }}"> <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> </a></li>
+                            <li>
+                                <a href="{{ route('create-sale', ['product' => $busines->id, 'type' => 1]) }}"> 
+                                    <i class="bi bi-circle"></i><span>{{ $busines->name }}</span> 
+                                </a>
+                            </li>
                         @endforeach
                     </ul>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link collapsed" data-bs-target="#forms-upload" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-cloud-upload"></i><span>Enviar Nome (Associação)</span><i class="bi bi-chevron-down ms-auto"></i>
+                    <a class="nav-link collapsed" data-bs-target="#forms-no-document" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-cloud-no-document"></i><span>Enviar Nome (Associação)</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul id="forms-upload" class="nav-content collapse " data-bs-parent="#sidebar-upload">
+                    <ul id="forms-no-document" class="nav-content collapse " data-bs-parent="#sidebar-no-document">
                         @foreach($sends as $send)
-                            <li><a href="{{ route('create-sale', ['product' => $busines->id, 'type' => 2]) }}"> <i class="bi bi-circle"></i><span>{{ $send->name }}</span> </a></li>
+                            <li>
+                                <a href="{{ route('create-sale', ['product' => $send->id, 'type' => 2]) }}"> 
+                                    <i class="bi bi-circle"></i><span>{{ $send->name }}</span> 
+                                </a>
+                            </li>
                         @endforeach
                     </ul>
                 </li>
