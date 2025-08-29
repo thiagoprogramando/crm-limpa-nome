@@ -12,7 +12,7 @@ class AppController extends Controller {
     
     public function app() {
 
-        $sales = Sale::where('id_client', Auth::user()->id)->paginate(10);
+        $sales = Sale::where('client_id', Auth::user()->id)->paginate(10);
         return view('client.app.app', [
             'sales' => $sales
         ]);

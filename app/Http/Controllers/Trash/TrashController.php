@@ -33,7 +33,7 @@ class TrashController extends Controller {
         if (!empty($request->name)) {
             $users = User::where('name', 'LIKE', '%' . $request->name . '%')->pluck('id')->toArray();
             if (!empty($users)) {
-                $query->whereIn('id_client', $users);
+                $query->whereIn('client_id', $users);
             }
         }
 
