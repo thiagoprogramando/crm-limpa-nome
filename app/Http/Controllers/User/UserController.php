@@ -91,11 +91,11 @@ class UserController extends Controller {
 
         if (!empty($request->fixed_cost)) {
 
-            if (($this->formatarValor($request->fixed_cost) < Auth::user()->fixed_cost) && Auth::user()->type !== 1) {
+            if (($this->formatValue($request->fixed_cost) < Auth::user()->fixed_cost) && Auth::user()->type !== 1) {
                 return redirect()->back()->with('info', 'O valor mín para custo é R$ '.Auth::user()->fixed_cost);
             }
 
-            $user->fixed_cost = $this->formatarValor($request->fixed_cost);
+            $user->fixed_cost = $this->formatValue($request->fixed_cost);
         }
         
         if (!empty($request->level)) {
@@ -373,13 +373,49 @@ class UserController extends Controller {
     
         return view('app.User.create-wallet');
     }
-    
-    private function formatarValor($valor) {
+
+    private function formatValue($value) {
         
-        $valor = preg_replace('/[^0-9,]/', '', $valor);
-        $valor = str_replace(',', '.', $valor);
-        $valorFloat = floatval($valor);
-    
-        return number_format($valorFloat, 2, '.', '');
+        $value = trim((string)$value);
+        if ($value === '') {
+            return number_format(0, 2, '.', '');
+        }
+
+        $value = preg_replace('/[^0-9.,-]/', '', $value);
+
+        $hasComma = strpos($value, ',') !== false;
+        $hasDot   = strpos($value, '.') !== false;
+
+        if ($hasComma && $hasDot) {
+            
+            $lastComma = strrpos($value, ',');
+            $lastDot   = strrpos($value, '.');
+
+            if ($lastComma > $lastDot) {
+                $value = str_replace('.', '', $value);
+                $value = str_replace(',', '.', $value);
+            } else {
+                $value = str_replace(',', '', $value);
+            }
+        } elseif ($hasComma) {
+            $parts = explode(',', $value);
+            $last  = end($parts);
+            if (strlen($last) === 3 && count($parts) > 1) {
+                $value = str_replace(',', '', $value);
+            } else {
+                $value = str_replace(',', '.', $value);
+            }
+        } elseif ($hasDot) {
+            
+            $parts = explode('.', $value);
+            $last  = end($parts);
+            if (strlen($last) === 3 && count($parts) > 1) {
+                $value = str_replace('.', '', $value);
+            }
+        }
+
+        $valueFloat = floatval($value);
+        return number_format($valueFloat, 2, '.', '');
     }
+
 }

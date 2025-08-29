@@ -133,7 +133,6 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th scope="col">Lista</th>
                                     <th scope="col">Produto</th>
                                     <th scope="col">Cliente</th>
                                     <th scope="col">Consultor</th>
@@ -149,9 +148,7 @@
                                             @if (Auth::user()->type == 1)
                                                 <input type="checkbox" class="row-checkbox" value="{{ $sale->id }}">
                                             @endif
-                                            #{{ $sale->id }}
-                                        </td>
-                                        <td>
+                                            #{{ $sale->id }} <br>
                                             <div class="text-start">
                                                 @if ($sale->status == 1)
                                                     <span class="badge bg-primary" title="Lista {{ $sale->list->name }}">
@@ -159,11 +156,11 @@
                                                     </span>
                                                 @endif
                                                 @isset($sale->label) 
-                                                    <span class="badge bg-primary">
+                                                    <span class="badge bg-warning">
                                                         {{ $sale->label }}
                                                     </span> 
                                                 @endisset
-                                            </div>   
+                                            </div>  
                                         </td>
                                         <td>
                                             <p class="m-0 p-0">

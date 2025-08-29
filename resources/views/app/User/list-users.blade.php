@@ -185,14 +185,14 @@
                                                                 </div>
                                                                 <div class="col-12 col-md-5 col-lg-5 mb-1">
                                                                     <div class="form-floating">
-                                                                        <input type="text" name="fixed_cost" class="form-control" id="fixed_cost" placeholder="Custo Fixo (R$):" value="{{ $user->fixed_cost }}" oninput="mascaraReal(this)">
+                                                                        <input type="text" name="fixed_cost" class="form-control money" id="fixed_cost" placeholder="Custo Fixo (R$):" value="{{ $user->fixed_cost }}" oninput="maskValue(this)">
                                                                         <label for="fixed_cost">Custo Fixo (R$):</label>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-md-7 col-lg-7 mb-1">
                                                                     <div class="form-floating">
-                                                                        <input type="text" name="wallet" class="form-control" id="wallet" placeholder="Wallet:" value="{{ $user->wallet }}">
-                                                                        <label for="wallet">Wallet:</label>
+                                                                        <input type="text" name="token_wallet" class="form-control" id="token_wallet" placeholder="token_wallet:" value="{{ $user->token_wallet }}">
+                                                                        <label for="token_wallet">Wallet:</label>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-md-5 col-lg-5 mb-1">
@@ -203,14 +203,14 @@
                                                                 </div>
                                                                 <div class="col-12 col-md-12 col-lg-12 mb-1">
                                                                     <div class="form-floating">
-                                                                        <input type="text" name="api_key" class="form-control" id="api_key" placeholder="Api Token ZapSing:" value="{{ $user->api_key }}">
-                                                                        <label for="api_key">Api Key:</label>
+                                                                        <input type="text" name="token_key" class="form-control" id="token_key" placeholder="Api Token ZapSing:" value="{{ $user->token_key }}">
+                                                                        <label for="token_key">Api Key:</label>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-md-12 col-lg-12 mb-1">
                                                                     <div class="form-floating">
-                                                                        <input type="text" name="api_token_zapapi" class="form-control" id="api_token_zapapi" placeholder="Api Token ZapSing:" value="{{ $user->api_token_zapapi }}">
-                                                                        <label for="api_token_zapapi">Token ZapApi:</label>
+                                                                        <input type="text" name="token_whatsapp" class="form-control" id="token_whatsapp" placeholder="Api Token ZapSing:" value="{{ $user->token_whatsapp }}">
+                                                                        <label for="token_whatsapp">Token ZapApi:</label>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 offset-md-6 col-md-6 offset-lg-6 col-lg-6 mb-1 btn-group">

@@ -50,16 +50,6 @@
                 </div>
             </div>
 
-            @if (Auth::user()->status <> 1)
-                <div class="col-12">
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="bi bi-exclamation-octagon me-1"></i>
-                        Você possui pendências no cadastro, <a href="{{ route('profile') }}">complete os dados clicando aqui!</a>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                </div>
-            @endif
-
             <div class="col-sm-12 col-md-8 col-lg-8">
                 <div class="row align-items-start">
                     <div class="col-sm-12 col-md-6 col-lg-4">
@@ -125,7 +115,7 @@
                                     <i class="bi bi-currency-dollar"></i>
                                     </div>
                                     <div class="ps-3">
-                                        {{-- <h6>{{ number_format($invoicing, 2, ',', '.') }}</h6> --}}
+                                        <h6>{{ number_format((Auth::user()->sales->flatMap->invoices->sum('value') + Auth::user()->sales->flatMap->invoicesByToken->sum('value')), 2, ',', '.') }}</h6>
                                     </div>
                                 </div>
                             </div>
@@ -141,7 +131,15 @@
                                     <i class="ri-money-dollar-circle-line"></i>
                                     </div>
                                     <div class="ps-3">
-                                        {{-- <h6>{{ number_format($invoicingDay, 2, ',', '.') }}</h6> --}}
+                                        <h6>
+                                            {{
+                                                number_format(
+                                                    Auth::user()->sales->flatMap->invoices->filter(fn($i) => $i->created_at->isToday())->sum('value') +
+                                                    Auth::user()->sales->flatMap->invoicesByToken->filter(fn($i) => $i->created_at->isToday())->sum('value'),
+                                                    2, ',', '.'
+                                                )
+                                            }}
+                                        </h6>
                                     </div>
                                 </div>
                             </div>
@@ -167,7 +165,7 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-7 col-xxl-7">
+                    {{-- <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-7 col-xxl-7">
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Ranking <span>| Os 10 melhores faturamentos.</span></h5>
@@ -182,8 +180,8 @@
                                                 <th scope="col">Graduação</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            @foreach ($ranking as $key => $position)
+                                        <tbody> --}}
+                                            {{-- @foreach ($ranking as $key => $position)
                                                 <tr>
                                                     <td scope="row" class="d-flex justify-content-center">
                                                         @switch($loop->iteration)
@@ -215,15 +213,15 @@
                                                         {{ $position->getGraduation()->nivel }}
                                                     </td>
                                                 </tr>
-                                            @endforeach
-                                        </tbody>
+                                            @endforeach --}}
+                                        {{-- </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-5 col-xxl-5">
+                    {{-- <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Rede <span>| Últimos cadastros</span></h5>
@@ -255,7 +253,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
 

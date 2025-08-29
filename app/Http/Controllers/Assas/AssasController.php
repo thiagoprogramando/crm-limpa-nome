@@ -93,14 +93,14 @@ class AssasController extends Controller {
             $invoice->user_id            = $user->id;
             $invoice->product_id         = 0;
             $invoice->value              = 49.99;
-            $invoice->commission         = 23;
+            $invoice->commission_seller  = 23;
             $invoice->commission_filiate = 23;
-            $invoice->status             = 0;
+            $invoice->status             = 2;
             $invoice->type               = 1;
             $invoice->num                = 1;
             $invoice->due_date           = now()->addDay();
 
-            $invoice->url_payment   = $charge['invoiceUrl'];
+            $invoice->payment_url   = $charge['invoiceUrl'];
             $invoice->payment_token = $charge['id'];
 
             $user->status = 2;

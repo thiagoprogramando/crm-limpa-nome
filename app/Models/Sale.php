@@ -65,12 +65,12 @@ class Sale extends Model {
 
     public function totalInvoices() {
 
-        $total = Invoice::where('sale_id', $this->id)->orWhere('payment_token', $this->payment_token)->sum('value');
+        $total      = Invoice::where('sale_id', $this->id)->orWhere('payment_token', $this->payment_token)->sum('value');
         if ($this->payment_token == null) {
             return $total;
         }
 
-        $sales = Sale::where('payment_token', $this->payment_token)->count();
+        $sales      = Sale::where('payment_token', $this->payment_token)->count();
         if ($sales > 1) {
             return $total / $sales;
         }

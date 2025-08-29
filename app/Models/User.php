@@ -41,7 +41,7 @@ class User extends Authenticatable {
         'token_wallet',
         'token_key',
 
-        'api_token_zapapi',
+        'token_whatsapp',
         'customer',
 
         'type',

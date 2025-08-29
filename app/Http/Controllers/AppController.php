@@ -32,19 +32,10 @@ class AppController extends Controller {
                 ->where('status', 1)
                 ->whereDate('created_at', $now->toDateString())
                 ->count();
-
-        $users = User::where('type', 2)
-            ->withSum(['sales as total_sales' => function($query) {
-                $query->join('invoices', 'sales.id', '=', 'invoices.sale_id')
-                    ->select(DB::raw('COALESCE(SUM(invoices.value), 0)'));
-            }], 'total_sales')
-            ->orderByDesc('total_sales')
-            ->paginate(10);
     
         return view('app.app', [
             'sales'    => $sales,
             'salesDay' => $salesDay,
-            'ranking'  => $users
         ]);
     }
 }

@@ -90,7 +90,7 @@
                                             <td class="text-center">
                                                 <div class="btn-group">
                                                     @if ($payment->status !== 1)
-                                                        <a href="{{ route('update-invoice', ['id' => $payment->token_payment, 'value' => $payment->value, 'dueDate' => now()->addDays(1), 'callback' => 5]) }}" class="btn btn-outline-primary">SEGUNDA VIA</a>
+                                                        <a href="{{ route('updated-invoice', ['id' => $payment->token_payment, 'value' => $payment->value, 'dueDate' => now()->addDays(1), 'callback' => 5]) }}" class="btn btn-outline-primary">SEGUNDA VIA</a>
                                                         @if ($payment->type == 1)
                                                             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#couponModal{{ $payment->id }}">CUPOM</button>
                                                         @endif
