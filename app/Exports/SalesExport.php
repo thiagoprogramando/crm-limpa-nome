@@ -20,9 +20,9 @@ class SalesExport implements FromCollection, WithHeadings, ShouldAutoSize {
             return [
                 'Cliente'       => $sale->user->name,
                 'CPF/CNPJ'      => $sale->user->cpfcnpj,
-                'Reprotocolado' =>  $sale->label,
-                'cupom'         =>  $sale->type == 3 ? 'SIM' : '',
-                'Consultor'     =>  $sale->seller->name
+                'Reprotocolado' => $sale->label,
+                'cupom'         => $sale->type == 3 ? 'SIM' : '',
+                'Consultor'     => $sale->seller->name
             ];
         });
     }

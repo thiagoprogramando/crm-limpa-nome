@@ -95,13 +95,8 @@
                                                             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#couponModal{{ $payment->id }}">CUPOM</button>
                                                         @endif
                                                     @endif
-                                                    @if(!empty(Auth::user()->wallet) && $payment->status !== 1)
-                                                        <a href="{{ route('payMonthly', ['id' => $payment->id]) }}" class="btn btn-outline-primary">
-                                                            Pagar
-                                                        </a>
-                                                    @endif
                                                     <a href="{{ $payment->url_payment }}" target="_blank" class="btn btn-primary text-light">
-                                                        Acessar
+                                                        Pagar
                                                     </a>
                                                 </div>
                                             </td>
