@@ -404,7 +404,7 @@ class AssasController extends Controller {
                     $notification->save();
                 }
 
-                $sales = Sale::where('payment_token', $token)->where('status', 0)->get();
+                $sales = Sale::where('payment_token', $token)->whereIn('status', [0, 2])->get();
                 if ($sales->isNotEmpty()) {
 
                     Sale::whereIn('id', $sales->pluck('id'))
