@@ -337,7 +337,7 @@ class SaleController extends Controller {
                 $invoice->value               = $value;
                 $invoice->commission_seller  = $totalCommission ?? 0;
                 $invoice->commission_filiate = $sponsorCommission ?? 0;
-                $invoice->type                = 1;
+                $invoice->type                = 2;
                 $invoice->status              = 2;
                 $invoice->due_date            = $dueDate;
                 $invoice->payment_token       = $payment['id'];

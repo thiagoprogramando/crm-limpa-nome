@@ -4,12 +4,12 @@
         <title>{{ env('APP_NAME') }}</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link href="{{ asset('assets/dashboard/img/favicon.png') }}" rel="icon">
+        <link href="{{ asset('assets/img/favicon.png') }}" rel="icon">
         <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="{{ asset('assets/login-form/css/style.css') }}">
+        <link rel="stylesheet" href="{{ asset('login-form/css/style.css') }}">
 
-        <script src="{{ asset('assets/dashboard/js/sweetalert.js')}}"></script>
+        <script src="{{ asset('assets/js/sweetalert.js')}}"></script>
 	</head>
 	<body>
 
@@ -20,7 +20,7 @@
                     <div class="col-md-12 col-lg-10">
 
                         <div class="wrap d-md-flex" style="min-height: 70vh;">
-                            <div class="img" style="background-image: url({{ asset('assets/login-form/images/bg_client.png') }}); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
+                            <div class="img" style="background-image: url({{ asset('login-form/images/bg_client.png') }}); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
 
                             <div class="login-wrap p-md-5">
                                 <h3 class="mb-4">Bem-vindo (a)!</h3>
@@ -47,10 +47,10 @@
             </div>
         </section>
 
-        <script src="{{ asset('assets/login-form/js/jquery.min.js') }}"></script>
-        <script src="{{ asset('assets/login-form/js/popper.js') }}"></script>
-        <script src="{{ asset('assets/login-form/js/bootstrap.min.js') }}"></script>
-        <script src="{{ asset('assets/login-form/js/main.js') }}"></script>
+        <script src="{{ asset('login-form/js/jquery.min.js') }}"></script>
+        <script src="{{ asset('login-form/js/popper.js') }}"></script>
+        <script src="{{ asset('login-form/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('login-form/js/main.js') }}"></script>
         <script>
             @if(session('error'))
                 Swal.fire({

@@ -18,7 +18,7 @@
                     <div class="card-body m-0 p-0">
                         <div class="row">
                             @foreach ($sales as $sale)
-                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                <div class="col-sm-12 col-md-12 col-lg-12">
                                     <div class="card">
                                         <div class="row g-0">
                                             <div class="col-12 col-sm-12 col-md-5 col-lg-5">
@@ -26,7 +26,7 @@
                                                     <h5 class="card-title">{{$sale->product->name }}</h5>
                                                     <p class="card-text">
                                                         {{$sale->product->description }} <br>
-                                                        <span class="badge bg-dark">{{ $sale->statusLabel() }} {{ \Carbon\Carbon::parse($sale->created_at)->format('d/m/Y') }}</span>
+                                                        <span class="badge bg-dark">{{ $sale->statusPaymentLabel() }} {{ \Carbon\Carbon::parse($sale->created_at)->format('d/m/Y') }}</span>
                                                     </p>
                                                 </div>
                                             </div>
@@ -41,7 +41,7 @@
                                                         <span class="badge bg-primary">{{ $sale->label }}</span> 
                                                     @endif
                                                     <div class="btn-group" role="group">
-                                                        <a title="Acessar Contrato" href="{{ $sale->url_contract }}" target="_blank" class="btn btn-outline-primary card-link"><i class="bi bi-file-earmark-text"></i>Contrato</a>
+                                                        <a title="Acessar Contrato" href="{{ $sale->contract_url }}" target="_blank" class="btn btn-outline-primary card-link"><i class="bi bi-file-earmark-text"></i>Contrato</a>
                                                         <a title="Acessar Faturas" href="{{ route('invoice-cliente', ['sale' => $sale->id]) }}" class="btn btn-outline-primary card-link"><i class="bi bi-currency-dollar"></i>Faturas</a>
                                                     </div>
                                                 </div>

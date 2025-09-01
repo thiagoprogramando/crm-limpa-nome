@@ -39,13 +39,7 @@
                                             <td class="text-center">{{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y') }}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    @if ($invoice->status !== 1)
-                                                        <a href="{{ route('update-invoice', ['id' => $invoice->token_payment, 'value' => $invoice->value, 'dueDate' => now()->addDays(1), 'callback' => 5]) }}" class="btn btn-outline-primary">SEGUNDA VIA</a>
-                                                        @if ($invoice->type == 1)
-                                                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#couponModal{{ $invoice->id }}">CUPOM</button>
-                                                        @endif
-                                                    @endif
-                                                    <a href="{{ $invoice->url_payment }}" target="_blank" class="btn btn-primary text-light">ACESSA</a>
+                                                    <a href="{{ $invoice->payment_url }}" target="_blank" class="btn btn-primary text-light">ACESSAR</a>
                                                 </div>
                                             </td>
                                         </tr>
