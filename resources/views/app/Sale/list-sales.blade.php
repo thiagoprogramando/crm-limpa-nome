@@ -68,7 +68,7 @@
                                     </div>
                                     <div class="col-12 col-md-6 col-lg-6 mb-2">
                                         <div class="form-floating">
-                                            <select name="id_list" class="form-select" id="floatinglist">
+                                            <select name="list_id" class="form-select" id="floatinglist">
                                                 <option selected="" value="">Listas:</option>
                                                 @foreach ($lists as $list)
                                                     <option value="{{ $list->id }}">{{ $list->name }}</option>  

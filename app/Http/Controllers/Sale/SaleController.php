@@ -75,8 +75,8 @@ class SaleController extends Controller {
             $query->where('value', $this->formatarValor($request->value));
         }
     
-        if (!empty($request->id_list)) {
-            $query->where('id_list', $request->id_list);
+        if (!empty($request->list_id)) {
+            $query->where('list_id', $request->list_id);
         }
     
         if (!empty($request->status)) {
