@@ -20,10 +20,8 @@
                 <a href="{{ route('createlist') }}" class="btn btn-outline-primary">Nova Lista</a>
             </div>
 
-            <div class="card p-2">
-                <div class="card-body">
-                    <h5 class="card-title">Listas</h5>
-                    
+            <div class="card p-0 m-0">
+                <div class="card-body p-0 m-0">
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
@@ -60,10 +58,10 @@
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $list->id }}">
                                                 @if (Auth::user()->type == 1)
-                                                    <a href="{{ route('updatelist', ['id' => $list->id]) }}" class="btn btn-warning text-light"><i class="bi bi-pencil-square"></i></a>
-                                                    <button type="submit" class="btn btn-danger text-light"><i class="bi bi-trash"></i></button>
+                                                    <a href="{{ route('updatelist', ['id' => $list->id]) }}" class="btn btn-outline-primary"><i class="bi bi-pencil-square"></i></a>
+                                                    <button type="submit" class="btn btn-outline-primary"><i class="bi bi-trash"></i></button>
                                                 @endif
-                                                <a href="{{ route('excel-list', ['id' => $list->id]) }}" class="btn btn-success text-light"><i class="bi bi-file-earmark-excel"></i></a>
+                                                <a href="{{ route('excel-list', ['id' => $list->id]) }}" class="btn btn-outline-primary"><i class="bi bi-file-earmark-excel"></i></a>
                                             </form>
                                         </td>
                                     </tr>

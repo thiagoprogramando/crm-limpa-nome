@@ -24,8 +24,7 @@ class AppController extends Controller {
         $sales = Sale::where('seller_id', Auth::id())->where('status', 1)->get();
     
         $salesDay = Auth::user()->type == 1
-            ? Sale::where('seller_id', Auth::id())
-                ->where('status', 1)
+            ? Sale::where('status', 1)
                 ->whereDate('created_at', $now->toDateString())
                 ->count()
             : Sale::where('seller_id', Auth::id())
