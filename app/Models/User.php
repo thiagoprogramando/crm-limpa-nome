@@ -104,7 +104,7 @@ class User extends Authenticatable {
     }
 
     public function months() {
-        return $this->hasMany(Invoice::class, 'id_user')
+        return $this->hasMany(Invoice::class, 'user_id')
                 ->where('type', 1)
                 ->where('status', 1)
                 ->count();
