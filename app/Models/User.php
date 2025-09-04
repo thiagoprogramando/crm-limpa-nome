@@ -258,6 +258,17 @@ class User extends Authenticatable {
         }
     }
 
+    public function getTokenWhatsapp() {
+
+        if (!empty($this->token_whatsapp)) {
+            return $this->token_whatsapp;
+        } elseif (!empty($this->parent->token_whatsapp)) {
+            return $this->parent->token_whatsapp;
+        }
+
+        return env('APP_TOKEN_WHATSAPP');
+    }
+
     protected $hidden = [
         'password',
         'remember_token',

@@ -274,7 +274,7 @@ class AssasController extends Controller {
     public function sendWhatsapp($link, $message, $phone, $token = null) {
 
         $client = new Client();
-        $url = $token ?: 'https://api.z-api.io/instances/3C71DE8B199F70020C478ECF03C1E469/token/DC7D43456F83CCBA2701B78B/send-link';
+        $url    = $token ?: env('APP_TOKEN_WHATSAPP');
     
         try {
             $response = $client->post($url, [
@@ -311,9 +311,9 @@ class AssasController extends Controller {
             
             $user = User::find($invoice->user_id);
             if ($user) {
-                if (($user->parent->afiliates()->count() % 5 === 0) &&  $user->invoices()->where('type', 1)->count() <= 1 && $user->created_at > Carbon::create(2025, 8, 5)) {
-                    $this->createCoupon($user->parent, 'Promoção 10 Afiliados 1 Mensalidade!');
-                }
+                // if (($user->parent->afiliates()->count() % 5 === 0) &&  $user->invoices()->where('type', 1)->count() <= 1 && $user->created_at > Carbon::create(2025, 8, 5)) {
+                //     $this->createCoupon($user->parent, 'Promoção 10 Afiliados 1 Mensalidade!');
+                // }
 
                 $user->status = 1;
                 if ($user->save()) {
@@ -343,7 +343,7 @@ class AssasController extends Controller {
                         . "Agradecemos por fazer parte da nossa jornada! \r\n\r\n";
 
             $assas = new AssasController();
-            $assas->sendWhatsapp('', $message, $parent->phone, $parent->token_whatsapp);
+            $assas->sendWhatsapp('', $message, $parent->phone, $parent->getTokenWhatsapp());
         }
 
         return true;
@@ -434,7 +434,8 @@ class AssasController extends Controller {
                     $this->sendWhatsapp(
                         env('APP_URL').'login-cliente',
                         $message,
-                        $client->phone
+                        $client->phone,
+                        $client->getTokenWhatsapp()
                     );
                 }
 
@@ -462,7 +463,7 @@ class AssasController extends Controller {
                     }
 
                     if (!empty($message)) {
-                        $this->sendWhatsapp("", $message, $seller->phone, $seller->token_whatsapp);
+                        $this->sendWhatsapp("", $message, $seller->phone, $seller->getTokenWhatsapp());
                     }
                 }
                 

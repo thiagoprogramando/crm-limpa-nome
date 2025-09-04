@@ -191,7 +191,7 @@
                     </a>
                     <ul id="forms-sale" class="nav-content collapse {{ Route::currentRouteName() == 'sales' || Route::currentRouteName() == 'invoice-default' || Route::currentRouteName() == 'coupons' ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
                         <li> <a href="{{ route('sales') }}"> <i class="bi bi-circle"></i><span>Vendas</span> </a> </li>
-                        <li><a href="{{ route('coupons') }}"> <i class="bi bi-circle"></i><span>Cupons</span> </a></li>
+                        {{-- <li><a href="{{ route('coupons') }}"> <i class="bi bi-circle"></i><span>Cupons</span> </a></li> --}}
                     </ul>
                 </li>
                 

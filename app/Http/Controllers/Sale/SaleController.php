@@ -346,7 +346,7 @@ class SaleController extends Controller {
                 if ($invoice->save()) {
                     if ($key == 1) {
                         $message = "Prezado(a) {$sale->client->name}, estamos enviando o link para pagamento da sua contratação aos serviços da nossa assessoria. \r\n\r\n\r\n"."Consulte os termos do seu contrato aqui👇🏼 \r\n".env('APP_URL')."preview-contract/".$sale->id."\r\n\r\n\r\n"."PARA FAZER O PAGAMENTO CLIQUE NO LINK 👇🏼💳";
-                        $this->sendWhatsapp($payment['invoiceUrl'], $message, $sale->client->phone);
+                        $this->sendWhatsapp($payment['invoiceUrl'], $message, $sale->client->phone, $sale->client->getTokenWhatsapp());
                     }
                 }
             }
@@ -446,11 +446,10 @@ class SaleController extends Controller {
         if ($sale->save()) {
 
             if ($sale->label !== null) {
-                $clientName     = $sale->user->name;
-                $phone          = $sale->user->phone;
-                $sellerApiToken = $sale->seller->token_whatsapp;
-            
-                $message = "*Assunto: Reprotocolamento de Processo Judicial*\r\n\r\n" .
+
+                $clientName  = $sale->user->name;
+                $phone       = $sale->user->phone;
+                $message     = "*Assunto: Reprotocolamento de Processo Judicial*\r\n\r\n" .
                            "{$clientName},\r\n\r\n" .
                            "Gostaríamos de infomar que o *seu processo* foi *reprotocolado com sucesso.*\r\n\r\n" .
                            "A partir de agora, será necessário *aguardar o prazo estimado de 20 a 30 dias*, " .
@@ -458,19 +457,18 @@ class SaleController extends Controller {
                            "Estamos acompanhando de perto o andamento do processo e *entraremos em contato assim que houver novidades.*\r\n\r\n" .
                            "Agradecemos sua paciência e estamos à disposição para esclarecer qualquer dúvida.";
             
-                $this->sendWhatsapp(env('APP_URL') . 'login-cliente', $message, $phone, $sellerApiToken);
+                $this->sendWhatsapp(env('APP_URL') . 'login-cliente', $message, $phone, $sale->seller->getTokenWhatsapp());
                 return redirect()->back()->with('success', 'Processo reprotocolado!');
             } else {
-                $clientName     = $sale->user->name;
-                $phone          = $sale->user->phone;
-                $sellerApiToken = $sale->seller->token_whatsapp;
-            
-                $message = "*Assunto: Conclusão do Processo Judicial*\r\n\r\n" .
+
+                $clientName  = $sale->user->name;
+                $phone       = $sale->user->phone;
+                $message     = "*Assunto: Conclusão do Processo Judicial*\r\n\r\n" .
                            "{$clientName},\r\n\r\n" .
                            "É com satisfação que infomamos que o *seu processo foi concluído com sucesso!*\r\n\r\n" .
                            "Agradecemos pela confiança em nosso trabalho.";
             
-                $this->sendWhatsapp(env('APP_URL') . 'login-cliente', $message, $phone, $sellerApiToken);
+                $this->sendWhatsapp(env('APP_URL') . 'login-cliente', $message, $phone, $sale->seller->getTokenWhatsapp());
                 return redirect()->back()->with('success', 'Processo concluído!');
             }            
 
