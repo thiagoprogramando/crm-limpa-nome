@@ -67,7 +67,7 @@ class AssasController extends Controller {
             return redirect()->route('profile')->with('info', 'Verifique seus dados e tente novamente!');
         }
        
-        $invoice = Invoice::where('user_id', $user->id)->where('type', 1)->where('status', 0)->exists();
+        $invoice = Invoice::where('user_id', $user->id)->where('type', 1)->whereIn('status', [0, 2])->exists();
         if ($invoice) {
             return redirect()->route('payments')->with('error', 'Você possui uma mensalidade em aberto!');
         }

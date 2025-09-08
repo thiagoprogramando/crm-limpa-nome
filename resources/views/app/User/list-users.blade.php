@@ -251,21 +251,22 @@
                                                                             <td>R$ {{ number_format($invoice->value, 2, ',', '.') }}</td>
                                                                             <td>{{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y') }}</td>
                                                                             <td class="text-center">
-                                                                                <div class="btn-group">
+                                                                                <form action="{{ route('deleted-invoice', ['id' => $invoice->id]) }}" method="POST" class="btn-group">
+                                                                                    @csrf
                                                                                     @if(!empty($user->token_wallet))
-                                                                                        <a href="{{ route('payMonthly', ['id' => $invoice->id]) }}" class="btn btn-success text-light">
+                                                                                        <a href="{{ route('payMonthly', ['id' => $invoice->id]) }}" class="btn btn-outline-primary">
                                                                                             <i class="bi bi-credit-card"></i> Pagar com saldo
                                                                                         </a>
                                                                                     @endif
-                                                                                    <a href="{{ $invoice->payment_url }}" target="_blank" class="btn btn-primary text-light">
+                                                                                    <a href="{{ $invoice->payment_url }}" target="_blank" class="btn btn-outline-primary">
                                                                                         <i class="bi bi-arrow-up-right-circle"></i> Acessar Fatura
                                                                                     </a>
-                                                                                    @if($invoice->status <> 1 )
-                                                                                        <a href="{{ route('deleted-invoice', ['id' => $invoice->id]) }}" class="btn btn-danger text-light confirm">
+                                                                                    @if($invoice->status !== 1 )
+                                                                                        <button type="submit" class="btn btn-outline-primary confirm">
                                                                                             <i class="bi bi-trash"></i>
-                                                                                        </a>
+                                                                                        </button>
                                                                                     @endif
-                                                                                </div>
+                                                                                </form>
                                                                             </td>
                                                                         </tr>
                                                                     @endforeach
