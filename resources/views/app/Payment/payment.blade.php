@@ -95,7 +95,7 @@
                                                             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#couponModal{{ $payment->id }}">CUPOM</button>
                                                         @endif --}}
                                                     @endif
-                                                    <a href="{{ $payment->url_payment }}" target="_blank" class="btn btn-primary text-light">
+                                                    <a href="{{ $payment->payment_url }}" target="_blank" class="btn btn-primary text-light">
                                                         Pagar
                                                     </a>
                                                 </div>
