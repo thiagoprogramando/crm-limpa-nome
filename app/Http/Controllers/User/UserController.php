@@ -138,14 +138,14 @@ class UserController extends Controller {
         if (!empty($request->api_key)) {
             $status = $this->accountStatus($request->api_key);
             if (is_array($status) && (isset($status['general']) && ($status['general'] == 'APPROVED' || $status['general'] == 'AWAITING_APPROVA'))) {
-                $user->api_key = $request->api_key;
+                $user->token_key = $request->token_key;
             } else {
                 return redirect()->back()->with('info', 'Tokens não válidados! Aguarde aprovação da sua carteira/ou entre em contato com o suporte.');
             }
         }
 
-        if (!empty($request->wallet)) {
-            $user->wallet = $request->wallet;
+        if (!empty($request->token_wallet)) {
+            $user->token_wallet = $request->token_wallet;
         }
 
         if (!empty($request->photo)) {
@@ -206,7 +206,8 @@ class UserController extends Controller {
         }
 
         if (!empty($request->cpfcnpj)) {
-            $query->where('cpfcnpj', $request->cpfcnpj);
+            $cpfcnpj = preg_replace('/\D/', '', $request->cpfcnpj);
+            $query->where('cpfcnpj', $cpfcnpj);
         }
 
         if (!empty($request->created_at_start)) {

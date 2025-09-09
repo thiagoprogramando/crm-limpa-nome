@@ -57,7 +57,8 @@ class SaleController extends Controller {
         }
 
         if (!empty($request->cpfcnpj)) {
-            $users = User::where('cpfcnpj', $request->cpfcnpj)->pluck('id')->toArray();
+            $cpfcnpj = preg_replace('/\D/', '', $request->cpfcnpj);
+            $users = User::where('cpfcnpj', $cpfcnpj)->pluck('id')->toArray();
             if (!empty($users)) {
                 $query->whereIn('client_id', $users);
             }
@@ -435,8 +436,8 @@ class SaleController extends Controller {
             }
         }
         
-        $sale->id_list = $sale->label !== null 
-                        ? $sale->id_list 
+        $sale->list_id = $sale->label !== null 
+                        ? $sale->list_id 
                         : $list->id;
 
         $sale->label = str_contains($sale->label, 'REPROTOCOLADO -') 
@@ -447,8 +448,8 @@ class SaleController extends Controller {
 
             if ($sale->label !== null) {
 
-                $clientName  = $sale->user->name;
-                $phone       = $sale->user->phone;
+                $clientName  = $sale->client->name;
+                $phone       = $sale->client->phone;
                 $message     = "*Assunto: Reprotocolamento de Processo Judicial*\r\n\r\n" .
                            "{$clientName},\r\n\r\n" .
                            "Gostaríamos de infomar que o *seu processo* foi *reprotocolado com sucesso.*\r\n\r\n" .
@@ -461,8 +462,8 @@ class SaleController extends Controller {
                 return redirect()->back()->with('success', 'Processo reprotocolado!');
             } else {
 
-                $clientName  = $sale->user->name;
-                $phone       = $sale->user->phone;
+                $clientName  = $sale->client->name;
+                $phone       = $sale->client->phone;
                 $message     = "*Assunto: Conclusão do Processo Judicial*\r\n\r\n" .
                            "{$clientName},\r\n\r\n" .
                            "É com satisfação que infomamos que o *seu processo foi concluído com sucesso!*\r\n\r\n" .

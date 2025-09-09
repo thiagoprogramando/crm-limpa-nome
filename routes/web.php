@@ -66,7 +66,6 @@ Route::middleware(['auth'])->group(function () {
             Route::post('created-sale-association/{product}/{type?}', [SaleController::class, 'createdSaleAssociation'])->name('created-sale-association');
             Route::post('updated-sale', [SaleController::class, 'update'])->name('updated-sale');
             Route::post('deleted-sale', [SaleController::class, 'destroy'])->name('deleted-sale');
-            Route::post('created-sale-excel/{product}', [SaleController::class, 'createdSaleExcel'])->name('created-sale-excel');
             
             Route::get('/send-contract/{id}', [ContractController::class, 'store'])->name('send-contract');
 

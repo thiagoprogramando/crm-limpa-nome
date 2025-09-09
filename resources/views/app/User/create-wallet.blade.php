@@ -46,14 +46,14 @@
                             <input type="hidden" name="id" value="{{ Auth::user()->id }}">
                             <div class="col-12 col-md-12 col-lg-12 mb-1">
                                 <div class="form-floating">
-                                    <input type="text" name="wallet" value="{{ Auth::user()->token_wallet }}" class="form-control" id="floatingWallet" placeholder="Wallet:" @readonly(!empty(Auth::user()->token_wallet))>
-                                    <label for="floatingWallet">Wallet:</label>
+                                    <input type="text" name="token_wallet" value="{{ Auth::user()->token_wallet }}" class="form-control" id="token_wallet" placeholder="Wallet:" @readonly(!empty(Auth::user()->token_wallet))>
+                                    <label for="token_wallet">Wallet:</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-12 col-lg-12 mb-1">
                                 <div class="form-floating">
-                                    <input type="text" name="api_key" value="{{ Auth::user()->token_key }}" class="form-control" id="floatingApiKey" placeholder="API KEY:" @readonly(!empty(Auth::user()->token_key))>
-                                    <label for="floatingApiKey">API KEY:</label>
+                                    <input type="text" name="token_key" value="{{ Auth::user()->token_key }}" class="form-control" id="token_key" placeholder="API KEY:" @readonly(!empty(Auth::user()->token_key))>
+                                    <label for="token_key">API KEY:</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-12 col-lg-12 d-grid gap-2 mb-3">
