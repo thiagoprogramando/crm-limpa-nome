@@ -431,7 +431,7 @@ class AssasController extends Controller {
                         $message = "Olá, {$client->name}!\r\n\r\n".
                                 "Agradecemos pelo seu pagamento! \r\n\r\n".
                                 "Tenha a certeza de que sua situação está em boas mãos. \r\n\r\n".
-                                "*Nos próximos 30 dias úteis*, nossa equipe especializada acompanhará ".
+                                "*De 10 à 30 dias uteis*, nossa equipe especializada acompanhará ".
                                 "de perto todo o processo para garantir que seu nome seja limpo o mais rápido possível. \r\n\r\n".
                                 "Estamos à disposição para qualquer dúvida ou esclarecimento. \r\n\r\n".
                                 "Você pode acompanhar o processo acessando nosso sistema no link abaixo: \r\n\r\n";
