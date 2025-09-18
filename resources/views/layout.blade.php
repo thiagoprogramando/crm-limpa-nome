@@ -21,6 +21,7 @@
         <script src="{{ asset('login-form/js/popper.js') }}"></script>
         <script src="{{ asset('login-form/js/bootstrap.min.js') }}"></script>
         <script src="{{ asset('login-form/js/main.js') }}"></script>
+        <script src="{{ asset('assets/js/mask.js') }}"></script>
         <script>
             @if(session('error'))
                 Swal.fire({

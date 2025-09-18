@@ -277,8 +277,16 @@ class User extends Authenticatable {
     protected function casts(): array {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
+    }
+
+    protected static function booted() {
+        static::creating(function ($user) {
+            if (empty($user->uuid)) {
+                $user->uuid = (string) \Illuminate\Support\Str::uuid();
+            }
+        });
     }
 
     protected static function boot() {

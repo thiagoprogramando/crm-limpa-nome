@@ -85,14 +85,14 @@ class AssasController extends Controller {
 
         $commissions[] = [
                         'walletId'          => env('WALLET_EXPRESS'),
-                        'percentualValue'   => 100,
+                        'percentualValue'   => 50,
                         'description'       => 'Comissão % Mensalidade AMPAY',
                         ];
-        // $commissions[] = [
-        //                 'walletId'          => env('WALLET_G7'),
-        //                 'percentualValue'        => 50,
-        //                 'description'       => 'Comissão % Mensalidade AMPAY',
-        //             ];
+        $commissions[] = [
+                        'walletId'          => env('WALLET_G7'),
+                        'percentualValue'        => 50,
+                        'description'       => 'Comissão % Mensalidade AMPAY',
+                    ];
 
         $charge = $this->createCharge($user->customer, 'PIX', '49.99', 'Assinatura -'.env('APP_NAME'), now()->addDay(), $commissions);
         if($charge <> false) {

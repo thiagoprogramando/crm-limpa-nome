@@ -185,6 +185,12 @@
                     </ul>
                 </li>
 
+                @if (Auth::user()->type === 4 || Auth::user()->type === 1)
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" href="{{ route('links') }}"> <i class="bi bi-link"></i> <span>Links</span> </a>
+                    </li>
+                @endif
+
                 <li class="nav-item">
                     <a class="nav-link {{ Route::currentRouteName() == 'sales' || Route::currentRouteName() == 'invoice-default' || Route::currentRouteName() == 'coupons' ? '' : 'collapsed' }}" data-bs-target="#forms-sale" data-bs-toggle="collapse" href="#">
                         <i class="bi bi-bag"></i><span>Vendas</span><i class="bi bi-chevron-down ms-auto"></i>

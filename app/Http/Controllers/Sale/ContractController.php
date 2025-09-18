@@ -102,9 +102,7 @@ class ContractController extends Controller {
             ->replace('{SELLER_EMAIL}', 
                 $sale->seller?->company_email ?? $sale->seller?->parent?->company_email ?? 'suporte@ampay.com.br'
             )
-            ->replace('{SALE_VALUE}', 
-                $sale->value ? number_format($sale->value, 2, ',', '.') : '---'
-            )
+            ->replace('{SALE_VALUE}', number_format($sale->totalInvoices(), 2, ',', '.'))
             ->replace('{SALE_METHOD}', 
                 $sale->paymentMethod() . ' em ' . $sale->installments . 'x'
             )
@@ -121,9 +119,7 @@ class ContractController extends Controller {
             ->replace('{SELLER_CPFCNPJ}' , '53.912.699/001-22')
             ->replace('{SELLER_ADDRESS}' , 'Rua José Versolato, 101 - 12° Andar Centro São Bernado do Campo 09750-730')
             ->replace('{SELLER_EMAIL}'   , 'suporte@ampay.com.br')
-            ->replace('{SALE_VALUE}'     , $sale->value 
-                    ? number_format($sale->value, 2, ',', '.') 
-                    : '---')
+            ->replace('{SALE_VALUE}', number_format($sale->totalInvoices(), 2, ',', '.'))
             ->replace('{SALE_METHOD}'    , $sale->paymentMethod().' em '.$sale->installments.'x')
             ->replace('{SALE_DATE}', date('d').'/'.date('m').'/'.date('Y'));
         }

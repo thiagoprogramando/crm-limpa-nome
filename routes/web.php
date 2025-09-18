@@ -16,6 +16,7 @@ use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Sale\ContractController;
 use App\Http\Controllers\Sale\CouponController;
 use App\Http\Controllers\Sale\InvoiceController;
+use App\Http\Controllers\Sale\LinkController;
 use App\Http\Controllers\Sale\SaleController;
 use App\Http\Controllers\Trash\RecoverController;
 use App\Http\Controllers\Trash\TrashController;
@@ -37,6 +38,9 @@ Route::post('registrer-user', [Registrer::class, 'store'])->name('registrer-user
 Route::get('/forgout/{code?}', [Forgout::class, 'index'])->name('forgout');
 Route::post('send-code-password', [Forgout::class, 'store'])->name('send-code-password');
 Route::post('update-password', [Forgout::class, 'update'])->name('update-password');
+
+Route::get('/create-external-sale/{uuid}', [SaleController::class, 'externalSale'])->name('create-external-sale');
+Route::post('/created-external-sale/{product}/{link}/{type?}', [SaleController::class, 'createdExternalSale'])->name('created-external-sale');
 
 Route::get('/preview-contract/{id}', [ContractController::class, 'previewContract'])->name('preview-contract');
 
@@ -66,6 +70,10 @@ Route::middleware(['auth'])->group(function () {
             Route::post('created-sale-association/{product}/{type?}', [SaleController::class, 'createdSaleAssociation'])->name('created-sale-association');
             Route::post('updated-sale', [SaleController::class, 'update'])->name('updated-sale');
             Route::post('deleted-sale', [SaleController::class, 'destroy'])->name('deleted-sale');
+
+            Route::get('/links', [LinkController::class, 'index'])->name('links');
+            Route::post('created-link', [LinkController::class, 'store'])->name('created-link');
+            Route::post('deleted-link/{uuid}', [LinkController::class, 'destroy'])->name('deleted-link');
             
             Route::get('/send-contract/{id}', [ContractController::class, 'store'])->name('send-contract');
 

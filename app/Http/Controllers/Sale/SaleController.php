@@ -13,6 +13,7 @@ use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\User;
+use App\Models\Link;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -604,7 +605,7 @@ class SaleController extends Controller {
         }   
 
         $sale = new Sale();
-        $sale->seller_id            = Auth::id();
+        $sale->seller_id            = $request->seller_id ?? Auth::id();
         $sale->client_id            = $client['id'];
         $sale->product_id           = $product->id;
         $sale->list_id              = $list->id;
@@ -613,7 +614,7 @@ class SaleController extends Controller {
         $sale->type                 = 2;
         $sale->status               = 2;
         if ($sale->save()) {
-            return redirect()->route('create-sale', ['product' => $product->id, 'type' => $type])->with('success', 'Sucesso! Nome incluído com sucesso!');
+            return redirect()->back()->with('success', 'Sucesso! Dados enviados com sucesso!');
         }
 
         return redirect()->back()->with('info', 'Não foi possível adicionar o nome, verifique os dados e tente novamente!');
@@ -678,6 +679,65 @@ class SaleController extends Controller {
         }
 
         return redirect()->route('create-sale', ['product' => $product->id, 'type' => $type])->with('success', 'Importação concluída! ' . $createdSales . ' vendas criadas com sucesso!');
+    }
+
+    public function externalSale($uuid) {
+
+        $link = Link::where('uuid', $uuid)->first();
+        if (!$link) {
+            return redirect()->route('login.cliente')->with('info', 'Link inválido ou expirado!');
+        }
+
+        return view('app.Sale.form-sale', [
+            'link' => $link
+        ]);
+    }
+
+    public function createdExternalSale(Request $request, $product, $link, $type = null) {
+
+        $assas = new AssasController();
+
+        $link = Link::where('uuid', $link)->first();
+        if (!$link) {
+            return redirect()->back()->with('info', 'Link expirado! Entre em contato com o vendedor!');
+        }
+
+        $product = Product::find($product);
+        if (!$product) {
+            return redirect()->back()->with('info', 'Produto indisponível no momento! Entre em contato com o vendedor!');
+        }
+        
+        $list = Lists::where('start', '<=', Carbon::now())->where('end', '>=', Carbon::now())->first();
+        if (!$list) {
+            return redirect()->back()->with('info', 'Não foi possível concluir a venda, verique os dados e tente novamente!');
+        }
+
+        $seller = User::find($link->user_id);
+        if (!$seller) {
+            return redirect()->back()->with('info', 'Não foi possível concluir a venda, verique os dados e tente novamente!');
+        }
+        
+        $client = $this->createdUser($request->name, null, $request->cpfcnpj, $request->birth_date, $request->phone, $seller->id, $seller->fixed_cost);
+        if ($client['status'] === false) {
+            return redirect()->back()->with('info', 'Ops! Parece que há informações incorretas, verique seus dados e tente novamente!');
+        }
+
+        $client = User::find($client['id']);
+        if (!$client) {
+            return redirect()->back()->with('error', 'Ops! Parece que há informações incorretas, verique seus dados e tente novamente!');
+        }
+
+        $customer = $assas->createCustomer($client['name'], $client['cpfcnpj']);
+        if ($customer === false) {
+            return redirect()->back()->with('info', 'Ops! Parece que há informações incorretas, verique seus dados e tente novamente!');
+        }
+
+        $sale = $this->createdSale($customer, $seller, $client, $product, $list, $link->payment_method, $link->payment_installments, $link->payment_json_installments);
+        if (!empty($sale['id'])) {
+            return redirect()->back()->with('success', 'Seus dados foram enviados com sucesso! Enviaremos os próximos passos para o seu whatsapp!'); 
+        }
+
+        return redirect()->back()->with('error', 'Ops! Parece que há informações incorretas, verique seus dados e tente novamente!'); 
     }
 
     private static function validateCpf($cpf) {
@@ -769,7 +829,9 @@ class SaleController extends Controller {
         if ($user->save()) {
             return [
                 'status'  => true,
-                'id'      => $user->id
+                'id'      => $user->id,
+                'name'    => $user->name,
+                'cpfcnpj' => $user->cpfcnpj,
             ];
         }
 
@@ -780,11 +842,18 @@ class SaleController extends Controller {
     }
 
     private function formatValue($valor) {
-        
-        $valor = preg_replace('/[^0-9,]/', '', $valor);
-        $valor = str_replace(',', '.', $valor);
-        $valorFloat = floatval($valor);
-    
-        return number_format($valorFloat, 2, '.', '');
+
+        if ($valor === null) {
+            return 0.00;
+        }
+
+        $valor = trim(preg_replace('/[^\d.,]/', '', $valor));
+        if (strpos($valor, ',') !== false) {
+            $valor = str_replace('.', '', $valor); 
+            $valor = str_replace(',', '.', $valor);
+        }
+
+        return number_format((float) $valor, 2, '.', '');
     }
+
 }
