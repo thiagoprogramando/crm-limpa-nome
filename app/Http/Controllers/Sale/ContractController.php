@@ -110,10 +110,10 @@ class ContractController extends Controller {
         } else {
             
             $contractContent = Str::of($sale->product->contract_subject)
-            ->replace('{CLIENT_NAME}'       , $sale->user->name ?? 'N/A')
-            ->replace('{CLIENT_CPFCNPJ}'    , $sale->user->cpfcnpj ?? 'N/A')
-            ->replace('{CLIENT_BIRTH_DATE}' , $sale->user->birth_date 
-                    ? Carbon::parse($sale->user->birth_date)->format('d/m/Y') 
+            ->replace('{CLIENT_NAME}'       , $sale->client->name ?? 'N/A')
+            ->replace('{CLIENT_CPFCNPJ}'    , $sale->client->cpfcnpj ?? 'N/A')
+            ->replace('{CLIENT_BIRTH_DATE}' , $sale->client->birth_date 
+                    ? Carbon::parse($sale->client->birth_date)->format('d/m/Y') 
                     : 'N/A')
             ->replace('{SELLER_NAME}'    , 'AMPAY SOLUÇÕES')
             ->replace('{SELLER_CPFCNPJ}' , '53.912.699/001-22')
