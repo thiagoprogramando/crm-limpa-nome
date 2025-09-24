@@ -255,7 +255,7 @@ class SaleController extends Controller {
                 if ($key == 1) {
                     $fixedCost       = ($seller->fixed_cost ?? $product->value_cost);
                     $netValue        = $value - $fixedCost;
-                    $totalCommission = max($netValue - ($netValue * 0.05) - 3, 0);
+                    $totalCommission = max($netValue - ($netValue * 0.05) - 8, 0);
 
                     $sponsor = $seller->parent;
                     $sponsorCommission  = 0;
@@ -288,7 +288,7 @@ class SaleController extends Controller {
                         ];
                         $commissions[] = [
                             'walletId'          => env('WALLET_EXPRESS'),
-                            'fixedValue'        => number_format(1, 2, '.', ''),
+                            'fixedValue'        => number_format(5, 2, '.', ''),
                             'externalReference' => $uuid,
                             'description'       => 'Comissão % para venda N° '.$sale->id,
                         ];
@@ -309,14 +309,14 @@ class SaleController extends Controller {
                         if ($percent > 1) {
                             $commissions[] = [
                                 'walletId'          => env('WALLET_EXPRESS'),
-                                'fixedValue'        => number_format(1, 2, '.', ''),
+                                'fixedValue'        => number_format(5, 2, '.', ''),
                                 'externalReference' => $uuid,
                                 'description'       => 'Comissão % para venda N° '.$sale->id,
                             ];
         
                             $commissions[] = [
                                 'walletId'          => env('WALLET_G7'),
-                                'fixedValue'        => number_format($percent - 1, 2, '.', ''),
+                                'fixedValue'        => number_format($percent - 5, 2, '.', ''),
                                 'externalReference' => $uuid,
                                 'description'       => 'Comissão % para venda N° '.$sale->id,
                             ];
