@@ -732,7 +732,26 @@ class SaleController extends Controller {
             return redirect()->back()->with('info', 'Ops! Parece que há informações incorretas, verique seus dados e tente novamente!');
         }
 
-        $sale = $this->createdSale($customer, $seller, $client, $product, $list, $link->payment_method, $link->payment_installments, $link->payment_json_installments);
+        $installments = $link->payment_json_installments ?? [];
+        if (!empty($installments) && is_array($installments)) {
+
+            $adjusted = [];
+            $dueDate = Carbon::now()->addDay();
+
+            $i = 1;
+            foreach ($installments as $key => $data) {
+                $adjusted[$i] = [
+                    'value'    => $data['value'],
+                    'due_date' => $dueDate->format('Y-m-d'),
+                ];
+                $dueDate = $dueDate->copy()->addMonth();
+                $i++;
+            }
+
+            $installments = $adjusted;
+        }
+
+        $sale = $this->createdSale($customer, $seller, $client, $product, $list, $link->payment_method, $link->payment_installments, $installments);
         if (!empty($sale['id'])) {
             return redirect()->back()->with('success', 'Seus dados foram enviados com sucesso! Enviaremos os próximos passos para o seu whatsapp!'); 
         }

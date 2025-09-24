@@ -350,7 +350,6 @@
             const MAX_installments = 18;
 
             function updateInstallmentsField() {
-
                 const paymentMethod         = $('#payment_method').val();
                 const installmentsField     = $('#payment_installments');
                 const valueLabel            = $('#floatingValueLabel');
@@ -399,15 +398,41 @@
                         </div>
                         <div class="col-5 col-sm-5 col-md-4 col-lg-4 mb-2">
                             <div class="form-floating">
-                                <input type="date" name="installments[${i}][due_date]" class="form-control" required>
+                                <input type="date" name="installments[${i}][due_date]" class="form-control installment-date" required>
                                 <label>Vencimento</label>
                             </div>
                         </div>
-                        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-                        </div>
+                        <div class="col-12 col-sm-12 col-md-12 col-lg-12"></div>
                     `;
                     container.append(inputGroup);
                 }
+
+                attachDateAutoFill();
+            }
+
+            function attachDateAutoFill() {
+                $('#installments\\[1\\]\\[due_date\\]').off('change').on('change', function () {
+                    const baseDate = new Date($(this).val());
+                    if (isNaN(baseDate)) return;
+
+                    baseDate.setDate(baseDate.getDate() + 1);
+
+                    const baseDay = baseDate.getDate();
+                    console.log(baseDay);
+                    $('.installment-date').each(function (index) {
+
+                        let newDate = new Date(baseDate);
+                        newDate.setMonth(baseDate.getMonth() + (index + 1));
+                        if (newDate.getDate() < baseDay) {
+                            newDate.setDate(baseDay);
+                        }
+
+                        const yyyy = newDate.getFullYear();
+                        const mm   = String(newDate.getMonth() + 1).padStart(2, '0');
+                        const dd   = String(newDate.getDate()).padStart(2, '0');
+                        $(this).val(`${yyyy}-${mm}-${dd}`);
+                    });
+                });
             }
 
             $('#payment_method').change(function () {

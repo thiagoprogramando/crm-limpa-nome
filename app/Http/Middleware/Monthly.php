@@ -13,22 +13,22 @@ class Monthly {
 
     public function handle(Request $request, Closure $next): Response {
 
-        if (Auth::check()) {
+        // if (Auth::check()) {
             
-            $user = Auth::user();
-            if ($user && ($user->type !== 1 && $user->type !== 4)) {
+        //     $user = Auth::user();
+        //     if ($user && ($user->type !== 1 && $user->type !== 4)) {
         
-                $monthly = Invoice::where('user_id', $user->id)->where('status', 1)->where('type', 1)->latest('created_at')->first();
-                if (!$monthly || $monthly->created_at->lte(now()->subDays(30)->startOfDay())) {
+        //         $monthly = Invoice::where('user_id', $user->id)->where('status', 1)->where('type', 1)->latest('created_at')->first();
+        //         if (!$monthly || $monthly->created_at->lte(now()->subDays(30)->startOfDay())) {
                     
-                    $assas = new AssasController();
-                    $createMonthly = $assas->createMonthly($user->id);
-                    if ($createMonthly) {
-                        return redirect()->route('payments')->with('error', 'Existem mensalidades em aberto!');
-                    }
-                }
-            }
-        }        
+        //             $assas = new AssasController();
+        //             $createMonthly = $assas->createMonthly($user->id);
+        //             if ($createMonthly) {
+        //                 return redirect()->route('payments')->with('error', 'Existem mensalidades em aberto!');
+        //             }
+        //         }
+        //     }
+        // }        
 
         return $next($request);
     }

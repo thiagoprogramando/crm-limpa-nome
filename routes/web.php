@@ -53,7 +53,6 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/app', [AppController::class, 'index'])->name('app');
             Route::get('/faq', [FaqController::class, 'faq'])->name('faq');
 
-            
             Route::get('/list-network', [UserController::class, 'listNetwork'])->name('list-network');
 
             Route::get('/create-sale/{product}/{type?}/{user?}', [SaleController::class, 'create'])->name('create-sale');
@@ -73,6 +72,7 @@ Route::middleware(['auth'])->group(function () {
 
             Route::get('/links', [LinkController::class, 'index'])->name('links');
             Route::post('created-link', [LinkController::class, 'store'])->name('created-link');
+            Route::post('updated-link/{uuid}', [LinkController::class, 'update'])->name('updated-link');
             Route::post('deleted-link/{uuid}', [LinkController::class, 'destroy'])->name('deleted-link');
             
             Route::get('/send-contract/{id}', [ContractController::class, 'store'])->name('send-contract');
