@@ -1268,3 +1268,22 @@ table thead tr th {
 canvas {
   max-height: 130px;
 }
+
+.floating-support {
+    position: fixed;       /* Fixa na tela */
+    right: 0;              /* Colocado na borda direita */
+    bottom: 20px;          /* Distância do fundo da tela */
+    background-color: #d3d3d3;   /* Cinza claro */
+    color: #000;           /* Cor do texto */
+    padding: 15px 25px;    /* Espaçamento interno */
+    font-weight: bold;
+    text-decoration: none; /* Remove sublinhado */
+    border-radius: 8px 0 0 8px; /* Bordas arredondadas apenas no lado esquerdo */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2); /* Sombra leve */
+    z-index: 1000;         /* Fica acima de outros elementos */
+    transition: background-color 0.3s;
+}
+
+.floating-support:hover {
+    background-color: #b0b0b0; /* Mudança de cor ao passar o mouse */
+}
