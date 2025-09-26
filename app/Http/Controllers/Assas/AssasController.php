@@ -1016,7 +1016,7 @@ class AssasController extends Controller {
 
                     $commissions[] = [
                         'walletId'          => env('WALLET_G7'),
-                        'fixedValue'        => number_format($totalCost - 3, 2, '.', ''),
+                        'fixedValue'        => number_format(($totalCost - 2) - (5 * count($sales)), 2, '.', ''),
                         'externalReference' => $uuid,
                         'description'       => 'Comissão Associação para venda N° - ' . $saleNumbers,
                     ];
@@ -1025,7 +1025,7 @@ class AssasController extends Controller {
 
                 $commissions[] = [
                     'walletId'          => env('WALLET_G7'),
-                    'fixedValue'        => number_format($totalCost - 3, 2, '.', ''),
+                    'fixedValue'        => number_format(($totalCost - 2) - (5 * count($sales)), 2, '.', ''),
                     'externalReference' => $uuid,
                     'description'       => 'Comissão Associação para venda '.env('APP_NAME').' N° - ' . $saleNumbers,
                 ];
@@ -1033,7 +1033,7 @@ class AssasController extends Controller {
 
             $commissions[] = [
                 'walletId'          => env('WALLET_EXPRESS'),
-                'fixedValue'        => number_format(1, 2, '.', ''),
+                'fixedValue'        => number_format(5 * count($sales), 2, '.', ''),
                 'externalReference' => $uuid,
                 'description'       => 'Comissão % para venda '.env('APP_NAME').' N° - ' . $saleNumbers,
             ];

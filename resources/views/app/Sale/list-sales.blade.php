@@ -172,7 +172,7 @@
                                             {{ implode(' ', array_slice(explode(' ', $sale->client->name), 0, 2)) }} <br>
                                             <span>CPF/CNPJ: {{ $sale->client->cpfcnpjLabel() }}</span>              
                                         </td>
-                                        <td title="{{ $sale->seller->name }}">
+                                        <td title="{{ $sale->seller->parent->name ?? 'N/A' }}">
                                             {{ implode(' ', array_slice(explode(' ', $sale->seller->name), 0, 2)) }} <br>
                                         </td>
                                         <td class="text-center">
