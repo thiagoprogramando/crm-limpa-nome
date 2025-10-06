@@ -388,6 +388,8 @@ class SaleController extends Controller {
 
     public function destroy(Request $request) {
 
+        $assasController = new AssasController();
+
         $sale = Sale::find($request->id);
         if (!$sale) {
             return redirect()->back()->with('error', 'Não encontramos dados da venda!');
@@ -395,14 +397,14 @@ class SaleController extends Controller {
 
         $invoices = Invoice::where('sale_id', $sale->id)->get();
         foreach ($invoices as $invoice) {
-           
-            $assasController = new AssasController();
             if($invoice->status <> 1) {
-                $assasController->cancelInvoice($invoice->token_payment);
+                $assasController->cancelInvoice($invoice->payment_token);
             }
             
             $invoice->delete();
         }
+
+        $assasController->cancelInvoice($sale->payment_token);
 
         if ($sale->delete()) {
             return redirect()->back()->with('success', 'Venda e Faturas excluídas com sucesso!');

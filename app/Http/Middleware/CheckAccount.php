@@ -26,10 +26,10 @@ class CheckAccount {
                 return redirect()->route('profile-white-label')->with('info', 'Complete os dados da empresa para acessar todos os módulos!');
             }
 
-            $payment = Invoice::where('user_id', $user->id)->where('status', 0)->where('type', 1)->count();
-            if($payment >= 1) {
-                return redirect()->route('payments')->with('info', 'Existem mensalidades em aberto!');
-            }
+            // $payment = Invoice::where('user_id', $user->id)->where('status', 0)->where('type', 1)->count();
+            // if($payment >= 1) {
+            //     return redirect()->route('payments')->with('info', 'Existem mensalidades em aberto!');
+            // }
         }
 
         return $next($request);

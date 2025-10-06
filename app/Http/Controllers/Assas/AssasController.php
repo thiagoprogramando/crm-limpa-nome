@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Assas;
 
 use App\Http\Controllers\Controller;
-
+use App\Models\CashBack;
 use App\Models\Invoice;
 use App\Models\Lists;
 use App\Models\Notification;
@@ -407,6 +407,7 @@ class AssasController extends Controller {
 
                     $sale->save();
 
+                    CashBack::where('sale_id', $sale->uuid)->update(['status' => 1]);
                     Notification::create([
                         'name'        => 'Fatura N°'.$invoice->id,
                         'description' => 'Faturas recebida com sucesso!',
@@ -482,6 +483,27 @@ class AssasController extends Controller {
             }
             
             return response()->json(['status' => 'success', 'message' => 'Nenhum Fatura/Venda encontrada!']);
+        }
+
+        if ($jsonData['event'] === 'PAYMENT_OVERDUE' || $jsonData['event'] === 'PAYMENT_DELETED') {
+
+            $token = $jsonData['payment']['id'];
+
+            $sale = Sale::where('payment_token', $token)->whereIn('status', [0, 2])->first();
+            if (!$sale) {
+                return response()->json(['status' => 'success', 'message' => 'Nenhuma Venda encontrada!']);
+            }
+
+            $cashback = CashBack::where('sale_id', $sale->uuid)->first();
+            if ($cashback) {
+                $cashback->status = 3;
+                $cashback->save();
+
+                $sale->seller->wallet += $cashback->value;
+                $sale->seller->save();
+
+                return response()->json(['status' => 'success', 'message' => 'Configurações de CashBack Estorno aplicadas!']);
+            }
         }
 
         return response()->json(['status' => 'success', 'message' => 'Webhook não utilizado!']);
@@ -827,6 +849,11 @@ class AssasController extends Controller {
     }
 
     public function cancelInvoice($token) {
+
+        if (empty($token)) {
+            return false;
+        }
+
         try {
             $client = new Client();
             $options = [
@@ -841,14 +868,14 @@ class AssasController extends Controller {
             $response = $client->delete(env('API_URL_ASSAS') . 'v3/payments/' . $token, $options);
 
             if ($response->getStatusCode() === 200) {
+                
                 $data = json_decode((string) $response->getBody(), true);
-
                 return isset($data['deleted']) && $data['deleted'] === true;
             }
 
             return false;
         } catch (\Throwable $e) {
-            Log::error('Erro ao cancelar fatura (Token: ' . $token . '): ' . $e->getMessage());
+            // Log::error('Erro ao cancelar fatura (Token: ' . $token . '): ' . $e->getMessage());
             return false;
         }
     }
@@ -974,7 +1001,6 @@ class AssasController extends Controller {
 
         DB::beginTransaction();
         try {
-
             $user = $this->validateUser($request->user_id);
             if (!$user->name || !$user->cpfcnpj) {
                 throw new \Exception('Verifique seus dados e tente novamente!');
@@ -987,33 +1013,61 @@ class AssasController extends Controller {
             $saleIds     = $sales->pluck('id')->toArray();
             $saleNumbers = implode(', ', $saleIds);
 
-            $totalValue = $this->calculateTotalValue($sales, $user, $product);
+            $originalTotal = $this->calculateTotalValue($sales, $user, $product);
             $unitCost   = $user->fixed_cost ?? $product->value_cost;
             $totalCost  = $unitCost * count($sales);
 
-            $commissions        = [];
-            $sponsorCommission  = 0;
-            $uuid               = Str::uuid();
+            $useCashback    = $request->input('use_cashback', 0);
+            $discount       = 0;
+            $uuid           = Str::uuid();
+
+            // =============== APLICA DESCONTO / CASHBACK ==================
+            if ($useCashback && $user->wallet > 0) {
+                
+                $maxDiscount        = $totalCost * 0.5; // máximo 50% do custo
+                $availableWallet    = $user->wallet;
+                $discount           = min($availableWallet, $maxDiscount);
+
+                // Desconta do saldo do usuário
+                $user->wallet -= $discount;
+                $user->save();
+
+                //Gera histórico do cashback
+                $cashback               = new CashBack();
+                $cashback->uuid         = Str::uuid();
+                $cashback->user_id      = $user->id;
+                $cashback->sale_id      = $uuid;
+                $cashback->description  = 'Desconto aplicado na fatura das vendas N° - ' . $saleNumbers;
+                $cashback->value        = $discount;
+                $cashback->type         = 2;
+                $cashback->status       = 2;
+                $cashback->save();
+            }
+
+            // Valor final da fatura é reduzido pelo desconto
+            $totalValue = max(0, $originalTotal - $discount);
+
+            // =============== MONTA COMISSÕES ==================
+            $commissions = [];
+            $sponsorCommission = 0;
 
             if ($sponsor) {
                 $unitSponsorProfit = ($unitCost - $sponsor->fixed_cost);
                 if ($unitSponsorProfit > 0) {
-
                     $sponsorCommission = ($unitSponsorProfit * count($sales));
                     $commissions[] = [
                         'walletId'          => $sponsor->token_wallet,
-                        'fixedValue'        => number_format($sponsorCommission  - 3, 2, '.', ''),
+                        'fixedValue'        => number_format($sponsorCommission - 3, 2, '.', ''),
                         'externalReference' => $uuid,
                         'description'       => 'Comissão de Patrocinador para venda N° - ' . $saleNumbers,
                     ];
                     $commissions[] = [
                         'walletId'          => env('WALLET_G7'),
-                        'fixedValue'        => number_format($totalCost - $sponsorCommission, 2, '.', ''),
+                        'fixedValue'        => number_format(($totalCost - $sponsorCommission), 2, '.', ''),
                         'externalReference' => $uuid,
-                        'description'       => 'Comissão Associação para venda '.env('APP_NAME').' N° - ' . $saleNumbers,
+                        'description'       => 'Comissão Associação para venda ' . env('APP_NAME') . ' N° - ' . $saleNumbers,
                     ];
                 } else {
-
                     $commissions[] = [
                         'walletId'          => env('WALLET_G7'),
                         'fixedValue'        => number_format(($totalCost - 2) - (5 * count($sales)), 2, '.', ''),
@@ -1022,40 +1076,79 @@ class AssasController extends Controller {
                     ];
                 }
             } else {
-
                 $commissions[] = [
                     'walletId'          => env('WALLET_G7'),
                     'fixedValue'        => number_format(($totalCost - 2) - (5 * count($sales)), 2, '.', ''),
                     'externalReference' => $uuid,
-                    'description'       => 'Comissão Associação para venda '.env('APP_NAME').' N° - ' . $saleNumbers,
+                    'description'       => 'Comissão Associação para venda ' . env('APP_NAME') . ' N° - ' . $saleNumbers,
                 ];
             }
 
+            // Comissão da WALLET_EXPRESS (fixa)
             $commissions[] = [
                 'walletId'          => env('WALLET_EXPRESS'),
                 'fixedValue'        => number_format(5 * count($sales), 2, '.', ''),
                 'externalReference' => $uuid,
-                'description'       => 'Comissão % para venda '.env('APP_NAME').' N° - ' . $saleNumbers,
+                'description'       => 'Comissão % para venda ' . env('APP_NAME') . ' N° - ' . $saleNumbers,
             ];
 
-            $this->cancelPreviousInvoices($sales, $request->token);
-
-            try {
-                $customer = $this->createCustomer($user->name, $user->cpfcnpj);
-
-                $charge = $this->createCharge($customer, 'PIX', $totalValue, 'Fatura referente às vendas N° - ' . $saleNumbers, now()->addDay(), $commissions);
-
-                if (!$charge || empty($charge['id'])) {
-                    throw new \Exception('Erro ao criar fatura!');
+            // =============== APLICA DESCONTO NA COMISSÃO DA ASSOCIAÇÃO ==================
+            if ($discount > 0) {
+                foreach ($commissions as &$commission) {
+                    if ($commission['walletId'] === env('WALLET_G7')) {
+                        $commission['fixedValue'] = number_format(
+                            max(0, $commission['fixedValue'] - $discount),
+                            2,
+                            '.',
+                            ''
+                        );
+                    }
                 }
-
-            } catch (\Exception $e) {
-                throw new \Exception('Erro ao criar cobrança: ' . $e->getMessage());
+                unset($commission);
             }
 
-            $this->createInvoice($uuid, $product, $charge, $user, $totalValue, 'Fatura referente às vendas N° - ' . $saleNumbers, $sponsorCommission, $commissions);
-            $this->associateSalesWithCharge($sales, $charge['id']);
+            // =============== VALIDAÇÃO FINAL ==================
+            $totalCommission = array_sum(array_column($commissions, 'fixedValue'));
+            if ($totalCommission > $totalValue) {
+                // Ajuste de segurança proporcional (mantém proporções)
+                $ratio = $totalValue / $totalCommission;
+                foreach ($commissions as &$commission) {
+                    if ($commission['walletId'] !== env('WALLET_EXPRESS')) {
+                        $commission['fixedValue'] = number_format($commission['fixedValue'] * $ratio, 2, '.', '');
+                    }
+                }
+                unset($commission);
+            }
 
+            // =============== CRIA COBRANÇA ==================
+            $this->cancelPreviousInvoices($sales, $request->token);
+
+            $customer = $this->createCustomer($user->name, $user->cpfcnpj);
+            $charge = $this->createCharge(
+                $customer,
+                'PIX',
+                $totalValue,
+                'Fatura referente às vendas N° - ' . $saleNumbers,
+                now()->addDay(),
+                $commissions
+            );
+
+            if (!$charge || empty($charge['id'])) {
+                throw new \Exception('Erro ao criar fatura!');
+            }
+
+            $this->createInvoice(
+                $uuid,
+                $product,
+                $charge,
+                $user,
+                $totalValue,
+                'Fatura referente às vendas N° - ' . $saleNumbers,
+                $sponsorCommission,
+                $commissions
+            );
+
+            $this->associateSalesWithCharge($sales, $charge['id']);
             DB::commit();
 
             return $this->jsonSuccess('Fatura criada com sucesso!', [

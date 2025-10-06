@@ -120,8 +120,8 @@
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
                                     <button type="button" id="toggle-select" class="btn btn-outline-primary">Selecionar</button>
-                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">Importar Por Excel</button>
-                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">Adicionar Nome</button>
+                                    <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#uploadModal">Importar Por Excel</button>
+                                    <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#addModal">Adicionar Nome</button>
                                     <button id="quanty-name" class="btn btn-sm btn-outline-primary">Selecionados: </button>
                                 </div>
                             </div>
@@ -490,12 +490,40 @@
 
             if (btnCreatePayment) {
                 btnCreatePayment.addEventListener('click', () => {
+
                     const selectedIds = getSelectedIds();
-                    sendToApi('{{ url('api/create-payment') }}', selectedIds);
+                    if (selectedIds.length === 0) {
+                        Swal.fire({
+                            title: 'Atenção!',
+                            text: 'Nenhuma venda selecionada!',
+                            icon: 'info',
+                            timer: 2000
+                        });
+                        return;
+                    }
+
+                    var wallet = @json(Auth::user()->wallet);
+                    if (wallet > 0) {
+                        Swal.fire({
+                            title: 'Deseja usar seu saldo de cashback?',
+                            text: "Você possui R$ " + wallet + " disponíveis.",
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Sim, usar cashback',
+                            cancelButtonText: 'Não, pagar normal'
+                        }).then((result) => {
+                            let useCashback = result.isConfirmed ? 1 : 0;
+                            sendToApi('{{ url('api/create-payment') }}', selectedIds, useCashback);
+                        });
+                    } else {
+                        sendToApi('{{ url('api/create-payment') }}', selectedIds, 0);
+                    }
                 });
             }
 
-            function sendToApi(route, ids) {
+            function sendToApi(route, ids, useCashback = 0) {
 
                 if (ids.length === 0) {
                     Swal.fire({
@@ -520,6 +548,7 @@
                         ids, 
                         user_id     : user_id,
                         product_id  : product_id,
+                        use_cashback: useCashback
                     })
                 })
                 .then(response => response.json())

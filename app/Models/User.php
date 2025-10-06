@@ -95,6 +95,21 @@ class User extends Authenticatable {
         return $this->hasMany(User::class, 'filiate', 'id')->where('status', 2)->count();
     }
 
+    public function extracts($status = null, $date = null) {
+        
+        $query = $this->hasMany(CashBack::class, 'user_id')->orderBy('id', 'desc');
+
+        if (!is_null($status)) {
+            $query->where('status', $status);
+        }
+
+        if (!is_null($date)) {
+            $query->whereDate('created_at', $date);
+        }
+
+        return $query;
+    }
+
     public function lastPendingInvoiceTypeOne() {
 
         return $lastPendingInvoice = $this->invoices()

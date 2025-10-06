@@ -76,7 +76,7 @@
                 <div class="col-xxl-4 col-md-4">
                     <div class="card info-card revenue-card p-2">
                         <div class="card-body">
-                            <h5 class="card-title">DISPONÍVEL PARA SAQUE</h5>
+                            <h5 class="card-title">SALDO <span>| Seu Dinheiro</span></h5>
                             <div class="d-flex align-items-center">
                                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                 <i class="bi bi-currency-dollar"></i>
@@ -90,9 +90,25 @@
                 </div>
 
                 <div class="col-xxl-4 col-md-4">
+                    <div class="card info-card customers-card p-2">
+                        <div class="card-body">
+                            <h5 class="card-title">CASH-BACK <span>| Para Descontos</span></h5>
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-piggy-bank"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6>R$ {{ number_format($cashback, 2, ',', '.') }}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xxl-4 col-md-4">
                     <div class="card info-card sales-card p-2">
                         <div class="card-body">
-                            <h5 class="card-title">RECEBÍVEIS</h5>
+                            <h5 class="card-title">RECEBÍVEIS <span>| Para Receber</span></h5>
                             <div class="d-flex align-items-center">
                                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                 <i class="bi bi-bank"></i>
@@ -106,56 +122,84 @@
                     </div>
                 </div>
 
-                <div class="col-xxl-4 col-md-4">
-                    <div class="card info-card customers-card p-2">
-                        <div class="card-body">
-                            <h5 class="card-title">ACUMULADO</h5>
-                            <div class="d-flex align-items-center">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                <i class="bi bi-piggy-bank"></i>
-                                </div>
-                                <div class="ps-3">
-                                    <h6>R$ {{ number_format($accumulated, 2, ',', '.') }}</h6>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="col-xxl-12 col-md-12">
                     <div class="card p-2">
-                        <h5 class="card-title">Extrato</h5>
-                        <div class="table-responsive">
-                            <table class="table table-responsive table-hover" id="table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Tipo</th>
-                                        <th>Data</th>
-                                        <th>Descrição</th>
-                                        <th class="text-justify">Valor</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($extracts['data'] as $extract)
-                                        <tr>
-                                            <td>
-                                                <a href=""><b>{{ $extract['id'] }}</b></a>
-                                            </td>
-                                            <td>
-                                                @if($extract['value'] < 0)
-                                                    Saída
-                                                @else
-                                                    Entrada
-                                                @endif
-                                            </td>
-                                            <td>{{ \Carbon\Carbon::parse($extract['date'])->format('d/m/Y') }}</td>
-                                            <td>{{ $extract['description'] }}</td>
-                                            <td class="text-justify">R$ {{ number_format($extract['value'], 2, ',', '.') }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                        <div class="card-body">
+                             <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="wallet-tab" data-bs-toggle="tab" data-bs-target="#wallet" type="button" role="tab" aria-controls="wallet" aria-selected="true">Extrato Carteira</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="cashback-tab" data-bs-toggle="tab" data-bs-target="#cashback" type="button" role="tab" aria-controls="cashback" aria-selected="false" tabindex="-1">Extrato Cash-Back</button>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content pt-2" id="myTabContent">
+                                <div class="tab-pane fade show active" id="wallet" role="tabpanel" aria-labelledby="wallet-tab">
+                                    <div class="table-responsive">
+                                        <table class="table table-responsive table-hover" id="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Tipo</th>
+                                                    <th>Data</th>
+                                                    <th>Descrição</th>
+                                                    <th class="text-justify">Valor</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($extracts['data'] as $extract)
+                                                    <tr>
+                                                        <td>
+                                                            <a href=""><b>{{ $extract['id'] }}</b></a>
+                                                        </td>
+                                                        <td>
+                                                            @if($extract['value'] < 0)
+                                                                Saída
+                                                            @else
+                                                                Entrada
+                                                            @endif
+                                                        </td>
+                                                        <td>{{ \Carbon\Carbon::parse($extract['date'])->format('d/m/Y') }}</td>
+                                                        <td>{{ $extract['description'] }}</td>
+                                                        <td class="text-justify">R$ {{ number_format($extract['value'], 2, ',', '.') }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="cashback" role="tabpanel" aria-labelledby="cashback-tab">
+                                    <div class="table-responsive">
+                                        <table class="table table-responsive table-hover" id="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Tipo</th>
+                                                    <th>Data</th>
+                                                    <th>Descrição</th>
+                                                    <th class="text-justify">Valor</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($extractsCashback as $cashback)
+                                                    <tr>
+                                                        <td>
+                                                            <a href=""><b>{{ $cashback->uuid }}</b></a>
+                                                        </td>
+                                                        <td>
+                                                            {{ $cashback->type }}
+                                                        </td>
+                                                        <td>{{ \Carbon\Carbon::parse($cashback->created_at)->format('d/m/Y') }}</td>
+                                                        <td>{{ $extract['description'] }}</td>
+                                                        <td class="text-justify">R$ {{ number_format($cashback->value, 2, ',', '.') }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

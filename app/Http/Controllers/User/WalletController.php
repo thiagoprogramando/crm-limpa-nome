@@ -13,25 +13,20 @@ class WalletController extends Controller {
     
     public function wallet() {
 
-        if (empty(Auth::user()->token_wallet) || empty(Auth::user()->token_wallet)) {
-            return redirect()->back()->with('info', 'Necessário Integrar  APIs de uma Carteira Digital!');
-        }
-
-        $assas   = new AssasController();
-        $balance = $assas->balance() ?? 0;
-        if($balance == 0 || $balance > 0) {
+        if (!empty(Auth::user()->token_wallet) && !empty(Auth::user()->token_wallet)) {
+            $assas        = new AssasController();
+            $balance      = $assas->balance() ?? 0;
             $statistics   = $assas->statistics();
             $extracts     = $assas->receivable();
-            $accumulated  = $assas->accumulated();
-            return view('app.User.wallet', [
-                'balance'       => $balance, 
-                'statistics'    => $statistics, 
-                'extracts'      => $extracts, 
-                'accumulated'   => $accumulated
-            ]);
         }
-        
-        return view('app.User.wallet', ['balance' => 'sem dados!', 'statistics' => 'sem dados!', 'accumulated' => 'sem dados!', 'extracts' => '']);
+
+        return view('app.User.wallet', [
+            'balance'       => $balance ?? 0, 
+            'statistics'    => $statistics ?? [], 
+            'extracts'      => $extracts ?? [], 
+            'cashback'      => Auth::user()->wallet,
+            'extractsCashback' => Auth::user()->extracts()->orderBy('id', 'desc')->paginate(30)
+        ]);
     }
 
     public function withdrawSend(Request $request) {
