@@ -26,22 +26,22 @@ class CashBack extends Model {
         return $this->belongsTo(Sale::class);
     }
 
-    public function labelType($value) {
+    public function typeLabel() {
         $types = [
             1 => 'Entrada',
             2 => 'Saída'
         ];
 
-        return $types[$value] ?? 'Nulo';
+        return $types[$this->type] ?? 'Nulo';
     }
 
-    public function labelStatus($value) {
+    public function statusLabel() {
         $status = [
             1 => 'Aprovado',
             2 => 'Pendente',
             3 => 'Estornado'
         ];
 
-        return $status[$value] ?? 'Nulo';
+        return $status[$this->status] ?? 'Nulo';
     }
 }

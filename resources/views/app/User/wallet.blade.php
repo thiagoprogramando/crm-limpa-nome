@@ -140,7 +140,6 @@
                                         <table class="table table-responsive table-hover" id="table">
                                             <thead>
                                                 <tr>
-                                                    <th>ID</th>
                                                     <th>Tipo</th>
                                                     <th>Data</th>
                                                     <th>Descrição</th>
@@ -150,9 +149,6 @@
                                             <tbody>
                                                 @foreach ($extracts['data'] as $extract)
                                                     <tr>
-                                                        <td>
-                                                            <a href=""><b>{{ $extract['id'] }}</b></a>
-                                                        </td>
                                                         <td>
                                                             @if($extract['value'] < 0)
                                                                 Saída
@@ -174,25 +170,25 @@
                                         <table class="table table-responsive table-hover" id="table">
                                             <thead>
                                                 <tr>
-                                                    <th>ID</th>
                                                     <th>Tipo</th>
-                                                    <th>Data</th>
+                                                    <th class="text-center">Data</th>
                                                     <th>Descrição</th>
-                                                    <th class="text-justify">Valor</th>
+                                                    <th class="text-center">Situação</th>
+                                                    <th class="text-center">Valor</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach ($extractsCashback as $cashback)
                                                     <tr>
                                                         <td>
-                                                            <a href=""><b>{{ $cashback->uuid }}</b></a>
+                                                            {{ $cashback->typeLabel() }}
                                                         </td>
-                                                        <td>
-                                                            {{ $cashback->type }}
+                                                        <td class="text-center">{{ \Carbon\Carbon::parse($cashback->created_at)->format('d/m/Y') }}</td>
+                                                        <td>{{ $cashback->description }}</td>
+                                                        <td class="text-center">
+                                                            {{ $cashback->statusLabel() }}
                                                         </td>
-                                                        <td>{{ \Carbon\Carbon::parse($cashback->created_at)->format('d/m/Y') }}</td>
-                                                        <td>{{ $extract['description'] }}</td>
-                                                        <td class="text-justify">R$ {{ number_format($cashback->value, 2, ',', '.') }}</td>
+                                                        <td class="text-center">R$ {{ number_format($cashback->value, 2, ',', '.') }}</td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
