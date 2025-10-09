@@ -415,22 +415,15 @@ class AssasController extends Controller {
                     ]);
                 }
 
-                $sales = Sale::where('payment_token', $token)->whereIn('status', [0, 2])->get();
-                if ($sales->isNotEmpty()) {
-
-                    Sale::whereIn('id', $sales->pluck('id'))->update(['status' => 1, 'list_id' => $list->id]);
-                    CashBack::whereIn('sale_id', $sales->pluck('uuid'))->update(['status' => 1]);
-                
-                    return response()->json(['success' => 'success', 'message' => 'Status das vendas atualizado com sucesso!']);
-                }
-
                 if (!$sale) {
 
                     $sale = Sale::where('payment_token', $token)->first();
+                    Log::info('Encontrou Sale', ['sale_id' => $sale->id, 'payment_token' => $token]);
                     if ($sale) {
                         $percent = $invoice->value * 0.2;
                         $sale->seller->wallet += $percent;
                         $sale->seller->save();
+                        Log::info('Vendedor WALLET Atualizado', ['vendedor' => $sale->seller->id]);
 
                         $cashback               = new CashBack();
                         $cashback->uuid         = Str::uuid();
@@ -445,54 +438,23 @@ class AssasController extends Controller {
                         $cashback->status       = 1;
                         $cashback->save();
                     }
+                }
 
-                    if ($sale && $sale->seller && $invoice->type == 3 && $invoice->product) {
-                        if ($invoice->num == 1) {
-                            
-                            $message = "Olá, {$sale->seller->name}, espero que esteja bem! 😊\r\n\r\n"
-                                    . "Uma nova *venda* foi realizada com sucesso.🤑💸\r\n\r\n"
-                                    . "👤 Cliente: {$invoice->user->name}\r\n"
-                                    . "📦 Produto/Serviço: {$invoice->product->name}\r\n"
-                                    . "💰 Valor Total: R$ " . number_format($sale->value, 2, ',', '.') . "\r\n"
-                                    . "📅 Data da Venda: " . $sale->created_at->format('d/m/Y H:i') . "\r\n\r\n"
-                                    . "Obrigado pelo excelente trabalho!🥇";
-                        } elseif ($invoice->commission > 0) {
-                            
-                            $message = "Olá, {$sale->seller->name}, espero que esteja bem! 😊\r\n\r\n"
-                                    . "Uma nova *comissão* foi recebida com sucesso.🤑💸\r\n\r\n"
-                                    . "👤 Cliente: {$invoice->user->name}\r\n"
-                                    . "📦 Produto/Serviço: {$invoice->product->name}\r\n"
-                                    . "🧾 Fatura Nº {$invoice->num}\r\n"
-                                    . "💰 Valor aproximado: R$ " . number_format($invoice->commission, 2, ',', '.') . "\r\n"
-                                    . "📅 Data da Venda: " . $sale->created_at->format('d/m/Y H:i') . "\r\n\r\n"
-                                    . "Continue assim, parabéns pelo trabalho!🥇";
-                        }
-
-                        if (!empty($message)) {
-                            $this->sendWhatsapp("", $message, $sale->seller->phone, $sale->seller->getTokenWhatsapp());
-                        }
-                    }
+                if ($sale && $sale->seller && $invoice->type == 3 && $invoice->product) {
+                    $this->notifySeller($invoice, $sale);
                 }
 
                 if ($invoice->user) {
-                    if ($invoice->num == 1) {
-                        $message = "Olá, {$invoice->user->name}!\r\n\r\n".
-                                "Agradecemos pelo seu pagamento! \r\n\r\n".
-                                "Tenha a certeza de que sua situação está em boas mãos. \r\n\r\n".
-                                "*De 10 à 30 dias uteis*, nossa equipe especializada acompanhará ".
-                                "de perto todo o processo para garantir que seu nome seja limpo o mais rápido possível. \r\n\r\n".
-                                "Estamos à disposição para qualquer dúvida ou esclarecimento. \r\n\r\n".
-                                "Você pode acompanhar o processo acessando nosso sistema no link abaixo: \r\n\r\n";
-                    } else {
-                        $message = "Olá, {$invoice->user->name}!\r\n\r\n".
-                                "Agradecemos por manter o compromisso e realizar o pagamento do boleto, ".
-                                "o que garante a continuidade e a validade da garantia do serviço. \r\n\r\n".
-                                "Acesse o Painel do cliente👇";
-                    }
+                    $this->notifyCustomer($invoice);
+                }
 
-                    $this->sendWhatsapp(
-                        env('APP_URL').'login-cliente', $message, $invoice->user->phone, $invoice->user->getTokenWhatsapp()
-                    );
+                $sales = Sale::where('payment_token', $token)->whereIn('status', [0, 2])->get();
+                if ($sales->isNotEmpty()) {
+
+                    Sale::whereIn('id', $sales->pluck('id'))->update(['status' => 1, 'list_id' => $list->id]);
+                    CashBack::whereIn('sale_id', $sales->pluck('uuid'))->update(['status' => 1]);
+                
+                    return response()->json(['success' => 'success', 'message' => 'Status das vendas atualizado com sucesso!']);
                 }
                 
                 return response()->json(['status' => 'success', 'message' => 'Operação Finalizada!']);
@@ -523,6 +485,60 @@ class AssasController extends Controller {
         }
 
         return response()->json(['status' => 'success', 'message' => 'Webhook não utilizado!']);
+    }
+
+    private function notifySeller($invoice, $sale) {
+        if (!$sale->seller || !$invoice->product || $invoice->type != 3) return;
+
+        $seller = $sale->seller;
+        $message = '';
+
+        if ($invoice->num == 1) {
+            $message = "Olá, {$seller->name}, espero que esteja bem! 😊\r\n\r\n"
+                . "Uma nova *venda* foi realizada com sucesso.🤑💸\r\n\r\n"
+                . "👤 Cliente: {$invoice->user->name}\r\n"
+                . "📦 Produto/Serviço: {$invoice->product->name}\r\n"
+                . "💰 Valor Total: R$ " . number_format($sale->value, 2, ',', '.') . "\r\n"
+                . "📅 Data da Venda: " . $sale->created_at->format('d/m/Y H:i') . "\r\n\r\n"
+                . "Obrigado pelo excelente trabalho!🥇";
+        } elseif ($invoice->commission > 0) {
+            $message = "Olá, {$seller->name}, espero que esteja bem! 😊\r\n\r\n"
+                . "Uma nova *comissão* foi recebida com sucesso.🤑💸\r\n\r\n"
+                . "👤 Cliente: {$invoice->user->name}\r\n"
+                . "📦 Produto/Serviço: {$invoice->product->name}\r\n"
+                . "🧾 Fatura Nº {$invoice->num}\r\n"
+                . "💰 Valor aproximado: R$ " . number_format($invoice->commission, 2, ',', '.') . "\r\n"
+                . "📅 Data da Venda: " . $sale->created_at->format('d/m/Y H:i') . "\r\n\r\n"
+                . "Continue assim, parabéns pelo trabalho!🥇";
+        }
+
+        if ($message) {
+            $this->sendWhatsapp('', $message, $seller->phone, $seller->getTokenWhatsapp());
+        }
+    }
+
+    private function notifyCustomer($invoice) {
+        if (!$invoice->user) return;
+
+        $user = $invoice->user;
+
+        if ($invoice->num == 1) {
+            $message = "Olá, {$user->name}!\r\n\r\n"
+                . "Agradecemos pelo seu pagamento! \r\n\r\n"
+                . "De 10 a 30 dias úteis, nossa equipe acompanhará o processo para garantir que seu nome seja limpo o mais rápido possível.\r\n\r\n"
+                . "Você pode acompanhar o processo acessando o sistema abaixo:";
+        } else {
+            $message = "Olá, {$user->name}!\r\n\r\n"
+                . "Agradecemos por manter o compromisso e realizar o pagamento do boleto, garantindo a continuidade da garantia do serviço.\r\n\r\n"
+                . "Acesse o Painel do Cliente 👇";
+        }
+
+        $this->sendWhatsapp(
+            env('APP_URL') . 'login-cliente',
+            $message,
+            $user->phone,
+            $user->getTokenWhatsapp()
+        );
     }
 
     public function updateInvoice($id, $value, $dueDate, $callback = null, $commission = null, $wallet = null) {
