@@ -42,16 +42,14 @@ class Registrer extends Controller {
         $password       = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 6));
         $user->password = bcrypt($password);
         $user->type     = 2;
-        $user->status   = 3;
+        $user->status   = 1;
         
         if (!empty($request->filiate)) {
             
             $filiate = User::find($request->filiate);
             if ($filiate) {
-                $user->filiate      = $filiate->id;
-                $filiateCost        = $filiate->fixed_cost;
-                $cost               = $this->formatarValor($request->fixed_cost);
-                $user->fixed_cost   = $cost ?? $filiateCost;
+                $user->filiate    = $filiate->id;
+                $user->fixed_cost = $filiate->fixed_cost ?? 200;
             }
         }
 
