@@ -263,7 +263,7 @@ class SaleController extends Controller {
                     
                     $commissions[] = [
                         'walletId'          => env('APP_WALLET_ASSAS'),
-                        'fixedValue'        => max(($fixedCost - $sponsorCommission), 0),
+                        'fixedValue'        => max(($fixedCost - $sponsorCommission) - 5, 0),
                         'externalReference' => $uuid,
                         'description'       => 'Fatura '.$key.' para venda N° '.$sale->id,
                     ];
@@ -277,14 +277,14 @@ class SaleController extends Controller {
                         ];
                         $commissions[] = [
                             'walletId'          => env('WALLET_EXPRESS'),
-                            'fixedValue'        => number_format(1, 2, '.', ''),
+                            'fixedValue'        => number_format(5, 2, '.', ''),
                             'externalReference' => $uuid,
                             'description'       => 'Fatura '.$key.' para venda N° '.$sale->id,
                         ];
                     }
                 } else {
                     $percent = $value * 0.05;
-                    $totalCommission = ($value - $percent - 5);
+                    $totalCommission = ($value - $percent - 7);
                     
                     if ($totalCommission > 0 && $seller->type !== 99 && $seller->type !== 1) {
                         $commissions[] = [
@@ -298,13 +298,13 @@ class SaleController extends Controller {
                     if ($totalCommission > 0) {
                         $commissions[] = [
                             'walletId'   => env('WALLET_EXPRESS'),
-                            'fixedValue' => number_format(1, 2, '.', ''),
+                            'fixedValue' => number_format(5, 2, '.', ''),
                             'externalReference' => $uuid,
                             'description'       => 'Fatura '.$key.' para venda N° '.$sale->id,
                         ];
                         $commissions[] = [
                             'walletId'   => env('WALLET_G7'),
-                            'fixedValue' => number_format($percent - 1, 2, '.', ''),
+                            'fixedValue' => number_format($percent - 2, 2, '.', ''),
                             'externalReference' => $uuid,
                             'description'       => 'Fatura '.$key.' para venda N° '.$sale->id,
                         ];

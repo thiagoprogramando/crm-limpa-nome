@@ -677,14 +677,26 @@ class AssasController extends Controller {
                     }
                     $commissions[] = [
                         'walletId'          => env('APP_WALLET_ASSAS'),
-                        'fixedValue'        => number_format($totalCost - $sponsorCommission, 2, '.', ''),
+                        'fixedValue'        => number_format(($totalCost - $sponsorCommission) - 5, 2, '.', ''),
+                        'externalReference' => $uuid,
+                        'description'       => 'Fatura referente às vendas N° - ' . $saleNumbers,
+                    ];
+                    $commissions[] = [
+                        'walletId'          => env('WALLET_EXPRESS'),
+                        'fixedValue'        => number_format(5, 2, '.', ''),
                         'externalReference' => $uuid,
                         'description'       => 'Fatura referente às vendas N° - ' . $saleNumbers,
                     ];
                 } else {
                     $commissions[] = [
                         'walletId'          => env('APP_WALLET_ASSAS'),
-                        'fixedValue'        => number_format($totalCost - 2, 2, '.', ''),
+                        'fixedValue'        => number_format($totalCost - 7, 2, '.', ''),
+                        'externalReference' => $uuid,
+                        'description'       => 'Fatura referente às vendas N° - ' . $saleNumbers,
+                    ];
+                    $commissions[] = [
+                        'walletId'          => env('WALLET_EXPRESS'),
+                        'fixedValue'        => number_format(5, 2, '.', ''),
                         'externalReference' => $uuid,
                         'description'       => 'Fatura referente às vendas N° - ' . $saleNumbers,
                     ];
@@ -692,7 +704,13 @@ class AssasController extends Controller {
             } else {
                 $commissions[] = [
                     'walletId'          => env('APP_WALLET_ASSAS'),
-                    'fixedValue'        => number_format($totalCost - 2, 2, '.', ''),
+                    'fixedValue'        => number_format($totalCost - 7, 2, '.', ''),
+                    'externalReference' => $uuid,
+                    'description'       => 'Fatura referente às vendas N° - ' . $saleNumbers,
+                ];
+                $commissions[] = [
+                    'walletId'          => env('WALLET_EXPRESS'),
+                    'fixedValue'        => number_format(5, 2, '.', ''),
                     'externalReference' => $uuid,
                     'description'       => 'Fatura referente às vendas N° - ' . $saleNumbers,
                 ];
