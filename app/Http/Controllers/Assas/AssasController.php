@@ -394,11 +394,10 @@ class AssasController extends Controller {
 
                 $sale = $invoice->sale;
                 if ($sale) {
+                    
                     if ($invoice->product && $invoice->num == 1) {
-                        $sale->status = 1;
-                        $sale->guarantee = $sale->guarantee
-                            ? Carbon::parse($sale->guarantee)->addMonths(3)
-                            : now()->addMonths(3);
+                        $sale->status    = 1;
+                        $sale->guarantee = now()->addMonths(3);
 
                         if ($list) {
                             $sale->list_id = $list->id;
@@ -416,20 +415,68 @@ class AssasController extends Controller {
                     ]);
                 }
 
-
                 $sales = Sale::where('payment_token', $token)->whereIn('status', [0, 2])->get();
                 if ($sales->isNotEmpty()) {
 
-                    Sale::whereIn('id', $sales->pluck('id'))
-                        ->update(['status' => 1, 'list_id' => $list->id]);
+                    Sale::whereIn('id', $sales->pluck('id'))->update(['status' => 1, 'list_id' => $list->id]);
+                    CashBack::whereIn('sale_id', $sales->pluck('uuid'))->update(['status' => 1]);
                 
                     return response()->json(['success' => 'success', 'message' => 'Status das vendas atualizado com sucesso!']);
                 }
 
-                $client = $invoice->user;
-                if ($client) {
+                if (!$sale) {
+
+                    $sale = Sale::where('payment_token', $token)->first();
+                    if ($sale) {
+                        $percent = $invoice->value * 0.2;
+                        $sale->seller->wallet += $percent;
+                        $sale->seller->save();
+
+                        $cashback               = new CashBack();
+                        $cashback->uuid         = Str::uuid();
+                        $cashback->user_id      = $sale->seller->id;
+                        $cashback->sale_id      = $sale->uuid;
+
+                        $ids = isset($sales) && $sales->count() > 0 ? $sales->pluck('id')->join(', ') : $sale->id;
+
+                        $cashback->description  = 'CashBack aplicado na fatura das vendas N° - '. $ids;
+                        $cashback->value        = $percent;
+                        $cashback->type         = 1;
+                        $cashback->status       = 1;
+                        $cashback->save();
+                    }
+
+                    if ($sale && $sale->seller && $invoice->type == 3 && $invoice->product) {
+                        if ($invoice->num == 1) {
+                            
+                            $message = "Olá, {$sale->seller->name}, espero que esteja bem! 😊\r\n\r\n"
+                                    . "Uma nova *venda* foi realizada com sucesso.🤑💸\r\n\r\n"
+                                    . "👤 Cliente: {$invoice->user->name}\r\n"
+                                    . "📦 Produto/Serviço: {$invoice->product->name}\r\n"
+                                    . "💰 Valor Total: R$ " . number_format($sale->value, 2, ',', '.') . "\r\n"
+                                    . "📅 Data da Venda: " . $sale->created_at->format('d/m/Y H:i') . "\r\n\r\n"
+                                    . "Obrigado pelo excelente trabalho!🥇";
+                        } elseif ($invoice->commission > 0) {
+                            
+                            $message = "Olá, {$sale->seller->name}, espero que esteja bem! 😊\r\n\r\n"
+                                    . "Uma nova *comissão* foi recebida com sucesso.🤑💸\r\n\r\n"
+                                    . "👤 Cliente: {$invoice->user->name}\r\n"
+                                    . "📦 Produto/Serviço: {$invoice->product->name}\r\n"
+                                    . "🧾 Fatura Nº {$invoice->num}\r\n"
+                                    . "💰 Valor aproximado: R$ " . number_format($invoice->commission, 2, ',', '.') . "\r\n"
+                                    . "📅 Data da Venda: " . $sale->created_at->format('d/m/Y H:i') . "\r\n\r\n"
+                                    . "Continue assim, parabéns pelo trabalho!🥇";
+                        }
+
+                        if (!empty($message)) {
+                            $this->sendWhatsapp("", $message, $sale->seller->phone, $sale->seller->getTokenWhatsapp());
+                        }
+                    }
+                }
+
+                if ($invoice->user) {
                     if ($invoice->num == 1) {
-                        $message = "Olá, {$client->name}!\r\n\r\n".
+                        $message = "Olá, {$invoice->user->name}!\r\n\r\n".
                                 "Agradecemos pelo seu pagamento! \r\n\r\n".
                                 "Tenha a certeza de que sua situação está em boas mãos. \r\n\r\n".
                                 "*De 10 à 30 dias uteis*, nossa equipe especializada acompanhará ".
@@ -437,62 +484,15 @@ class AssasController extends Controller {
                                 "Estamos à disposição para qualquer dúvida ou esclarecimento. \r\n\r\n".
                                 "Você pode acompanhar o processo acessando nosso sistema no link abaixo: \r\n\r\n";
                     } else {
-                        $message = "Olá, {$client->name}!\r\n\r\n".
+                        $message = "Olá, {$invoice->user->name}!\r\n\r\n".
                                 "Agradecemos por manter o compromisso e realizar o pagamento do boleto, ".
                                 "o que garante a continuidade e a validade da garantia do serviço. \r\n\r\n".
                                 "Acesse o Painel do cliente👇";
                     }
 
                     $this->sendWhatsapp(
-                        env('APP_URL').'login-cliente',
-                        $message,
-                        $client->phone,
-                        $client->getTokenWhatsapp()
+                        env('APP_URL').'login-cliente', $message, $invoice->user->phone, $invoice->user->getTokenWhatsapp()
                     );
-                }
-
-                $seller = $sale->seller;
-                if ($seller && $invoice->type != 1 && $invoice->num == 1) {
-                    $percent = $invoice->value * 0.2;
-                    $seller->wallet += $percent;
-                    $seller->save();
-
-                    $cashback               = new CashBack();
-                    $cashback->uuid         = Str::uuid();
-                    $cashback->user_id      = $seller->id;
-                    $cashback->sale_id      = $token;
-                    $cashback->description  = 'CashBack aplicado na fatura das vendas N° - ' . $sales->pluck('id') ?? $sale->id;
-                    $cashback->value        = $percent;
-                    $cashback->type         = 1;
-                    $cashback->status       = 1;
-                    $cashback->save();
-                }
-
-                if ($seller && $invoice->type == 3 && $invoice->product) {
-                    if ($invoice->num == 1) {
-                        
-                        $message = "Olá, {$seller->name}, espero que esteja bem! 😊\r\n\r\n"
-                                . "Uma nova *venda* foi realizada com sucesso.🤑💸\r\n\r\n"
-                                . "👤 Cliente: {$client->name}\r\n"
-                                . "📦 Produto/Serviço: {$invoice->product->name}\r\n"
-                                . "💰 Valor Total: R$ " . number_format($sale->value, 2, ',', '.') . "\r\n"
-                                . "📅 Data da Venda: " . $sale->created_at->format('d/m/Y H:i') . "\r\n\r\n"
-                                . "Obrigado pelo excelente trabalho!🥇";
-                    } elseif ($invoice->commission > 0) {
-                        
-                        $message = "Olá, {$seller->name}, espero que esteja bem! 😊\r\n\r\n"
-                                . "Uma nova *comissão* foi recebida com sucesso.🤑💸\r\n\r\n"
-                                . "👤 Cliente: {$client->name}\r\n"
-                                . "📦 Produto/Serviço: {$invoice->product->name}\r\n"
-                                . "🧾 Fatura Nº {$invoice->num}\r\n"
-                                . "💰 Valor aproximado: R$ " . number_format($invoice->commission, 2, ',', '.') . "\r\n"
-                                . "📅 Data da Venda: " . $sale->created_at->format('d/m/Y H:i') . "\r\n\r\n"
-                                . "Continue assim, parabéns pelo trabalho!🥇";
-                    }
-
-                    if (!empty($message)) {
-                        $this->sendWhatsapp("", $message, $seller->phone, $seller->getTokenWhatsapp());
-                    }
                 }
                 
                 return response()->json(['status' => 'success', 'message' => 'Operação Finalizada!']);
