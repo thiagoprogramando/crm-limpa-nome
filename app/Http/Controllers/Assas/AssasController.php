@@ -452,6 +452,22 @@ class AssasController extends Controller {
                 }
 
                 $seller = $sale->seller;
+                if ($seller && $invoice->type != 1 && $invoice->num == 1) {
+                    $percent = $invoice->value * 0.2;
+                    $seller->wallet += $percent;
+                    $seller->save();
+
+                    $cashback               = new CashBack();
+                    $cashback->uuid         = Str::uuid();
+                    $cashback->user_id      = $seller->id;
+                    $cashback->sale_id      = $token;
+                    $cashback->description  = 'CashBack aplicado na fatura das vendas N° - ' . $sales->pluck('id') ?? $sale->id;
+                    $cashback->value        = $percent;
+                    $cashback->type         = 1;
+                    $cashback->status       = 1;
+                    $cashback->save();
+                }
+
                 if ($seller && $invoice->type == 3 && $invoice->product) {
                     if ($invoice->num == 1) {
                         
@@ -1123,14 +1139,9 @@ class AssasController extends Controller {
             // =============== CRIA COBRANÇA ==================
             $this->cancelPreviousInvoices($sales, $request->token);
 
-            $customer = $this->createCustomer($user->name, $user->cpfcnpj);
-            $charge = $this->createCharge(
-                $customer,
-                'PIX',
-                $totalValue,
-                'Fatura referente às vendas N° - ' . $saleNumbers,
-                now()->addDay(),
-                $commissions
+            $customer   = $this->createCustomer($user->name, $user->cpfcnpj);
+            $charge     = $this->createCharge( 
+                $customer, 'PIX', $totalValue, 'Fatura referente às vendas N° - ' . $saleNumbers, now()->addDay(), $commissions
             );
 
             if (!$charge || empty($charge['id'])) {
@@ -1138,14 +1149,7 @@ class AssasController extends Controller {
             }
 
             $this->createInvoice(
-                $uuid,
-                $product,
-                $charge,
-                $user,
-                $totalValue,
-                'Fatura referente às vendas N° - ' . $saleNumbers,
-                $sponsorCommission,
-                $commissions
+                $uuid, $product, $charge, $user, $totalValue, 'Fatura referente às vendas N° - ' . $saleNumbers, $sponsorCommission, $commissions
             );
 
             $this->associateSalesWithCharge($sales, $charge['id']);
