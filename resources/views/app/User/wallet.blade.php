@@ -82,7 +82,13 @@
                                 <i class="bi bi-currency-dollar"></i>
                                 </div>
                                 <div class="ps-3">
-                                    <h6>R$ {{ number_format($balance, 2, ',', '.') }}</h6>
+                                    <h6>
+                                        @if($balance < 0)
+                                            -R$ {{ number_format(abs($balance), 2, ',', '.') }}
+                                        @else
+                                            R$ {{ number_format($balance, 2, ',', '.') }}
+                                        @endif
+                                    </h6>
                                 </div>
                             </div>
                         </div>
