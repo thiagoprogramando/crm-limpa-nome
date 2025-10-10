@@ -420,7 +420,7 @@ class AssasController extends Controller {
                     $sale = Sale::where('payment_token', $token)->first();
                     Log::info('Encontrou Sale', ['sale_id' => $sale->id, 'payment_token' => $token]);
                     if ($sale) {
-                        $percent = $invoice->value * 0.2;
+                        $percent = $invoice->value * 0.1;
                         $sale->seller->wallet += $percent;
                         $sale->seller->save();
                         Log::info('Vendedor WALLET Atualizado', ['vendedor' => $sale->seller->id]);
