@@ -28,7 +28,7 @@
                                     </div>
                                 @endif
                                 <input type="hidden" name="filiate" value="{{ isset($id) ? $id : '' }}">
-                                <input type="hidden" name="fixed_cost" value="{{ isset($fixed_cost) ? $fixed_cost : '' }}">
+                                <input type="hidden" name="fixed_cost" value="{{ isset($fixed_cost) ? $fixed_cost : '200' }}">
                                 <div class="form-group mb-3">
                                     <input type="text" name="name" class="form-control" placeholder="Nome:" required>
                                 </div>

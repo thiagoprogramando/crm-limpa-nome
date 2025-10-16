@@ -472,7 +472,7 @@ class AssasController extends Controller {
                 return response()->json(['status' => 'success', 'message' => 'Nenhuma Venda encontrada!']);
             }
 
-            $cashback = CashBack::where('sale_id', $sale->uuid)->first();
+            $cashback = CashBack::where('sale_id', $sale->uuid)->orWhere('sale_id', $sale->id)->first();
             if ($cashback) {
                 $cashback->status = 3;
                 $cashback->save();

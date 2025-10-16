@@ -15,8 +15,8 @@ class Registrer extends Controller {
     public function index($id = null, $fixed_cost = null) {
 
         return view('registrer', [
-            'id'            => $id, 
-            'fixed_cost'    => $fixed_cost
+            'id'         => $id, 
+            'fixed_cost' => $fixed_cost
         ]);
     }
 
@@ -45,13 +45,13 @@ class Registrer extends Controller {
         $user->status   = 1;
         
         if (!empty($request->filiate)) {
-            
             $filiate = User::find($request->filiate);
             if ($filiate) {
                 $user->filiate    = $filiate->id;
-                $user->fixed_cost = $filiate->fixed_cost ?? 200;
             }
         }
+
+        $user->fixed_cost = $filiate->fixed_cost ?? 200;
 
         if($user->save()) {
             $this->sendActive($user->id, $password);
@@ -146,6 +146,7 @@ class Registrer extends Controller {
     }
 
     private function formatarValor($valor) {
+        
         if (is_numeric($valor)) {
             return number_format((float) $valor, 2, '.', '');
         }
